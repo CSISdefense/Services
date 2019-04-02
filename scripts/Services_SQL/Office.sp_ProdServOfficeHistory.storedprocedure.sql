@@ -34,9 +34,9 @@ SELECT /****** Script for SelectTopNRows command from SSMS  ******/
  [ProductOrServiceCode]
       ,[ContractingOfficeCode]
       ,[fiscal_year]
-      ,[paircount_7year]
-      ,[numberofactions_7year]
-      ,[obligatedamount_7year]
+      ,[paircount_7year] as office_psc_paircount_7year
+      ,[numberofactions_7year] as office_psc_numberofactions_7year
+      ,[obligatedamount_7year] as office_psc_obligatedamount_7year
   FROM [Office].[ProdServOfficeHistoryLagged]
 
 END

@@ -15,7 +15,7 @@ AS
 SELECT        
 C.fiscal_year
 , co.ContractingOfficeCode as ContractingOfficeCode
-, c.contractingofficeagencyid
+--, c.contractingofficeagencyid
 ,count(distinct c.productorservicecode) as ProductOrServiceCodeCount
 ,count(distinct ProductServiceOrRnDarea) as ProductOrServiceAreaCount
 ,count(distinct c.principalnaicscode) as DetailedIndustryCount
@@ -63,7 +63,7 @@ GROUP BY
 C.fiscal_year
 , co.ContractingOfficeCode 
 --, co2mcc.ContractingOfficeName 
-, c.contractingofficeagencyid
+--, c.contractingofficeagencyid
 --, cO2MCC.MajorCommandName 
 --, cO2MCC.MajorCommandCode 
 --,ISNULL(CAgency.Customer, CAgency.AGENCYIDText) 
