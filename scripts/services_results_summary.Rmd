@@ -84,6 +84,33 @@ summary(def_serv$Action.Obligation)
 # save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
 load("../data/clean/transformed_def_serv.Rdata")
 
+summary(factor(def_serv$PricingFee))
+def_serv$PricingUCA<-as.character(def_serv$PricingFee)
+def_serv$PricingUCA[is.na(def_serv$UCA)]<-NA
+summary(factor(def_serv$PricingUCA))
+def_serv$PricingUCA[def_serv$UCA=="UCA"]<-"UCA"
+def_serv$PricingUCA<-factor(def_serv$PricingUCA)
+summary(def_serv$PricingUCA)
+def_serv$Comp1or5<-def_serv$CompOffr
+levels(def_serv$Comp1or5)<-
+      list("No Competition"="No Competition",
+           "1 offer"="1 offer",
+           "2-4 offers"=c("2 offers","3-4 offers"),
+           "5+ offers"="5+ offers")
+summary(def_serv$Comp1or5)
+colnames(def_serv)[colnames(def_serv)=="Office"]<-"ContractingOfficeCode"
+colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
+
+
+def_serv<-read_and_join( def_serv,
+                             "Office.sp_ProdServOfficeHistoryLagged.txt",
+                             path="",
+                             directory="..\\data\\semi_clean\\",
+                             by=c("ContractingOfficeCode","Fiscal_Year","ProductOrServiceCode"),
+                             add_var=c("PlaceIntlPercent","CrisisPercent"),
+                             new_var_checked=FALSE)
+
+
 #Removing l_s just to reduce size. They can be derived easily.
 
 # 
