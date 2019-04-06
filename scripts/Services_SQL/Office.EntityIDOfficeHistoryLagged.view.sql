@@ -14,8 +14,9 @@ SELECT
 o.EntityID
 ,o.ContractingOfficeCode
 ,o.fiscal_year
+,o.NumberOfActions as office_entity_numberofactions_1year
 ,ohistory.paircount_7year as office_entity_paircount_7year
-,ohistory.numberofactions_7year as office_entity_numberofactions_7year
+--,ohistory.numberofactions_7year as office_entity_numberofactions_7year
 ,ohistory.obligatedamount_7year as office_entity_obligatedamount_7year
 FROM Office.[EntityIDofficeHistory] AS o
 left outer join (

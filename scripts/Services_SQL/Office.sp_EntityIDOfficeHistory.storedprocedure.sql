@@ -35,7 +35,7 @@ SELECT /****** Script for SelectTopNRows command from SSMS  ******/
       ,[ContractingOfficeCode]
       ,[fiscal_year]
       ,[office_entity_paircount_7year]
-      ,[office_entity_numberofactions_7year]
+      ,[office_entity_numberofactions_1year]
       ,[office_entity_obligatedamount_7year]
   FROM [Office].[EntityIDofficeHistoryLagged]
 
