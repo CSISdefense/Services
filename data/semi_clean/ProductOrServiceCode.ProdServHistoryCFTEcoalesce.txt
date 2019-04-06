@@ -1,4 +1,4 @@
-﻿fiscal_year	OCO_GF	productorservicecode	ProductOrServiceCode1L	IsRnDdefenseSystem	CFTE_Rate_1year	CFTE_Factor_1year	CFTE_Factor_1yearP4	CFTE_Factor_1yearP4avg	CFTE_Factor_1yearP1	CFTE_Factor_1yearP1avg
+﻿fiscal_year	OCO_GF	ProductOrServiceCode	ProductOrServiceCode1L	IsRnDdefenseSystem	CFTE_Rate_1year	CFTE_Factor_1year	CFTE_Factor_1yearP4	CFTE_Factor_1yearP4avg	CFTE_Factor_1yearP1	CFTE_Factor_1yearP1avg
 1988	GF	AC21	A	1	228782.915550584	4.48753268E-06	NULL	4.48753268E-06	NULL	4.23285216E-06
 1989	GF	AC14	A	1	453089.23091871	2.33323426666667E-06	NULL	2.33323426666667E-06	NULL	4.23285216E-06
 1989	GF	AC54	A	1	309001.461336439	3.502029575E-06	NULL	3.502029575E-06	NULL	4.23285216E-06
