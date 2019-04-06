@@ -178,10 +178,6 @@ summary(def_serv$EntityID)
 summary(def_serv$office_entity_numberofactions_1year)
 summary(def_serv$office_entity_paircount_7year)
 summary(def_serv$office_entity_obligatedamount_7year)
-def_serv$pMarket<-def_serv$office_entity_obligatedamount_7year/def_serv$office_obligatedamount_7year
-def_serv$pMarket[def_serv$office_obligatedamount_7year==0 & !is.na(def_serv$EntityID)]<-0
-def_serv$pMarket[def_serv$pMarket>1]<-1
-summary(def_serv$pMarket)
 
 def_serv$office_entity_numberofactions_1year[is.na(def_serv$office_entity_numberofactions_1year)&
                                          !is.na(def_serv$EntityID)&!is.na(def_serv$ContractingOfficeCode)]<-0
@@ -191,6 +187,11 @@ def_serv$office_entity_paircount_7year[is.na(def_serv$office_entity_paircount_7y
 def_serv$office_entity_obligatedamount_7year[(is.na(def_serv$office_entity_obligatedamount_7year)|
                                             def_serv$office_entity_obligatedamount_7year<0)&
                                          !is.na(def_serv$EntityID)&!is.na(def_serv$ContractingOfficeCode)]<-0
+def_serv$pMarket<-def_serv$office_entity_obligatedamount_7year/def_serv$office_obligatedamount_7year
+def_serv$pMarket[def_serv$office_obligatedamount_7year==0 &
+                                         !is.na(def_serv$EntityID)&!is.na(def_serv$ContractingOfficeCode)]<-0
+def_serv$pMarket[def_serv$pMarket>1]<-1
+summary(def_serv$pMarket)
 
 
 
@@ -240,6 +241,8 @@ def_serv<-read_and_join_experiment( def_serv,
 
 summary(def_serv$CFTE_Rate_1year)
 
+View(def_serv %>% group_by() %>% dplyr::select (ProdServ, fiscal_year, OCO_GF,CFTE_Rate_1year))
+
 # def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
 save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
 load("../data/clean/transformed_def_serv.Rdata")
@@ -250,8 +253,10 @@ colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
 
 
 
-
-
+length(unique((def_serv$ContractingOfficeCode)))
+length(unique((def_serv$Agency)))
+length(unique((def_serv$NAICS)))
+length(unique((def_serv$NAICS3)))
 
 
 #Removing l_s just to reduce size. They can be derived easily.
@@ -364,18 +369,20 @@ NA_stats(def_serv,"cl_def3_HHI_lag1")
 
 complex_category <- c("US6_avg_sal_lag1")
 capacity_category <- c("pPBSC", "pOffPSC")
-pair_category <- c("pMarket","office_entity_numberofactions_1year")
+pair_category <- c("office_entity_ca_inc")
 
 
 statsummary_discrete("CompOffr",def_serv)
 
-
+def_serv$office_entity_ca_inc<-def_serv$office_entity_numberofactions_1year+1
 hhi<-statsummary_continuous(HHI_category, def_serv)
 hhi
 write.csv(hhi,file="output/hhi_summary.csv")
 statsummary_continuous(complex_category, def_serv)
 statsummary_continuous(capacity_category, def_serv,log=FALSE)
-statsummary_continuous(pair_category, def_serv,log=FALSE)
+statsummary_continuous(pair_category, def_serv)
+
+
 
 ```
 
@@ -1253,6 +1260,8 @@ def_serv$l_OptGrowth<-log(def_serv$OptGrowth)
 def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
 def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
 def_serv$l_pMarket<-log(def_serv$pMarket+1)
+def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
+
 
 
 
@@ -1262,6 +1271,8 @@ freq_continuous_plot(def_serv,"l_base",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"OptGrowth",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"l_OptGrowth",bins=50)
 
+
+
 freq_continuous_plot(def_serv,"pPBSC",bins=50)
 freq_continuous_plot(def_serv,"l_pPBSC",bins=50) #No real point, stick with PBSC
 freq_continuous_plot(def_serv,"pOffPSC",bins=50)
@@ -1269,7 +1280,11 @@ freq_continuous_plot(def_serv,"l_pOffPSC",bins=50)  #No real point here either
 freq_continuous_plot(def_serv,"pMarket",bins=50)
 freq_continuous_plot(def_serv,"l_pMarket",bins=50)
 freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
+freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
+freq_continuous_plot(def_serv,"l_CA",bins=50)
 summary(def_serv$pMarket)
+
+def_serv$l_pMarket<-log(def_serv$pMarket+1)
 
 
 # Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
