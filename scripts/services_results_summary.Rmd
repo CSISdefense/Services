@@ -99,19 +99,27 @@ def_serv<-read_and_join_experiment( def_serv,
                              path="",
                              directory="..\\data\\semi_clean\\",
                              by=c("ContractingOfficeCode","fiscal_year"),
-                             add_var=c("office_obligatedamount_7year",
+                             add_var=c("office_obligatedamount_1year",
                                        "office_numberofactions_1year",
-                                       "office_PBSCobligated_1year"),
+                                       "office_PBSCobligated_1year",
+                                       "office_obligatedamount_7year"),
                              new_var_checked=FALSE)
 summary(def_serv$office_numberofactions_1year)
 summary(def_serv$office_obligatedamount_7year)
+summary(def_serv$office_obligatedamount_1year)
 summary(def_serv$office_PBSCobligated_1year)
 
 def_serv$office_numberofactions_1year[is.na(def_serv$office_numberofactions_1year)]<-0
 def_serv$office_obligatedamount_7year[is.na(def_serv$office_obligatedamount_7year) | 
                                         def_serv$office_obligatedamount_7year<0]<-0
+def_serv$office_obligatedamount_1year[is.na(def_serv$office_obligatedamount_1year) | 
+                                        def_serv$office_obligatedamount_1year<0]<-0
 def_serv$office_PBSCobligated_1year[is.na(def_serv$office_PBSCobligated_1year)|
                                       def_serv$office_PBSCobligated_1year<0]<-0
+def_serv$pPBSC<-def_serv$office_PBSCobligated_1year/def_serv$office_obligatedamount_1year
+def_serv$pPBSC[def_serv$office_obligatedamount_1year==0]<-0
+def_serv$pPBSC[def_serv$pPBSC>1]<-1
+summary(def_serv$pPBSC)
 
 def_serv<-read_and_join_experiment( def_serv,
                              "Office.sp_ProdServOfficeHistoryLagged.txt",
@@ -1218,11 +1226,17 @@ def_serv$l_base<-log(def_serv$UnmodifiedBaseandExercisedOptionsValue+1)
 
 def_serv$OptGrowth<-def_serv$ExercisedOptions/def_serv$UnmodifiedBaseandExercisedOptionsValue+1
 def_serv$l_OptGrowth<-log(def_serv$OptGrowth)
+def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
+
+
 
 freq_continuous_plot(def_serv,"UnmodifiedBaseandExercisedOptionsValue",bins=50)
 freq_continuous_plot(def_serv,"l_base",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"OptGrowth",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"l_OptGrowth",bins=50)
+
+freq_continuous_plot(def_serv,"pPBSC",bins=50)
+freq_continuous_plot(def_serv,"l_pPBSC",bins=50) #No real point, stick with PBSC
 
 HH1plot<-HH1plot+geom_vline(xintercept=c(1500,2500))+labs(x="Annual Herfindahl-Hirschman Index (HHI) for NAICS-6 Sector",y="Contract or Task Order Count")
 HH1plot
@@ -1258,7 +1272,7 @@ complete<-
   !is.na(def_serv$b_CBre)&
   #Study Variables
   !is.na(def_serv$cl_US6_avg_sal_lag1)&
-  !is.na(def_serv$office_PBSCobligated_1year)&
+  !is.na(def_serv$pPBSC)&
 !is.na(def_serv$office_psc_obligatedamount_7year)&
 !is.na(def_serv$office_entity_paircount_7year)&
 !is.na(def_serv$office_entity_numberofactions_7year)&
