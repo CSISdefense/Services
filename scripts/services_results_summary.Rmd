@@ -87,7 +87,27 @@ def_serv<-left_join(def_serv,fed)
 #About 24k inexplicably missing
 # summary(def_serv[is.na(def_serv$Crisis),])
 colnames(def_serv)[colnames(def_serv)=="ContractingOfficeCode"]<-"Office"
+
+
+colnames(def_serv)[colnames(def_serv)=="fiscal_year"]<-"StartFY"
 colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
+
+def_serv$cl_CFTE<-arm::rescale(def_serv$l_CFTE)
+def_serv$c_pPBSC<-arm::rescale(def_serv$pPBSC)
+def_serv$c_pOffPSC<-arm::rescale(def_serv$pOffPSC)
+
+
+def_serv$c_pMarket<-arm::rescale(def_serv$pMarket)
+def_serv$l_OffCA<-log(def_serv$office_numberofactions_1year+1)
+def_serv$cl_OffCA<-arm::rescale(def_serv$l_OffCA)
+def_serv$l_OffVol<-log(def_serv$office_obligatedamount_7year+1)
+def_serv$cl_OffVol<-arm::rescale(def_serv$l_OffVol)
+def_serv$cl_pairCA<-arm::rescale(def_serv$l_CA)
+def_serv$c_pairHist<-arm::rescale(def_serv$office_entity_paircount_7year)
+
+summary(def_serv$l_OffVol)
+summary(def_serv$cl_OffVol)
+
 
 
 
@@ -1148,20 +1168,6 @@ def_serv$l_pMarket<-log(def_serv$pMarket+1)
 # serv_smp$l_Offr<-na_non_positive_log(serv_smp$UnmodifiedNumberOfOffersReceived)
 # serv_smp1m$l_Offr<-na_non_positive_log(serv_smp1m$UnmodifiedNumberOfOffersReceived)
 
-def_serv$cl_CFTE<-arm::rescale(def_serv$l_CFTE)
-def_serv$c_pPBSC<-arm::rescale(def_serv$pPBSC)
-def_serv$c_pOffPSC<-arm::rescale(def_serv$pOffPSC)
-
-
-def_serv$c_pMarket<-arm::rescale(def_serv$pMarket)
-def_serv$l_OffCA<-log(def_serv$office_numberofactions_1year+1)
-def_serv$cl_OffCA<-arm::rescale(def_serv$l_OffCA)
-def_serv$l_OffVol<-log(def_serv$office_obligatedamount_7year+1)
-def_serv$cl_OffVol<-arm::rescale(def_serv$l_OffVol)
-def_serv$cl_pairCA<-arm::rescale(def_serv$l_CA)
-def_serv$c_pairHist<-arm::rescale(def_serv$office_entity_paircount_7year)
-
-
 
 
 complete<-
@@ -1174,17 +1180,17 @@ complete<-
   !is.na(def_serv$cl_US6_avg_sal_lag1)&
   !is.na(def_serv$cl_CFTE)&
   !is.na(def_serv$c_pPBSC)&
-!is.na(def_serv$c_pOffPSC)&
-!is.na(def_serv$c_pairHist)&
-!is.na(def_serv$cl_pairCA)&
-#Controls
+  !is.na(def_serv$c_pOffPSC)&
+  !is.na(def_serv$c_pairHist)&
+  !is.na(def_serv$cl_pairCA)&
+  #Controls
   !is.na(def_serv$CompOffr)&
   !is.na(def_serv$cl_Offr)&
   !is.na(def_serv$cl_Ceil)&
   !is.na(def_serv$capped_cl_Days)&
   !is.na(def_serv$Veh) &
   !is.na(def_serv$PricingUCA)&
-  !is.na(def_serv$Place)& #New Variable
+  !is.na(def_serv$PlaceCountryISO3)& #New Variable
   # !is.na(def_serv$b_UCA)& No longer  used
   !is.na(def_serv$NAICS)&
   !is.na(def_serv$NAICS3)&
@@ -1196,10 +1202,10 @@ complete<-
   !is.na(def_serv$cl_def6_HHI_lag1)&
   !is.na(def_serv$cl_def6_obl_lag1)&
   !is.na(def_serv$cl_def6_ratio_lag1)&
-    #New Controls
-  !is.na(def_serv$cl_OffCA)&
-!is.na(def_serv$cl_OffVol)&
-!is.na(def_serv$c_pMarket)
+  #New Controls
+  !is.na(def_serv$cl_OffCA)& #summary(def_serv$cl_OffCA)
+  !is.na(def_serv$cl_OffVol)& #summary(def_serv$cl_OffVol)
+  !is.na(def_serv$c_pMarket)  #summary(def_serv$c_pMarket)
 
 
 
