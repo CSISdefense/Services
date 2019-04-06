@@ -191,6 +191,26 @@ def_serv<-read_and_join_experiment( def_serv,
 summary(def_serv$ExercisedOptions)
 summary(def_serv$AnyUnmodifiedUnexercisedOptions)
 summary(factor(def_serv$AnyUnmodifiedUnexercisedOptionsWhy))
+summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
+
+
+summary(def_serv$Crisis)
+def_serv$OCO_GF<-def_serv$Crisis
+levels(def_serv$OCO_GF)<-
+      list("GF"=c("Other","ARRA","Dis"),
+           "OCOC"="OCO")
+summary(def_serv$OCO_GF)
+
+
+def_serv<-read_and_join_experiment( def_serv,
+                             "ProductOrServiceCode.ProdServHistoryCFTEcoalesce.txt",
+                             path="",
+                             directory="..\\data\\semi_clean\\",
+                             by=c("fiscal_year","OCO_GF","ProductOrServiceCode"),
+                             add_var=c("CFTE_Rate_1year"),
+                             new_var_checked=FALSE)
+
+summary(def_serv$CFTE_Rate_1year)
 
 # def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
 save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
@@ -230,9 +250,9 @@ NA_stats(def_serv,"b_CBre")`)
 #The original variables for b_Term and b_CBre are Term and CBre
 grouped_barplot("Term", def_serv)
 grouped_barplot("CBre", def_serv)
-statsummary_discrete(c("Term"), def_serv)
+statsummary_discrete(c("b_Term"), def_serv)
 statsummary_discrete(c("CBre"), def_serv)
-statsummary_continuous(c("UnmodifiedNumberOfOffersReceived"), def_serv)
+statsummary_continuous(c("OptGrowth"), def_serv)
 ```
 
 
@@ -1192,9 +1212,18 @@ ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index)),filename="Output//platform_
 
 ### Variable examination
 ```{r VarGraph}
+summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
+def_serv$UnmodifiedBaseandExercisedOptionsValue[def_serv$UnmodifiedBaseandExercisedOptionsValue<=0]<-NA
+def_serv$l_base<-log(def_serv$UnmodifiedBaseandExercisedOptionsValue+1)
 
+def_serv$OptGrowth<-def_serv$ExercisedOptions/def_serv$UnmodifiedBaseandExercisedOptionsValue+1
+def_serv$l_OptGrowth<-log(def_serv$OptGrowth)
 
-HH1plot<-freq_continuous_plot(def_serv,"def6_HHI_lag1",bins=50)
+freq_continuous_plot(def_serv,"UnmodifiedBaseandExercisedOptionsValue",bins=50)
+freq_continuous_plot(def_serv,"l_base",bins=50)
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"OptGrowth",bins=50)
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"l_OptGrowth",bins=50)
+
 HH1plot<-HH1plot+geom_vline(xintercept=c(1500,2500))+labs(x="Annual Herfindahl-Hirschman Index (HHI) for NAICS-6 Sector",y="Contract or Task Order Count")
 HH1plot
 ggsave(HH1plot,file="Output//HH1freq.png",width=5.5,height=5.5,dpi=600)
