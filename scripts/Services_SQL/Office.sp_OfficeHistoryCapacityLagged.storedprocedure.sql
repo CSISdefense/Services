@@ -34,6 +34,7 @@ SELECT  [ContractingOfficeCode]
       ,[fiscal_year]
       ,[obligatedamount_1year] as office_obligatedamount_1year
       ,[numberofactions_1year] as office_numberofactions_1year
+	  ,[PBSCobligated_1year] as office_PBSCobligated_1year
       ,[NumberOfTransactions_1year] as office_NumberOfTransactions_1year
       ,[NumberOfContracts_1year] as office_NumberOfContracts_1year
       ,[numberofactions_7year] as office_numberofactions_7year

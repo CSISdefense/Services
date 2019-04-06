@@ -8,7 +8,7 @@ GO
 
 
 
-create  VIEW [Office].[sp_ProdServOfficeHistoryLagged]
+alter  VIEW [Office].[ProdServOfficeHistoryLagged]
 AS
 SELECT        
 o.ProductOrServiceCode
@@ -28,7 +28,7 @@ left outer join (
 	FROM Office.[ProdServOfficeHistory] AS interior
 	left outer join Office.[ProdServOfficeHistory] ohistory
 	on interior.contractingofficecode=ohistory.contractingofficecode and
-	ohistory.fiscal_year  between interior.fiscal_year-1 and interior.fiscal_year-7 and
+	ohistory.fiscal_year  between interior.fiscal_year-7 and interior.fiscal_year-1 and
 	ohistory.ProductOrServiceCode = interior.ProductOrServiceCode
 	GROUP BY 
 	interior.fiscal_year

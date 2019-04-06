@@ -19,6 +19,7 @@ library(foreign)
 library(stargazer)
 library(texreg)
 library(reshape2)
+library(tidyverse)
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/DIIGstat.r")
 
 axis.text.size<-10
@@ -65,24 +66,17 @@ def_serv<-def[def$PSR %in% c("Services","R&D"),]
 rm(def)    
     
 # # head(def_serv)
-debug(transform_contract)
 def_serv<-transform_contract(def_serv)
 # 
 # 
 
-
+colnames(def_serv)[colnames(def_serv)=="Office"]<-"ContractingOfficeCode"
+colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
 
 
 
 summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue)
 summary(def_serv$Action.Obligation)
-
-
-
-
-# def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
-# save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
-load("../data/clean/transformed_def_serv.Rdata")
 
 summary(factor(def_serv$PricingFee))
 def_serv$PricingUCA<-as.character(def_serv$PricingFee)
@@ -98,23 +92,123 @@ levels(def_serv$Comp1or5)<-
            "2-4 offers"=c("2 offers","3-4 offers"),
            "5+ offers"="5+ offers")
 summary(def_serv$Comp1or5)
-colnames(def_serv)[colnames(def_serv)=="Office"]<-"ContractingOfficeCode"
-colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
 
 
-def_serv<-read_and_join( def_serv,
+def_serv<-read_and_join_experiment( def_serv,
+                             "Office.sp_OfficeHistoryCapacityLagged.txt",
+                             path="",
+                             directory="..\\data\\semi_clean\\",
+                             by=c("ContractingOfficeCode","fiscal_year"),
+                             add_var=c("office_obligatedamount_7year",
+                                       "office_numberofactions_1year",
+                                       "office_PBSCobligated_1year"),
+                             new_var_checked=FALSE)
+summary(def_serv$office_numberofactions_1year)
+summary(def_serv$office_obligatedamount_7year)
+summary(def_serv$office_PBSCobligated_1year)
+
+def_serv$office_numberofactions_1year[is.na(def_serv$office_numberofactions_1year)]<-0
+def_serv$office_obligatedamount_7year[is.na(def_serv$office_obligatedamount_7year) | 
+                                        def_serv$office_obligatedamount_7year<0]<-0
+def_serv$office_PBSCobligated_1year[is.na(def_serv$office_PBSCobligated_1year)|
+                                      def_serv$office_PBSCobligated_1year<0]<-0
+
+def_serv<-read_and_join_experiment( def_serv,
                              "Office.sp_ProdServOfficeHistoryLagged.txt",
                              path="",
                              directory="..\\data\\semi_clean\\",
-                             by=c("ContractingOfficeCode","Fiscal_Year","ProductOrServiceCode"),
-                             add_var=c("PlaceIntlPercent","CrisisPercent"),
+                             by=c("ContractingOfficeCode","fiscal_year","ProductOrServiceCode"),
+                             add_var=c("office_psc_obligatedamount_7year"),
                              new_var_checked=FALSE)
+summary(def_serv$office_psc_obligatedamount_7year)
+def_serv$office_psc_obligatedamount_7year[is.na(def_serv$office_psc_obligatedamount_7year)|
+                                            def_serv$office_psc_obligatedamount_7year<0]<-0
+# undebug(read_and_join_experiment)
+
+
+def_serv<-read_and_join_experiment( def_serv,
+                             "Office.sp_EntityIDofficeHistoryLagged.txt",
+                             path="",
+                             directory="..\\data\\semi_clean\\",
+                             by=c("EntityID","ContractingOfficeCode","fiscal_year"),
+                             add_var=c("office_entity_paircount_7year","office_entity_numberofactions_7year",
+                                       "office_entity_obligatedamount_7year"),
+                             new_var_checked=FALSE)
+
+summary(def_serv$office_entity_numberofactions_7year)
+summary(def_serv$office_entity_paircount_7year)
+summary(def_serv$office_entity_obligatedamount_7year)
+
+
+
+def_serv<-read_and_join_experiment_experiment( def_serv,
+                             "Contract.sp_ContractEntityID.txt",
+                             path="",
+                             directory="..\\data\\semi_clean\\",
+                             by=c("CSIScontractID"),
+                             add_var=c("EntityID","UnmodifiedEntityID"),
+                             new_var_checked=FALSE)
+def_serv$EntityID[is.na(def_serv$EntityID)]<-
+  def_serv$UnmodifiedEntityID[is.na(def_serv$EntityID)]
+
+def_serv$office_entity_numberofactions_7year[is.na(def_serv$office_entity_numberofactions_7year)&
+                                         !is.na(def_serv$EntityID)]<-0
+def_serv$office_entity_paircount_7year[is.na(def_serv$office_entity_paircount_7year)&
+                                         !is.na(def_serv$EntityID)]<-0
+
+def_serv$office_entity_obligatedamount_7year[(is.na(def_serv$office_entity_obligatedamount_7year)|
+                                            def_serv$office_entity_obligatedamount_7year<0)&
+                                         !is.na(def_serv$EntityID)]<-0
+
+summary(def_serv$EntityID)
+summary(def_serv$office_entity_numberofactions_7year)
+summary(def_serv$office_entity_paircount_7year)
+summary(def_serv$office_entity_obligatedamount_7year)
+
+
+load("..\\data\\semi_clean\\fed_transformed.rdata")
+fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,PlaceCountryISO3,Crisis)
+def_serv<-left_join(def_serv,fed)
+summary(def_serv$PlaceCountryISO3)
+summary(fed$PlaceCountryISO3)
+summary(factor(def_serv$Crisis))
+#About 24k inexplicably missing
+summary(def_serv[is.na(def_serv$Crisis),])
+colnames(def_serv)[colnames(def_serv)=="ContractingOfficeCode"]<-"Office"
+
+
+def_serv<-read_and_join_experiment( def_serv,
+                             "Contract.sp_ContractExercisedOptions.txt",
+                             path="",
+                             directory="..\\data\\semi_clean\\",
+                             by=c("CSIScontractID"),
+                             add_var=c("AnyUnmodifiedUnexercisedOptions"
+                                       ,"AnyUnmodifiedUnexercisedOptionsWhy"
+                                       ,"UnmodifiedBaseandExercisedOptionsValue"
+                                       ,"ExercisedOptions"),
+                             new_var_checked=FALSE)
+
+summary(def_serv$ExercisedOptions)
+summary(def_serv$AnyUnmodifiedUnexercisedOptions)
+summary(factor(def_serv$AnyUnmodifiedUnexercisedOptionsWhy))
+
+# def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
+save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
+load("../data/clean/transformed_def_serv.Rdata")
+
+
+colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
+
+
+
+
+
+
 
 
 #Removing l_s just to reduce size. They can be derived easily.
 
 # 
-
 
 
 # load("output//naics_join.Rdata")
@@ -1130,16 +1224,24 @@ sum(def_serv$Action.Obligation[is.na(def_serv$EffComp)],na.rm=TRUE)/sum(def_serv
 
 
 complete<-
-  !is.na(def_serv$b_Term)&
+  #Dependent Variables
+  !is.na(def_serv$b_Term)& #summary(def_serv$b_Term)
   !is.na(def_serv$b_CBre)&
+  #Study Variables
+  !is.na(def_serv$cl_US6_avg_sal_lag1)&
+  !is.na(def_serv$office_PBSCobligated_1year)&
+!is.na(def_serv$office_psc_obligatedamount_7year)&
+!is.na(def_serv$office_entity_paircount_7year)&
+!is.na(def_serv$office_entity_numberofactions_7year)&
+#Controls
   !is.na(def_serv$CompOffr)&
   !is.na(def_serv$cl_Offr)&
   !is.na(def_serv$cl_Ceil)&
   !is.na(def_serv$capped_cl_Days)&
   !is.na(def_serv$Veh) &
-  !is.na(def_serv$PricingFee)&
-  !is.na(def_serv$b_Intl)&
-  !is.na(def_serv$b_UCA)&
+  !is.na(def_serv$PricingUCA)&
+  # !is.na(def_serv$Place)& #New Variable
+  # !is.na(def_serv$b_UCA)&
   !is.na(def_serv$NAICS)&
   !is.na(def_serv$NAICS3)&
   !is.na(def_serv$Office)&
@@ -1150,8 +1252,12 @@ complete<-
   !is.na(def_serv$cl_def6_HHI_lag1)&
   !is.na(def_serv$cl_def6_obl_lag1)&
   !is.na(def_serv$cl_def6_ratio_lag1)&
-  !is.na(def_serv$cl_US6_avg_sal_lag1
-           )
+    #New Controls
+  !is.na(def_serv$office_numberofactions_1year)&
+!is.na(def_serv$office_obligatedamount_7year)&
+!is.na(def_serv$office_entity_obligatedamount_7year)
+
+
 
 
 summary(complete)

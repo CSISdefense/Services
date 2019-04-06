@@ -9,6 +9,9 @@ GO
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
+select *
+from ProductOrServiceCode.ProdServHistoryCFTEcoalesce
+
 DECLARE	@return_value int
 
 --EXEC	@return_value = [Vendor].[SP_EntityIDhistory]
@@ -16,6 +19,13 @@ EXEC	@return_value = [Vendor].[SP_EntityIDhistoryNAICS]
 --EXEC	@return_value = Contract.[SP_ContractBudgetDecisionTree]
 		@Customer = 'Defense'
 		
+SET ANSI_WARNINGS OFF;
+SET NOCOUNT ON;
+
+--DECLARE	@return_value int
+EXEC	[Contract].[SP_ContractExercisedOptions]
+@IsDefense = NULL
+
 --SELECT	'Return Value' = @return_value
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
@@ -48,8 +58,18 @@ EXEC	Office.sp_ProdServOfficeHistoryLagged
 		--@Customer = 'Defense'
 
 		
+		
+--SELECT	'Return Value' = @return_value
+SET ANSI_WARNINGS OFF;
+SET NOCOUNT ON;
 
+--EXEC	@return_value = [Vendor].[SP_EntityIDhistory]
+EXEC	[Contract].[SP_ContractEntityID]
+--EXEC	@return_value = Contract.[SP_ContractBudgetDecisionTree]
+		--@Customer = 'Defense'
 
+		
+		
 
 ----SET ANSI_WARNINGS OFF;
 ----SET NOCOUNT ON;
