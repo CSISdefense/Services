@@ -1133,7 +1133,7 @@ summary_residual_compare(naics36_term,naics36_Office_term,naics36_cbre,naics36_O
 
 get_icc(naics36_When_Office_term)
 get_icc(naics36_cpsa_When_Office_term)
-get_icc(naics36_cpsa_Office_term,)
+get_icc(naics36_cpsa_Office_term)
 get_icc(PlaceCountry_term)
 get_icc(PlaceCountry_naics_36_Office_term)
 get_icc(PlaceCountry_naics_36_cpsa_Office_term)
@@ -1158,7 +1158,7 @@ stargazer::stargazer(naics36_When_Office_term,
 
 get_icc(naics36_When_Office_opt)
 get_icc(naics36_cpsa_When_Office_opt)
-get_icc(naics36_cpsa_Office_opt,)
+get_icc(naics36_cpsa_Office_opt)
 get_icc(PlaceCountry_opt)
 get_icc(PlaceCountry_naics_36_Office_opt)
 get_icc(PlaceCountry_naics_36_cpsa_Office_opt)
