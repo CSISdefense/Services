@@ -50,9 +50,9 @@ load(file="..//data//clean//def_sample.Rdata")
 
 The sample is created by including the entirity of the ARRA and Disaster datasets, as well as 100,000 records each from the OCO datase and another 100,000 from all remaining records.
 
-#Initial Bivariate Comparisons
+#Study Variables
 
-##Crisis Dataset
+##Services Complexity
 ### 01A NAICS Salary
 ```{r Model01A}
 
@@ -694,15 +694,15 @@ texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 
 
 
-##Scope Variables
-### Ceiling
-#### 05A: Cost Ceiling
+##Contract-Level Controls
+###Scope Variables
+#### 04A: Cost Ceiling
 
 Expectation: Initial Ceiling size positively estimates increasing probability of ceiling breaches and terminations and negatively estimates the option growth. Terminations and ceiling breaches simply comes down to large being associated with higher risk, while for option growth,  
 
 
 
-```{r Model05A}
+```{r Model04A}
 #Frequency Plot for unlogged ceiling
 freq_continuous_cbre_plot(serv_smp,"UnmodifiedContractBaseAndAllOptionsValue",
                bins=1000)
@@ -715,32 +715,28 @@ summary(serv_smp$l_Ceil)
 
 str(serv_smp)
 #Model
-CBre_05A <- glm (data=serv_smp,
+CBre_04A <- glm (data=serv_smp,
                  b_CBre ~ Crisis +NoCompOffr +
                    
                    
-                   cl_Ceil+
-                   Crisis:NoCompOffr+
-                   b_UCA:Crisis, 
+                   cl_Ceil, 
                  family=binomial(link="logit"))
-glmer_examine(CBre_05A)
+glmer_examine(CBre_04A)
 
-Term_05A <- glm (data=serv_smp,
+Term_04A <- glm (data=serv_smp,
                  b_Term ~ Crisis +NoCompOffr +
                    
                    
-                   cl_Ceil+
-                   
-                   b_UCA:Crisis, 
+                   cl_Ceil, 
                  family=binomial(link="logit"))
-glmer_examine(Term_05A)
+glmer_examine(Term_04A)
 
 
 
-stargazer::stargazer(CBre_04E,CBre_05A,Term_04E,Term_05A,type="text",
+stargazer::stargazer(CBre_04E,CBre_04A,Term_04E,Term_04A,type="text",
                      digits=2)
 
-summary_residual_compare(CBre_04E,CBre_05A,Term_04E,Term_05A,bins=NA)
+summary_residual_compare(CBre_04E,CBre_04A,Term_04E,Term_04A,bins=NA)
 
 
 ```
@@ -750,7 +746,7 @@ Expectations were upheld. The addition of the new variable did raise the VIF for
 Contract ceiling has a significant relationship, though the residuals show a possible non-linear patterns. This is most remarkable in the positive centered values between 0 and 1. This may be driven  by a missing value and is worth watching.
 
 
-```{r Model05A}
+```{r Model04A}
 #Frequency Plot for unlogged ceiling
 freq_continuous_cbre_plot(serv_smp,"UnmodifiedContractBaseAndAllOptionsValue",
                bins=1000)
@@ -763,32 +759,28 @@ summary(serv_smp$l_Ceil)
 
 str(serv_smp)
 #Model
-CBre_05A <- glm (data=serv_smp,
+CBre_04A <- glm (data=serv_smp,
                  b_CBre ~ Crisis +NoCompOffr +
                    
                    
-                   cl_Ceil+
-                   Crisis:NoCompOffr+
-                   b_UCA:Crisis, 
+                   cl_Ceil, 
                  family=binomial(link="logit"))
-glmer_examine(CBre_05A)
+glmer_examine(CBre_04A)
 
-Term_05A <- glm (data=serv_smp,
+Term_04A <- glm (data=serv_smp,
                  b_Term ~ Crisis +NoCompOffr +
                    
                    
-                   cl_Ceil+
-                   
-                   b_UCA:Crisis, 
+                   cl_Ceil, 
                  family=binomial(link="logit"))
-glmer_examine(Term_05A)
+glmer_examine(Term_04A)
 
 
 
-stargazer::stargazer(CBre_04E,CBre_05A,Term_04E,Term_05A,type="text",
+stargazer::stargazer(CBre_04E,CBre_04A,Term_04E,Term_04A,type="text",
                      digits=2)
 
-summary_residual_compare(CBre_04E,CBre_05A,Term_04E,Term_05A,bins=NA)
+summary_residual_compare(CBre_04E,CBre_04A,Term_04E,Term_04A,bins=NA)
 
 
 ```
@@ -796,12 +788,11 @@ summary_residual_compare(CBre_04E,CBre_05A,Term_04E,Term_05A,bins=NA)
 
 
 
-### Maximum Duration
-#### 06A: Maximum Duration
+#### 04B: Maximum Duration
 
 Expectation: Greater maximum duration will positively estimate the probability ceiling of  breaches and terminations.
 
-```{r Model06A}
+```{r Model04B}
 #Frequency Plot for max duration
 freq_continuous_cbre_plot(serv_smp,"UnmodifiedDays",
                bins=1000)
@@ -810,42 +801,66 @@ freq_continuous_cbre_plot(serv_smp,"UnmodifiedDays",
 
 summary_continuous_plot(serv_smp,"l_Days")
 #Model
-CBre_06A <- glm (data=serv_smp,
+CBre_04B <- glm (data=serv_smp,
                  b_CBre ~ Crisis +NoCompOffr +
                    
                    
                    cl_Ceil+
                    capped_cl_Days+
-                   cl_Ceil+Crisis:NoCompOffr+cl_Ceil:NoCompOffr, 
+                   cl_Ceil+Crisis:NoCompOffr, 
                  family=binomial(link="logit"))
-glmer_examine(CBre_06A)
+glmer_examine(CBre_04B)
 
-Term_06A <- glm (data=serv_smp,
+Term_04B <- glm (data=serv_smp,
                  b_Term ~ Crisis +NoCompOffr+
                    
                    
                    cl_Ceil+
-                   capped_cl_Days+
-                   
-                   b_UCA:Crisis, 
+                   capped_cl_Days, 
                  family=binomial(link="logit"))
-glmer_examine(Term_06A)
+glmer_examine(Term_04B)
 
 
-stargazer::stargazer(CBre_05E,CBre_06A,Term_05B,Term_06A,type="text",
+stargazer::stargazer(CBre_05E,CBre_04B,Term_05B,Term_04B,type="text",
                      digits=2)
 
-summary_residual_compare(CBre_05E,CBre_06A,Term_05B,Term_06A)
+summary_residual_compare(CBre_05E,CBre_04B,Term_05B,Term_04B)
 ```
 Expectations are met for ceiling breaches. Excluding for VIF for terminations.
 
 Duration has significant correlations with ceiling breaches. The initial model results are surprising as ceiling change direction, reducing, although the interaction between crisis funding and ceiling remains roughly the same. The graph of the fitted values shows that this model The next step will be to look at the interaction of ceiling and duration. The residuals for both ceiling and days do fall out of the 95% confidence interval more than expected and particularly for ceiling breaches show some signs of patterns.
 
+### Competition
+#### 05A: No Competition / 1 / 2-4 / 5+ Offers
+```{r Model05A}
+summary_discrete_plot(serv_smp,"Comp")
 
-##Contract Vehicle
+serv_smp$b_NoComp<-!serv_smp$b_Comp
+
+#Model
+CBre_05A <- glm (data=serv_smp,
+                 b_CBre ~ Crisis +b_NoComp, family=binomial(link="logit"))
+glmer_examine(CBre_05A)
+
+Term_05A <- glm (data=serv_smp,
+                 b_Term ~ Crisis +b_NoComp, family=binomial(link="logit"))
+glmer_examine(Term_05A)
+
+
+stargazer::stargazer(CBre_01A,CBre_05A,Term_01A,Term_05A,type="text",
+                     digits=2)
+
+
+summary_residual_compare(CBre_01A,CBre_05A,Term_01A,Term_05A,bins=3)
+
+```
+
+
+
+### Contract Vehicle
 Our dataset includes both stand alone contract awards and task orders that are under larger indefinite delivery vehicles (IDVs). This does fit with literature review findings about the risk of long duration contracts in a crisis, so will be kept in despite its minimal coefficient.
 
-### 07A: Single-Award, Multi-Award, and Other Indefinite Delivery Vehicles
+#### 07A: Def/Pur; S-IDC; M-IDC; FSS-GWAC; BPA-BOA.
 
 Expectation: Indefinite delivery vehicles, means that the government has an existing relationship with the vendor and administration is easier. The downside is that the government may be locked into the vendor, although exit does not necessarily require outright termination, instead the government may simply cease to use a vehicle. Taken together, across the board the four categories of vehicles are expected to  negatively estimate the probability of termination. Ceiling breaches are a more complex topic and the study team does not have immediate expecations aside from likely significance.
 
@@ -861,9 +876,9 @@ CBre_07A <- glm (data=serv_smp,
                    cl_Ceil+
                    capped_cl_Days+
                    Veh+
-                  cl_Ceil+Crisis:NoCompOffr+
+                  cl_Ceil+
                    
-                   cl_Ceil:NoCompOffr+
+                   
                    capped_cl_Days:NoCompOffr, 
                  family=binomial(link="logit"))
 glmer_examine(CBre_07A)
@@ -874,9 +889,7 @@ Term_07A <- glm (data=serv_smp,
                    
                   cl_Ceil+
                    capped_cl_Days+
-                   Veh+
-                  
-                   b_UCA:Crisis, 
+                   Veh, 
                  family=binomial(link="logit"))
 glmer_examine(Term_07A)
 
@@ -898,13 +911,13 @@ The next step is to check the intersections with duration.
 
 
 
-##Type of Contract
+### Type of Contract
 
 The next step adds a measure for whether the contract was cost-based or fixed-price. 
 
 Expectation Prior CSIS research has found that fixed-price contracts estimate a higher probability of terminations but did not find a notable relationship for ceiling breaches.
 
-### 08A: Fixed-Price
+#### 08A: FFP / Other FP / Incentive / T&M/FP:LOE;LH / Other CB / Combination
 ```{r Model08A}
 
   summary_discrete_plot(serv_smp,"PricingUCA")
@@ -919,9 +932,9 @@ CBre_08A <- glm (data=serv_smp,
                    Veh+
                    PricingUCA +
                   cl_Ceil+
-                   Crisis:NoCompOffr+
                    
-                   cl_Ceil:NoCompOffr+
+                   
+                   
                    capped_cl_Days:NoCompOffr, 
                    #
                  #NoCompOffr:Veh, 
@@ -955,3 +968,260 @@ summary_residual_compare(CBre_07A,CBre_08A,Term_07C,Term_08A,30)
 
 ```
 
+
+### Crisis Dataset
+#### 09A Crisis Dataset
+```{r Model09A}
+
+summary_discrete_plot(serv_smp,"Crisis")
+
+#Model
+CBre_09A <- glm (data=serv_smp,
+                 b_CBre ~ Crisis, family=binomial(link="logit"))
+display(CBre_09A)
+
+#Model
+Term_09A <- glm (data=serv_smp,
+                 b_Term ~ Crisis, family=binomial(link="logit"))
+display(Term_09A)
+
+
+
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_09A,Term_09A,type="text",
+                       digits=2)
+
+
+# summary_residual_compare(CBre_09A,Term_09A,bins=3)
+
+
+
+```
+
+
+## Industrial Sector
+
+
+### Level 6
+
+#### Model 10A: l_def6_HHI_lag1
+
+Expectations are  unchanged.
+```{r Model10A}
+#Frequency Plot for unlogged ceiling
+summary_continuous_plot(serv_smp,"def6_HHI_lag1")
+summary_continuous_plot(serv_smp,"l_def6_HHI_lag1")
+summary_continuous_plot(serv_smp,"l_def3_HHI_lag1")
+
+
+#Model
+CBre_10A <- glm (data=serv_smp,
+                 b_CBre ~cl_def6_HHI_lag1, family=binomial(link="logit"))
+glmer_examine(CBre_10A)
+
+
+# #Plot the fitted model plot
+# CBre_02A_curve<-function(x, Comp){invlogit(cbind(1,Comp,x) %*%  coef(CBre_02A))}
+# 
+# #Competition curves
+# fitted_cbre_model(serv_smp,"cl_Ceil") + stat_function(fun = CBre_02A_curve, 
+#                              args=list(Comp=0),color="blue")+
+#   stat_function(fun = CBre_02A_curve, 
+#                              args=list(Comp=2),color="blue")
+# 
+
+
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_NCS6A,CBre_10A,CBre_NCS6E,type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_NCS6A,CBre_10A)
+
+
+```
+The use of log doesn't change the direction of finding, but it does reduce the magnitude of the residuals and smooths out the trend. 
+
+
+#### Model 10B: Defense to Overall ratio
+The higher the ratio of defense obligations to reciepts in the overall economy, the DoD holds a monosopy over a sector. Given the challenges of monosopy, the a higher ratio estimates a greater  risk of ceiling breaches.
+```{r Model10B}
+#Frequency Plot for unlogged ceiling
+summary_continuous_plot(contract,"capped_def6_ratio_lag1")
+      summary_continuous_plot(contract,"l_def6_ratio_lag1")
+      
+      summary_continuous_plot(contract,"capped_def3_ratio_lag1")
+      summary_continuous_plot(contract,"l_def3_ratio_lag1")
+      
+
+
+#Model
+CBre_10B <- glm (data=serv_smp,
+                 b_CBre ~cl_def6_HHI_lag1+cl_def6_ratio_lag1, 
+                 family=binomial(link="logit"))
+glmer_examine(CBre_10B)
+
+
+# 
+# #Plot the fitted model plot
+# CBre_02A_curve<-function(x, Comp){invlogit(cbind(1,Comp,x) %*%  coef(CBre_02A))}
+# 
+# #Competition curves
+# fitted_cbre_model(serv_smp,"cl_Ceil") + stat_function(fun = CBre_02A_curve, 
+#                              args=list(Comp=0),color="blue")+
+#   stat_function(fun = CBre_02A_curve, 
+#                              args=list(Comp=2),color="blue")
+
+
+
+
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_10A,CBre_10B,
+                       CBre_09B,CBre_10B,type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_10A,CBre_10B)
+summary_residual_compare(CBre_09B,CBre_10B,bins=2)
+
+
+```
+The results align with the hypothesis and are significant, although the magnitude is minimal.
+
+
+
+
+
+### Level 3
+#### Model 10C: cl_def3_HHI
+```{r Model10C}
+#Frequency Plot for unlogged ceiling
+summary_continuous_plot(serv_smp,"l_def3_HHI_lag1")
+
+
+#Model
+CBre_10C <- glm (data=serv_smp,
+                 b_CBre ~cl_def3_HHI_lag1, family=binomial(link="logit"))
+glmer_examine(CBre_10C)
+
+
+# #Plot the fitted model plot
+# CBre_02A_curve<-function(x, Comp){invlogit(cbind(1,Comp,x) %*%  coef(CBre_02A))}
+# 
+# #Competition curves
+# fitted_cbre_model(serv_smp,"cl_Ceil") + stat_function(fun = CBre_02A_curve, 
+#                              args=list(Comp=0),color="blue")+
+#   stat_function(fun = CBre_02A_curve, 
+#                              args=list(Comp=2),color="blue")
+# 
+
+
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_10A,CBre_NCS6E,CBre_NCS6F,CBre_10C,type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_10A,CBre_10C)
+
+
+```
+
+Level 3 HHI seems to slightly out perform level 6.
+
+
+#### Model 10D: Defense to Overall ratio
+The higher the ratio of defense obligations to reciepts in the overall economy, the DoD holds a monosopy over a sector. Given the challenges of monosopy, the a higher ratio estimates a greater  risk of ceiling breaches.
+```{r Model10D}
+#Frequency Plot for unlogged ceiling
+
+
+
+
+summary_continuous_plot(serv_smp,"capped_def3_ratio_lag1")
+summary_continuous_plot(serv_smp,"l_def3_ratio_lag1")
+
+#Model
+CBre_10D <- glm (data=serv_smp,
+                 b_CBre ~cl_def3_HHI_lag1+cl_def3_ratio_lag1, 
+                 family=binomial(link="logit"))
+glmer_examine(CBre_10D)
+
+
+# 
+# #Plot the fitted model plot
+# CBre_02A_curve<-function(x, Comp){invlogit(cbind(1,Comp,x) %*%  coef(CBre_02A))}
+# 
+# #Competition curves
+# fitted_cbre_model(serv_smp,"cl_Ceil") + stat_function(fun = CBre_02A_curve, 
+#                              args=list(Comp=0),color="blue")+
+#   stat_function(fun = CBre_02A_curve, 
+#                              args=list(Comp=2),color="blue")
+
+
+
+
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_10C,CBre_10D,
+                       CBre_01B,CBre_10D,type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_10C,CBre_10D)
+summary_residual_compare(CBre_10D)
+summary_residual_compare(CBre_01B,CBre_10D,bins=2)
+summary_residual_compare(CBre_10D,bins=2)
+
+
+```
+The results align with the hypothesis, although the magnitude is small, if larger in magnitude than the level 4 version. Although the residuals also notably increase in magnitude with the introduction of this variable.
+
+
+
+
+
+### Model 10E: NAICS 6 and NAICS 3
+Consolidation at lessa nd more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS levels, e.g. power plants, rather than more specific NAICS levels, like solar vs. coal. As a result, consolidation for more granular NAICS codes should estimate higher rates of ceiling breaches compared to less granular NAICS code.
+
+We'll start by adding in everything from both models and seeing what violates VIF.
+```{r Model10E}
+#Frequency Plot for unlogged ceiling
+
+
+#Model
+CBre_10E <- glm (data=serv_smp,
+                 b_CBre ~cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                  
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                  cl_US6_avg_sal_lag1  , family=binomial(link="logit"))
+glmer_examine(CBre_10E)
+vif(CBre_10E)
+#Defense obl 3 have the highest VIF and no coefficient to speak of, dropping it
+
+
+#Plot residuals versus fitted
+ stargazer::stargazer(CBre_NCS3E,CBre_NCS3F2,CBre_NCS3F4,CBre_NCS6G,CBre_10E3,
+                       CBre_NCS3D,CBre_NCS3F2,CBre_NCS3F3,CBre_NCS6G,CBre_10E3,
+                       type="text",digits=2)
+
+
+summary_residual_compare(CBre_NCS3F4,CBre_10E3)
+summary_residual_compare(CBre_NCS3F3,CBre_10E3,bins=10)
+summary_residual_compare(CBre_NCS3F2,CBre_10E3)
+summary_residual_compare(CBre_NCS3F2,CBre_10E3,bins=10)
+
+summary_residual_compare(CBre_NCS3F,CBre_10E3)
+summary_residual_compare(CBre_NCS3D,CBre_10E3,bins=10)
+summary_residual_compare(CBre_NCS6G,CBre_10E3)
+summary_residual_compare(CBre_NCS6G,CBre_10E3,bins=10)
+
+```
+The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
+
+
+## Office and Vendor-Office Pair
+### Office Volume
+
+### Office Count
+
+
+### Market Share
