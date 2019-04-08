@@ -4,3 +4,9 @@
 .Ruserdata
 
 data/semi_clean/Office\.sp_EntityIDofficeHistoryLagged\.txt
+
+data/semi_clean/Contract\.sp_ContractEntityID\.txt
+
+data/semi_clean/Office\.sp_ProdServOfficeHistoryLagged\.txt
+
+data/semi_clean/Contract\.sp_ContractExercisedOptions\.txt

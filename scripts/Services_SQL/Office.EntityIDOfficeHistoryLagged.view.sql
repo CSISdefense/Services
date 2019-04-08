@@ -14,21 +14,22 @@ SELECT
 o.EntityID
 ,o.ContractingOfficeCode
 ,o.fiscal_year
-,ohistory.paircount_7year
-,ohistory.numberofactions_7year
-,ohistory.obligatedamount_7year
+,o.NumberOfActions as office_entity_numberofactions_1year
+,ohistory.paircount_7year as office_entity_paircount_7year
+--,ohistory.numberofactions_7year as office_entity_numberofactions_7year
+,ohistory.obligatedamount_7year as office_entity_obligatedamount_7year
 FROM Office.[EntityIDofficeHistory] AS o
 left outer join (
  select interior.ContractingOfficeCode
 	,interior.EntityID
 	,interior.fiscal_year
-	,count(interior.fiscal_year) as paircount_7year
+	,count(ohistory.fiscal_year) as paircount_7year
 	,sum(ohistory.obligatedamount) as  obligatedamount_7year
 	, sum(ohistory.numberofactions) as  numberofactions_7year
 	FROM Office.[EntityIDofficeHistory] AS interior
 	left outer join Office.[EntityIDofficeHistory] ohistory
 	on interior.contractingofficecode=ohistory.contractingofficecode and
-	ohistory.fiscal_year  between interior.fiscal_year-1 and interior.fiscal_year-7 and
+	ohistory.fiscal_year  between interior.fiscal_year-7 and interior.fiscal_year-1 and
 	ohistory.entityid = interior.EntityID
 	GROUP BY 
 	interior.fiscal_year

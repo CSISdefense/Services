@@ -19,6 +19,7 @@ library(foreign)
 library(stargazer)
 library(texreg)
 library(reshape2)
+library(tidyverse)
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/DIIGstat.r")
 
 axis.text.size<-10
@@ -65,7 +66,6 @@ def_serv<-def[def$PSR %in% c("Services","R&D"),]
 rm(def)    
     
 # # head(def_serv)
-debug(transform_contract)
 def_serv<-transform_contract(def_serv)
 # 
 # 
@@ -73,48 +73,61 @@ def_serv<-transform_contract(def_serv)
 
 
 
+# summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue)
+# summary(def_serv$Action.Obligation)
 
-summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue)
-summary(def_serv$Action.Obligation)
+
+
+load("..\\data\\semi_clean\\fed_transformed.rdata")
+fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,PlaceCountryISO3,Crisis)
+def_serv<-left_join(def_serv,fed)
+# summary(def_serv$PlaceCountryISO3)
+# summary(fed$PlaceCountryISO3)
+# summary(factor(def_serv$Crisis))
+#About 24k inexplicably missing
+# summary(def_serv[is.na(def_serv$Crisis),])
+colnames(def_serv)[colnames(def_serv)=="ContractingOfficeCode"]<-"Office"
+
+
+colnames(def_serv)[colnames(def_serv)=="fiscal_year"]<-"StartFY"
+colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
+
+def_serv$cl_CFTE<-arm::rescale(def_serv$l_CFTE)
+def_serv$c_pPBSC<-arm::rescale(def_serv$pPBSC)
+def_serv$c_pOffPSC<-arm::rescale(def_serv$pOffPSC)
+
+
+def_serv$c_pMarket<-arm::rescale(def_serv$pMarket)
+def_serv$l_OffCA<-log(def_serv$office_numberofactions_1year+1)
+def_serv$cl_OffCA<-arm::rescale(def_serv$l_OffCA)
+def_serv$l_OffVol<-log(def_serv$office_obligatedamount_7year+1)
+def_serv$cl_OffVol<-arm::rescale(def_serv$l_OffVol)
+def_serv$cl_pairCA<-arm::rescale(def_serv$l_CA)
+def_serv$c_pairHist<-arm::rescale(def_serv$office_entity_paircount_7year)
+
+summary(def_serv$l_OffVol)
+summary(def_serv$cl_OffVol)
 
 
 
 
 # def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
-# save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
+save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
 load("../data/clean/transformed_def_serv.Rdata")
 
-summary(factor(def_serv$PricingFee))
-def_serv$PricingUCA<-as.character(def_serv$PricingFee)
-def_serv$PricingUCA[is.na(def_serv$UCA)]<-NA
-summary(factor(def_serv$PricingUCA))
-def_serv$PricingUCA[def_serv$UCA=="UCA"]<-"UCA"
-def_serv$PricingUCA<-factor(def_serv$PricingUCA)
-summary(def_serv$PricingUCA)
-def_serv$Comp1or5<-def_serv$CompOffr
-levels(def_serv$Comp1or5)<-
-      list("No Competition"="No Competition",
-           "1 offer"="1 offer",
-           "2-4 offers"=c("2 offers","3-4 offers"),
-           "5+ offers"="5+ offers")
-summary(def_serv$Comp1or5)
-colnames(def_serv)[colnames(def_serv)=="Office"]<-"ContractingOfficeCode"
-colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
 
 
-def_serv<-read_and_join( def_serv,
-                             "Office.sp_ProdServOfficeHistoryLagged.txt",
-                             path="",
-                             directory="..\\data\\semi_clean\\",
-                             by=c("ContractingOfficeCode","Fiscal_Year","ProductOrServiceCode"),
-                             add_var=c("PlaceIntlPercent","CrisisPercent"),
-                             new_var_checked=FALSE)
+
+
+length(unique((def_serv$ContractingOfficeCode)))
+length(unique((def_serv$Agency)))
+length(unique((def_serv$NAICS)))
+length(unique((def_serv$NAICS3)))
 
 
 #Removing l_s just to reduce size. They can be derived easily.
 
 # 
-
 
 
 # load("output//naics_join.Rdata")
@@ -136,9 +149,9 @@ NA_stats(def_serv,"b_CBre")`)
 #The original variables for b_Term and b_CBre are Term and CBre
 grouped_barplot("Term", def_serv)
 grouped_barplot("CBre", def_serv)
-statsummary_discrete(c("Term"), def_serv)
+statsummary_discrete(c("b_Term"), def_serv)
 statsummary_discrete(c("CBre"), def_serv)
-statsummary_continuous(c("UnmodifiedNumberOfOffersReceived"), def_serv)
+statsummary_continuous(c("OptGrowth"), def_serv)
 ```
 
 
@@ -214,23 +227,29 @@ NA_stats(def_serv,"cl_US6_avg_sal_lag1")
 NA_stats(def_serv,"cl_def3_HHI_lag1")
 `
 ```{r statistic summary table for continuous variables: cl_def_HHI_lag1, cl_def_ratio_lag1, cl_US_avg_sal_lag1, cl_def_obl_lag1, all use original variables instead}
-HHI_category <- c("def6_HHI_lag1", "def5_HHI_lag1", "def4_HHI_lag1","def3_HHI_lag1", "def2_HHI_lag1")
-ratio_category <- c("capped_def6_ratio_lag1", "capped_def5_ratio_lag1", "capped_def4_ratio_lag1", "capped_def3_ratio_lag1", "capped_def2_ratio_lag1")
-avg_category <- c("US6_avg_sal_lag1", "US5_avg_sal_lag1", "US4_avg_sal_lag1", "US3_avg_sal_lag1", "US2_avg_sal_lag1")
-obl_category <- c("def6_obl_lag1", "def5_obl_lag1", "def4_obl_lag1", "def3_obl_lag1", "def2_obl_lag1" )
 
+!is.na(def_serv$cl_US6_avg_sal_lag1)&
+  !is.na(def_serv$pPBSC)&
+!is.na(def_serv$pOffPSC)&
+
+
+complex_category <- c("US6_avg_sal_lag1","CFTE_Rate_1year")
+capacity_category <- c("pPBSC", "pOffPSC")
+pair_category <- c("office_entity_ca_inc")
+
+def_serv$CFTE_Rate_1year
 statsummary_discrete("CompOffr",def_serv)
 
-
-
+def_serv$office_entity_ca_inc<-def_serv$office_entity_numberofactions_1year+1
 hhi<-statsummary_continuous(HHI_category, def_serv)
 hhi
 write.csv(hhi,file="output/hhi_summary.csv")
-statsummary_continuous(ratio_category, def_serv)
-statsummary_continuous(avg_category, def_serv)
-statsummary_continuous(obl_category, def_serv)
+statsummary_continuous(complex_category, def_serv)
+statsummary_continuous(capacity_category, def_serv,log=FALSE)
+statsummary_continuous(pair_category, def_serv)
 
-statsummary_discrete("CompOffr", def_serv)
+
+
 ```
 
 
@@ -662,14 +681,6 @@ NAICS_summary<-csis360::read_and_join(NAICS_summary,
 
 
 
-# Helper function for string wrapping. 
-# Default 20 character target width.
-swr <- function(string, nwrap=20) {
-  paste(strwrap(string, width=nwrap), collapse="\n")
-}
-swr <- Vectorize(swr)
-summary(NAICS_summary$NAICS_shorthand)
-
 # View(NAICS_summary)
 NAICS_summary$NAICS_shorthand<-swr(NAICS_summary$NAICS_shorthand,nwrap = 25)
 NAICS_summary$CY<-NAICS_summary$StartCY-1
@@ -1098,20 +1109,42 @@ ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index)),filename="Output//platform_
 
 ### Variable examination
 ```{r VarGraph}
+summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
+def_serv$UnmodifiedBaseandExercisedOptionsValue[def_serv$UnmodifiedBaseandExercisedOptionsValue<=0]<-NA
+def_serv$l_base<-log(def_serv$UnmodifiedBaseandExercisedOptionsValue+1)
+
+def_serv$OptGrowth<-def_serv$ExercisedOptions/def_serv$UnmodifiedBaseandExercisedOptionsValue+1
+def_serv$l_OptGrowth<-log(def_serv$OptGrowth)
+def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
+def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
+def_serv$l_pMarket<-log(def_serv$pMarket+1)
+def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
+def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
+
+summary(def_serv$l_CFTE)
 
 
-HH1plot<-freq_continuous_plot(def_serv,"def6_HHI_lag1",bins=50)
-HH1plot<-HH1plot+geom_vline(xintercept=c(1500,2500))+labs(x="Annual Herfindahl-Hirschman Index (HHI) for NAICS-6 Sector",y="Contract or Task Order Count")
-HH1plot
-ggsave(HH1plot,file="Output//HH1freq.png",width=5.5,height=5.5,dpi=600)
-ggsave(HH1plot,file="Output//HH1freq.eps",width=5.5,height=5.5,dpi=600)
+freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50)
+freq_continuous_plot(def_serv,"l_CFTE",bins=50)
+freq_continuous_plot(def_serv,"UnmodifiedBaseandExercisedOptionsValue",bins=50)
+freq_continuous_plot(def_serv,"l_base",bins=50)
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"OptGrowth",bins=50)
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"l_OptGrowth",bins=50)
 
-sum(def_serv$Action.Obligation[def_serv$EffComp=="No Comp."],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$EffComp=="1 Offer"],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$EffComp=="2+ Offers"],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-nrow(def_serv[def_serv$EffComp=="No Comp.",])/nrow(def_serv)
 
-sum(def_serv$Action.Obligation[is.na(def_serv$EffComp)],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
+
+freq_continuous_plot(def_serv,"pPBSC",bins=50)
+freq_continuous_plot(def_serv,"l_pPBSC",bins=50) #No real point, stick with PBSC
+freq_continuous_plot(def_serv,"pOffPSC",bins=50)
+freq_continuous_plot(def_serv,"l_pOffPSC",bins=50)  #No real point here either
+freq_continuous_plot(def_serv,"pMarket",bins=50)
+freq_continuous_plot(def_serv,"l_pMarket",bins=50)
+freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
+freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
+freq_continuous_plot(def_serv,"l_CA",bins=50)
+summary(def_serv$pMarket)
+
+def_serv$l_pMarket<-log(def_serv$pMarket+1)
 
 
 # Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
@@ -1130,16 +1163,27 @@ sum(def_serv$Action.Obligation[is.na(def_serv$EffComp)],na.rm=TRUE)/sum(def_serv
 
 
 complete<-
-  !is.na(def_serv$b_Term)&
+  #Dependent Variables
+  !is.na(def_serv$b_Term)& #summary(def_serv$b_Term)
   !is.na(def_serv$b_CBre)&
+  !is.na(def_serv$l_OptGrowth)&
+  !is.na(def_serv$AnyUnmodifiedUnexercisedOptions)&
+  #Study Variables
+  !is.na(def_serv$cl_US6_avg_sal_lag1)&
+  !is.na(def_serv$cl_CFTE)&
+  !is.na(def_serv$c_pPBSC)&
+  !is.na(def_serv$c_pOffPSC)&
+  !is.na(def_serv$c_pairHist)&
+  !is.na(def_serv$cl_pairCA)&
+  #Controls
   !is.na(def_serv$CompOffr)&
   !is.na(def_serv$cl_Offr)&
   !is.na(def_serv$cl_Ceil)&
   !is.na(def_serv$capped_cl_Days)&
   !is.na(def_serv$Veh) &
-  !is.na(def_serv$PricingFee)&
-  !is.na(def_serv$b_Intl)&
-  !is.na(def_serv$b_UCA)&
+  !is.na(def_serv$PricingUCA)&
+  !is.na(def_serv$PlaceCountryISO3)& #New Variable
+  # !is.na(def_serv$b_UCA)& No longer  used
   !is.na(def_serv$NAICS)&
   !is.na(def_serv$NAICS3)&
   !is.na(def_serv$Office)&
@@ -1150,22 +1194,66 @@ complete<-
   !is.na(def_serv$cl_def6_HHI_lag1)&
   !is.na(def_serv$cl_def6_obl_lag1)&
   !is.na(def_serv$cl_def6_ratio_lag1)&
-  !is.na(def_serv$cl_US6_avg_sal_lag1
-           )
+  #New Controls
+  !is.na(def_serv$cl_OffCA)& #summary(def_serv$cl_OffCA)
+  !is.na(def_serv$cl_OffVol)& #summary(def_serv$cl_OffVol)
+  !is.na(def_serv$c_pMarket)  #summary(def_serv$c_pMarket)
+
+
 
 
 summary(complete)
 money<-def_serv$Action.Obligation
+any(def_serv$Action.Obligation<0)
+money[def_serv$Action.Obligation<0]<-0
+sum(def_serv$Action.Obligation[def_serv$Action.Obligation<0])
+
+#Overall
 length(money[!complete])/length(money)
 sum(money[!complete],na.rm=TRUE)/sum(money,na.rm=TRUE)
 
+
+
+#With potential options, what portion of contracts
+sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
+  sum(money,na.rm=TRUE)
+
+
+#Missing data, how many records
 nrow(def_serv[!complete,])/nrow(def_serv)
 sum(def_serv[!complete,]$Action.Obligation,na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
+
+#Missing data how much money?
+length(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1])/
+  length(money[def_serv$AnyUnmodifiedUnexercisedOptions==1])
+sum(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
+  sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)
+
+
+
+#Refreshing
+load(file="../data/clean/def_sample.Rdata")
+
+# serv_smp<-update_sample_col_CSIScontractID(serv_smp,
+#                                            def_serv[complete,],
+#                                            col=NULL, 
+#                                            drop_and_replace=TRUE)
+# 
+# serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
+#                                            def_serv[complete,],
+#                                            col=NULL, 
+#                                            drop_and_replace=TRUE)
+# 
+
+
+
+
 # 
 # serv_smp<-def_serv[complete,]
 # # 
 # serv_smp1m<-serv_smp[sample(nrow(serv_smp),1000000),]
 # serv_smp<-serv_smp[sample(nrow(serv_smp),250000),]
+serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
 save(file="../data/clean/def_sample.Rdata",serv_smp,serv_smp1m)
 # write.foreign(df=serv_smp,
 #               datafile="Data//def_sample250k.dat",

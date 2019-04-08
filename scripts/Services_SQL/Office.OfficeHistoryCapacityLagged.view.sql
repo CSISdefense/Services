@@ -29,6 +29,7 @@ o.ContractingOfficeCode
 --,ISNULL(CAgency.subCustomer, CAgency.AGENCYIDText) as ContractingSubCustomer 
 ,omatch.obligatedamount  as obligatedamount_1year
 ,omatch.numberofactions as numberofactions_1year
+,omatch.PBSCobligated as PBSCobligated_1year
 --,omatch.NumberOfPlaceCountries
 ,omatch.NumberOfTransactions as NumberOfTransactions_1year
 ,omatch.NumberOfContracts as NumberOfContracts_1year
@@ -49,7 +50,7 @@ left outer join (
 	FROM [Office].[ContractingOfficeCodeHistory] AS interior
 	left outer join Office.[OfficeHistoryCapacity] ohistory
 	on interior.contractingofficecode=ohistory.contractingofficecode and
-	ohistory.fiscal_year  between interior.fiscal_year-1 and interior.fiscal_year-7
+	ohistory.fiscal_year  between (interior.fiscal_year-7) and (interior.fiscal_year-1)
 	GROUP BY 
 	interior.fiscal_year
 	, interior.ContractingOfficeCode 

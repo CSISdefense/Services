@@ -15,6 +15,7 @@ library(arm)
 library(R2WinBUGS)
 library(Hmisc)
 library(sjstats)
+library(optimx)
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/DIIGstat.r")
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/NAICS.r")
 
@@ -88,11 +89,11 @@ naics06_cbre <- glmer(data=serv_smp,
                   , family=binomial(link="logit"))
 get_icc(display=TRUE,naics06_cbre)
 
-if(!exists("naics06_comp"))
-naics06_comp <- glmer(data=serv_smp,
-                 b_Comp ~ (1 | NAICS)
-                  , family=binomial(link="logit"))
-get_icc(display=TRUE,naics06_comp)
+if(!exists("naics06_opt"))
+naics06_opt <- lmer(data=serv_opt,
+                 l_OptGrowth ~ (1 | NAICS)
+                  )#)#, family=binomial(link="logit"))
+get_icc(display=TRUE,naics06_opt)
 
 ```
 
@@ -111,11 +112,11 @@ if(!exists("naics03_cbre"))
                         , family=binomial(link="logit"))
 get_icc(display=TRUE,naics03_cbre)
 
-if(!exists("naics03_comp"))
-  naics03_comp <- glmer(data=serv_smp,
-                        b_Comp ~ (1 | NAICS3)
-                        , family=binomial(link="logit"))
-get_icc(display=TRUE,naics03_comp)
+if(!exists("naics03_opt"))
+  naics03_opt <- lmer(data=serv_opt,
+                        l_OptGrowth ~ (1 | NAICS3)
+                        )#)#, family=binomial(link="logit"))
+get_icc(display=TRUE,naics03_opt)
 ```
 
 
@@ -134,11 +135,11 @@ if(!exists("naics36_cbre"))
                         , family=binomial(link="logit"))
 get_icc(display=TRUE,naics36_cbre)
 
-if(!exists("naics36_comp"))
-  naics36_comp <- glmer(data=serv_smp,
-                        b_Comp ~ (1 | NAICS3/NAICS)
-                        , family=binomial(link="logit"))
-get_icc(display=TRUE,naics36_comp)
+if(!exists("naics36_opt"))
+  naics36_opt <- lmer(data=serv_opt,
+                        l_OptGrowth ~ (1 | NAICS3/NAICS)
+                        )#)#, family=binomial(link="logit"))
+get_icc(display=TRUE,naics36_opt)
 ```
 
 
@@ -148,9 +149,9 @@ get_icc(display=TRUE,naics36_comp)
 
 ```{r Empty_Compare_CBre}
 
-save(naics03_cbre,naics03_term,naics03_comp,
-     naics06_cbre,naics06_term,naics06_comp,
-     naics36_cbre,naics36_term,naics36_comp,
+save(naics03_cbre,naics03_term,naics03_opt,
+     naics06_cbre,naics06_term,naics06_opt,
+     naics36_cbre,naics36_term,naics36_opt,
      file="../data//clean//naics_empty_models.rdata")
 
 
@@ -165,10 +166,10 @@ get_icc(naics06_term)
 get_icc(naics36_term)
 ```
 For termination a largely similar patern holds, but instead it's instead levels 4 and 6 that provide the best balance, but 3 and 6 isn't far behind.
-```{r Empty_Compare_Comp}
-get_icc(naics03_comp)
-get_icc(naics06_comp)
-get_icc(naics36_comp)
+```{r Empty_Compare_opt}
+get_icc(naics03_opt)
+get_icc(naics06_opt)
+get_icc(naics36_opt)
 
 ```
 The ideal levels varies some depending on the output variable. On the whole NAICS 3 and NAICS 6 combined seem to explain comparatively high levels of variance when summed and are reasonably balanced between the two levels.
@@ -194,6 +195,12 @@ psc_term <- glmer(data=serv_smp,
                   , family=binomial(link="logit"))
 get_icc(display=TRUE,psc_term)
 
+if(!exists("psc_opt"))
+psc_opt<- lmer(data=serv_opt,
+                 l_OptGrowth ~ (1 | ProdServ)
+                  )#)#, family=binomial(link="logit"))
+get_icc(display=TRUE,psc_opt)
+
 
 ```
 34% for Ceiling Breaches and 22% for Terminations, not a bad start.
@@ -214,6 +221,11 @@ cpsa_term <- glmer(data=serv_smp,
 get_icc(display=TRUE,cpsa_term)
 
 
+if(!exists("cpsa_opt"))
+cpsa_opt<- lmer(data=serv_opt,
+                 l_OptGrowth ~ (1 | CrisisProductOrServiceArea)
+                  )#)#, family=binomial(link="logit"))
+get_icc(display=TRUE,cpsa_opt)
 
 
 # 
@@ -252,7 +264,8 @@ get_icc(display=TRUE,cpsa_term)
 
 ### Service / Commdity / Construction
 ```{r PSR}
-serv_smp$ServCommCons<-serv_smp$HostNation3Category
+colnames(serv_smp)[colnames(serv_smp)=="HostNation3Category"]<-"ServCommCons"
+colnames(serv_opt)[colnames(serv_opt)=="HostNation3Category"]<-"ServCommCons"
 
 
 
@@ -269,6 +282,13 @@ ServCommCons_term <- glmer(data=serv_smp,
                  b_Term ~ (1 | ServCommCons)
                   , family=binomial(link="logit"))
 get_icc(display=TRUE,ServCommCons_term)
+
+
+if(!exists("ServCommCons_opt"))
+ServCommCons_opt<- lmer(data=serv_opt,
+                 l_OptGrowth ~ (1 | ServCommCons)
+                  )#)#, family=binomial(link="logit"))
+get_icc(display=TRUE,ServCommCons_opt)
 
 
 ```
@@ -296,6 +316,13 @@ cpsa_psc_term <- glmer(data=serv_smp,
 get_icc(display=TRUE,cpsa_psc_term)
 
 
+if(!exists("cpsa_psc_opt"))
+cpsa_psc_opt<- lmer(data=serv_opt,
+                 l_OptGrowth ~ (1 | CrisisProductOrServiceArea/ProdServ)
+                  )#)#, family=binomial(link="logit"))
+get_icc(display=TRUE,cpsa_psc_opt)
+
+
 ```
 Oddly, crisis product or service area just doesn't seem to add anything to the 
 
@@ -307,10 +334,10 @@ Oddly, crisis product or service area just doesn't seem to add anything to the
 
 
 
-save(psc_cbre,psc_term,
-     cpsa_cbre,cpsa_term,
-     ServCommCons_cbre,ServCommCons_term,
-     cpsa_psc_cbre,cpsa_psc_term,
+save(psc_cbre,psc_term,psc_opt,
+     cpsa_cbre,cpsa_term,cpsa_opt,
+     ServCommCons_cbre,ServCommCons_term,ServCommCons_opt,
+     cpsa_psc_cbre,cpsa_psc_term,cpsa_psc_opt,
      # ssc_psc_cbre,ssc_psc_term,
      file="..//data//clean//psc_empty_models.rdata")
 
@@ -339,7 +366,18 @@ get_icc(cpsa_psc_term)
 ```
 CrisisProductOrSericeArea doesn't add much value versus ProdServ alone but ServCommCons adds none.
 
+```{r Empty_Compare_opt}
+get_icc(psc_opt)
+get_icc(cpsa_opt)
+get_icc(ServCommCons_opt)
+get_icc(cpsa_psc_opt)
 
+      stargazer::stargazer(psc_opt,cpsa_opt,ServCommCons_opt,
+                           cpsa_psc_opt,type="text",
+                     digits=2)
+
+
+```
 Proceeding with CrisisProductOrServiceArea/ProdServ for Term and CrisisProductOrServiceArea/ProdServ for CBre
 
 
@@ -350,7 +388,7 @@ Fiscal year generally has more explanatory power than calendar year.
 ## Combining PSC and NAICS
 ### NAICS 3/6 + CPSA/ProdServ
 ```{r NAICSlevel36_and_CPSAprodserv}
-
+# load(file="..//data//clean//psc_naics_empty_models.rdata")
 if(!exists("naics36_plus_cpsa_psc_term"))
   naics36_plus_cpsa_psc_term <- glmer(data=serv_smp,
                         b_Term ~ (1 | NAICS3/NAICS) +(1| CrisisProductOrServiceArea/ProdServ)
@@ -363,11 +401,11 @@ if(!exists("naics36_plus_cpsa_psc_cbre"))
                         , family=binomial(link="logit"))
 get_icc(display=TRUE,naics36_plus_cpsa_psc_cbre)
 
-if(!exists("naics36_plus_cpsa_psc_comp"))
-  naics36_plus_cpsa_psc_comp <- glmer(data=serv_smp,
-                        b_Comp ~ (1 | NAICS3/NAICS) +(1| CrisisProductOrServiceArea/ProdServ)
-                        , family=binomial(link="logit"))
-get_icc(display=TRUE,naics36_plus_cpsa_psc_comp)
+if(!exists("naics36_plus_cpsa_psc_opt"))
+  naics36_plus_cpsa_psc_opt <- lmer(data=serv_opt,
+                        l_OptGrowth ~ (1 | NAICS3/NAICS) +(1| CrisisProductOrServiceArea/ProdServ)
+                        )#, family=binomial(link="logit"))
+get_icc(display=TRUE,naics36_plus_cpsa_psc_opt)
 ```
 
 
@@ -386,11 +424,13 @@ if(!exists("naics36_cpsa_cbre"))
                         , family=binomial(link="logit"))
 get_icc(display=TRUE,naics36_cpsa_cbre)
 
-if(!exists("naics36_cpsa_comp"))
-  naics36_cpsa_comp <- glmer(data=serv_smp,
-                        b_Comp ~ (1 | NAICS3/NAICS/CrisisProductOrServiceArea)
-                        , family=binomial(link="logit"))
-get_icc(display=TRUE,naics36_cpsa_comp)
+if(!exists("naics36_cpsa_opt"))
+  naics36_cpsa_opt <- lmer(data=serv_opt,
+                        l_OptGrowth ~ (1 | NAICS3/NAICS/CrisisProductOrServiceArea)
+                        )#, family=binomial(link="logit"))
+get_icc(display=TRUE,naics36_cpsa_opt)
+
+
 ```
 
 
@@ -412,6 +452,13 @@ cpsa_psc_naics3_term  <- glmer(data=serv_smp,
 get_icc(display=TRUE,cpsa_psc_naics3_term)
 
 
+if(!exists("cpsa_psc_naics3_opt"))
+  cpsa_psc_naics3_opt <- lmer(data=serv_opt,
+                        l_OptGrowth ~ (1 | CrisisProductOrServiceArea/ProdServ/NAICS3)
+                        )#, family=binomial(link="logit"))
+get_icc(display=TRUE,cpsa_psc_naics3_opt)
+
+
 ```
 
 ### Compare NAICS and ProdServ
@@ -421,9 +468,9 @@ get_icc(display=TRUE,cpsa_psc_naics3_term)
 
 
 
-save(naics36_plus_cpsa_psc_term,naics36_plus_cpsa_psc_cbre,naics36_plus_cpsa_psc_comp,
-     naics36_cpsa_term,naics36_cpsa_cbre,naics36_cpsa_comp,
-     cpsa_psc_naices3_cbre,cpsa_psc_naics3_term,
+save(naics36_plus_cpsa_psc_term,naics36_plus_cpsa_psc_cbre,naics36_plus_cpsa_psc_opt,
+     naics36_cpsa_term,naics36_cpsa_cbre,naics36_cpsa_opt,
+     cpsa_psc_naices3_cbre,cpsa_psc_naics3_term,cpsa_psc_naics3_opt,
      file="..//data//clean//psc_naics_empty_models.rdata")
 
 
@@ -465,7 +512,28 @@ get_icc(cpsa_psc_naics3_term)
 ```
 For termination, adding PSC slightly improves the performance of the model,. 
 
-\
+
+```{r Empty_Compare_opt}
+
+
+get_icc(naics36_opt)
+get_icc(cpsa_psc_opt)
+get_icc(naics36_plus_cpsa_psc_opt)
+get_icc(naics36_cpsa_opt)
+get_icc(cpsa_psc_naics3_opt)
+
+
+
+      stargazer::stargazer(naics36_opt,
+                           cpsa_psc_opt,
+                           naics36_plus_cpsa_psc_opt,
+                           naics36_cpsa_opt,
+                           cpsa_psc_naics3_opt,type="text",
+                     digits=2)
+```
+
+
+Adding both NAICS3/NAICS6+CPSA/PSC consistently beats just NAICS3/NAICS6/CPSA, but the margin isn't  huge and I'm a bit hesitant to have  two potentially redundant set of multilevel models. The partial exception is Opts where PSC just catches much more than NAICS, but the margin is about 2000 smaller than the margin in the other direction for the other models and consistency seems worth maintaining.
 
 ## Start Year
 
@@ -485,16 +553,40 @@ if(!exists("StartCY_cbre"))
                         , family=binomial(link="logit"))
 get_icc(display=TRUE,StartCY_cbre)
 
-if(!exists("StartCY_comp"))
-  StartCY_comp <- glmer(data=serv_smp,
-                        b_Comp ~ (1 | StartCY)
-                        , family=binomial(link="logit"))
-get_icc(display=TRUE,StartCY_comp)
+if(!exists("StartCY_opt"))
+  StartCY_opt <- lmer(data=serv_opt,
+                        l_OptGrowth ~ (1 | StartCY)
+                        )#, family=binomial(link="logit"))
+get_icc(display=TRUE,StartCY_opt)
 
 ```
 
 The ICC is highest for ceiling breaches and is backloaded, with 2015 and 2016 having lower than usual odds. This is likely an artifact of those years having fewer completed longer contracts. That said, this should be largely compensated for with the inclusion of initial duration. If this proves challenges to manage, it may be worth considering dropping 2016. 
 
+### Fiscal Year
+
+```{r StartFY}
+# load(file="../data//clean//when_empty_models.rdata")
+
+if(!exists("StartFY_term"))
+  StartFY_term <- glmer(data=serv_smp,
+                        b_Term ~ (1 | StartFY)
+                        , family=binomial(link="logit"))
+get_icc(display=TRUE,StartFY_term)
+
+if(!exists("StartFY_cbre"))
+  StartFY_cbre <- glmer(data=serv_smp,
+                        b_CBre ~ (1 | StartFY)
+                        , family=binomial(link="logit"))
+get_icc(display=TRUE,StartFY_cbre)
+
+if(!exists("StartFY_opt"))
+  StartFY_opt <- lmer(data=serv_opt,
+                        l_OptGrowth ~ (1 | StartFY)
+                        )#, family=binomial(link="logit"))
+get_icc(display=TRUE,StartFY_opt)
+coef(StartFY_opt)
+```
 
 
 ### NAICS and Calendar Year
@@ -512,41 +604,131 @@ if(!exists("NAICS_StartCY_cbre"))
                               , family=binomial(link="logit"))
 get_icc(display=TRUE,NAICS_StartCY_cbre)
 
-if(!exists("NAICS_StartCY_comp"))
-  NAICS_StartCY_comp <- glmer(data=serv_smp,
-                              b_Comp ~  (1 | NAICS3/NAICS) + (1 | StartCY)
-                              , family=binomial(link="logit"))
-get_icc(display=TRUE,NAICS_StartCY_comp)
+if(!exists("NAICS_StartCY_opt"))
+  NAICS_StartCY_opt <- lmer(data=serv_opt,
+                              l_OptGrowth ~  (1 | NAICS3/NAICS) + (1 | StartCY)
+                              )#, family=binomial(link="logit"))
+get_icc(display=TRUE,NAICS_StartCY_opt)
 
 ```
 
+### NAICS/CPSA and Calendar Year
+```{r NAICS_StartCY}
+
+if(!exists("NAICS_cpsa_StartCY_term"))
+  NAICS_cpsa_StartCY_term <- glmer(data=serv_smp,
+                              b_Term ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | StartCY)
+                              , family=binomial(link="logit"))
+get_icc(display=TRUE,NAICS_cpsa_StartCY_term)
+
+if(!exists("NAICS_cpsa_StartCY_cbre"))
+  NAICS_cpsa_StartCY_cbre <- glmer(data=serv_smp,
+                              b_CBre ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | StartCY)
+                              , family=binomial(link="logit"))
+get_icc(display=TRUE,NAICS_cpsa_StartCY_cbre)
+
+if(!exists("NAICS_cpsa_StartCY_opt"))
+  NAICS_cpsa_StartCY_opt <- lmer(data=serv_opt,
+                              l_OptGrowth ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | StartCY)
+                              )#, family=binomial(link="logit"))
+get_icc(display=TRUE,NAICS_cpsa_StartCY_opt)
+
+```
+
+
+### NAICS/CPSA and Fiscal Year
+```{r NAICS_StartFY}
+
+if(!exists("NAICS_cpsa_StartFY_term"))
+  NAICS_cpsa_StartFY_term <- glmer(data=serv_smp,
+                              b_Term ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | StartFY)
+                              , family=binomial(link="logit"))
+get_icc(display=TRUE,NAICS_cpsa_StartFY_term)
+
+if(!exists("NAICS_cpsa_StartFY_cbre"))
+  NAICS_cpsa_StartFY_cbre <- glmer(data=serv_smp,
+                              b_CBre ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | StartFY)
+                              , family=binomial(link="logit"))
+get_icc(display=TRUE,NAICS_cpsa_StartFY_cbre)
+
+if(!exists("NAICS_cpsa_StartFY_opt"))
+  NAICS_cpsa_StartFY_opt <- lmer(data=serv_opt,
+                              l_OptGrowth ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | StartFY)
+                              )#, family=binomial(link="logit"))
+get_icc(display=TRUE,NAICS_cpsa_StartFY_opt)
+
+```
 ### Compare Signed Dates
 ```{r Empty_Compare_When}
 
-save(StartCY_cbre,StartCY_term,StartCY_comp,
-     # SignedMonth_cbre,SignedMonth_term,SignedMonth_comp,
-     # NestedMonth_cbre,NestedMonth_term,NestedMonth_comp,
-     NAICS_StartCY_cbre,NAICS_StartCY_term,NAICS_StartCY_comp,
+save(StartCY_cbre,StartCY_term,StartCY_opt,
+     # SignedMonth_cbre,SignedMonth_term,SignedMonth_opt,
+     # NestedMonth_cbre,NestedMonth_term,NestedMonth_opt,
+     NAICS_StartCY_cbre,NAICS_StartCY_term,NAICS_StartCY_opt,
+     NAICS_cpsa_StartCY_cbre,NAICS_cpsa_StartCY_term,NAICS_cpsa_StartCY_opt,
+     NAICS_cpsa_StartFY_cbre,NAICS_cpsa_StartFY_term,NAICS_cpsa_StartFY_opt,
      file="../data//clean//when_empty_models.rdata")
 
 get_icc(naics36_cbre)
 get_icc(StartCY_cbre)
+get_icc(StartFY_cbre)
 # get_icc(SignedMonth_cbre)
 # get_icc(NestedMonth_cbre)
 get_icc(NAICS_StartCY_cbre)
+get_icc(NAICS_cpsa_StartCY_cbre)
+get_icc(NAICS_cpsa_StartFY_cbre)
+
+
+stargazer::stargazer(naics36_cbre,
+                           naics36_cpsa_cbre,
+                           StartCY_cbre,
+                     StartFY_cbre,
+                           NAICS_StartCY_cbre,
+                           NAICS_cpsa_StartCY_cbre,
+                     NAICS_cpsa_StartFY_cbre,type="text",
+                     digits=2)
 
 get_icc(naics36_term)
 get_icc(StartCY_term)
+get_icc(StartFY_term)
 # get_icc(SignedMonth_term)
 # get_icc(NestedMonth_term)
 get_icc(NAICS_StartCY_term)
+get_icc(NAICS_cpsa_StartCY_term)
+get_icc(NAICS_cpsa_StartFY_term)
 
-get_icc(naics36_comp)
-get_icc(StartCY_comp)
-# coef(StartCY_comp)
-# get_icc(SignedMonth_comp)
-# get_icc(NestedMonth_comp)
-get_icc(NAICS_StartCY_comp)
+stargazer::stargazer(naics36_term,
+                           naics36_cpsa_term,
+                           StartCY_term,
+                     StartFY_term,
+                           NAICS_StartCY_term,
+                           NAICS_cpsa_StartFY_term,
+                           NAICS_cpsa_StartCY_term,
+                     type="text",
+                     digits=2)
+
+
+get_icc(naics36_opt)
+get_icc(StartCY_opt)
+get_icc(StartFY_opt)
+# coef(StartCY_opt)
+# get_icc(SignedMonth_opt)
+# get_icc(NestedMonth_opt)
+get_icc(NAICS_StartCY_opt)
+get_icc(NAICS_cpsa_StartCY_opt)
+get_icc(NAICS_cpsa_StartFY_opt)
+
+coef(StartCY_opt)
+
+
+      stargazer::stargazer(naics36_opt,
+                           naics36_cpsa_opt,
+                           StartCY_opt,
+                           StartFY_opt,
+                           NAICS_StartCY_opt,
+                           NAICS_cpsa_StartCY_opt,
+                           NAICS_cpsa_StartFY_opt,type="text",
+                     digits=2)
 
 ```
 
@@ -568,11 +750,11 @@ if(!exists("Office_cbre"))
                        , family=binomial(link="logit"))
 get_icc(display=TRUE,Office_cbre)
 
-if(!exists("Office_comp"))
-  Office_comp <- glmer(data=serv_smp,
-                       b_Comp ~ (1 | Agency:Office)
-                       , family=binomial(link="logit"))
-get_icc(display=TRUE,Office_comp)
+if(!exists("Office_opt"))
+  Office_opt <- lmer(data=serv_opt,
+                       l_OptGrowth ~ (1 | Agency:Office)
+                       )#, family=binomial(link="logit"))
+get_icc(display=TRUE,Office_opt)
 
 ```
 
@@ -590,11 +772,11 @@ if(!exists("Agency_cbre"))
                        , family=binomial(link="logit"))
 get_icc(display=TRUE,Agency_cbre)
 
-if(!exists("Agency_comp"))
-  Agency_comp <- glmer(data=serv_smp,
-                       b_Comp ~ (1 | Agency)
-                       , family=binomial(link="logit"))
-get_icc(display=TRUE,Agency_comp)
+if(!exists("Agency_opt"))
+  Agency_opt <- lmer(data=serv_opt,
+                       l_OptGrowth ~ (1 | Agency)
+                       )#, family=binomial(link="logit"))
+get_icc(display=TRUE,Agency_opt)
 
 ```
 
@@ -613,11 +795,11 @@ if(!exists("NestedOffice_cbre"))
                              , family=binomial(link="logit"))
 get_icc(display=TRUE,NestedOffice_cbre)
 
-if(!exists("NestedOffice_comp"))
-  NestedOffice_comp <- glmer(data=serv_smp,
-                             b_Comp ~ (1 | Agency/Office)
-                             , family=binomial(link="logit"))
-get_icc(display=TRUE,NestedOffice_comp)
+if(!exists("NestedOffice_opt"))
+  NestedOffice_opt <- lmer(data=serv_opt,
+                             l_OptGrowth ~ (1 | Agency/Office)
+                             )#, family=binomial(link="logit"))
+get_icc(display=TRUE,NestedOffice_opt)
 
 ```
 
@@ -636,54 +818,87 @@ if(!exists("naics36_Office_cbre"))
                              , family=binomial(link="logit"))
 get_icc(display=TRUE,naics36_Office_cbre)
 
-if(!exists("naics36_Office_comp"))
-  naics36_Office_comp <- glmer(data=serv_smp,
-                             b_Comp ~  (1 | NAICS3/NAICS)+ (1 | Agency/Office)
-                             , family=binomial(link="logit"))
-get_icc(display=TRUE,naics36_Office_comp)
+if(!exists("naics36_Office_opt"))
+  naics36_Office_opt <- lmer(data=serv_opt,
+                             l_OptGrowth ~  (1 | NAICS3/NAICS)+ (1 | Agency/Office)
+                             )#, family=binomial(link="logit"))
+get_icc(display=TRUE,naics36_Office_opt)
 
 ```
 
-### NAICS 36 When Office
-```{r naics36_When_Office}
-if(!exists("naics 36_When_Office_term"))
-  naics36_When_Office_term <- glmer(data=serv_smp,
-                             b_Term ~  (1 | NAICS3/NAICS) + (1 | StartCY) + (1 | Agency/Office)
+### NAICS 36 CPSA  Office
+```{r naics36_cpsa_Office}
+if(!exists("naics naics36_cpsa_Office_term"))
+  naics36_cpsa_Office_term <- glmer(data=serv_smp,
+                             b_Term ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | Agency/Office)
                              , family=binomial(link="logit"))
-get_icc(display=TRUE,naics36_When_Office_term)
+get_icc(display=TRUE,naics36_cpsa_Office_term)
 # 
-if(!exists("naics36_When_Office_cbre"))
-  naics36_When_Office_cbre <- glmer(data=serv_smp,
-                             b_CBre ~  (1 | NAICS3/NAICS)+ (1 | StartCY) + (1 | Agency/Office)
+if(!exists("naics36_cpsa_Office_cbre"))
+  naics36_cpsa_Office_cbre <- glmer(data=serv_smp,
+                             b_CBre ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | Agency/Office)
                              , family=binomial(link="logit"))
-get_icc(display=TRUE,naics36_When_Office_cbre)
+get_icc(display=TRUE,naics36_cpsa_Office_cbre)
 
-if(!exists("naics36_When_Office_comp"))
-  naics36_When_Office_comp <- glmer(data=serv_smp,
-                             b_Comp ~  (1 | NAICS3/NAICS)+ (1 | StartCY) + (1 | Agency/Office)
+if(!exists("naics36_cpsa_Office_opt"))
+  naics36_cpsa_Office_opt <- lmer(data=serv_opt,
+                             l_OptGrowth ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | Agency/Office)
+                             )#, family=binomial(link="logit"))
+get_icc(display=TRUE,naics36_cpsa_Office_opt)
+
+```
+
+
+
+### NAICS 36 CPSA   FY When Office
+```{r naics36_cpsa_When_Office}
+if(!exists("naics naics36_cpsa_When_Office_term"))
+  naics36_cpsa_When_Office_term <- glmer(data=serv_smp,
+                             b_Term ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea) + (1 | StartFY) + (1 | Agency/Office)
                              , family=binomial(link="logit"))
-get_icc(display=TRUE,naics36_When_Office_comp)
+get_icc(display=TRUE,naics36_cpsa_When_Office_term)
+# 
+if(!exists("naics36_cpsa_When_Office_cbre"))
+  naics36_cpsa_When_Office_cbre <- glmer(data=serv_smp,
+                             b_CBre ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+ (1 | StartFY) + (1 | Agency/Office)
+                             , family=binomial(link="logit"))
+get_icc(display=TRUE,naics36_cpsa_When_Office_cbre)
+
+if(!exists("naics36_cpsa_When_Office_opt"))
+  naics36_cpsa_When_Office_opt <- lmer(data=serv_opt,
+                             l_OptGrowth ~  (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+ (1 | StartFY) + (1 | Agency/Office)
+                             )#, family=binomial(link="logit"))
+get_icc(display=TRUE,naics36_cpsa_When_Office_opt)
 
 ```
 
 ### Compare Who
 ```{r Empty_Compare_Who_Term}
 
-save(Office_cbre,Office_term,Office_comp,
-     Agency_cbre,Agency_term,Agency_comp,
-     NestedOffice_cbre,NestedOffice_term,NestedOffice_comp,
-     naics36_Office_cbre,naics36_Office_term,naics36_Office_comp,
-     naics36_When_Office_cbre,naics36_When_Office_term,naics36_When_Office_comp,
-     
+save(Office_cbre,Office_term,Office_opt,
+     Agency_cbre,Agency_term,Agency_opt,
+     NestedOffice_cbre,NestedOffice_term,NestedOffice_opt,
+     naics36_Office_cbre,naics36_Office_term,naics36_Office_opt,
+     naics36_cpsa_Office_cbre,naics36_cpsa_Office_term,naics36_cpsa_Office_opt,
+     naics36_cpsa_When_Office_cbre,naics36_cpsa_When_Office_term,naics36_cpsa_When_Office_opt,
      file="../data//clean//who_empty_models.rdata")
 
-get_icc(naics36_term)
-get_icc(Office_term)
-get_icc(Agency_term)
-get_icc(NestedOffice_term)
-get_icc(naics36_When_Office_term)
-# get_icc(naics06_When_Office_term)
+get_icc(naics36_cbre)
+get_icc(Office_cbre)
+get_icc(Agency_cbre)
+get_icc(NestedOffice_cbre)
+get_icc(naics36_Office_cbre)
+get_icc(naics36_cpsa_Office_cbre)
+get_icc(naics36_cpsa_When_Office_cbre)
 
+stargazer::stargazer(naics36_cbre,
+                           Office_cbre,
+                           Agency_cbre,
+                     NestedOffice_cbre,
+                     naics36_Office_cbre,
+                     naics36_cpsa_Office_cbre,
+                           naics36_cpsa_When_Office_cbre,type="text",
+                     digits=2)
 
 debug(summary_residual_compare)
 summary_residual_compare(naics36_Office_term,naics46_Office_term,naics36_Office_cbre,naics46_Office_cbre,bins=10,suppress_vif=TRUE)
@@ -694,24 +909,46 @@ summary_residual_compare(naics36_term,naics36_Office_term,naics36_cbre,naics36_O
 ```
 
 
-```{r Empty_Compare_Who_CBre}
+```{r Empty_Compare_Who_term}
 
-get_icc(naics36_cbre)
-get_icc(Office_cbre)
-get_icc(Agency_cbre)
-get_icc(NestedOffice_cbre)
-get_icc(naics36_Office_cbre)
-# get_icc(naics36_When_Office_cbre)
+
+get_icc(naics36_term)
+get_icc(Office_term)
+get_icc(Agency_term)
+get_icc(NestedOffice_term)
+get_icc(naics36_Office_term)
+get_icc(naics36_cpsa_Office_term)
+get_icc(naics36_cpsa_When_Office_term)
+
+stargazer::stargazer(naics36_term,
+                           Office_term,
+                           Agency_term,
+                     NestedOffice_term,
+                     naics36_Office_term,
+                     naics36_cpsa_Office_term,
+                           naics36_cpsa_When_Office_term,type="text",
+                     digits=2)
 ```
 
-```{r Empty_Compare_Who_Comp}
-get_icc(naics36_comp)
-get_icc(Office_comp)
-get_icc(Agency_comp)
-get_icc(NestedOffice_comp)
-get_icc(naics36_Office_comp)
-# get_icc(naics36_When_Office_comp)
-get_icc(naics06_When_Office_comp)
+```{r Empty_Compare_Who_opt}
+
+get_icc(naics36_opt)
+get_icc(Office_opt)
+get_icc(Agency_opt)
+get_icc(NestedOffice_opt)
+get_icc(naics36_Office_opt)
+get_icc(naics36_cpsa_Office_opt)
+get_icc(naics36_cpsa_When_Office_opt)
+
+stargazer::stargazer(naics36_opt,
+                           Office_opt,
+                           Agency_opt,
+                     NestedOffice_opt,
+                     naics36_Office_opt,
+                     naics36_cpsa_Office_opt,
+                           naics36_cpsa_When_Office_opt,type="text",
+                     digits=2)
+
 ```
 There is some contradiction in which model best serves this category. For Comp, the nested office has the largest summed ICC, but for term this results in an failure to converge and a 0 ICC for agency. Agency:Office alone is respectable for all three so that is used in the combination attempt.
 
@@ -724,56 +961,217 @@ There is some contradiction in which model best serves this category. For Comp, 
 ```{r PlaceCountry}
 # load(file="Output//where_empty_models.rdata")
 
-
-
-
-# if(!exists("PlaceCountry_cbre"))
-  PlaceCountry_cbre <- glmer(data=large_crisis_smp,
+if(!exists("PlaceCountry_cbre"))
+  PlaceCountry_cbre <- glmer(data=serv_smp,
                        b_CBre ~ (1 | PlaceCountryISO3)
                        , family=binomial(link="logit"),
      control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
      optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
 
-get_icc(display=TRUE,Place_theater_Country_offplace_theater_cbre)
 get_icc(display=TRUE,PlaceCountry_cbre)
 
-# if(!exists("PlaceCountry_term"))
-  PlaceCountry_term <- glmer(data=large_crisis_smp,
+if(!exists("PlaceCountry_term"))
+  PlaceCountry_term <- glmer(data=serv_smp,
                        b_Term ~ (1 | PlaceCountryISO3)
                        , family=binomial(link="logit"),
      control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
      optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
 
-get_icc(display=TRUE,Place_theater_Country_offplace_theater_cbre)
 get_icc(display=TRUE,PlaceCountry_term)
+
+
+
+if(!exists("PlaceCountry_opt"))
+  PlaceCountry_opt <- lmer(data=serv_opt,
+                       l_OptGrowth ~ (1 | PlaceCountryISO3)
+                       )#, family=binomial(link="logit"))
+get_icc(display=TRUE,PlaceCountry_opt)
+
 ```
 
 
 
-### Place
-```{r PlaceCountry}
+### NAICS 36 Office Place
+```{r PlaceCountry_naics_36_Office}
 # load(file="Output//where_empty_models.rdata")
 
-
-
-
-# if(!exists("PlaceCountry_cbre"))
-  PlaceCountry_cbre <- glmer(data=large_crisis_smp,
-                       b_CBre ~ (1 | PlaceCountryISO3)
+if(!exists("PlaceCountry_naics_36_Office_cbre"))
+  PlaceCountry_naics_36_Office_cbre <- glmer(data=serv_smp,
+                       b_CBre ~   (1 | NAICS3/NAICS)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)
                        , family=binomial(link="logit"),
      control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
      optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
 
-get_icc(display=TRUE,Place_theater_Country_offplace_theater_cbre)
-get_icc(display=TRUE,PlaceCountry_cbre)
+get_icc(display=TRUE,PlaceCountry_naics_36_Office_cbre)
 
-# if(!exists("PlaceCountry_term"))
-  PlaceCountry_term <- glmer(data=large_crisis_smp,
-                       b_Term ~ (1 | PlaceCountryISO3)
+if(!exists("PlaceCountry_naics_36_Office_term"))
+  PlaceCountry_naics_36_Office_term <- glmer(data=serv_smp,
+                       b_Term ~ (1 | NAICS3/NAICS)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)
                        , family=binomial(link="logit"),
      control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
      optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
 
-get_icc(display=TRUE,Place_theater_Country_offplace_theater_cbre)
-get_icc(display=TRUE,PlaceCountry_term)
+get_icc(display=TRUE,PlaceCountry_naics_36_Office_term)
+
+
+
+if(!exists("PlaceCountry_naics_36_Office_opt"))
+  PlaceCountry_naics_36_Office_opt <- lmer(data=serv_opt,
+                       l_OptGrowth ~ (1 | NAICS3/NAICS)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)
+                       )#, family=binomial(link="logit"))
+get_icc(display=TRUE,PlaceCountry_naics_36_Office_opt)
+
+
+```
+
+
+### NAICS 36 cpsa_Office Place
+```{r PlaceCountry_naics_36_cpsa_Office}
+# load(file="Output//where_empty_models.rdata")
+
+if(!exists("PlaceCountry_naics_36_cpsa_Office_cbre"))
+  PlaceCountry_naics_36_cpsa_Office_cbre <- glmer(data=serv_smp,
+                       b_CBre ~   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)
+                       , family=binomial(link="logit"),
+     control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
+     optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
+
+get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_cbre)
+
+if(!exists("PlaceCountry_naics_36_cpsa_Office_term"))
+  PlaceCountry_naics_36_cpsa_Office_term <- glmer(data=serv_smp,
+                       b_Term ~ (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)
+                       , family=binomial(link="logit"),
+     control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
+     optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
+
+get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_term)
+
+
+
+if(!exists("PlaceCountry_naics_36_cpsa_Office_opt"))
+  PlaceCountry_naics_36_cpsa_Office_opt <- lmer(data=serv_opt,
+                       l_OptGrowth ~ (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)
+                       )#, family=binomial(link="logit"))
+get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_opt)
+
+
+```
+
+### NAICS 36 cpsa_Office When Place
+```{r PlaceCountry_naics_36_cpsa_Office_When}
+# load(file="Output//where_empty_models.rdata")
+
+if(!exists("PlaceCountry_naics_36_cpsa_Office_When_cbre"))
+  PlaceCountry_naics_36_cpsa_Office_When_cbre <- glmer(data=serv_smp,
+                       b_CBre ~   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)+ (1 | StartFY) 
+                       , family=binomial(link="logit"),
+     control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
+     optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
+
+get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_cbre)
+
+if(!exists("PlaceCountry_naics_36_cpsa_Office_When_term"))
+  PlaceCountry_naics_36_cpsa_Office_When_term <- glmer(data=serv_smp,
+                       b_Term ~ (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)+ (1 | StartFY) 
+                       , family=binomial(link="logit"),
+     control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
+     optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
+
+get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_When_term)
+
+
+
+if(!exists("PlaceCountry_naics_36_cpsa_Office_When_opt"))
+  PlaceCountry_naics_36_cpsa_Office_When_opt <- lmer(data=serv_opt,
+                       l_OptGrowth ~ (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)+ (1 | StartFY) 
+                       )#, family=binomial(link="logit"))
+get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_When_opt)
+
+
+```
+
+### Compare Where
+```{r Empty_Compare_Where_Term}
+
+save(PlaceCountry_cbre,PlaceCountry_term,PlaceCountry_opt,
+     PlaceCountry_naics_36_Office_opt,
+     PlaceCountry_naics_36_cpsa_Office_opt,
+     PlaceCountry_naics_36_cpsa_Office_When_opt,
+     file="../data//clean//where_empty_models.rdata")
+
+
+get_icc(naics36_When_Office_cbre)
+get_icc(naics36_cpsa_When_Office_cbre)
+get_icc(naics36_cpsa_Office_cbre)
+get_icc(PlaceCountry_cbre)
+get_icc(PlaceCountry_naics_36_Office_cbre)
+get_icc(PlaceCountry_naics_36_cpsa_Office_cbre)
+get_icc(PlaceCountry_naics_36_cpsa_Office_When_cbre)
+
+
+stargazer::stargazer(naics36_When_Office_cbre,
+                     naics36_cpsa_Office_cbre,
+                           naics36_cpsa_When_Office_cbre,
+                           PlaceCountry_cbre,
+                     PlaceCountry_naics_36_Office_cbre,
+                           PlaceCountry_naics_36_cpsa_Office_cbre,
+                           PlaceCountry_naics_36_cpsa_Office_When_cbre,
+                     type="text",
+                     digits=2)
+
+debug(summary_residual_compare)
+summary_residual_compare(naics36_Office_term,naics46_Office_term,naics36_Office_cbre,naics46_Office_cbre,bins=10,suppress_vif=TRUE)
+summary_residual_compare(naics06_Office_term,naics36_Office_term,naics06_Office_cbre,naics36_Office_cbre,bins=10,suppress_vif=TRUE)
+summary_residual_compare(naics36_term,naics36_Office_term,naics36_cbre,naics36_Office_cbre,bins=10,suppress_vif=TRUE)
+summary_residual_compare(naics36_term,naics236_term,naics36_cbre,naics236_cbre,bins=10,suppress_vif=TRUE)
+summary_residual_compare(naics36_term,naics36_Office_term,naics36_cbre,naics36_Office_cbre,bins=10,suppress_vif=TRUE)
+```
+
+
+```{r Empty_Compare_Where_term}
+
+get_icc(naics36_When_Office_term)
+get_icc(naics36_cpsa_When_Office_term)
+get_icc(naics36_cpsa_Office_term)
+get_icc(PlaceCountry_term)
+get_icc(PlaceCountry_naics_36_Office_term)
+get_icc(PlaceCountry_naics_36_cpsa_Office_term)
+get_icc(PlaceCountry_naics_36_cpsa_Office_When_term)
+
+
+stargazer::stargazer(naics36_When_Office_term,
+                     naics36_cpsa_Office_term,
+                           naics36_cpsa_When_Office_term,
+                           PlaceCountry_term,
+                     PlaceCountry_naics_36_Office_term,
+                           PlaceCountry_naics_36_cpsa_Office_term,
+                           PlaceCountry_naics_36_cpsa_Office_When_term,
+                     type="text",
+                     digits=2)
+
+
+```
+
+```{r Empty_Compare_Where_opt}
+
+
+get_icc(naics36_When_Office_opt)
+get_icc(naics36_cpsa_When_Office_opt)
+get_icc(naics36_cpsa_Office_opt)
+get_icc(PlaceCountry_opt)
+get_icc(PlaceCountry_naics_36_Office_opt)
+get_icc(PlaceCountry_naics_36_cpsa_Office_opt)
+get_icc(PlaceCountry_naics_36_cpsa_Office_When_opt)
+
+
+stargazer::stargazer(naics36_When_Office_opt,
+                     naics36_cpsa_Office_opt,
+                           naics36_cpsa_When_Office_opt,
+                           PlaceCountry_opt,
+                     PlaceCountry_naics_36_Office_opt,
+                           PlaceCountry_naics_36_cpsa_Office_opt,
+                           PlaceCountry_naics_36_cpsa_Office_When_opt,
+                     type="text",
+                     digits=2)
 ```
