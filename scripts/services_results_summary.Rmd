@@ -681,14 +681,6 @@ NAICS_summary<-csis360::read_and_join(NAICS_summary,
 
 
 
-# Helper function for string wrapping. 
-# Default 20 character target width.
-swr <- function(string, nwrap=20) {
-  paste(strwrap(string, width=nwrap), collapse="\n")
-}
-swr <- Vectorize(swr)
-summary(NAICS_summary$NAICS_shorthand)
-
 # View(NAICS_summary)
 NAICS_summary$NAICS_shorthand<-swr(NAICS_summary$NAICS_shorthand,nwrap = 25)
 NAICS_summary$CY<-NAICS_summary$StartCY-1
@@ -1212,16 +1204,56 @@ complete<-
 
 summary(complete)
 money<-def_serv$Action.Obligation
+any(def_serv$Action.Obligation<0)
+money[def_serv$Action.Obligation<0]<-0
+sum(def_serv$Action.Obligation[def_serv$Action.Obligation<0])
+
+#Overall
 length(money[!complete])/length(money)
 sum(money[!complete],na.rm=TRUE)/sum(money,na.rm=TRUE)
 
+
+
+#With potential options, what portion of contracts
+sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
+  sum(money,na.rm=TRUE)
+
+
+#Missing data, how many records
 nrow(def_serv[!complete,])/nrow(def_serv)
 sum(def_serv[!complete,]$Action.Obligation,na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
+
+#Missing data how much money?
+length(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1])/
+  length(money[def_serv$AnyUnmodifiedUnexercisedOptions==1])
+sum(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
+  sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)
+
+
+
+#Refreshing
+load(file="../data/clean/def_sample.Rdata")
+
+# serv_smp<-update_sample_col_CSIScontractID(serv_smp,
+#                                            def_serv[complete,],
+#                                            col=NULL, 
+#                                            drop_and_replace=TRUE)
+# 
+# serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
+#                                            def_serv[complete,],
+#                                            col=NULL, 
+#                                            drop_and_replace=TRUE)
+# 
+
+
+
+
 # 
 # serv_smp<-def_serv[complete,]
 # # 
 # serv_smp1m<-serv_smp[sample(nrow(serv_smp),1000000),]
 # serv_smp<-serv_smp[sample(nrow(serv_smp),250000),]
+serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
 save(file="../data/clean/def_sample.Rdata",serv_smp,serv_smp1m)
 # write.foreign(df=serv_smp,
 #               datafile="Data//def_sample250k.dat",
