@@ -928,7 +928,7 @@ summary_residual_compare(naics36_term,naics36_Office_term,naics36_cbre,naics36_O
 ```
 
 
-```{r Empty_Compare_Who_CBre}
+```{r Empty_Compare_Who_term}
 
 get_icc(naics36_term)
 get_icc(Office_term)
@@ -937,6 +937,16 @@ get_icc(NestedOffice_term)
 get_icc(naics36_Office_term)
 get_icc(naics36_When_Office_term)
 get_icc(naics36_cpsa_When_Office_term)
+
+stargazer::stargazer(naics36_term,
+                           Office_term,
+                           Agency_term,
+                     NestedOffice_term,
+                           naics36_When_Office_term,
+                           naics36_cpsa_When_Office_term,
+                     NAICS_cpsa_StartFY_cbre,type="text",
+                     digits=2)
+
 ```
 
 ```{r Empty_Compare_Who_opt}
@@ -947,6 +957,16 @@ get_icc(NestedOffice_opt)
 get_icc(naics36_Office_opt)
 get_icc(naics36_When_Office_opt)
 get_icc(naics36_cpsa_When_Office_opt)
+
+stargazer::stargazer(naics36_opt,
+                           Office_opt,
+                           Agency_opt,
+                     NestedOffice_opt,
+                           naics36_When_Office_opt,
+                           naics36_cpsa_When_Office_opt,
+                     NAICS_cpsa_StartFY_opt,type="text",
+                     digits=2)
+
 ```
 There is some contradiction in which model best serves this category. For Comp, the nested office has the largest summed ICC, but for term this results in an failure to converge and a 0 ICC for agency. Agency:Office alone is respectable for all three so that is used in the combination attempt.
 
@@ -1056,3 +1076,120 @@ get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_opt)
 
 ```
 
+### NAICS 36 cpsa_Office When Place
+```{r PlaceCountry_naics_36_cpsa_Office_When}
+# load(file="Output//where_empty_models.rdata")
+
+if(!exists("PlaceCountry_naics_36_cpsa_Office_When_cbre"))
+  PlaceCountry_naics_36_cpsa_Office_When_cbre <- glmer(data=serv_smp,
+                       b_CBre ~   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)+ (1 | StartFY) 
+                       , family=binomial(link="logit"),
+     control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
+     optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
+
+get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_cbre)
+
+if(!exists("PlaceCountry_naics_36_cpsa_Office_When_term"))
+  PlaceCountry_naics_36_cpsa_Office_When_term <- glmer(data=serv_smp,
+                       b_Term ~ (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)+ (1 | StartFY) 
+                       , family=binomial(link="logit"),
+     control = glmerControl(optimizer = "optimx", calc.derivs = FALSE,
+     optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
+
+get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_When_term)
+
+
+
+if(!exists("PlaceCountry_naics_36_cpsa_Office_When_opt"))
+  PlaceCountry_naics_36_cpsa_Office_When_opt <- lmer(data=serv_opt,
+                       l_OptGrowth ~ (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  (1 | Agency/Office) + (1 | PlaceCountryISO3)+ (1 | StartFY) 
+                       )#, family=binomial(link="logit"))
+get_icc(display=TRUE,PlaceCountry_naics_36_cpsa_Office_When_opt)
+
+
+```
+
+### Compare Where
+```{r Empty_Compare_Where_Term}
+
+save(PlaceCountry_cbre,PlaceCountry_term,PlaceCountry_opt,
+     PlaceCountry_naics_36_Office_opt,
+     PlaceCountry_naics_36_cpsa_Office_opt,
+     PlaceCountry_naics_36_cpsa_Office_When_opt,
+     file="../data//clean//where_empty_models.rdata")
+
+
+get_icc(naics36_When_Office_cbre)
+get_icc(naics36_cpsa_When_Office_cbre)
+get_icc(naics36_cpsa_Office_cbre,)
+get_icc(PlaceCountry_cbre)
+get_icc(PlaceCountry_naics_36_Office_cbre)
+get_icc(PlaceCountry_naics_36_cpsa_Office_cbre)
+get_icc(PlaceCountry_naics_36_cpsa_Office_When_cbre)
+
+
+stargazer::stargazer(naics36_When_Office_cbre,
+                     naics36_cpsa_Office_cbre,
+                           naics36_cpsa_When_Office_cbre,
+                           PlaceCountry_cbre,
+                     PlaceCountry_naics_36_Office_cbre,
+                           PlaceCountry_naics_36_cpsa_Office_cbre,
+                           PlaceCountry_naics_36_cpsa_Office_When_cbre,
+                     type="text",
+                     digits=2)
+
+debug(summary_residual_compare)
+summary_residual_compare(naics36_Office_term,naics46_Office_term,naics36_Office_cbre,naics46_Office_cbre,bins=10,suppress_vif=TRUE)
+summary_residual_compare(naics06_Office_term,naics36_Office_term,naics06_Office_cbre,naics36_Office_cbre,bins=10,suppress_vif=TRUE)
+summary_residual_compare(naics36_term,naics36_Office_term,naics36_cbre,naics36_Office_cbre,bins=10,suppress_vif=TRUE)
+summary_residual_compare(naics36_term,naics236_term,naics36_cbre,naics236_cbre,bins=10,suppress_vif=TRUE)
+summary_residual_compare(naics36_term,naics36_Office_term,naics36_cbre,naics36_Office_cbre,bins=10,suppress_vif=TRUE)
+```
+
+
+```{r Empty_Compare_Where_term}
+
+get_icc(naics36_When_Office_term)
+get_icc(naics36_cpsa_When_Office_term)
+get_icc(naics36_cpsa_Office_term,)
+get_icc(PlaceCountry_term)
+get_icc(PlaceCountry_naics_36_Office_term)
+get_icc(PlaceCountry_naics_36_cpsa_Office_term)
+get_icc(PlaceCountry_naics_36_cpsa_Office_When_term)
+
+
+stargazer::stargazer(naics36_When_Office_term,
+                     naics36_cpsa_Office_term,
+                           naics36_cpsa_When_Office_term,
+                           PlaceCountry_term,
+                     PlaceCountry_naics_36_Office_term,
+                           PlaceCountry_naics_36_cpsa_Office_term,
+                           PlaceCountry_naics_36_cpsa_Office_When_term,
+                     type="text",
+                     digits=2)
+
+
+```
+
+```{r Empty_Compare_Where_opt}
+
+
+get_icc(naics36_When_Office_opt)
+get_icc(naics36_cpsa_When_Office_opt)
+get_icc(naics36_cpsa_Office_opt,)
+get_icc(PlaceCountry_opt)
+get_icc(PlaceCountry_naics_36_Office_opt)
+get_icc(PlaceCountry_naics_36_cpsa_Office_opt)
+get_icc(PlaceCountry_naics_36_cpsa_Office_When_opt)
+
+
+stargazer::stargazer(naics36_When_Office_opt,
+                     naics36_cpsa_Office_opt,
+                           naics36_cpsa_When_Office_opt,
+                           PlaceCountry_opt,
+                     PlaceCountry_naics_36_Office_opt,
+                           PlaceCountry_naics_36_cpsa_Office_opt,
+                           PlaceCountry_naics_36_cpsa_Office_When_opt,
+                     type="text",
+                     digits=2)
+```
