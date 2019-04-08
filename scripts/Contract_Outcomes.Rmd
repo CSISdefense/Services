@@ -833,17 +833,17 @@ Duration has significant correlations with ceiling breaches. The initial model r
 ### Competition
 #### 05A: No Competition / 1 / 2-4 / 5+ Offers
 ```{r Model05A}
-summary_discrete_plot(serv_smp,"Comp")
+summary_discrete_plot(serv_smp,"Comp1or5")
 
-serv_smp$b_NoComp<-!serv_smp$b_Comp
+
 
 #Model
 CBre_05A <- glm (data=serv_smp,
-                 b_CBre ~ Crisis +b_NoComp, family=binomial(link="logit"))
+                 b_CBre ~ Crisis +Comp1or5, family=binomial(link="logit"))
 glmer_examine(CBre_05A)
 
 Term_05A <- glm (data=serv_smp,
-                 b_Term ~ Crisis +b_NoComp, family=binomial(link="logit"))
+                 b_Term ~ Crisis +Comp1or5, family=binomial(link="logit"))
 glmer_examine(Term_05A)
 
 
@@ -1021,13 +1021,13 @@ glmer_examine(CBre_10A)
 
 
 # #Plot the fitted model plot
-# CBre_02A_curve<-function(x, Comp){invlogit(cbind(1,Comp,x) %*%  coef(CBre_02A))}
+# CBre_02A_curve<-function(x, Comp1or5){invlogit(cbind(1,Comp1or5,x) %*%  coef(CBre_02A))}
 # 
 # #Competition curves
 # fitted_cbre_model(serv_smp,"cl_Ceil") + stat_function(fun = CBre_02A_curve, 
-#                              args=list(Comp=0),color="blue")+
+#                              args=list(Comp1or5=0),color="blue")+
 #   stat_function(fun = CBre_02A_curve, 
-#                              args=list(Comp=2),color="blue")
+#                              args=list(Comp1or5=2),color="blue")
 # 
 
 
@@ -1064,13 +1064,13 @@ glmer_examine(CBre_10B)
 
 # 
 # #Plot the fitted model plot
-# CBre_02A_curve<-function(x, Comp){invlogit(cbind(1,Comp,x) %*%  coef(CBre_02A))}
+# CBre_02A_curve<-function(x, Comp1or5){invlogit(cbind(1,Comp1or5,x) %*%  coef(CBre_02A))}
 # 
 # #Competition curves
 # fitted_cbre_model(serv_smp,"cl_Ceil") + stat_function(fun = CBre_02A_curve, 
-#                              args=list(Comp=0),color="blue")+
+#                              args=list(Comp1or5=0),color="blue")+
 #   stat_function(fun = CBre_02A_curve, 
-#                              args=list(Comp=2),color="blue")
+#                              args=list(Comp1or5=2),color="blue")
 
 
 
@@ -1093,35 +1093,35 @@ The results align with the hypothesis and are significant, although the magnitud
 
 
 ### Level 3
-#### Model 10C: cl_def3_HHI
-```{r Model10C}
+#### Model 10D: cl_def3_HHI
+```{r Model10D}
 #Frequency Plot for unlogged ceiling
 summary_continuous_plot(serv_smp,"l_def3_HHI_lag1")
 
 
 #Model
-CBre_10C <- glm (data=serv_smp,
+CBre_10D <- glm (data=serv_smp,
                  b_CBre ~cl_def3_HHI_lag1, family=binomial(link="logit"))
-glmer_examine(CBre_10C)
+glmer_examine(CBre_10D)
 
 
 # #Plot the fitted model plot
-# CBre_02A_curve<-function(x, Comp){invlogit(cbind(1,Comp,x) %*%  coef(CBre_02A))}
+# CBre_02A_curve<-function(x, Comp1or5){invlogit(cbind(1,Comp1or5,x) %*%  coef(CBre_02A))}
 # 
 # #Competition curves
 # fitted_cbre_model(serv_smp,"cl_Ceil") + stat_function(fun = CBre_02A_curve, 
-#                              args=list(Comp=0),color="blue")+
+#                              args=list(Comp1or5=0),color="blue")+
 #   stat_function(fun = CBre_02A_curve, 
-#                              args=list(Comp=2),color="blue")
+#                              args=list(Comp1or5=2),color="blue")
 # 
 
 
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_10A,CBre_NCS6E,CBre_NCS6F,CBre_10C,type="text",
+  stargazer::stargazer(CBre_10A,CBre_NCS6E,CBre_NCS6F,CBre_10D,type="text",
                        digits=2)
 
 
-summary_residual_compare(CBre_10A,CBre_10C)
+summary_residual_compare(CBre_10A,CBre_10D)
 
 
 ```
@@ -1129,9 +1129,9 @@ summary_residual_compare(CBre_10A,CBre_10C)
 Level 3 HHI seems to slightly out perform level 6.
 
 
-#### Model 10D: Defense to Overall ratio
+#### Model 10E: Defense to Overall ratio
 The higher the ratio of defense obligations to reciepts in the overall economy, the DoD holds a monosopy over a sector. Given the challenges of monosopy, the a higher ratio estimates a greater  risk of ceiling breaches.
-```{r Model10D}
+```{r Model10E}
 #Frequency Plot for unlogged ceiling
 
 
@@ -1141,35 +1141,35 @@ summary_continuous_plot(serv_smp,"capped_def3_ratio_lag1")
 summary_continuous_plot(serv_smp,"l_def3_ratio_lag1")
 
 #Model
-CBre_10D <- glm (data=serv_smp,
+CBre_10E <- glm (data=serv_smp,
                  b_CBre ~cl_def3_HHI_lag1+cl_def3_ratio_lag1, 
                  family=binomial(link="logit"))
-glmer_examine(CBre_10D)
+glmer_examine(CBre_10E)
 
 
 # 
 # #Plot the fitted model plot
-# CBre_02A_curve<-function(x, Comp){invlogit(cbind(1,Comp,x) %*%  coef(CBre_02A))}
+# CBre_02A_curve<-function(x, Comp1or5){invlogit(cbind(1,Comp1or5,x) %*%  coef(CBre_02A))}
 # 
 # #Competition curves
 # fitted_cbre_model(serv_smp,"cl_Ceil") + stat_function(fun = CBre_02A_curve, 
-#                              args=list(Comp=0),color="blue")+
+#                              args=list(Comp1or5=0),color="blue")+
 #   stat_function(fun = CBre_02A_curve, 
-#                              args=list(Comp=2),color="blue")
+#                              args=list(Comp1or5=2),color="blue")
 
 
 
 
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_10C,CBre_10D,
-                       CBre_01B,CBre_10D,type="text",
+  stargazer::stargazer(CBre_10D,CBre_10E,
+                       CBre_01B,CBre_10E,type="text",
                        digits=2)
 
 
-summary_residual_compare(CBre_10C,CBre_10D)
-summary_residual_compare(CBre_10D)
-summary_residual_compare(CBre_01B,CBre_10D,bins=2)
-summary_residual_compare(CBre_10D,bins=2)
+summary_residual_compare(CBre_10D,CBre_10E)
+summary_residual_compare(CBre_10E)
+summary_residual_compare(CBre_01B,CBre_10E,bins=2)
+summary_residual_compare(CBre_10E,bins=2)
 
 
 ```
@@ -1179,40 +1179,40 @@ The results align with the hypothesis, although the magnitude is small, if large
 
 
 
-### Model 10E: NAICS 6 and NAICS 3
+### Model 10G: NAICS 6 and NAICS 3
 Consolidation at lessa nd more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS levels, e.g. power plants, rather than more specific NAICS levels, like solar vs. coal. As a result, consolidation for more granular NAICS codes should estimate higher rates of ceiling breaches compared to less granular NAICS code.
 
 We'll start by adding in everything from both models and seeing what violates VIF.
-```{r Model10E}
+```{r Model10G}
 #Frequency Plot for unlogged ceiling
 
 
 #Model
-CBre_10E <- glm (data=serv_smp,
+CBre_10G <- glm (data=serv_smp,
                  b_CBre ~cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                   
                    cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                   cl_US6_avg_sal_lag1  , family=binomial(link="logit"))
-glmer_examine(CBre_10E)
-vif(CBre_10E)
+glmer_examine(CBre_10G)
+vif(CBre_10G)
 #Defense obl 3 have the highest VIF and no coefficient to speak of, dropping it
 
 
 #Plot residuals versus fitted
- stargazer::stargazer(CBre_NCS3E,CBre_NCS3F2,CBre_NCS3F4,CBre_NCS6G,CBre_10E3,
-                       CBre_NCS3D,CBre_NCS3F2,CBre_NCS3F3,CBre_NCS6G,CBre_10E3,
+ stargazer::stargazer(CBre_NCS3E,CBre_NCS3F2,CBre_NCS3F4,CBre_NCS6G,CBre_10G3,
+                       CBre_NCS3D,CBre_NCS3F2,CBre_NCS3F3,CBre_NCS6G,CBre_10G3,
                        type="text",digits=2)
 
 
-summary_residual_compare(CBre_NCS3F4,CBre_10E3)
-summary_residual_compare(CBre_NCS3F3,CBre_10E3,bins=10)
-summary_residual_compare(CBre_NCS3F2,CBre_10E3)
-summary_residual_compare(CBre_NCS3F2,CBre_10E3,bins=10)
+summary_residual_compare(CBre_NCS3F4,CBre_10G3)
+summary_residual_compare(CBre_NCS3F3,CBre_10G3,bins=10)
+summary_residual_compare(CBre_NCS3F2,CBre_10G3)
+summary_residual_compare(CBre_NCS3F2,CBre_10G3,bins=10)
 
-summary_residual_compare(CBre_NCS3F,CBre_10E3)
-summary_residual_compare(CBre_NCS3D,CBre_10E3,bins=10)
-summary_residual_compare(CBre_NCS6G,CBre_10E3)
-summary_residual_compare(CBre_NCS6G,CBre_10E3,bins=10)
+summary_residual_compare(CBre_NCS3F,CBre_10G3)
+summary_residual_compare(CBre_NCS3D,CBre_10G3,bins=10)
+summary_residual_compare(CBre_NCS6G,CBre_10G3)
+summary_residual_compare(CBre_NCS6G,CBre_10G3,bins=10)
 
 ```
 The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
