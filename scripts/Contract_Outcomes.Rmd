@@ -671,7 +671,7 @@ stargazer::stargazer(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,
                        digits=2)
 
 
-texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D),file="..//Output//Opt_Model.html",
+texreg::htmlreg(list(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D),file="..//Output//Opt_Model.html",
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
