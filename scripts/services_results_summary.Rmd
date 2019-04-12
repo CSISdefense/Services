@@ -1254,7 +1254,7 @@ load(file="../data/clean/def_sample.Rdata")
 # serv_smp1m<-serv_smp[sample(nrow(serv_smp),1000000),]
 # serv_smp<-serv_smp[sample(nrow(serv_smp),250000),]
 serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
-save(file="../data/clean/def_sample.Rdata",serv_smp,serv_smp1m)
+save(file="../data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt)
 # write.foreign(df=serv_smp,
 #               datafile="Data//def_sample250k.dat",
 #               codefile="Data//def_sample250k_code.do",
