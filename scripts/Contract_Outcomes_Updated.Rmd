@@ -42,7 +42,7 @@ note.text.size<-1.40
 First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from FPDS.
 
 ```{r ReadInData, echo = TRUE}
-load(file="../data/clean/def_sample.Rdata")
+load(file="..//data//clean//def_sample.Rdata")
 
 ```
 
@@ -473,53 +473,11 @@ summary_residual_compare(CBre_02D,CBre_03B,Term_02D,Term_03B, skip_vif = TRUE)
 
 When considering contract actions alone, expectation was met for exercised options, but not for ceiling breaches and terminations.
 
-### 03C: Vendor Market Share
-Expectation:
-
-```{r Model03C}
-
-summary_continuous_plot(serv_smp,"c_pMarket")
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=c_pMarket, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
-
-#Model
-CBre_03C <- glm (data=serv_smp,
-                 b_CBre ~ c_pMarket, family=binomial(link="logit"))
-display(CBre_03B)
-
-#Model
-Term_03C <- glm (data=serv_smp,
-                 b_Term ~ c_pMarket, family=binomial(link="logit"))
-
-display(Term_03B)
-
-Opt_03C <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_pairCA)
-
-display(Opt_03B)
-
-#Plot residuals versus fitted
-stargazer::stargazer(CBre_02D,CBre_03A,CBre_03B,
-                       Term_02D,Term_03A,Term_03B,
-                       Opt_02D,Opt_03A,Opt_03B,
-                       type="text",
-                       digits=2)
-
-
-
-summary_residual_compare(CBre_03A,CBre_03B,Term_03A,Term_03B, skip_vif = TRUE)
-summary_residual_compare(CBre_02D,CBre_03B,Term_02D,Term_03B, skip_vif = TRUE)
-
-
-```
-
-
-### 03D: Office-Vendor Relationship
+### 03C: Office-Vendor Relationship
 Expectation: 
 The importance of partnership, trust, and handling difficult problems and uncertainty together naturally lead into the last characteristic: the relationship between the contractor and buyer. The higher level of interaction provides the more opportunity to build a deeper relationship, the likelihood of cost ceiling breaches and terminations decreases and the exercised options increase for that partnership. Also we expect the result of combined model would be the same as individual models above.
 
-```{r Model03D}
+```{r Model03C}
 
  # !is.na(def_serv$cl_US6_avg_sal_lag1)&
  #  !is.na(def_serv$cl_CFTE)&
@@ -529,42 +487,42 @@ The importance of partnership, trust, and handling difficult problems and uncert
  #  !is.na(def_serv$cl_pairCA)&
 
 #Model
-CBre_03D <- glm (data=serv_smp,
+CBre_03C <- glm (data=serv_smp,
                  b_CBre ~ c_pairHist+cl_pairCA, family=binomial(link="logit"))
-glmer_examine(CBre_03D)
+glmer_examine(CBre_03C)
 
 #Model
-Term_03D <- glm (data=serv_smp,
+Term_03C <- glm (data=serv_smp,
                  b_Term ~ c_pairHist+cl_pairCA, family=binomial(link="logit"))
 
-glmer_examine(Term_03D)
+glmer_examine(Term_03C)
 
-Opt_03D <- glm(data=serv_opt,
+Opt_03C <- glm(data=serv_opt,
                         l_OptGrowth ~ c_pairHist+cl_pairCA)
 
-glmer_examine(Opt_03D)
+glmer_examine(Opt_03C)
 
 #Plot residuals versus fitted
-stargazer::stargazer(CBre_02D,CBre_03A,CBre_03B,CBre_03D,
-                       Term_02D,Term_03A,Term_03B,Term_03D,
-                       Opt_02D,Opt_03A,Opt_03B,Opt_03D,
+  stargazer::stargazer(CBre_02D,CBre_03A,CBre_03B,CBre_03C,
+                       Term_02D,Term_03A,Term_03B,Term_03C,
+                       Opt_02D,Opt_03A,Opt_03B,Opt_03C,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(CBre_03A,CBre_03D,Term_03A,Term_03D)
-summary_residual_compare(CBre_03B,CBre_03D,Term_03B,Term_03D)
-summary_residual_compare(CBre_02D,CBre_03D,Term_02D,Term_03D)
+summary_residual_compare(CBre_03A,CBre_03C,Term_03A,Term_03C)
+summary_residual_compare(CBre_03B,CBre_03C,Term_03B,Term_03C)
+summary_residual_compare(CBre_02D,CBre_03C,Term_02D,Term_03C)
 
 ```
 
 When combining pair history and contract actions, magnitude of relationships with dependent variables incraesed, but the agreement with expectations splited in the same way as individually.  
 
 
-### 03E: Cumulative  Model
+### 03D: Cumulative  Model
 
-```{r Model03E}
+```{r Model03D}
 
 #Model
 CBre_03D <- glm (data=serv_smp,
@@ -643,6 +601,101 @@ In the cumulative model, per dependent variable and independent variable:
    C. Office-Vendor Relationship:
       The result for pair history did not match with expectation.
       The result for contract actions matched with expectation.
+
+
+## Office and Vendor-Office Pair
+
+### Vendor Market Share
+Expectation: Contracts of offices partnered with vendors who have larger market shares would be more likely to experience cost ceiling breaches and exercised options, but less likely to have terminations.
+
+```{r Model11A}
+
+summary_continuous_plot(serv_smp,"c_pMarket")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=c_pMarket, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_11A <- glm (data=serv_smp,
+                 b_CBre ~ c_pMarket, family=binomial(link="logit"))
+display(CBre_11A)
+
+#Model
+Term_11A <- glm (data=serv_smp,
+                 b_Term ~ c_pMarket, family=binomial(link="logit"))
+
+display(Term_11A)
+
+Opt_11A <- glm(data=serv_opt,
+                        l_OptGrowth ~ c_pMarket)
+
+display(Opt_11A)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_02D,CBre_03D,CBre_11A,
+                       Term_02D,Term_03D,Term_11A,
+                       Opt_02D,Opt_03D,Opt_11A,
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(CBre_03D,CBre_11A,Term_03D,Term_11A, skip_vif = TRUE)
+
+
+
+```
+
+When considering vendor market share alone, results of cost ceiling breaches and terminations both met their expectations. Exercised options got contradictory result with the expectation.
+
+
+### Past Office Volume (dollars)
+Expectation: 
+
+```{r Model11B}
+
+summary_continuous_plot(serv_smp,"cl_OffVol")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_OffVol, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_11B <- glm (data=serv_smp,
+                 b_CBre ~ cl_OffVol, family=binomial(link="logit"))
+display(CBre_11B)
+
+#Model
+Term_11B <- glm (data=serv_smp,
+                 b_Term ~ cl_OffVol, family=binomial(link="logit"))
+
+display(Term_11B)
+
+Opt_11B <- glm(data=serv_opt,
+                        l_OptGrowth ~ cl_OffVol)
+
+display(Opt_11B)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_02D,CBre_03D,CBre_11A,CBre_11B,
+                       Term_02D,Term_03D,Term_11A,Term_11B,
+                       Opt_02D,Opt_03D,Opt_11A,Opt_11B,
+                       type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_11A,CBre_11B,Term_11A,Term_11B, skip_vif = TRUE)
+summary_residual_compare(CBre_03D,CBre_11B,Term_03D,Term_11B, skip_vif = TRUE)
+
+
+
+```
+
+### Detailed Industry Diveristy
+
+
+### Crisis Funding
+
+
 
 ### Study Variables Summary
 
@@ -788,15 +841,6 @@ texreg::htmlreg(list(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D),fi
 
 
 ```
-
-
-## Office and Vendor-Office Pair
-### Past Office Volume (dollars)
-
-### Detailed Industry Diveristy
-
-
-
 
 
 
