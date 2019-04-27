@@ -64,13 +64,16 @@ load(file="../data/semi_clean/defense_contract_complete.RData")
 def<-def[def$MinOfSignedDate>=as.Date("2008-01-01") & def$MinOfSignedDate<=as.Date("2015-12-31"),]
 def_serv<-def[def$PSR %in% c("Services","R&D"),]
 rm(def)    
+  
+
+levels(def_serv$OCO_GF)<-
+    list("GF"="GF",
+         "OCO"="OCOC")
     
 # # head(def_serv)
 def_serv<-transform_contract(def_serv)
 # 
 # 
-
-
 
 
 # summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue)
@@ -81,34 +84,11 @@ def_serv<-transform_contract(def_serv)
 load("..\\data\\semi_clean\\fed_transformed.rdata")
 fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,PlaceCountryISO3,Crisis)
 def_serv<-left_join(def_serv,fed)
-# summary(def_serv$PlaceCountryISO3)
-# summary(fed$PlaceCountryISO3)
-# summary(factor(def_serv$Crisis))
-#About 24k inexplicably missing
+summary(def_serv$PlaceCountryISO3)
+summary(fed$PlaceCountryISO3)
+summary(factor(def_serv$Crisis))
+#About 25.4k inexplicably missing
 # summary(def_serv[is.na(def_serv$Crisis),])
-colnames(def_serv)[colnames(def_serv)=="ContractingOfficeCode"]<-"Office"
-
-
-colnames(def_serv)[colnames(def_serv)=="fiscal_year"]<-"StartFY"
-colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
-
-def_serv$cl_CFTE<-arm::rescale(def_serv$l_CFTE)
-def_serv$c_pPBSC<-arm::rescale(def_serv$pPBSC)
-def_serv$c_pOffPSC<-arm::rescale(def_serv$pOffPSC)
-
-
-def_serv$c_pMarket<-arm::rescale(def_serv$pMarket)
-def_serv$l_OffCA<-log(def_serv$office_numberofactions_1year+1)
-def_serv$cl_OffCA<-arm::rescale(def_serv$l_OffCA)
-def_serv$l_OffVol<-log(def_serv$office_obligatedamount_7year+1)
-def_serv$cl_OffVol<-arm::rescale(def_serv$l_OffVol)
-def_serv$cl_pairCA<-arm::rescale(def_serv$l_CA)
-def_serv$c_pairHist<-arm::rescale(def_serv$office_entity_paircount_7year)
-
-summary(def_serv$l_OffVol)
-summary(def_serv$cl_OffVol)
-
-
 
 
 # def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
@@ -1160,6 +1140,7 @@ def_serv$l_pMarket<-log(def_serv$pMarket+1)
 # serv_smp$l_Offr<-na_non_positive_log(serv_smp$UnmodifiedNumberOfOffersReceived)
 # serv_smp1m$l_Offr<-na_non_positive_log(serv_smp1m$UnmodifiedNumberOfOffersReceived)
 
+serv_smp<-left_join(serv_smp,def_serv, by="CSIScontractID")
 
 
 complete<-
@@ -1212,7 +1193,7 @@ sum(def_serv$Action.Obligation[def_serv$Action.Obligation<0])
 length(money[!complete])/length(money)
 sum(money[!complete],na.rm=TRUE)/sum(money,na.rm=TRUE)
 
-
+summary(def_serv[def_serv$Crisis=="OCO",])
 
 #With potential options, what portion of contracts
 sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
