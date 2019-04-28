@@ -91,10 +91,11 @@ summary(factor(def_serv$Crisis))
 # summary(def_serv[is.na(def_serv$Crisis),])
 
 
+
+
 # def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
 save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
 load("../data/clean/transformed_def_serv.Rdata")
-
 
 
 
@@ -1137,11 +1138,6 @@ def_serv$l_pMarket<-log(def_serv$pMarket+1)
 ```{r Sample}
 
  # load(file="data//def_sample.Rdata")
-# serv_smp$l_Offr<-na_non_positive_log(serv_smp$UnmodifiedNumberOfOffersReceived)
-# serv_smp1m$l_Offr<-na_non_positive_log(serv_smp1m$UnmodifiedNumberOfOffersReceived)
-
-serv_smp<-left_join(serv_smp,def_serv, by="CSIScontractID")
-
 
 complete<-
   #Dependent Variables
@@ -1178,7 +1174,8 @@ complete<-
   #New Controls
   !is.na(def_serv$cl_OffCA)& #summary(def_serv$cl_OffCA)
   !is.na(def_serv$cl_OffVol)& #summary(def_serv$cl_OffVol)
-  !is.na(def_serv$c_pMarket)  #summary(def_serv$c_pMarket)
+  !is.na(def_serv$c_pMarket)&  #summary(def_serv$c_pMarket)
+  !is.na(def_serv$Crisis)  #summary(def_serv$c_pMarket)
 
 
 
@@ -1192,8 +1189,6 @@ sum(def_serv$Action.Obligation[def_serv$Action.Obligation<0])
 #Overall
 length(money[!complete])/length(money)
 sum(money[!complete],na.rm=TRUE)/sum(money,na.rm=TRUE)
-
-summary(def_serv[def_serv$Crisis=="OCO",])
 
 #With potential options, what portion of contracts
 sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
@@ -1215,26 +1210,29 @@ sum(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
 #Refreshing
 load(file="../data/clean/def_sample.Rdata")
 
+# serv_complete<-def_serv[complete,]
+# serv_smp1m<-serv_complete[sample(nrow(serv_complete),1000000),]
+# serv_smp<-serv_complete[sample(nrow(serv_complete),250000),]
+# rm(serv_complete)
+# serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
+
+
 # serv_smp<-update_sample_col_CSIScontractID(serv_smp,
 #                                            def_serv[complete,],
-#                                            col=NULL, 
+#                                            col=NULL,
 #                                            drop_and_replace=TRUE)
 # 
 # serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
 #                                            def_serv[complete,],
-#                                            col=NULL, 
+#                                            col=NULL,
 #                                            drop_and_replace=TRUE)
 # 
-
 
 
 
 # 
 # serv_smp<-def_serv[complete,]
 # # 
-# serv_smp1m<-serv_smp[sample(nrow(serv_smp),1000000),]
-# serv_smp<-serv_smp[sample(nrow(serv_smp),250000),]
-serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
 save(file="../data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt)
 # write.foreign(df=serv_smp,
 #               datafile="Data//def_sample250k.dat",
