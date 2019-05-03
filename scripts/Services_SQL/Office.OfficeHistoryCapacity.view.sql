@@ -65,6 +65,7 @@ on c.fiscal_year=def.Fiscal_Year
 GROUP BY 
 C.fiscal_year
 , co.ContractingOfficeCode 
+,def.GDPdeflatorName
 --, co2mcc.ContractingOfficeName 
 --, c.contractingofficeagencyid
 --, cO2MCC.MajorCommandName 
