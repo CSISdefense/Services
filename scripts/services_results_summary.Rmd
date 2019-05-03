@@ -61,15 +61,35 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 ```{r ReadInData, echo = TRUE}
 load(file="../data/semi_clean/defense_contract_complete.RData")
 
+
+
 def<-def[def$MinOfSignedDate>=as.Date("2008-01-01") & def$MinOfSignedDate<=as.Date("2015-12-31"),]
 def_serv<-def[def$PSR %in% c("Services","R&D"),]
 rm(def)    
   
+#****This should be in dataset building, not transform.
+    # def<-read_and_join_experiment( def,
+    #                                                "Contract.sp_ContractEntityID.txt",
+    #                                                path="",
+    #                                                directory="..\\data\\semi_clean\\",
+    #                                                by=c("CSIScontractID"),
+    #                                                add_var=c("EntityID","UnmodifiedEntityID"),
+    #                                                new_var_checked=FALSE)
+    # def$EntityID[is.na(def$EntityID)]<-
+    #   def$UnmodifiedEntityID[is.na(def$EntityID)]
 
-levels(def_serv$OCO_GF)<-
-    list("GF"="GF",
-         "OCO"="OCOC")
-    
+
+load("..\\data\\semi_clean\\fed_transformed.rdata")
+fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,PlaceCountryISO3,Crisis)
+def_serv<-left_join(def_serv,fed)
+summary(def_serv$PlaceCountryISO3)
+summary(fed$PlaceCountryISO3)
+summary(factor(def_serv$Crisis))
+rm(fed)
+#About 25.4k inexplicably missing
+# summary(def_serv[is.na(def_serv$Crisis),])
+
+
 # # head(def_serv)
 def_serv<-transform_contract(def_serv)
 # 
@@ -81,14 +101,6 @@ def_serv<-transform_contract(def_serv)
 
 
 
-load("..\\data\\semi_clean\\fed_transformed.rdata")
-fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,PlaceCountryISO3,Crisis)
-def_serv<-left_join(def_serv,fed)
-summary(def_serv$PlaceCountryISO3)
-summary(fed$PlaceCountryISO3)
-summary(factor(def_serv$Crisis))
-#About 25.4k inexplicably missing
-# summary(def_serv[is.na(def_serv$Crisis),])
 
 
 

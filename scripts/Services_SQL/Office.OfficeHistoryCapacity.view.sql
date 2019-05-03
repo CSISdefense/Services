@@ -20,10 +20,10 @@ C.fiscal_year
 ,count(distinct ProductServiceOrRnDarea) as ProductOrServiceAreaCount
 ,count(distinct c.principalnaicscode) as DetailedIndustryCount
 ,count(distinct naics.principalNAICS3DigitCode) as SubSectorCount
-, sum(c.obligatedamount) as obligatedamount 
+, sum(c.obligatedamount/def.GDPdeflator) as ObligatedAmountConst
 , sum(c.numberofactions) as  numberofactions
-,sum(iif(perf.[isperformancebasedcontract]=1,c.obligatedamount,NULL)) as PBSCobligated
-,sum(iif(psc.IsService=1,c.obligatedamount,NULL)) as ServicesObligated
+,sum(iif(perf.[isperformancebasedcontract]=1,c.obligatedamount/def.GDPdeflator,NULL)) as PBSCobligatedConst
+,sum(iif(psc.IsService=1,c.obligatedamount/def.GDPdeflator,NULL)) as ServicesObligatedConst
 --, SUM(C.obligatedamount) AS SumOfobligatedAmount
 --, SUM(C.numberofactions) AS SumOfnumberOfActions
 , count(distinct CountryCode.Country3LetterCodeText) as NumberOfPlaceCountries
@@ -31,6 +31,7 @@ C.fiscal_year
 ,count(distinct ctid.CSIScontractID) as NumberOfContracts
 ,count(distinct iif(ctid.csisidvmodificationid<>656978, ccid.CSISidvpiidID,NULL))+ --Number of IDVids
 	count(distinct iif(ctid.csisidvmodificationid=656978, ccid.csiscontractid,NULL)) as NumberOfParentContracts
+	,def.GDPdeflatorName
 FROM            Contract.FPDS AS C
  LEFT OUTER JOIN FPDSTypeTable.ProductOrServiceCode AS PSC 
  ON C.productorservicecode = PSC.ProductOrServiceCode 
@@ -56,6 +57,8 @@ left outer join contract.CSIScontractID as ccid
 on ccid.CSIScontractID=ctid.CSIScontractID
 left outer join FPDSTypeTable.PrincipalNaicsCode naics
 on c.principalnaicscode=naics.principalnaicscode
+left outer join Economic.Deflators def
+on c.fiscal_year=def.Fiscal_Year
 --left outer join contract.ContractLabelID as label
 --on cid.ContractLabelID=label.ContractLabelID
 
