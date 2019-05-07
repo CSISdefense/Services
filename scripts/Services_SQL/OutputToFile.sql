@@ -38,7 +38,7 @@ EXEC	[Office].[sp_OfficeHistoryCapacityLagged]
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
-EXEC	[Office].[sp_OfficeHistoryCapacityLagged]
+EXEC	[Office].[sp_EntityIDofficeHistoryLagged]
 		--@Customer = 'Defense'
 
 
