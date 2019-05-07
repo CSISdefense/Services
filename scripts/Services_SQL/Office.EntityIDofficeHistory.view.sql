@@ -41,7 +41,7 @@ AS
 		WHEN EID.EntityID is not null
 		THEN 'Name'
 		 END as EntityCategory
-		 ,GDPdeflatorName
+		  ,GDPdeflatorName
 	--,CASE
 	--	WHEN Parent.ParentID is not null and isnull(Parent.UnknownCompany,0)=0 
 	--	THEN pidh.EntitySizeCode 
@@ -129,7 +129,7 @@ AS
 	,max(DtPCH.ChildCount) as DunsChildCount
 	,sum(c.ObligatedAmount/def.GDPdeflator) as ObligatedAmountConst
 	,sum(c.NumberOfActions) as NumberOfActions
-	,def.GDPdeflatorName
+	,max(def.GDPdeflatorName) as GDPdeflatorName
 	from Contract.FPDS as C
 		LEFT OUTER JOIN Contractor.DunsnumbertoParentContractorHistory as DtPCH
 			ON DtPCH.FiscalYear=C.fiscal_year AND DtPCH.DUNSNUMBER=C.DUNSNumber
@@ -171,7 +171,6 @@ AS
 	 end
 		,c.fiscal_year
 		,c.contractingofficeid
-		,GDPdeflatorName
 	) as interior
 	left outer join vendor.EntityID as EID
 	on EID.EntityID=interior.EntityID

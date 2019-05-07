@@ -8,7 +8,7 @@ GO
 
 
 
-ALTER  VIEW [Office].[ProdServOfficeHistory]
+ALTER  VIEW [Office].[ProdServOfficeHistory]	
 AS
 
 
@@ -19,15 +19,14 @@ AS
 	,C.fiscal_year
 	,sum(C.obligatedamount/def.GDPdeflator) as ObligatedAmountConst
 	,sum(C.numberofactions) as numberofactions
-	,def.GDPdeflatorName
+	,max(def.GDPdeflatorName) as GDPdeflatorName
 	from Contract.FPDS as C
 	left outer join Economic.Deflators def
     on c.fiscal_year=def.Fiscal_Year 
 	group by c.productorservicecode
 		,c.fiscal_year
 		,c.contractingofficeid
-	,def.GDPdeflatorName
-
+	
 
 
 

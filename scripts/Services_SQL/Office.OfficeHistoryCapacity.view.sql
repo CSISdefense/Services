@@ -31,7 +31,7 @@ C.fiscal_year
 ,count(distinct ctid.CSIScontractID) as NumberOfContracts
 ,count(distinct iif(ctid.csisidvmodificationid<>656978, ccid.CSISidvpiidID,NULL))+ --Number of IDVids
 	count(distinct iif(ctid.csisidvmodificationid=656978, ccid.csiscontractid,NULL)) as NumberOfParentContracts
-	,def.GDPdeflatorName
+	,max(def.GDPdeflatorName) as GDPdeflatorName
 FROM            Contract.FPDS AS C
  LEFT OUTER JOIN FPDSTypeTable.ProductOrServiceCode AS PSC 
  ON C.productorservicecode = PSC.ProductOrServiceCode 
@@ -65,7 +65,6 @@ on c.fiscal_year=def.Fiscal_Year
 GROUP BY 
 C.fiscal_year
 , co.ContractingOfficeCode 
-,def.GDPdeflatorName
 --, co2mcc.ContractingOfficeName 
 --, c.contractingofficeagencyid
 --, cO2MCC.MajorCommandName 
