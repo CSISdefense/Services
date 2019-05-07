@@ -1,19 +1,9 @@
-/****** Object:  View [Office].[OfficeHistoryCapacity]    Script Date: 4/1/2019 11:21:38 AM ******/
+/****** Object:  View [Office].[OfficeHistoryCapacityLagged]    Script Date: 5/7/2019 7:40:21 AM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
-
-
-
-
-
-
-
-
-
 
 ALTER VIEW [Office].[OfficeHistoryCapacityLagged]
 AS
@@ -27,9 +17,9 @@ o.ContractingOfficeCode
 --, cO2MCC.MajorCommandCode as C_MCCode
 --,ISNULL(CAgency.Customer, CAgency.AGENCYIDText) as ContractingCustomer 
 --,ISNULL(CAgency.subCustomer, CAgency.AGENCYIDText) as ContractingSubCustomer 
-,omatch.obligatedamount  as obligatedamount_1year
+,omatch.ObligatedAmountConst  as obligatedamount_1year
 ,omatch.numberofactions as numberofactions_1year
-,omatch.PBSCobligated as PBSCobligated_1year
+,omatch.PBSCobligatedConst as PBSCobligated_1year
 --,omatch.NumberOfPlaceCountries
 ,omatch.NumberOfTransactions as NumberOfTransactions_1year
 ,omatch.NumberOfContracts as NumberOfContracts_1year
@@ -37,6 +27,7 @@ o.ContractingOfficeCode
 ,ohistory.numberofactions_7year
 ,ohistory.obligatedamount_7year
 ,ohistory.PBSCobligated_7year
+,omatch.GDPdeflatorName
 FROM [Office].[ContractingOfficeCodeHistory] AS o
 left outer join Office.[OfficeHistoryCapacity] omatch
  on o.contractingofficecode=omatch.contractingofficecode and
@@ -44,9 +35,9 @@ left outer join Office.[OfficeHistoryCapacity] omatch
 left outer join (
  select interior.ContractingOfficeCode
 	,interior.fiscal_year
-	,sum(ohistory.obligatedamount) as  obligatedamount_7year
+	,sum(ohistory.ObligatedAmountConst) as  obligatedamount_7year
 	, sum(ohistory.numberofactions) as  numberofactions_7year	
-	,sum(PBSCobligated) as PBSCobligated_7year
+	,sum(ohistory.PBSCobligatedConst) as PBSCobligated_7year
 	FROM [Office].[ContractingOfficeCodeHistory] AS interior
 	left outer join Office.[OfficeHistoryCapacity] ohistory
 	on interior.contractingofficecode=ohistory.contractingofficecode and

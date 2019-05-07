@@ -1,16 +1,16 @@
--- =======================================================
--- Create Stored Procedure Template for Azure SQL Database
--- =======================================================
+/****** Object:  StoredProcedure [Office].[sp_OfficeHistoryCapacityLagged]    Script Date: 5/7/2019 7:45:42 AM ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 -- =============================================
 -- Author:      <Author, , Name>
 -- Create Date: <Create Date, , >
 -- Description: <Description, , >
 -- =============================================
-alter PROCEDURE [Office].[sp_OfficeHistoryCapacityLagged]
+ALTER PROCEDURE [Office].[sp_OfficeHistoryCapacityLagged]
 --(
 --    ---- Add the parameters for the stored procedure here
 --    --<@Param1, sysname, @p1> <Datatype_For_Param1, , int> = <Default_Value_For_Param1, , 0>,
@@ -40,6 +40,9 @@ SELECT  [ContractingOfficeCode]
       ,[numberofactions_7year] as office_numberofactions_7year
       ,[obligatedamount_7year] as office_obligatedamount_7year
       ,[PBSCobligated_7year] as office_PBSCobligated_7year
+	  ,GDPdeflatorName
   FROM [Office].[OfficeHistoryCapacityLagged]
 END
 GO
+
+

@@ -1,4 +1,4 @@
-/****** Object:  View [Office].[OfficeHistoryCapacity]    Script Date: 4/1/2019 11:21:38 AM ******/
+/****** Object:  View [Office].[ProdServOfficeHistoryLagged]    Script Date: 5/7/2019 7:35:51 AM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -8,7 +8,9 @@ GO
 
 
 
-alter  VIEW [Office].[ProdServOfficeHistoryLagged]
+
+
+ALTER  VIEW [Office].[ProdServOfficeHistoryLagged]
 AS
 SELECT        
 o.ProductOrServiceCode
@@ -17,13 +19,14 @@ o.ProductOrServiceCode
 ,ohistory.paircount_7year
 ,ohistory.numberofactions_7year
 ,ohistory.obligatedamount_7year
+,o.GDPdeflatorName
 FROM Office.[ProdServOfficeHistory] AS o
 left outer join (
  select interior.ContractingOfficeCode
 	,interior.productorservicecode
 	,interior.fiscal_year
 	,count(interior.fiscal_year) as paircount_7year
-	,sum(ohistory.obligatedamount) as  obligatedamount_7year
+	,sum(ohistory.ObligatedAmountConst) as  obligatedamount_7year
 	, sum(ohistory.numberofactions) as  numberofactions_7year
 	FROM Office.[ProdServOfficeHistory] AS interior
 	left outer join Office.[ProdServOfficeHistory] ohistory

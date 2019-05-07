@@ -60,9 +60,7 @@ EXEC	Office.sp_EntityIDofficeHistoryLagged
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
---EXEC	@return_value = [Vendor].[SP_EntityIDhistory]
 EXEC	Office.sp_ProdServOfficeHistoryLagged
---EXEC	@return_value = Contract.[SP_ContractBudgetDecisionTree]
 		--@Customer = 'Defense'
 
 		
