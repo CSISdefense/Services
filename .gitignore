@@ -16,3 +16,7 @@ data/semi_clean/Office\.OfficeIDhistoryNAICS_fy\.txt
 data/clean/Office\.OfficeIDhistoryNAICS_fy\.txt
 
 data_raw/gsa_sci/FY2017 Service Contract Inventory\.xlsx
+
+data/semi_clean/Office\.sp_EntityIDofficeHistoryLaggedConst\.txt
+
+data/semi_clean/Office\.sp_ProdServOfficeHistoryLaggedConst\.txt
