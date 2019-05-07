@@ -1,4 +1,4 @@
-/****** Object:  View [Vendor].[EntityIDhistory]    Script Date: 4/1/2019 1:16:44 PM ******/
+/****** Object:  View [Office].[EntityIDofficeHistory]    Script Date: 5/7/2019 6:55:05 AM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -6,7 +6,10 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-ALTER  VIEW Office.[EntityIDofficeHistory]
+
+
+
+ALTER  VIEW [Office].[EntityIDofficeHistory]
 AS
 
 
@@ -38,7 +41,7 @@ AS
 		WHEN EID.EntityID is not null
 		THEN 'Name'
 		 END as EntityCategory
-
+		 ,GDPdeflatorName
 	--,CASE
 	--	WHEN Parent.ParentID is not null and isnull(Parent.UnknownCompany,0)=0 
 	--	THEN pidh.EntitySizeCode 
@@ -99,7 +102,7 @@ AS
 	--	else pidh.AnyEntityForeignPlaceOfPerformance
 	--	 end  as AnyEntityForeignPlaceOfPerformance
 
-	,interior.ObligatedAmount
+	,interior.ObligatedAmountConst
 	,interior.NumberOfActions
 	,PARENT.Top100Federal
 	,PARENT.Top6
@@ -124,9 +127,9 @@ AS
 	,max(ParentDtPCH.ChildCount) as ParentDunsChildCount
 	,max(ParentDtPCHimputed.ChildCount) as ParentDunsImputedChildCount
 	,max(DtPCH.ChildCount) as DunsChildCount
-	,sum(c.ObligatedAmount) as ObligatedAmount
+	,sum(c.ObligatedAmount/def.GDPdeflator) as ObligatedAmountConst
 	,sum(c.NumberOfActions) as NumberOfActions
-	
+	,def.GDPdeflatorName
 	from Contract.FPDS as C
 		LEFT OUTER JOIN Contractor.DunsnumbertoParentContractorHistory as DtPCH
 			ON DtPCH.FiscalYear=C.fiscal_year AND DtPCH.DUNSNUMBER=C.DUNSNumber
@@ -154,6 +157,8 @@ AS
 		on u.CSIStransactionID=c.CSIStransactionID
 		left outer join Vendor.VendorName vn
 		on vn.VendorName=u.StandardizedVendorName
+		left outer join Economic.Deflators def
+        on c.fiscal_year=def.Fiscal_Year
 	group by CASE WHEN Parent.ParentID is not null and isnull(Parent.UnknownCompany,0)=0 
 		THEN Parent.EntityID 
 		WHEN c.parentdunsnumber is not null and isnull(ParentSquared.UnknownCompany,0)=0 
@@ -166,6 +171,7 @@ AS
 	 end
 		,c.fiscal_year
 		,c.contractingofficeid
+		,GDPdeflatorName
 	) as interior
 	left outer join vendor.EntityID as EID
 	on EID.EntityID=interior.EntityID

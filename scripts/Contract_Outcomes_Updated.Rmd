@@ -69,7 +69,7 @@ Expectation: Given the fact that one source for higher salaries is the difficult
 summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1")
 
 #Scatter Plot of Opt_01A
-ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_01A <- glm (data=serv_smp,
@@ -114,7 +114,7 @@ Expectation: The invoice rate approximates how much the government is charged an
 summary_continuous_plot(serv_smp,"cl_CFTE")
 
 #Scatter Plot 
-ggplot(serv_opt, aes(x=cl_CFTE, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_CFTE, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_01B <- glm (data=serv_smp,
@@ -209,7 +209,7 @@ Expectation: Performance-based services contracting ties a portion of a contract
 summary_continuous_plot(serv_smp,"pPBSC")
 
 #Scatter Plot 
-ggplot(serv_opt, aes(x=c_pPBSC, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=c_pPBSC, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_02A <- glm (data=serv_smp,
@@ -255,7 +255,7 @@ Expectation: The increasing share of contracting office obligations for a given 
 summary_continuous_plot(serv_smp,"c_pOffPSC")
 
 #Scatter Plot 
-ggplot(serv_opt, aes(x=c_pOffPSC, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=c_pOffPSC, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_02B <- glm (data=serv_smp,
@@ -392,7 +392,7 @@ Expactation: The number of past years of the relationship between the contractin
 summary_discrete_plot(serv_smp,"c_pairHist")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=c_pairHist, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=c_pairHist, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_03A <- glm (data=serv_smp,
@@ -440,7 +440,7 @@ Expectation: As the number of contract actions a vendor has performed for an off
 summary_continuous_plot(serv_smp,"cl_pairCA")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_pairCA, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_pairCA, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_03B <- glm (data=serv_smp,
@@ -605,7 +605,7 @@ In the cumulative model, per dependent variable and independent variable:
 
 ## Office and Vendor-Office Pair
 
-### Vendor Market Share
+### 11A: Vendor Market Share
 Expectation: Contracts of offices partnered with vendors who have larger market shares would be more likely to experience cost ceiling breaches and exercised options, but less likely to have terminations.
 
 ```{r Model11A}
@@ -613,7 +613,7 @@ Expectation: Contracts of offices partnered with vendors who have larger market 
 summary_continuous_plot(serv_smp,"c_pMarket")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=c_pMarket, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=c_pMarket, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_11A <- glm (data=serv_smp,
@@ -649,15 +649,15 @@ summary_residual_compare(CBre_03D,CBre_11A,Term_03D,Term_11A, skip_vif = TRUE)
 When considering vendor market share alone, results of cost ceiling breaches and terminations both met their expectations. Exercised options got contradictory result with the expectation.
 
 
-### Past Office Volume (dollars)
-Expectation: 
+### 11B: Past Office Volume (dollars)
+Expectation: Contracting offices previously had more contract volume in dollars would have more experience managing cost and preventing cost-ceiling breaches, therefore larger past office volume would lower the likelihood of cost-ceiling breaches but no substantial relationships with likelihood of terminations or exercised options.
 
 ```{r Model11B}
 
 summary_continuous_plot(serv_smp,"cl_OffVol")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_OffVol, y=l_OptGrowth)) + geom_point() + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_OffVol, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_11B <- glm (data=serv_smp,
@@ -690,18 +690,48 @@ summary_residual_compare(CBre_03D,CBre_11B,Term_03D,Term_11B, skip_vif = TRUE)
 
 ```
 
-### Detailed Industry Diveristy
+When considering past office volume alone, the relationship was as expected with cost-ceiling breaches. Out of our expectation, the results also showed increasing post office volume would reduce the possibility of exercised options but increase likelihood of having terminations.
 
 
-### Crisis Funding
+### 11C: Crisis Funding
+Expectation: Service Contract replying on crisis funds would have more likelihood of cost-ceiling breaches and exercised options but less terminations.  
+```{r Model11C}
+# summary_continuous_plot(serv_smp,"Crisis")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=Crisis, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Crisis Funding') + theme(plot.title = element_text(hjust = 0.5))
+
+summary_discrete_plot(serv_smp,"Crisis")
+
+#Model
+CBre_11C <- glm (data=serv_smp,
+                 b_CBre ~ Crisis, family=binomial(link="logit"))
+display(CBre_11C)
+
+#Model
+Term_11C <- glm (data=serv_smp,
+                 b_Term ~ Crisis, family=binomial(link="logit"))
+display(Term_11C)
+
+#Model
+Opt_11C <- glm (data=serv_smp,
+                 l_OptGrowth ~ Crisis)
+display(Term_11C)
+
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_11C,Term_11C,Opt_11C, type="text",
+                       digits=2)
+
+```
+
+When considering the Crisis funding alone, no matter which kinds of crisis funding a contract relies on, it would have less likelihood of exercised options, which is contradictory with our expectation. No siginificant difference of terminations whether if a contract is for OCO or Disaster funds, but less termination if it's for ARRA (aligned with our expectation). More cost ceiling for ARRA and Disaster funds (aligned with expectation), but less for OCO.
 
 
+### 11D: Detailed Industry Diveristy
 
 ### Study Variables Summary
 
 ```{r StudyVariableSummary}
-
-
 
 
  # !is.na(def_serv$cl_US6_avg_sal_lag1)&
@@ -1114,7 +1144,6 @@ stargazer::stargazer(CBre_07A,CBre_08A,Term_07C,Term_08A,type="text",
 
 
 summary_residual_compare(CBre_07A,CBre_08A,Term_07C,Term_08A,30)
-
 
 ```
 

@@ -10,3 +10,9 @@ data/semi_clean/Contract\.sp_ContractEntityID\.txt
 data/semi_clean/Office\.sp_ProdServOfficeHistoryLagged\.txt
 
 data/semi_clean/Contract\.sp_ContractExercisedOptions\.txt
+
+data/semi_clean/Office\.OfficeIDhistoryNAICS_fy\.txt
+
+data/clean/Office\.OfficeIDhistoryNAICS_fy\.txt
+
+data/semi_clean/office\.officehistorycapacity\.txt

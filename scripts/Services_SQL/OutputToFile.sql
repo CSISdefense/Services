@@ -30,10 +30,18 @@ EXEC	[Contract].[SP_ContractExercisedOptions]
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
---EXEC	@return_value = [Vendor].[SP_EntityIDhistory]
 EXEC	[Office].[sp_OfficeHistoryCapacityLagged]
---EXEC	@return_value = Contract.[SP_ContractBudgetDecisionTree]
 		--@Customer = 'Defense'
+
+
+		--SELECT	'Return Value' = @return_value
+SET ANSI_WARNINGS OFF;
+SET NOCOUNT ON;
+
+EXEC	[Office].[sp_OfficeHistoryCapacityLagged]
+		--@Customer = 'Defense'
+
+
 
 
 --SELECT	'Return Value' = @return_value

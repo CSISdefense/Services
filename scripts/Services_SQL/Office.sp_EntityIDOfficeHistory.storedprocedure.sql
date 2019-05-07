@@ -1,10 +1,10 @@
--- =======================================================
--- Create Stored Procedure Template for Azure SQL Database
--- =======================================================
+/****** Object:  StoredProcedure [Office].[sp_EntityIDofficeHistoryLagged]    Script Date: 5/7/2019 7:00:59 AM ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 -- =============================================
 -- Author:      <Author, , Name>
 -- Create Date: <Create Date, , >
@@ -37,7 +37,10 @@ SELECT /****** Script for SelectTopNRows command from SSMS  ******/
       ,[office_entity_paircount_7year]
       ,[office_entity_numberofactions_1year]
       ,[office_entity_obligatedamount_7year]
+	  ,GDPdeflatorName
   FROM [Office].[EntityIDofficeHistoryLagged]
 
 END
 GO
+
+
