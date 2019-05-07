@@ -6,7 +6,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-ALTER view [ProductOrServiceCode].[ProdServHistoryCFTEcoalesce]
+ALTER view [ProductOrServiceCode].[ProdServHistoryCFTEcoalesceLaggedConst]
 as 
 /****** Script for SelectTopNRows command from SSMS  ******/
 select PSCFY.fiscal_year
