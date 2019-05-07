@@ -10,7 +10,7 @@ GO
 -- Create Date: <Create Date, , >
 -- Description: <Description, , >
 -- =============================================
-ALTER PROCEDURE [Office].[sp_ProdServOfficeHistoryLagged]
+ALTER PROCEDURE [Office].[sp_ProdServOfficeHistoryLaggedConst]
 --(
 --    ---- Add the parameters for the stored procedure here
 --    --<@Param1, sysname, @p1> <Datatype_For_Param1, , int> = <Default_Value_For_Param1, , 0>,

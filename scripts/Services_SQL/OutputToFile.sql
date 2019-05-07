@@ -10,7 +10,7 @@ SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
 select *
-from ProductOrServiceCode.ProdServHistoryCFTEcoalesce
+from ProductOrServiceCode.ProdServHistoryCFTEcoalesceLaggedConst
 
 DECLARE	@return_value int
 
@@ -30,7 +30,7 @@ EXEC	[Contract].[SP_ContractExercisedOptions]
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
-EXEC	[Office].[sp_OfficeHistoryCapacityLagged]
+EXEC	[Office].[sp_OfficeHistoryCapacityLaggedConst]
 		--@Customer = 'Defense'
 
 
@@ -38,7 +38,7 @@ EXEC	[Office].[sp_OfficeHistoryCapacityLagged]
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
-EXEC	[Office].[sp_EntityIDofficeHistoryLagged]
+EXEC	[Office].[sp_EntityIDofficeHistoryLaggedConst]
 		--@Customer = 'Defense'
 
 
@@ -49,7 +49,7 @@ SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
 --EXEC	@return_value = [Vendor].[SP_EntityIDhistory]
-EXEC	Office.sp_EntityIDofficeHistoryLagged
+EXEC	Office.sp_EntityIDofficeHistoryLaggedConst
 --EXEC	@return_value = Contract.[SP_ContractBudgetDecisionTree]
 		--@Customer = 'Defense'
 
@@ -60,7 +60,7 @@ EXEC	Office.sp_EntityIDofficeHistoryLagged
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
-EXEC	Office.sp_ProdServOfficeHistoryLagged
+EXEC	Office.sp_ProdServOfficeHistoryLaggedConst
 		--@Customer = 'Defense'
 
 		
