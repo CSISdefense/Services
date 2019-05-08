@@ -42,20 +42,6 @@ EXEC	[Office].[sp_EntityIDofficeHistoryLaggedConst]
 		--@Customer = 'Defense'
 
 
-
-
---SELECT	'Return Value' = @return_value
-SET ANSI_WARNINGS OFF;
-SET NOCOUNT ON;
-
---EXEC	@return_value = [Vendor].[SP_EntityIDhistory]
-EXEC	Office.sp_EntityIDofficeHistoryLaggedConst
---EXEC	@return_value = Contract.[SP_ContractBudgetDecisionTree]
-		--@Customer = 'Defense'
-
-		
-
-
 --SELECT	'Return Value' = @return_value
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;

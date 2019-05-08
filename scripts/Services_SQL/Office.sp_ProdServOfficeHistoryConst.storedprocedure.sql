@@ -31,7 +31,7 @@ SET NOCOUNT ON;
 
 /****** Script for SelectTopNRows command from SSMS  ******/
 SELECT /****** Script for SelectTopNRows command from SSMS  ******/
- [ProductOrServiceCode]
+[ProductOrServiceCode]
       ,[ContractingOfficeCode]
       ,[fiscal_year]
       ,[paircount_7year] as office_psc_paircount_7year
