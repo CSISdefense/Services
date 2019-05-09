@@ -39,8 +39,7 @@ note.text.size<-1.40
 
 
 ##Load Data
-First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
-
+First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from FPDS.
 
 ```{r ReadInData, echo = TRUE}
 load(file="..//data//clean//def_sample.Rdata")
@@ -53,7 +52,11 @@ The sample is created by including the entirity of the ARRA and Disaster dataset
 #Study Variables
 
 ##Services Complexity
+Expectation: Higher service complexity would make work more demanding and thus raises the risks of negative contracting outcomes, namely the likelihood of cost ceiling breaches and terminations increases and the likelihood exercised options decraeses.
+
 ### 01A NAICS Salary
+Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS salary increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases) and exercised options decreases (increases).
+
 ```{r Model01A}
 
  # !is.na(def_serv$cl_US6_avg_sal_lag1)&
@@ -64,6 +67,9 @@ The sample is created by including the entirity of the ARRA and Disaster dataset
  #  !is.na(def_serv$cl_pairCA)&
 
 summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1")
+
+#Scatter Plot of Opt_01A
+ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_01A <- glm (data=serv_smp,
@@ -78,18 +84,24 @@ Term_01A <- glm (data=serv_smp,
 Opt_01A <- glm(data=serv_opt,
                         l_OptGrowth ~ cl_US6_avg_sal_lag1)
 
+
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_01A,Term_01A,Opt_01A,type="text",
+stargazer::stargazer(CBre_01A,Term_01A,Opt_01A,type="text",
                        digits=2)
 
 
-# summary_residual_compare(CBre_01A,Term_01A,bins=3)
+summary_residual_compare(CBre_01A,Term_01A,bins=3, skip_vif = TRUE)
 
 
 
 ```
 
+Individually, except for terminations, expectations are matched for ceiing breaches and exercised options, as higher average salaries estimate a higher risk of ceiling breaches and lower possibility of exercised options. 
+
+
 ### 01B Invoice Rate
+Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employees who are supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases), and exercised options decrease (increase).
+
 ```{r Model01B}
 
  # !is.na(def_serv$cl_US6_avg_sal_lag1)&
@@ -100,6 +112,9 @@ Opt_01A <- glm(data=serv_opt,
  #  !is.na(def_serv$cl_pairCA)&
 
 summary_continuous_plot(serv_smp,"cl_CFTE")
+
+#Scatter Plot 
+ggplot(serv_opt, aes(x=cl_CFTE, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_01B <- glm (data=serv_smp,
@@ -114,6 +129,8 @@ Term_01B <- glm (data=serv_smp,
 Opt_01B <- glm(data=serv_opt,
                         l_OptGrowth ~ cl_CFTE)
 
+
+
 #Plot residuals versus fitted
   stargazer::stargazer(CBre_01A,CBre_01B,
                        Term_01A,Term_01B,
@@ -122,15 +139,21 @@ Opt_01B <- glm(data=serv_opt,
                        digits=2)
 
 
-# summary_residual_compare(CBre_01B,Term_01B,bins=3)
-  summary_residual_compare(CBre_01A,CBre_01B,Term_01A,Term_01B,bins=3)
-  # summary_residual_compare(Opt_01A,Opt_01B,bins=3)
+summary_residual_compare(CBre_01B,Term_01B,bins=3, skip_vif = TRUE)
+summary_residual_compare(CBre_01A,CBre_01B,Term_01A,Term_01B,bins=3, skip_vif = TRUE)
 
 
 
 ```
 
+When considered alone, expectations are matched for ceiling breaches and exercised options, as higher invoice rate estimates a higher risk of ceiling breaches and lower possibility of exercised options. No significant relationship between invoice rate and terminations.
+
+
+
 ### 01C Service Complexity
+Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), the higher risk of ceiling breaches and terminations and the less exercised options there would be. Also we expect the result of combined model would be the same as individual models.
+
+ 
 ```{r Model01C}
 
 
@@ -156,32 +179,37 @@ Opt_01C <- glm(data=serv_opt,
 
 glmer_examine(Opt_01C)
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_01A,CBre_01B,CBre_01C,
+stargazer::stargazer(CBre_01A,CBre_01B,CBre_01C,
                        Term_01A,Term_01B,Term_01C,
                        Opt_01A,Opt_01B,Opt_01C,
                        type="text",
                        digits=2)
 
 
-# summary_residual_compare(CBre_01B,Term_01B,bins=3)
+  summary_residual_compare(CBre_01B,Term_01B,bins=3, skip_vif = TRUE)
   summary_residual_compare(CBre_01A,CBre_01C,Term_01A,Term_01C,bins=3)
   summary_residual_compare(CBre_01B,CBre_01C,Term_01B,Term_01C,bins=3)
-  # summary_residual_compare(Opt_01A,Opt_01B,bins=3)
-
 
 
 ```
 
+Both average salary and invoiced rate don't have large vif, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
+
+Both individually and pair-wise, higher average salary and invoiced rate estimate higher possibility of cost ceiling breaches and lower likelihood of exercised options as expected. But the termination expectation is not supported or not significant for two measures of service complexity resepctively.
+
+
 
 ## Office Capacity
 
-Expectation: Competition has the potential to reduce terminations and ceiling breaches by giving the government more options in vendors and encouraging better behavior from the contractor that was chosen. 
 ### 02A: Performance Based Services
-
+Expectation: Performance-based services contracting ties a portion of a contractor's payment, contract extensions, or contract renewals to the achievement of specific, measurable performance standards and requirements, which encourages better contracting results. PBSC has the potential to reduce terminations and ceiling breaches and bring more possibility of exercised options.
 
 ```{r Model02A}
 
 summary_continuous_plot(serv_smp,"pPBSC")
+
+#Scatter Plot 
+ggplot(serv_opt, aes(x=c_pPBSC, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_02A <- glm (data=serv_smp,
@@ -199,7 +227,7 @@ Opt_02A <- glm(data=serv_opt,
 
 display(Opt_02A)
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_01C,CBre_02A,
+stargazer::stargazer(CBre_01C,CBre_02A,
                        Term_01C,Term_02A,
                        Opt_01C,Opt_02A,
                        type="text",
@@ -208,44 +236,13 @@ display(Opt_02A)
 
 
 ```
-The expected sign was found in no case, though the plot for ceiling breach suggests that this is driven by the very top of the scale, for those with PBSC below 80% there's a clear inverse relationship between the variables.
+
+When considering PBSC alone, none of the expected sign was found in ceiling breaches, terminations or exercised options.
 
 
-Expectation: The literature suggests that competition versus non-competition could be even more important in crisis situations. The base competition variable is still expected to be negative.
+### 02B: No.Office PSC History
+Expectation: The increasing share of contracting office obligations for a given service indicates high capcaity in that area, lower likelihood of cost ceiling breaches and termination and higher likelihood of exercised options are expected to be observed.
 
-
-```{r Model02B}
-
-summary_continuous_plot(serv_smp,"c_pPBSC")
-
-#Model
-CBre_02B <- glm (data=serv_smp,
-                 b_CBre ~ c_pPBSC, family=binomial(link="logit"))
-display(CBre_02B)
-
-#Model
-Term_02B <- glm (data=serv_smp,
-                 b_Term ~ c_pPBSC, family=binomial(link="logit"))
-
-display(Term_02B)
-
-Opt_02B <- glm(data=serv_opt,
-                        l_OptGrowth ~ c_pPBSC)
-
-display(Opt_02B)
-#Plot residuals versus fitted
-  stargazer::stargazer(CBre_01C,CBre_02B,
-                       Term_01C,Term_02B,
-                       Opt_01C,Opt_02B,
-                       type="text",
-                       digits=2)
-
-
-
-```
-
-
-### 02B: No Office PSC History
 ```{r Model02B}
 
  # !is.na(def_serv$cl_US6_avg_sal_lag1)&
@@ -256,6 +253,9 @@ display(Opt_02B)
  #  !is.na(def_serv$cl_pairCA)&
 
 summary_continuous_plot(serv_smp,"c_pOffPSC")
+
+#Scatter Plot 
+ggplot(serv_opt, aes(x=c_pOffPSC, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_02B <- glm (data=serv_smp,
@@ -273,7 +273,7 @@ Opt_02B <- glm(data=serv_opt,
 
 display(Opt_02B)
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_01C,CBre_02A,CBre_02B,
+stargazer::stargazer(CBre_01C,CBre_02A,CBre_02B,
                        Term_01C,Term_02A,Term_02B,
                        Opt_01C,Opt_02A,Opt_02B,
                        type="text",
@@ -281,17 +281,15 @@ display(Opt_02B)
 
 
 
-summary_residual_compare(CBre_02A,CBre_02B,Term_02A,Term_02B,bins=3)
+summary_residual_compare(CBre_02A,CBre_02B,Term_02A,Term_02B,bins=3, skip_vif = TRUE)
+
 ```
 
-Expectations were only fulfilled for options growth. Results went significantly in the other direction for ceiling
+When considering number of contracting office obligations for a given service alone, expectation was only fulfilled for options growth.
 
-The Variance Inflation Factor exceeds 2 for the interaction term with the addition of the interaction term.
 
 ### 02C: Office Capacity
-The next step is to look at a more detailed model, where single offer competition is broken out as a middle option between competition and no competion.
-
-Expectation: Competition has the potential to reduce terminations and ceiling breaches by giving the government more options in vendors and encouraging better behavior from the contractor that was chosen. More offers could in theory mean greater benefit, although this was not directly mentioned by the literature.
+Expectation: Collaberactively, the larger share of PBSC and contracting office obligations for a given service, the less risk of ceiling breaches and terminations and the more exercised options there would be. Also we expect the results of combined model would be the same as two individual models above. 
 
 ```{r Model02C}
 
@@ -312,7 +310,7 @@ Opt_02C <- glm(data=serv_opt,
 
 glmer_examine(Opt_02C)
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_01C,CBre_02A,CBre_02B,CBre_02C,
+stargazer::stargazer(CBre_01C,CBre_02A,CBre_02B,CBre_02C,
                        Term_01C,Term_02A,Term_02B,Term_02C,
                        Opt_01C,Opt_02A,Opt_02B,Opt_02C,
                        type="text",
@@ -325,9 +323,15 @@ summary_residual_compare(CBre_02B,CBre_02C,Term_02B,Term_02C,bins=3)
 
 
 ```
-The results flip the sign for Performance based for ceiling breaches and terminations, though only significantly so for breaches. OptGrowth merely intensifies.
+
+No high correlation is observed between PBSC and Contract Office Obligations for PSC based on the vif score.
+
+After combining PBSC and Contract office obligations for PSC, PBSC had a flipped relationship with ceiling breaches that matches with expectation (A look at summary statistics for Performance-Based experience did find that as the percent of performance-based service went from 0 percent to 75 percent, the ceiling breach rate declined. Above 75 percent, it rose dramatically, suggesting an additional variable may influence that relationship.) but lost significance with terminations. Contract office obligations for PSC is associate with more exercised options. The rest of results remained unmatching with expectations.
+
 
 ### 02D: Cumulative  Model
+Expectation: When all the four variables are combined into one model, same expectations are applied as individual ones. Per service complexity indicator increases, higher risk of ceiling breaches and terminations and less exercised options expected. Per office capacity indicator increases, lower risk of ceiling breaches and terminations and more exercised options expected.
+
 ```{r Model02D}
 
 
@@ -347,7 +351,7 @@ Opt_02D <- glm(data=serv_opt,
 
 glmer_examine(Opt_02D)
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_01C,CBre_02C,CBre_02D,
+stargazer::stargazer(CBre_01C,CBre_02C,CBre_02D,
                        Term_01C,Term_02C,Term_02D,
                        Opt_01C,Opt_02C,Opt_02D,
                        type="text",
@@ -361,15 +365,20 @@ summary_residual_compare(CBre_01C,CBre_02D,Term_01C,Term_02D)
 
 ```
 
+No high correlation is observed among all of the 4 predictors (average salary, invoiced rate, PBSC and Contract Office Obligations for PSC) so far based on the vif score. When all measures for sevice complexity and office capacity are combined, per dependent variable:
+
+1. Ceiling Breaches: The direction of relationship with average salary flips but all others remain the same. Only average salary and PBSC match with expectations.
+
+2. Terminations: Neither invoice rate nor PBSC is significantly related to terminations. None of the variables matches with expectations when considered together.
+
+3. Exercised Options: Except for PBSC, all other three variables are associated with exercised options as expected.
+
+
 
 ## Office-Vendor Relationship
 
 ### 03A: Pair History
-Undefinitized Contract Awards allow for quick action in situations where there is not time or information to establish all of a contracts properties at the time of signing. They have been found by the GAO and the Performance of the Defense Acquisition studies to contain notable risks, primarily    relating to cost overruns. 
-
-Expectation: UCA will estimate a higher probability of termination and ceiling breaches.
-
-
+Expactation: The number of past years of the relationship between the contracting office or the contractors with a single transaction in a given fiscal year enough to qualify, namely, pair history increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and the exercised options increase (decrease) for that partnership.
 
 ```{r Model03A}
 
@@ -381,6 +390,9 @@ Expectation: UCA will estimate a higher probability of termination and ceiling b
  #  !is.na(def_serv$cl_pairCA)&
 
 summary_discrete_plot(serv_smp,"c_pairHist")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=c_pairHist, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_03A <- glm (data=serv_smp,
@@ -406,15 +418,15 @@ display(Opt_03A)
 
 
 
-summary_residual_compare(CBre_02D,CBre_03A,Term_02D,Term_03A)
+summary_residual_compare(CBre_02D,CBre_03A,Term_02D,Term_03A, skip_vif = TRUE)
 
 ```
-Expectations are upheld for ceiling breaches but not for terminations.
+
+When considering pair history alone, expectations were met for ceiling breaches and terminations, but not for exercised options. 
+
 
 ### 03B: Interaction
-
-Expectation: Unclear. The risks of UCA are well established.They are more commonly used for crisis funding, however, unlike competition there was not specific evidence found in the literature review that crises exacerbate their risk.
-
+Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and that of exercised options increases (decreases) for that partnership.
 
 ```{r Model03B}
 
@@ -426,6 +438,9 @@ Expectation: Unclear. The risks of UCA are well established.They are more common
  #  !is.na(def_serv$cl_pairCA)&
 
 summary_continuous_plot(serv_smp,"cl_pairCA")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_pairCA, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_03B <- glm (data=serv_smp,
@@ -443,7 +458,7 @@ Opt_03B <- glm(data=serv_opt,
 
 display(Opt_03B)
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_02D,CBre_03A,CBre_03B,
+stargazer::stargazer(CBre_02D,CBre_03A,CBre_03B,
                        Term_02D,Term_03A,Term_03B,
                        Opt_02D,Opt_03A,Opt_03B,
                        type="text",
@@ -451,21 +466,16 @@ display(Opt_03B)
 
 
 
-summary_residual_compare(CBre_03A,CBre_03B,Term_03A,Term_03B)
-summary_residual_compare(CBre_02D,CBre_03B,Term_02D,Term_03B)
+summary_residual_compare(CBre_03A,CBre_03B,Term_03A,Term_03B, skip_vif = TRUE)
+summary_residual_compare(CBre_02D,CBre_03B,Term_02D,Term_03B, skip_vif = TRUE)
 
 ```
-Expectations were not supported.
 
-In exploratory graphs, the interaction of UCA and appear to be largely absent for breaches and while present for terminations, given that competition for terminations has a small coefficient and is not significant, it's probably not time to add an interaction. Instead this step adds an interaction between UCAs and crisis funds. The result is striking, in aknist all cases, UCAs for crisis funds have lower correlation with negative outcomes than those in the general contract population. In many cases, the coefficient is sufficient to cancel out much of the estimate for UCA directly, although for OCO ceiling breaches the coefficient is only reduced by roughly a half.
-
-For terminations, nothing reaches 0.05 p-value significance and contrary to expectation that OCO funded UCAs would estimate a lower risk of terminations. It also reduces the AIC. Leaving it in for now, but considering taking it out later.
-
+When considering contract actions alone, expectation was met for exercised options, but not for ceiling breaches and terminations.
 
 ### 03C: Office-Vendor Relationship
-
-Expectation: Unclear. The risks of UCA are well established.They are more commonly used for crisis funding, however, unlike competition there was not specific evidence found in the literature review that crises exacerbate their risk.
-
+Expectation: 
+The importance of partnership, trust, and handling difficult problems and uncertainty together naturally lead into the last characteristic: the relationship between the contractor and buyer. The higher level of interaction provides the more opportunity to build a deeper relationship, the likelihood of cost ceiling breaches and terminations decreases and the exercised options increase for that partnership. Also we expect the result of combined model would be the same as individual models above.
 
 ```{r Model03C}
 
@@ -507,6 +517,9 @@ summary_residual_compare(CBre_02D,CBre_03C,Term_02D,Term_03C)
 
 ```
 
+When combining pair history and contract actions, magnitude of relationships with dependent variables incraesed, but the agreement with expectations splited in the same way as individually.  
+
+
 ### 03D: Cumulative  Model
 
 ```{r Model03D}
@@ -535,7 +548,7 @@ glmer_examine(Opt_03D)
 
 #Plot residuals versus fitted   
 
-  stargazer::stargazer(CBre_02D,CBre_03C,CBre_03D,
+stargazer::stargazer(CBre_02D,CBre_03C,CBre_03D,
                        Term_02D,Term_03C,Term_03D,
                        Opt_02D,Opt_03C,Opt_03D,
                        type="text",
@@ -547,11 +560,178 @@ summary_residual_compare(CBre_02D,CBre_03D,Term_02D,Term_03D)
 
 ```
 
+None of the predictors has high level of correlation (vif over 1.7) with each other. 
+In the cumulative model, per dependent variable and independent variable:
+
+1. Ceiling breaches:
+   A. Service Complexity:
+      The relationship with average salary lost significance.
+      The result for invoice rate did not match with expectation.
+      
+   B. Office Capacity: 
+      The relationship with PBSC matched with expectation but with less magnitude.
+      The result for office obligations did not match with expectation.
+     
+   C. Office-Vendor Relationship:
+      The result for pair history matched with expectation 
+      The relationship with contract actions lost significance.
+
+2. Terminations:
+   A. Service Complexity:
+      The reult for average salary did not match with expectation.
+      The result for invoice rate did matach with expectation but only significant (for p-value <0.1)
+      
+   B. Office Capacity: 
+      The relationship with PBSC lost significance.
+      The result for office obligations did not match with expectation.
+     
+   C. Office-Vendor Relationship:
+      The result for pair history matched with expectation once all variables included.
+      The result for contract actions did not match with expectation.
+
+3. Exercised Options:
+  A. Service Complexity:
+      The reult for average salary matched with expectation all the time.
+      The result for invoice rate matached with expectation all the time.
+      
+   B. Office Capacity: 
+      The result for PBSC did not match with expectation.
+      The result for office obligations matched with expectation.
+     
+   C. Office-Vendor Relationship:
+      The result for pair history did not match with expectation.
+      The result for contract actions matched with expectation.
+
+
+## Office and Vendor-Office Pair
+
+### 11A: Vendor Market Share
+Expectation: Contracts of offices partnered with vendors who have larger market shares would be more likely to experience cost ceiling breaches and exercised options, but less likely to have terminations.
+
+```{r Model11A}
+
+summary_continuous_plot(serv_smp,"c_pMarket")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=c_pMarket, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_11A <- glm (data=serv_smp,
+                 b_CBre ~ c_pMarket, family=binomial(link="logit"))
+display(CBre_11A)
+
+#Model
+Term_11A <- glm (data=serv_smp,
+                 b_Term ~ c_pMarket, family=binomial(link="logit"))
+
+display(Term_11A)
+
+Opt_11A <- glm(data=serv_opt,
+                        l_OptGrowth ~ c_pMarket)
+
+display(Opt_11A)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_02D,CBre_03D,CBre_11A,
+                       Term_02D,Term_03D,Term_11A,
+                       Opt_02D,Opt_03D,Opt_11A,
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(CBre_03D,CBre_11A,Term_03D,Term_11A, skip_vif = TRUE)
+
+
+
+```
+
+When considering vendor market share alone, results of cost ceiling breaches and terminations both met their expectations. Exercised options got contradictory result with the expectation.
+
+
+### 11B: Past Office Volume (dollars)
+Expectation: Contracting offices previously had more contract volume in dollars would have more experience managing cost and preventing cost-ceiling breaches, therefore larger past office volume would lower the likelihood of cost-ceiling breaches but no substantial relationships with likelihood of terminations or exercised options.
+
+```{r Model11B}
+
+summary_continuous_plot(serv_smp,"cl_OffVol")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_OffVol, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_11B <- glm (data=serv_smp,
+                 b_CBre ~ cl_OffVol, family=binomial(link="logit"))
+display(CBre_11B)
+
+#Model
+Term_11B <- glm (data=serv_smp,
+                 b_Term ~ cl_OffVol, family=binomial(link="logit"))
+
+display(Term_11B)
+
+Opt_11B <- glm(data=serv_opt,
+                        l_OptGrowth ~ cl_OffVol)
+
+display(Opt_11B)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_02D,CBre_03D,CBre_11A,CBre_11B,
+                       Term_02D,Term_03D,Term_11A,Term_11B,
+                       Opt_02D,Opt_03D,Opt_11A,Opt_11B,
+                       type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_11A,CBre_11B,Term_11A,Term_11B, skip_vif = TRUE)
+summary_residual_compare(CBre_03D,CBre_11B,Term_03D,Term_11B, skip_vif = TRUE)
+
+
+
+```
+
+When considering past office volume alone, the relationship was as expected with cost-ceiling breaches. Out of our expectation, the results also showed increasing post office volume would reduce the possibility of exercised options but increase likelihood of having terminations.
+
+
+### 11C: Crisis Funding
+Expectation: Service Contract replying on crisis funds would have more likelihood of cost-ceiling breaches and exercised options but less terminations.  
+```{r Model11C}
+# summary_continuous_plot(serv_smp,"Crisis")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=Crisis, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Crisis Funding') + theme(plot.title = element_text(hjust = 0.5))
+
+summary_discrete_plot(serv_smp,"Crisis")
+
+#Model
+CBre_11C <- glm (data=serv_smp,
+                 b_CBre ~ Crisis, family=binomial(link="logit"))
+display(CBre_11C)
+
+#Model
+Term_11C <- glm (data=serv_smp,
+                 b_Term ~ Crisis, family=binomial(link="logit"))
+display(Term_11C)
+
+#Model
+Opt_11C <- glm (data=serv_smp,
+                 l_OptGrowth ~ Crisis)
+display(Term_11C)
+
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_11C,Term_11C,Opt_11C, type="text",
+                       digits=2)
+
+```
+
+When considering the Crisis funding alone, no matter which kinds of crisis funding a contract relies on, it would have less likelihood of exercised options, which is contradictory with our expectation. No siginificant difference of terminations whether if a contract is for OCO or Disaster funds, but less termination if it's for ARRA (aligned with our expectation). More cost ceiling for ARRA and Disaster funds (aligned with expectation), but less for OCO.
+
+
+### 11D: Detailed Industry Diveristy
+
 ### Study Variables Summary
 
 ```{r StudyVariableSummary}
-
-
 
 
  # !is.na(def_serv$cl_US6_avg_sal_lag1)&
@@ -965,7 +1145,6 @@ stargazer::stargazer(CBre_07A,CBre_08A,Term_07C,Term_08A,type="text",
 
 summary_residual_compare(CBre_07A,CBre_08A,Term_07C,Term_08A,30)
 
-
 ```
 
 
@@ -1218,10 +1397,4 @@ summary_residual_compare(CBre_NCS6G,CBre_10G3,bins=10)
 The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
 
 
-## Office and Vendor-Office Pair
-### Office Volume
 
-### Office Count
-
-
-### Market Share
