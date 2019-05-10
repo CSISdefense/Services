@@ -78,6 +78,11 @@ rm(def)
     #   def$UnmodifiedEntityID[is.na(def$EntityID)]
 
 
+discrete_percent_plot(def_serv,"Cbre")
+discrete_percent_plot(def_serv,"Term",group_col)
+
+
+
 load("..\\data\\semi_clean\\fed_transformed.rdata")
 fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,PlaceCountryISO3,Crisis)
 def_serv<-left_join(def_serv,fed)
@@ -94,6 +99,22 @@ debug(deflate)
 def_serv<-transform_contract(def_serv)
 # 
 # 
+
+
+    def_serv<-read_and_join( def_serv,
+                             "ProductOrServiceCodes.csv",
+                             path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                             directory="",
+                             by="ProductOrServiceCode",
+                             add_var=c("Simple",
+                                       "ProductServiceOrRnDarea",
+                                       "ProductOrServiceArea",
+                                       "HostNation3Category",
+                                       "CrisisProductOrServiceArea",
+                                       "ProductOrServiceCodeText",
+                                       
+                             ),
+                             new_var_checked=FALSE)
 
 
 # summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue)
