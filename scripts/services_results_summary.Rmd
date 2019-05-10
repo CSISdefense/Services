@@ -112,9 +112,11 @@ def_serv<-transform_contract(def_serv)
                                        "HostNation3Category",
                                        "CrisisProductOrServiceArea",
                                        "ProductOrServiceCodeText",
+                                       "Level1_Category"
                                        
                              ),
                              new_var_checked=FALSE)
+  summary_discrete_plot(def_serv,"Level1_Category")
 
 
 # summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue)

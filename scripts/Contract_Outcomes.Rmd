@@ -2096,7 +2096,7 @@ coef.list<-list("(Intercept)"="(Intercept)",
 
 
 
-texreg::htmlreg(list(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D),file="..//Output//CBre_model_lvl1.html",
+texreg::htmlreg(list(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,CBre_12C),file="..//Output//CBre_model_lvl1.html",
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
