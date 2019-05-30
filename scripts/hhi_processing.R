@@ -9,7 +9,7 @@ library(csis360)
 library(dplyr)
 library(readr)
 
-contracting_office_naics = read.table("..//data//clean//Office.OfficeIDhistoryNAICS_fy.txt", header = TRUE, 
+contracting_office_naics = read.table("data//clean//Office.OfficeIDhistoryNAICS_fy.txt", header = TRUE, 
                                       na.strings = c("","NA","NULL"),
                                       quote = "\"",
                                       sep = "\t")
@@ -19,7 +19,11 @@ names(contracting_office_naics) <- c("Fiscal_year","principalNAICScode",
                                      "numberOfContracts",
                                      "obligatedAmount","numberOfActions")
 
-contracting_office_naics<-contracting_office_naics %>% group_by(Fiscal_year)
+contracting_office_naics<-contracting_office_naics %>% group_by(Fiscal_year,ContractingOfficeCode)
+
+contracting_office_naics<-contracting_office_naics %>%
+  filter(Fiscal_year > 2000) 
+  
 
 #Rank and calculated HHI by obligation amount
 contracting_office_naics_ob<-contracting_office_naics %>%
@@ -27,20 +31,22 @@ contracting_office_naics_ob<-contracting_office_naics %>%
   dplyr::mutate(
     pos = rank(-obligatedAmount,
                ties.method ="min"),
-    pct = ifelse(obligatedAmount>0,
+    pctObl = ifelse(obligatedAmount>0,
                  obligatedAmount / sum(obligatedAmount[obligatedAmount>0]),
                  NA
-    )
+    ),
+    pctK = numberOfContracts / sum(numberOfContracts)
   )
 
 fy_summary_ob<-contracting_office_naics_ob %>%
   dplyr::summarize(
     obligatedAmount = sum(obligatedAmount),
-    office_count=length(Fiscal_year),
-    hh_index=sum((pct*100)^2,na.rm=TRUE)
+    numberOfContracts=sum(numberOfContracts),
+    hh_index_obl=sum((pctObl*100)^2,na.rm=TRUE),
+    hh_index_k=sum((pctK*100)^2,na.rm=TRUE)
   )
 
-fy_summary_ob.write_csv("")
+write.csv(fy_summary_ob,file="data\\clean\\office_naics_hhi.csv")
 
 # Rank and calculated HHI by contract number
 
@@ -58,6 +64,6 @@ contracting_office_naics_nc<-contracting_office_naics %>%
 fy_summary_nc<-contracting_office_naics_nc %>%
   dplyr::summarize(
     numberOfContracts = sum(numberOfContracts),
-    office_count=length(Fiscal_year),
+    numberOfContracts=sum(numberOfContracts),
     hh_index=sum((pct*100)^2,na.rm=TRUE)
   )
