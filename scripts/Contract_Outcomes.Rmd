@@ -208,7 +208,7 @@ stargazer::stargazer(CBre_01A,CBre_01B,CBre_01C,
   summary_residual_compare(CBre_01B,CBre_01C,Term_01B,Term_01C)
 
 
-rm(CBre_01A,CBre_01B, Term_01A, Term_01B, Opt_01A, Opt_01B)
+
 ```
 
 Both average salary and invoiced rate have a not inconsiderable VIF but one well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
@@ -380,7 +380,6 @@ stargazer::stargazer(CBre_01C,CBre_02C,CBre_02D,
 summary_residual_compare(CBre_02C,CBre_02D,Term_02C,Term_02D)
 summary_residual_compare(CBre_01C,CBre_02D,Term_01C,Term_02D)
 
-rm(CBre_01C,CBre_02A, CBre_02B, CBre_02C, Term_01C, Term_02A,Term_02B,Term_02C, Opt_01C, Opt_02A, Opt_02B, Opt_02C)
 ```
 
 No high correlation is observed among all of the 4 predictors (average salary, invoiced rate, PBSC and Contract Office Obligations for PSC) so far based on the vif score. When all measures for sevice complexity and office capacity are combined, per dependent variable:
@@ -581,7 +580,6 @@ stargazer::stargazer(CBre_02D,CBre_03C,CBre_03D,
 summary_residual_compare(CBre_03C,CBre_03D,Term_03C,Term_03D)
 summary_residual_compare(CBre_02D,CBre_03D,Term_02D,Term_03D)
 
-rm(CBre_02D, CBre_03A, CBre_03B, CBre_03C, Term_02D, Term_03A, Term_03B, Term_03C, Opt_02D, Opt_03A, Opt_03B, Opt_03C)
 ```
 
 None of the predictors has high level of correlation (vif over 1.7) with each other. 
@@ -949,7 +947,6 @@ stargazer::stargazer(CBre_03D,CBre_04C,CBre_04D,
 #summary_residual_compare(CBre_03D,CBre_04D,Term_03D,Term_04D)
 #summary_residual_compare(CBre_04C,CBre_04D,Term_04C,Term_04D)
 
-rm(CBre_03D, CBre_04A, CBre_04B, CBre_04C, Term_03D, Term_04A, Term_04B, Term_04C, Opt_03D, Opt_04A, Opt_04B, Opt_04C)
 
 ```
 Salary no longer matches expectations for ceiling breaches. Invoice rate is no longer significant for terminations. 
@@ -1043,7 +1040,6 @@ stargazer::stargazer(CBre_04D,CBre_05A,CBre_05B,
 
 #summary_residual_compare(CBre_04D,CBre_05B,Term_04D,Term_05B)
 
- rm(CBre_04D, CBre_05A, Term_04D, Term_05A, Opt_04D, Opt_05A)
 ```
 Minimal effect on study variables. 2-4 offers for terminations is not  longer significant, it's really 5+ that boosts the risks. But for exercised options, 5+ leads to more options while fewer having negative relationship with 2-4 offers, but only significant with p-value < 0.1 
 
@@ -1147,7 +1143,6 @@ stargazer::stargazer(CBre_05B,CBre_06A,CBre_06B,
 
 #summary_residual_compare(CBre_05B,CBre_06B,Term_05B,Term_06B)
 
-rm(CBre_05B, CBre_06A, Term_05B, Term_06A, Opt_05B, Opt_06A)
 ```
 Expectations for vehicle are now upheld for both ceiling breaches and terminations. For other variables the addition of vehicle proved less pivotal, though coefficients were often decreased.
 
@@ -1260,7 +1255,6 @@ stargazer::stargazer(CBre_06B,CBre_07A,CBre_07B,
 #summary_residual_compare(CBre_06B,CBre_07B,Term_06B,Term_07B)
 #summary_residual_compare(CBre_07A,CBre_07B,Term_07A,Term_07B,bins=3)
 
-rm(CBre_06B, CBre_07A, Term_06B, Term_07A, Opt_06B, Opt_07A)
 ```
 
 Incentive contracts are no longer significantly associated with a greater risk of ceiling breaches, though they have also lost significance in options. Suprirsingly, UCA and Combination or Other have both become significant in for lower risk of ceiling breaches.
@@ -1359,7 +1353,6 @@ stargazer::stargazer(CBre_07B,CBre_08A,CBre_08B,
 
 #summary_residual_compare(CBre_07B,CBre_08B,Term_07B,Term_08B)
 
-rm(CBre_07B, CBre_08A,Term_07B, Term_08A, Opt_07B, Opt_08A)
 ```
 
 Terminatins for OCO and ARRA are now significant in the expected direction.
@@ -1406,7 +1399,7 @@ stargazer::stargazer(CBre_08B,CBre_09A,
                        digits=2)
 
 
-summary_residual_compare(CBre_08B,CBre_09A,Term_08B,Term_09A)
+summary_residual_compare(CBre_08B,CBre_09A,Term_08B,Term_09A, skip_vif = TRUE)
 
 ```
 
@@ -1419,9 +1412,9 @@ Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 
 ```{r Model09B}
 #Frequency Plot for unlogged ceiling
-      summary_continuous_plot(def_serv,"def6_ratio_lag1")
+      summary_continuous_plot(serv_smp,"def6_ratio_lag1")
 
-      summary_continuous_plot(def_serv,"cl_def6_ratio_lag1")
+      summary_continuous_plot(serv_smp,"cl_def6_ratio_lag1")
       
 
 
@@ -1452,8 +1445,8 @@ stargazer::stargazer(CBre_08B,CBre_09A,CBre_09B,
                        digits=2)
 
 
-summary_residual_compare(CBre_08B,CBre_09B,Term_08A,Term_09A)
-summary_residual_compare(CBre_09A,CBre_09B,Term_09A,Term_09B)
+#summary_residual_compare(CBre_08B,CBre_09B,Term_08A,Term_09A)
+#summary_residual_compare(CBre_09A,CBre_09B,Term_09A,Term_09B)
 
 
 
@@ -1465,9 +1458,9 @@ Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 
 ```{r Model09C}
 #Frequency Plot for unlogged ceiling
-      summary_continuous_plot(def_serv,"def6_obl_lag1Const")
+      summary_continuous_plot(serv_smp,"def6_obl_lag1Const")
 
-      summary_continuous_plot(def_serv,"cl_def6_obl_lag1Const")
+      summary_continuous_plot(serv_smp,"cl_def6_obl_lag1Const")
       
 
 
@@ -1498,9 +1491,9 @@ stargazer::stargazer(CBre_09A,CBre_09B,CBre_09C,
                        digits=2)
 
 
-summary_residual_compare(CBre_08B,CBre_09C,Term_08A,Term_09C)
-summary_residual_compare(CBre_09A,CBre_09C,Term_09A,Term_09C)
-summary_residual_compare(CBre_09B,CBre_09C,Term_09B,Term_09C)
+#summary_residual_compare(CBre_08B,CBre_09C,Term_08A,Term_09C)
+#summary_residual_compare(CBre_09A,CBre_09C,Term_09A,Term_09C)
+#summary_residual_compare(CBre_09B,CBre_09C,Term_09B,Term_09C)
 
 
 
@@ -1580,7 +1573,7 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 #Model
 CBre_09E <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1 + 
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -1593,7 +1586,7 @@ glmer_examine(CBre_09E)
 
 #Model
 Term_09E <- glm (data=serv_smp,
-                 b_Term ~ cl_US6_avg_sal_lag1 + 
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
                    cl_Ceil + capped_cl_Days+
@@ -1606,7 +1599,7 @@ Term_09E <- glm (data=serv_smp,
 glmer_examine(Term_09E)
 
 Opt_09E <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1 + 
+                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1625,8 +1618,8 @@ stargazer::stargazer(CBre_08B,CBre_09D2,CBre_09E,
                        type="text",
                        digits=2)
 
-summary_residual_compare(CBre_09D2,CBre_09E,Term_09D2,Term_09E)
-summary_residual_compare(CBre_08B,CBre_09E,Term_08B,Term_09E)
+#summary_residual_compare(CBre_09D2,CBre_09E,Term_09D2,Term_09E)
+#summary_residual_compare(CBre_08B,CBre_09E,Term_08B,Term_09E)
 ```
 
 Expectations are not upheld.
@@ -1667,7 +1660,7 @@ stargazer::stargazer(CBre_09A,CBre_10A,
                        type="text",
                        digits=2)
 
-summary_residual_compare(CBre_09A,CBre_10A,Term_09A,Term_10A)
+summary_residual_compare(CBre_09A,CBre_10A,Term_09A,Term_10A, skip_vif =  TRUE)
 
 
 
@@ -1713,7 +1706,7 @@ stargazer::stargazer(CBre_09B,CBre_10A,CBre_10B,
                        type="text",
                        digits=2)
 
-summary_residual_compare(CBre_09B,CBre_10B,Term_09B,Term_10B)
+summary_residual_compare(CBre_09B,CBre_10B,Term_09B,Term_10B, skip_vif = TRUE)
 ```
 
 Expectations were in lined with ceiling breaches and options, not with termination, and 
@@ -1769,7 +1762,7 @@ ratio expectations for ceiling breach and options but not terminations.
 
 #Model
 CBre_10D <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1 + 
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -1783,7 +1776,7 @@ glmer_examine(CBre_10D)
 
 #Model
 Term_10D <- glm (data=serv_smp,
-                 b_Term ~ cl_US6_avg_sal_lag1 + 
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
                    cl_Ceil + capped_cl_Days+
@@ -1797,7 +1790,7 @@ Term_10D <- glm (data=serv_smp,
 glmer_examine(Term_10D)
 
 Opt_10D <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1 + 
+                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1859,7 +1852,7 @@ stargazer::stargazer(CBre_11A,
                        type="text",
                        digits=2)
 
-summary_residual_compare(CBre_11A,Term_11A)
+summary_residual_compare(CBre_11A,Term_11A, skip_vif =  TRUE)
 
 
 ```
@@ -1875,7 +1868,7 @@ Aligns with expectations on terminatio, but not for ceiling  breach or for optio
 
 #Model
 CBre_11B <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1 + 
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -1890,7 +1883,7 @@ glmer_examine(CBre_11B)
 
 #Model
 Term_11B <- glm (data=serv_smp,
-                 b_Term ~ cl_US6_avg_sal_lag1 + 
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
                    cl_Ceil + capped_cl_Days+
@@ -1905,7 +1898,7 @@ Term_11B <- glm (data=serv_smp,
 glmer_examine(Term_11B)
 
 Opt_11B <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1 + 
+                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1926,8 +1919,8 @@ stargazer::stargazer(CBre_10D,CBre_11A,CBre_11B,
                        type="text",
                        digits=2)
 
-summary_residual_compare(CBre_10D,CBre_11B,Term_10D,Term_11B)
-summary_residual_compare(CBre_11A,CBre_11B,Term_11S,Term_11B)
+#summary_residual_compare(CBre_10D,CBre_11B,Term_10D,Term_11B)
+#summary_residual_compare(CBre_11A,CBre_11B,Term_11S,Term_11B)
 ```
 Note that the VIF is getting high on pair_CA.
 
@@ -2033,7 +2026,7 @@ When using hhi calculated based on contracting office number of contarcts: consi
 
 #Model
 CBre_12C <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1 + 
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -2044,12 +2037,12 @@ CBre_12C <- glm (data=serv_smp,
                    cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                    cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                    c_pMarket+
-                   cl_OffVol+cl_hh_index_obl , family=binomial(link="logit"))
+                   cl_OffVol+cl_hh_index_k , family=binomial(link="logit"))
 glmer_examine(CBre_12C)
 
 #Model
 Term_12C <- glm (data=serv_smp,
-                 b_Term ~ cl_US6_avg_sal_lag1 + 
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
                    cl_Ceil + capped_cl_Days+
@@ -2060,12 +2053,12 @@ Term_12C <- glm (data=serv_smp,
                    cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                    cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                    c_pMarket+
-                   cl_OffVol+cl_hh_index_obl, family=binomial(link="logit"))
+                   cl_OffVol+cl_hh_index_k, family=binomial(link="logit"))
 
 glmer_examine(Term_12C)
 
 Opt_12C <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1 + 
+                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -2076,7 +2069,7 @@ Opt_12C <- glm(data=serv_opt,
                  cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                  cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                  c_pMarket+
-                   cl_OffVol+cl_hh_index_obl)
+                   cl_OffVol+cl_hh_index_k)
 
 glmer_examine(Opt_12C)
 
