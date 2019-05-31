@@ -9,7 +9,7 @@ library(csis360)
 library(dplyr)
 library(readr)
 
-contracting_office_naics = read.table("data//clean//Office.OfficeIDhistoryNAICS_fy.txt", header = TRUE, 
+contracting_office_naics = read.table("data//semi_clean//Office.OfficeIDhistoryNAICS_fy.txt", header = TRUE, 
                                       na.strings = c("","NA","NULL"),
                                       quote = "\"",
                                       sep = "\t")
