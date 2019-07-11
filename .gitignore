@@ -26,3 +26,15 @@ scripts/Contract\.SP_ContractSampleCriteriaDetailsCustomer\.txt
 data/semi_clean/Contract\.SP_ContractCloseOutExamination\.txt
 
 data/semi_clean/Contract\.SP_ContractSampleCriteriaDetailsCustomer\.txt
+
+data/semi_clean/Contract\.sp_ContractEntityID\.rda
+
+data/semi_clean/Contract\.sp_ContractExercisedOptions\.rda
+
+data/semi_clean/end_research\.rda
+
+data/semi_clean/Office\.sp_ProdServOfficeHistoryLaggedConst\.rda
+
+data/semi_clean/Office\.sp_OfficeHistoryCapacityLaggedConst\.rda
+
+data/semi_clean/Office\.sp_EntityIDofficeHistoryLaggedConst\.rda
