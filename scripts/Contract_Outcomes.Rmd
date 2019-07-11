@@ -86,7 +86,7 @@ Expectation: Given the fact that one source for higher salaries is the difficult
 summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1Const")
 
 #Scatter Plot of Opt_01A
-ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1Const, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1Const, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_01A <- glm (data=serv_smp,
@@ -99,7 +99,7 @@ Term_01A <- glm (data=serv_smp,
 
 
 Opt_01A <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_US6_avg_sal_lag1Const)
+                        lp_OptGrowth ~ cl_US6_avg_sal_lag1Const)
 
 
 #Plot residuals versus fitted
@@ -131,7 +131,7 @@ Expectation: The invoice rate approximates how much the government is charged an
 summary_continuous_plot(serv_smp,"cl_CFTE")
 
 #Scatter Plot 
-ggplot(serv_opt, aes(x=cl_CFTE, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_CFTE, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_01B <- glm (data=serv_smp,
@@ -144,7 +144,7 @@ Term_01B <- glm (data=serv_smp,
 
 
 Opt_01B <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_CFTE)
+                        lp_OptGrowth ~ cl_CFTE)
 
 
 
@@ -192,7 +192,7 @@ Term_01C <- glm (data=serv_smp,
 glmer_examine(Term_01C)
 
 Opt_01C <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_US6_avg_sal_lag1Const +  cl_CFTE)
+                        lp_OptGrowth ~ cl_US6_avg_sal_lag1Const +  cl_CFTE)
 
 glmer_examine(Opt_01C)
 #Plot residuals versus fitted
@@ -227,7 +227,7 @@ Expectation: Performance-based services contracting ties a portion of a contract
 summary_continuous_plot(serv_smp,"pPBSC")
 
 #Scatter Plot 
-ggplot(serv_opt, aes(x=c_pPBSC, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=c_pPBSC, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_02A <- glm (data=serv_smp,
@@ -241,7 +241,7 @@ Term_02A <- glm (data=serv_smp,
 display(Term_02A)
 
 Opt_02A <- glm(data=serv_opt,
-                        l_OptGrowth ~ c_pPBSC)
+                        lp_OptGrowth ~ c_pPBSC)
 
 display(Opt_02A)
 #Plot residuals versus fitted
@@ -273,7 +273,7 @@ Expectation: The increasing share of contracting office obligations for a given 
 summary_continuous_plot(serv_smp,"c_pOffPSC")
 
 #Scatter Plot 
-ggplot(serv_opt, aes(x=c_pOffPSC, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=c_pOffPSC, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_02B <- glm (data=serv_smp,
@@ -287,7 +287,7 @@ Term_02B <- glm (data=serv_smp,
 display(Term_02B)
 
 Opt_02B <- glm(data=serv_opt,
-                        l_OptGrowth ~ c_pOffPSC)
+                        lp_OptGrowth ~ c_pOffPSC)
 
 display(Opt_02B)
 #Plot residuals versus fitted
@@ -324,7 +324,7 @@ Term_02C <- glm (data=serv_smp,
 glmer_examine(Term_02C)
 
 Opt_02C <- glm(data=serv_opt,
-                        l_OptGrowth ~ c_pPBSC+c_pOffPSC)
+                        lp_OptGrowth ~ c_pPBSC+c_pOffPSC)
 
 glmer_examine(Opt_02C)
 #Plot residuals versus fitted
@@ -365,7 +365,7 @@ Term_02D <- glm (data=serv_smp,
 glmer_examine(Term_02D)
 
 Opt_02D <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC)
+                        lp_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC)
 
 glmer_examine(Opt_02D)
 #Plot residuals versus fitted
@@ -409,7 +409,7 @@ Expactation: The number of past years of the relationship between the contractin
 summary_discrete_plot(serv_smp,"c_pairHist")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=c_pairHist, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=c_pairHist, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_03A <- glm (data=serv_smp,
@@ -423,7 +423,7 @@ Term_03A <- glm (data=serv_smp,
 display(Term_03A)
 
 Opt_03A <- glm(data=serv_opt,
-                        l_OptGrowth ~ c_pairHist)
+                        lp_OptGrowth ~ c_pairHist)
 
 display(Opt_03A)
 #Plot residuals versus fitted
@@ -457,7 +457,7 @@ Expectation: As the number of contract actions a vendor has performed for an off
 summary_continuous_plot(serv_smp,"cl_pairCA")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_pairCA, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_pairCA, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_03B <- glm (data=serv_smp,
@@ -471,7 +471,7 @@ Term_03B <- glm (data=serv_smp,
 display(Term_03B)
 
 Opt_03B <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_pairCA)
+                        lp_OptGrowth ~ cl_pairCA)
 
 display(Opt_03B)
 #Plot residuals versus fitted
@@ -515,7 +515,7 @@ Term_03C <- glm (data=serv_smp,
 glmer_examine(Term_03C)
 
 Opt_03C <- glm(data=serv_opt,
-                        l_OptGrowth ~ c_pairHist+cl_pairCA)
+                        lp_OptGrowth ~ c_pairHist+cl_pairCA)
 
 glmer_examine(Opt_03C)
 
@@ -562,7 +562,7 @@ Term_03D <- glm (data=serv_smp,
 glmer_examine(Term_03D)
 
 Opt_03D <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA)
 
@@ -792,7 +792,7 @@ summary(serv_smp$cl_Ceil)
 str(serv_smp)
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_Ceil, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_Ceil, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_04A <- glm (data=serv_smp,
@@ -806,7 +806,7 @@ Term_04A <- glm (data=serv_smp,
 display(Term_04A)
 
 Opt_04A <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_Ceil)
+                        lp_OptGrowth ~ cl_Ceil)
 
 display(Opt_04A)
 #Plot residuals versus fitted
@@ -838,7 +838,7 @@ freq_continuous_cbre_plot(serv_smp,"UnmodifiedDays",
 summary_continuous_plot(serv_smp,"capped_cl_Days")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=capped_cl_Days, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=capped_cl_Days, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_04B <- glm (data=serv_smp,
@@ -852,7 +852,7 @@ Term_04B <- glm (data=serv_smp,
 display(Term_04B)
 
 Opt_04B <- glm(data=serv_opt,
-                        l_OptGrowth ~ capped_cl_Days)
+                        lp_OptGrowth ~ capped_cl_Days)
 
 display(Opt_04B)
 #Plot residuals versus fitted
@@ -887,7 +887,7 @@ Term_04C <- glm (data=serv_smp,
 display(Term_04C)
 
 Opt_04C <- glm(data=serv_opt,
-                        l_OptGrowth ~cl_Ceil + capped_cl_Days)
+                        lp_OptGrowth ~cl_Ceil + capped_cl_Days)
 
 display(Opt_04C)
 #Plot residuals versus fitted
@@ -928,7 +928,7 @@ Term_04D <- glm (data=serv_smp,
 glmer_examine(Term_04D)
 
 Opt_04D <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days)
@@ -966,7 +966,7 @@ summary_discrete_plot(serv_smp,"Comp1or5")
 
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=Comp1or5, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=Comp1or5, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_05A <- glm (data=serv_smp,
@@ -980,7 +980,7 @@ Term_05A <- glm (data=serv_smp,
 display(Term_05A)
 
 Opt_05A <- glm(data=serv_opt,
-                        l_OptGrowth ~ Comp1or5)
+                        lp_OptGrowth ~ Comp1or5)
 
 display(Opt_05A)
 #Plot residuals versus fitted
@@ -1021,7 +1021,7 @@ Term_05B <- glm (data=serv_smp,
 glmer_examine(Term_05B)
 
 Opt_05B <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1062,7 +1062,7 @@ summary_discrete_plot(serv_smp,"Veh")
 
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=Veh, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=Veh, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_06A <- glm (data=serv_smp,
@@ -1076,7 +1076,7 @@ Term_06A <- glm (data=serv_smp,
 display(Term_06A)
 
 Opt_06A <- glm(data=serv_opt,
-                        l_OptGrowth ~ Veh)
+                        lp_OptGrowth ~ Veh)
 
 display(Opt_06A)
 #Plot residuals versus fitted
@@ -1123,7 +1123,7 @@ Term_06B <- glm (data=serv_smp,
 glmer_examine(Term_06B)
 
 Opt_06B <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1171,7 +1171,7 @@ serv_opt$PricingUCA<-factor(serv_opt$PricingUCA,
   summary_discrete_plot(serv_smp,"PricingUCA")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=PricingUCA, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=PricingUCA, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1186,7 +1186,7 @@ Term_07A <- glm (data=serv_smp,
 display(Term_07A)
 
 Opt_07A <- glm(data=serv_opt,
-                        l_OptGrowth ~ PricingUCA)
+                        lp_OptGrowth ~ PricingUCA)
 
 display(Opt_07A)
 #Plot residuals versus fitted
@@ -1233,7 +1233,7 @@ Term_07B <- glm (data=serv_smp,
 glmer_examine(Term_07B)
 
 Opt_07B <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1267,7 +1267,7 @@ Expectation: Service Contract replying on crisis funds would have more likelihoo
 ```{r Model08A}
 summary_discrete_plot(serv_smp,"Crisis")
 #Scatter Plot
-ggplot(serv_opt, aes(x=Crisis, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=Crisis, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1282,7 +1282,7 @@ Term_08A <- glm (data=serv_smp,
 display(Term_08A)
 
 Opt_08A <- glm(data=serv_opt,
-                        l_OptGrowth ~ Crisis)
+                        lp_OptGrowth ~ Crisis)
 
 display(Opt_08A)
 #Plot residuals versus fitted
@@ -1331,7 +1331,7 @@ Term_08B <- glm (data=serv_smp,
 glmer_examine(Term_08B)
 
 Opt_08B <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1373,7 +1373,7 @@ summary_continuous_plot(serv_smp,"cl_def6_HHI_lag1")
 summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_def6_HHI_lag1, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_def6_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1388,7 +1388,7 @@ Term_09A <- glm (data=serv_smp,
 display(Term_09A)
 
 Opt_09A <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_def6_HHI_lag1)
+                        lp_OptGrowth ~ cl_def6_HHI_lag1)
 
 display(Opt_09A)
 #Plot residuals versus fitted
@@ -1419,7 +1419,7 @@ Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_def6_ratio_lag1, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_def6_ratio_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1434,7 +1434,7 @@ Term_09B <- glm (data=serv_smp,
 display(Term_09B)
 
 Opt_09B <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_def6_ratio_lag1)
+                        lp_OptGrowth ~ cl_def6_ratio_lag1)
 
 display(Opt_09B)
 #Plot residuals versus fitted
@@ -1465,7 +1465,7 @@ Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_def6_obl_lag1Const, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_def6_obl_lag1Const, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1480,7 +1480,7 @@ Term_09C <- glm (data=serv_smp,
 display(Term_09C)
 
 Opt_09C <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_def6_obl_lag1Const)
+                        lp_OptGrowth ~ cl_def6_obl_lag1Const)
 
 display(Opt_09C)
 #Plot residuals versus fitted
@@ -1524,7 +1524,7 @@ Term_09D <- glm (data=serv_smp,
 glmer_examine(Term_09D)
 
 Opt_09D <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
+                        lp_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
 
 glmer_examine(Opt_09D)
 
@@ -1542,7 +1542,7 @@ Term_09D2 <- glm (data=serv_smp,
 glmer_examine(Term_09D2)
 
 Opt_09D2 <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
+                        lp_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
 
 glmer_examine(Opt_09D2)
 #Plot residuals versus fitted
@@ -1599,7 +1599,7 @@ Term_09E <- glm (data=serv_smp,
 glmer_examine(Term_09E)
 
 Opt_09E <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1635,7 +1635,7 @@ summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
 
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1650,7 +1650,7 @@ Term_10A <- glm (data=serv_smp,
 display(Term_10A)
 
 Opt_10A <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_def3_HHI_lag1)
+                        lp_OptGrowth ~ cl_def3_HHI_lag1)
 
 display(Opt_10A)
 #Plot residuals versus fitted
@@ -1681,7 +1681,7 @@ summary_continuous_plot(serv_smp,"cl_def3_ratio_lag1")
 
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1696,7 +1696,7 @@ Term_10B <- glm (data=serv_smp,
 display(Term_10B)
 
 Opt_10B <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_def3_ratio_lag1)
+                        lp_OptGrowth ~ cl_def3_ratio_lag1)
 
 display(Opt_10B)
 #Plot residuals versus fitted
@@ -1733,7 +1733,7 @@ Term_10C <- glm (data=serv_smp,
 glmer_examine(Term_10C)
 
 Opt_10C <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1)
+                        lp_OptGrowth ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1)
 
 glmer_examine(Opt_10C)
 #Plot residuals versus fitted
@@ -1790,7 +1790,7 @@ Term_10D <- glm (data=serv_smp,
 glmer_examine(Term_10D)
 
 Opt_10D <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1827,7 +1827,7 @@ Market Share Vendor for that Office	c_pMarket		++	-	+
 summary_continuous_plot(serv_smp,"c_pMarket")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=c_pMarket, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=c_pMarket, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1842,7 +1842,7 @@ Term_11A <- glm (data=serv_smp,
 display(Term_11A)
 
 Opt_11A <- glm(data=serv_opt,
-                        l_OptGrowth ~ c_pMarket)
+                        lp_OptGrowth ~ c_pMarket)
 
 display(Opt_11A)
 #Plot residuals versus fitted
@@ -1898,7 +1898,7 @@ Term_11B <- glm (data=serv_smp,
 glmer_examine(Term_11B)
 
 Opt_11B <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1937,7 +1937,7 @@ From looking at data, terminations, easier for big, less dependent. - less depen
 summary_continuous_plot(serv_smp,"cl_OffVol")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_OffVol, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_OffVol, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_12A <- glm (data=serv_smp,
@@ -1951,7 +1951,7 @@ Term_12A <- glm (data=serv_smp,
 display(Term_12A)
 
 Opt_12A <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_OffVol)
+                        lp_OptGrowth ~ cl_OffVol)
 
 display(Opt_12A)
 
@@ -1984,7 +1984,7 @@ Expectation: More diverse industries of contracts contracting offices handle, th
 summary_continuous_plot(serv_smp,"cl_hh_index_k")
 
 #Scatter Plot
-ggplot(serv_opt, aes(x=cl_hh_index_k, y=l_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_opt, aes(x=cl_hh_index_k, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 CBre_12B <- glm (data=serv_smp,
@@ -1998,7 +1998,7 @@ Term_12B <- glm (data=serv_smp,
 display(Term_12B)
 
 Opt_12B <- glm(data=serv_opt,
-                        l_OptGrowth ~ cl_hh_index_k)
+                        lp_OptGrowth ~ cl_hh_index_k)
 
 display(Opt_12B)
 
@@ -2058,7 +2058,7 @@ Term_12C <- glm (data=serv_smp,
 glmer_examine(Term_12C)
 
 Opt_12C <- glm(data=serv_opt,
-                        l_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+

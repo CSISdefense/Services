@@ -1,0 +1,504 @@
+---
+title: "Terminations and Closures"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(csis360)
+library(ggplot2)
+library(dplyr)
+library(arm)
+library(R2WinBUGS)
+library(knitr)
+library(foreign)
+library(stargazer)
+library(texreg)
+library(reshape2)
+library(readr)
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+source("https://raw.githubusercontent.com/CSISdefense/R-scripts-and-data/master/lookups.r")
+source("https://raw.githubusercontent.com/CSISdefense/R-scripts-and-data/master/helper.r")
+source("https://raw.githubusercontent.com/CSISdefense/Crisis-Funding/master/Scripts/ContractCleanup.r")
+
+axis.text.size<-10
+strip.text.size<-10
+legend.text.size<-8
+# table.text.size<-5.75
+title.text.size<-12
+geom.text.size<-12
+
+main.text.size<-1
+note.text.size<-1.40
+
+```
+
+
+# Overall Citeria
+## Importing data
+
+```{r CloseOutAll}
+
+# criteria<-read_delim(file="..\\data\\semi_clean\\Contract.SP_ContractSampleCriteriaDetailsCustomer.txt",
+#                      delim="\t",na=c("","NA","NULL"))
+
+criteria$StartFY<-year(criteria$MinOfSignedDate)+ifelse(month(criteria$MinOfSignedDate)>=10,1,0)
+criteria<-criteria %>% filter(StartFY>=2007 & StartFY<2016)
+criteria<-standardize_variable_names(criteria)
+
+criteria$LastCurrentCompletionDate<-na_nonsense_dates(criteria$LastCurrentCompletionDate)
+
+
+
+
+
+criteria<-csis360::read_and_join_experiment(criteria,
+                            lookup_file = "Contract.SP_ContractCloseOutExamination.txt",
+                            path="..\\",
+                            dir="Data\\semi_clean\\",
+                            by="CSIScontractID",
+                            new_var_checked = FALSE
+                            # skip_check_var=c("IsClosed" ,
+                            #                  "MaxClosedDate",
+                            #                  "ObligatedAfterMaxClosedDate")
+)
+
+
+
+criteria<-csis360::read_and_join_experiment(criteria,
+                            lookup_file = "Contract.SP_ContractTerminationExamination.txt",
+                            path="..\\",
+                            dir="Data\\semi_clean\\",
+                            by="CSIScontractID",
+                            new_var_checked = FALSE
+                            # skip_check_var=c("IsClosed" ,
+                            #                  "MaxClosedDate",
+                            #                  "ObligatedAfterMaxClosedDate")
+)
+
+criteria$Term<-"Unterminated"
+criteria$Term[!is.na(criteria$MaxTerminatedDate)]<-"Terminated"
+criteria$Term<-factor(criteria$Term)
+
+
+criteria$Include2015<-"No"
+criteria$Include2015[criteria$StartFY<=2015 & 
+                       #For unclosed out contracts both current completion and last signed should bebefore  2016
+                       (criteria$MaxBoostDate<=as.Date("2016-09-30")| is.na(criteria$MaxBoostDate))&
+                      (criteria$LastCurrentCompletionDate<=as.Date("2016-09-30")
+                     #For closed out it's enough that the boost date is within the range.
+                     | (criteria$IsClosed==1 | criteria$Term=="Terminated"))
+                        ]<-"Yes"
+
+criteria$Include2015<-factor(criteria$Include2015, levels=c("Yes","No"))
+summary(criteria$Include2015)
+
+late_signed<-criteria %>%filter(MaxBoostDate>LastCurrentCompletionDate)
+
+
+save(criteria,late_signed,file="../data/semi_clean/end_research.rdta")
+
+
+
+summary(factor(late_signed$IsClosed))
+summary(late_signed$Term)
+summary(factor(late_signed$Include2015))
+sum(late_signed$Action_Obligation)
+sum(criteria$Action_Obligation)
+```
+
+# Close Out
+## Analysis with Excluded Contracts
+### Totals
+```{r CloseOutAll}
+CloseOutAll<-criteria %>% dplyr::filter(IsClosed==1)
+
+
+# summary(CloseOutAll)
+summary(CloseOutAll$MaxClosedDate)
+summary(CloseOutAll$ObligatedAfterMaxClosedDate)
+
+sum(CloseOutAll$ObligatedAfterMaxClosedDate)
+
+CloseOutAll$PostCloseFloor0<-CloseOutAll$ObligatedAfterMaxClosedDate
+CloseOutAll$PostCloseFloor0[CloseOutAll$PostCloseFloor0<0]<-0
+
+CloseOutAll$LastCurrentCompletionDate<-as.Date(CloseOutAll$LastCurrentCompletionDate)
+
+CloseOutAll$LastCurrentCompletionDate<-na_nonsense_dates(CloseOutAll$LastCurrentCompletionDate)
+
+summary(factor(CloseOutAll$Include2015))
+gridExtra::grid.arrange(ggplot(CloseOutAll, aes(x=StartFY, fill=Include2015))+geom_bar(),
+ggplot(CloseOutAll, aes(x=StartFY, y=Action_Obligation, fill=Include2015))+geom_col()
+)
+(
+CloseOutCeilObl<-ggplot(CloseOutAll,aes(x=PostCloseFloor0+1)) +#,color=qHighCeiling
+  stat_ecdf(geom = "step")+stat_ecdf(geom = "step",aes(x=PostCloseFloor0+1))+
+    coord_cartesian(ylim=c(0.85,1))+#+,xlim=c(0,1e8)
+  scale_x_log10(label=comma)+
+  labs(title="Cumulative Distribution of Terminated Contracts",
+       y="% of Category's Terminated Contracts",
+       x="Obligations After Close Out",
+       color="Initial Ceiling")+
+  scale_y_continuous(label=percent)+facet_grid(Term~Include2015)
+)
+```
+
+### After Close Out with all
+```{r CloseOutDurAll}
+
+summary(CloseOutAll$MaxClosedDate)
+
+CloseOutAll$PreCloseLength<-CloseOutAll$MaxClosedDate-CloseOutAll$MinOfSignedDate
+CloseOutAll$PostCloseSignedLength<-CloseOutAll$MaxBoostDate-CloseOutAll$MaxClosedDate
+CloseOutAll$PostCloseCurrentLength<-CloseOutAll$LastCurrentCompletionDate-CloseOutAll$MaxClosedDate
+
+summary(CloseOutAll$PreCloseLength)
+
+
+(
+CloseDurSignedAnnual<-ggplot(CloseOutAll,aes(x=PostCloseSignedLength,color=Include2015))+ #,color=ClosePctCat)) + #
+  stat_ecdf(geom = "step")+
+    coord_cartesian(ylim=c(0.5,1),xlim=c(0,500))+#+
+  # scale_x_log10(label=comma)+
+  labs(title="Duration and Close Out Completeness",
+       y="Cumulative Distribution % of\nCategory's Closed Out Contracts",
+       x="Days Close Out to Final Boost Date",
+       color="Close Out Completeness")+
+  scale_y_continuous(label=percent)+facet_grid(StartFY~.)+geom_vline(xintercept = 365)+
+    theme(legend.position="right")
+)
+
+CloseOut<-CloseOutAll %>% filter(Include2015=="Yes")
+
+```
+
+# Termination Examination
+The reason for modification code includes both partial and complete terminations. As a way of differentiating complete from partial terminations, we take a closer look at how much spending happened after a contracts last termination. The last termination was used because a contract with both a partial and a complete termination would still qualify as having been completely terminated.
+
+
+## Analysis with all ontracts
+
+```{r TermInput}
+termAll<-criteria %>% dplyr::filter(Term=="Terminated")
+
+summary(termAll$Include2015)
+
+termAll %>% filter(StartFY<=2012 & Include2015=="No")
+
+gridExtra::grid.arrange(
+ggplot(termAll, aes(x=StartFY, fill=Include2015))+geom_bar()+facet_wrap(~Include2015),
+ggplot(termAll, aes(x=StartFY, y=Action_Obligation, fill=Include2015))+geom_col()+facet_wrap(~Include2015)
+)
+
+# summary(termAll)
+summary(termAll$ObligatedBeforeMaxTerminatedDate)
+summary(termAll$ObligatedAfterMaxTerminatedDate)
+summary(termAll$ObligatedOnMaxTerminatedDate)
+summary(termAll$MaxTerminatedDate)
+sum(termAll$ObligatedBeforeMaxTerminatedDate)
+sum(termAll$ObligatedOnMaxTerminatedDate)
+sum(termAll$ObligatedAfterMaxTerminatedDate)
+sum(termAll$Action_Obligation[termAll$Include2015=="Yes"])
+summary(termAll$isDefaultOrCause	)
+
+summary(termAll$qHighCeiling)
+  
+
+
+
+```
+### Calculating Term Percent
+```{r TermProcess}
+
+#How often there no net pre-termination obligations
+nrow(termAll %>% filter(ObligatedBeforeMaxTerminatedDate<=0))
+
+#How often are contracts terminated on their first day
+nrow(termAll %>% filter(MaxTerminatedDate<=MinOfSignedDate) )
+
+termAll$ThroughTerm<-termAll$ObligatedBeforeMaxTerminatedDate+
+  termAll$ObligatedOnMaxTerminatedDate[termAll$MaxTerminatedDate<=termAll$MinOfSignedDate]
+
+
+nrow(termAll %>% filter(ThroughTerm<=0))
+nrow(termAll %>% filter(ThroughTerm<ObligatedAfterMaxTerminatedDate))
+nrow(termAll %>% filter(ThroughTerm/3<ObligatedAfterMaxTerminatedDate))
+
+
+termAll$PostTermFloor0<-termAll$ObligatedAfterMaxTerminatedDate
+termAll$PostTermFloor0[termAll$PostTermFloor0<0]<-0
+termAll$PreTermFloor1<-termAll$ThroughTerm
+termAll$PreTermFloor1[termAll$ThroughTerm<1]<-1
+termAll$TermPct<-termAll$PostTermFloor0/(termAll$PostTermFloor0+termAll$PreTermFloor1)
+summary(termAll$TermPct)
+# g<-build_plot(
+#   data=termAll, # %>% dplyr::select(PostTermFloor0),
+#   chart_geom = "Histogram",
+#   share = FALSE,
+#   # labels_and_colors=labels_and_colors,
+#   # NA, #VAR.ncol
+#   x_var="PostTermFloor0", #x_var
+#   y_var="Count", #VAR.y.variable
+#   # color_var="DecisionTreeDisplay", #color_var
+#   # facet_var="DecisionTreeDisplay", #facet_var
+#   # column_key=column_key,
+#   format=TRUE
+# )
+
+
+termAll$NoPreTermObl<-"Some Net $s Pre-termAll."
+termAll$NoPreTermObl[termAll$ObligatedBeforeMaxTerminatedDate<=0]<-"0 Pre-termAll"
+termAll$NoPreTermObl<-factor(termAll$NoPreTermObl)
+
+
+(
+TermPct<-ggplot(termAll,aes(x=TermPct,color=Include2015)) +
+  stat_ecdf(geom = "step")+
+    coord_cartesian(ylim=c(0.9,1),xlim=c(0,1))+
+  labs(title="Cumulative Distribution of Terminated Contracts",
+       y="% of Terminated Contracts",
+       x="Percent of Obligations After Day of Termination"
+       )+geom_vline(xintercept = 0.50)
+)
+
+
+(
+TermCeilObl<-ggplot(termAll,aes(x=PostTermFloor0+1)) +#,color=qHighCeiling
+  stat_ecdf(geom = "step")+stat_ecdf(geom = "step",aes(x=PostTermFloor0+1))+
+    coord_cartesian(ylim=c(0.65,1))+#+,xlim=c(0,1e8)
+  scale_x_log10(label=comma)+
+  labs(title="Cumulative Distribution of Terminated Contracts",
+       y="% of Category's Terminated Contracts",
+       x="Obligations After Termination",
+       color="Initial Ceiling")+
+  scale_y_continuous(label=percent)
+)+facet_wrap(~Include2015)
+
+
+
+```
+### Term Percent Categories
+```{r TermPCTCat}
+
+termAll$TermPctCat<-Hmisc::cut2(termAll$TermPct,c(0.25,0.5))
+summary(termAll$TermPctCat)
+# levels(termAll$TermPctCat)[3]<-"[50%+]"
+termAll$TermPctCat<-as.character(termAll$TermPctCat)
+termAll$TermPctCat[termAll$TermPct==0]<-"[0]"
+termAll$TermPctCat[termAll$TermPct==0 & termAll$ObligatedOnMaxTerminatedDate>0]<-"[0]+Last Day Spend"
+# termAll$TermPctCat[termAll$TermPct==0 & termAll$ObligatedOnMaxTerminatedDate>0 & termAll$MaxTerminatedDate<=termAll$MinOfSignedDate]<-"[0]+One Day Spend"
+termAll$TermPctCat<-factor(termAll$TermPctCat)
+summary(termAll$TermPctCat)
+
+
+
+
+levels(termAll$TermPctCat)<-list(
+  "[0]+No Last Day Spend"="[0]",
+  "[0]+Last Day Spend"="[0]+Last Day Spend",
+  "(0%,25%)"="[0.00,0.25)",
+  "[25%,50%)"="[0.25,0.50)",
+  "[50%+]"="[0.50,1.00]"
+)
+
+termAll$TermPartial<-termAll$TermPctCat
+levels(termAll$TermPartial)<-list(
+  "Complete Termination"=c("[0]+No Last Day Spend","[0]+Last Day Spend","(0%,25%)"),
+  "Partial Termination"=c("[25%,50%)","[50%+]")
+)
+summary(termAll$TermPartial)
+
+termAll$TermPctCat3<-termAll$TermPctCat
+levels(termAll$TermPctCat3)<-list(
+  "Term Ends Spend"="[0]+No Last Day Spend",
+  "Last Day Spend"="[0]+Last Day Spend",
+  "Any After"=c("(0%,10%)","[10%,100%)","[100%+]")
+)
+summary(termAll$TermPctCat)
+
+termAll$FirstDayTerm<-"No"
+termAll$FirstDayTerm[termAll$MaxTerminatedDate==termAll$MinOfSignedDate]<-"Yes"
+
+ggplot(termAll, aes(x=StartFY, fill=factor(Include2015)))+geom_bar()+facet_wrap(~TermPctCat,scale="free_y")
+ggplot(termAll, aes(x=StartFY, y=Action_Obligation, fill=factor(Include2015)))+geom_col()+facet_wrap(~TermPctCat,scale="free_y")
+
+
+```
+
+### After Termination Duration
+
+```{r TermPctAll}
+termAll$LastCurrentCompletionDate<-na_nonsense_dates(termAll$LastCurrentCompletionDate)
+termAll$PreTermLength<-termAll$MaxTerminatedDate-termAll$MinOfSignedDate
+termAll$PostTermSignedLength<-termAll$MaxBoostDate-termAll$MaxTerminatedDate
+termAll$LastCurrentCompletionDate<-as.Date(termAll$LastCurrentCompletionDate)
+termAll$PostTermCurrentLength<-termAll$LastCurrentCompletionDate-termAll$MaxTerminatedDate
+# termAll$PreTermLengthFloor1<-termAll$PreTermLength
+# termAll$PreTermLengthFloor1[termAll$PreTermLengthFloor1<1]<-1
+# termAll$PostTermSignedLengthFloor0<-termAll$PostTermSignedLength
+# termAll$PostTermSignedLengthFloor0[termAll$PostTermSignedLengthFloor0<0]<-0
+
+
+ggplot(termAll,aes(x=PostTermCurrentLength,color=TermPctCat)) +
+  stat_ecdf(geom = "step")+
+    coord_cartesian(ylim=c(0,1),xlim=c(-1000,2500))+#+,xlim=c(0,1e8)
+  # scale_x_log10(label=comma)+
+  labs(title="Duration and Termination Completeness",
+       y="Cumulative Distribution % of\nCategory's Terminated Contracts",
+       x="Days from Termination to Current Completion",
+       color="Termination Completeness")+facet_wrap(~Include2015)+
+  scale_y_continuous(label=percent)+geom_vline(xintercept = 365)#+facet_wrap(~StartFY)
+
+
+
+
+ggplot(termAll,aes(x=PostTermSignedLength)) +
+  stat_ecdf(geom = "step")+
+    coord_cartesian(ylim=c(0,1),xlim=c(-1000,2500))+#+,xlim=c(0,1e8)
+  # scale_x_log10(label=comma)+
+  labs(title="Duration and Termination Completeness",
+       y="Cumulative Distribution % of\nCategory's Terminated Contracts",
+       x="Days from Termination to Last Boost",
+       color="Termination Completeness")+facet_wrap(~Include2015)+
+  scale_y_continuous(label=percent)+geom_vline(xintercept = 365)#+facet_wrap(~StartFY)
+
+
+
+
+(
+TermDur<-ggplot(termAll,aes(x=PostTermSignedLength,color=TermPctCat)) +
+  stat_ecdf(geom = "step")+
+    coord_cartesian(ylim=c(0,1),xlim=c(-1000,2500))+#+,xlim=c(0,1e8)
+  # scale_x_log10(label=comma)+
+  labs(title="Duration and Termination Completeness",
+       y="Cumulative Distribution % of\nCategory's Terminated Contracts",
+       x="Days from Termination to Last Boost",
+       color="Termination Completeness")+facet_wrap(~Include2015)+
+  scale_y_continuous(label=percent)+geom_vline(xintercept = 365)#+facet_wrap(~StartFY)
+)
+
+
+term<-termAll %>% filter(Include2015=="Yes")
+```
+
+
+
+
+### After Term Spend
+```{r TermCrosstab}
+
+term$isDefaultOrCause<-factor(term$isDefaultOrCause)
+
+freq_table("TermPctCat",term)
+
+(
+  TermSum<-grouped_barplot("TermPctCat",term)+
+    labs(title = "Termination Completion Summary")
+)
+
+(
+  TermSum<-grouped_barplot("isDefaultOrCause",term)+
+    labs(title = "Termination Completion Summary")
+)
+
+
+(
+TermOblByCeil<-ggplot(term,aes(x=TermPctCat,fill=TermPctCat,y=Action_Obligation)) +
+  geom_col()+scale_y_continuous(labels = comma)+
+  # facet_wrap(qHighCeiling~.)+
+  labs(title="Termination Completeness by Initial Ceiling",
+       y="Contract Obligations",
+       x="Termination Completeness")+
+  theme(legend.position="None",axis.text.x = element_text(angle=90))
+)
+
+
+(
+TermOblByCeil<-ggplot(term,aes(x=TermPctCat,fill=TermPctCat,y=Action_Obligation)) +
+  geom_col()+scale_y_continuous(labels = comma)+
+  facet_grid(isDefaultOrCause~.,scale="free_y")+
+  labs(title="Termination Completeness by Initial Ceiling",
+       y="Contract Obligations",
+       x="Termination Completeness")+
+  theme(legend.position="None",axis.text.x = element_text(angle=90))
+)
+
+# ggplot(term,aes(x=NoPreTermObl,fill=TermPctCat)) +facet_grid(TermPctCat3~.,scales="free_y")+
+#   geom_bar()+scale_y_continuous(labels = comma)
+
+```
+
+## Other Breakouts.
+```{r CompVeh}
+(
+TermComp<-ggplot(term,aes(x=CompOffr,fill=TermPctCat)) +facet_grid(TermPctCat3~.,scales="free_y")+
+  geom_bar()+scale_y_continuous(labels = comma)+
+  labs(title="Competition and Termination Completeness",
+       y="Contract Count",
+       x="Termination Completeness",
+       fill="Termination Completeness")
+)
+
+
+
+(
+TermVeh<-ggplot(term,aes(x=Veh,fill=TermPctCat)) +facet_grid(TermPctCat3~.,scales="free_y")+
+  geom_bar()+scale_y_continuous(labels = comma)+
+  labs(title="Vehicle and Termination Completeness",
+       y="Contract Count",
+       x="Termination Completeness",
+       fill="Termination Completeness")
+)
+
+
+term$Veh3<-term$Veh
+levels(term$Veh3)=list(
+  "Def/Pur"="Def/Pur",
+  "S-IDC"="S-IDC",
+  "Other IDV"=c("M-IDC","FSS/GWAC","BPA/BOA" )
+)
+
+ggsave(TermSum,file="../Output/TermSum.png")
+ggsave(TermDur,file="../Output/TermDur.png")
+
+
+```
+
+
+### One Day Closures
+```{r OneDay}
+
+(
+TermDay1<-ggplot(term %>% filter(FirstDayTerm=="Yes" & !is.na(CompOffr) & !is.na(Veh)),
+                 aes(x=TermPctCat3,fill=TermPctCat)) +facet_grid(Veh3~CompOffr)+
+  geom_bar()+scale_y_continuous(labels = comma)+
+  labs(title="Distribution of Day 1 Final Termination Contracts",
+       y="Contract Count",
+       x="Competition Category",
+       fill="Termination Completeness",
+       caption="Unlabeled Vehicle and Competition Excluded")+
+    theme(legend.position = "bottom",
+          axis.text.x = element_text(angle = 90))+
+    scale_fill_discrete(guide=guide_legend(nrow=2))
+)
+
+(
+TermOblByStart<-ggplot(term,aes(x=TermPctCat,fill=TermPctCat)) +
+  geom_bar()+scale_y_continuous(labels = comma)+
+  facet_wrap(StartCY~.)+
+  labs(title="Termination Completeness by Initial Ceiling",
+       y="Contract Obligations",
+       x="Termination Completeness")+
+  theme(legend.position="None",axis.text.x = element_text(angle=90))
+)
+
+
+ggsave(TermDay1,file="../Output/TermDay1.png")
+
+partialterm<-term %>% group_by() %>% dplyr::select(CSIScontractID,TermPartial)
+summary(partialterm)
+def<-left_join(def,partialterm)
+
+
+```
+
