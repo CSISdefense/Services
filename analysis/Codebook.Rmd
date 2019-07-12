@@ -7,7 +7,7 @@ output:
 date: "Wednesday, February 8, 2017"
 ---
 
-#Setup
+# Setup
 ```{r Libraries, echo = FALSE}
 library(csis360)
 library(ggplot2)
@@ -20,8 +20,8 @@ library(stargazer)
 library(texreg)
 library(reshape2)
 library(tidyverse)
-# source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
-source("../Scripts/DIIGstat.r")
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+
 
 axis.text.size<-10
 strip.text.size<-10
@@ -41,11 +41,8 @@ Contracts are classified using a mix of numerical and categorical variables. Whi
 
 
 
-##Prepare Data
+## Load Data
 First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
-
-
-
 
 
 ```{r ReadInData, echo = TRUE}
@@ -60,9 +57,9 @@ load("../data/clean/transformed_def_serv.Rdata")
 
 NA_stats(def_serv,"b_Term")
 * b_Term is a binary variable that has a value of 1 for any contracts that have experienced a partial or complete termination, 0 otherwise. (`r summary(def_serv$b_Term);
-sum(def_serv$Action.Obligation[def_serv$b_Term==1],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)`
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$b_Term==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)`
 * b_CBre is a binary variable that has a value of 1 for any contracts that have experienced a partial or complete termination, 0 otherwise. (`r summary(def_serv$b_CBre);
-sum(def_serv$Action.Obligation[def_serv$b_CBre==1],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$b_CBre==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
 NA_stats(def_serv,"b_CBre")`)
 
 ```{r vargraphs: b_Term, b_CBre}
@@ -123,18 +120,18 @@ grouped_barplot("Offr", def_serv)
 NA_stats(def_serv,"Comp") `
 * n_Comp is a binary variable based on competition. It has a value of 0 for uncompeted contracts and a value of 1 for competition, regardless of number of offers. `r  summary(def_serv$EffComp);
 NA_stats(def_serv,"EffComp")
-sum(def_serv$Action.Obligation[def_serv$EffComp=="No Comp."],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$EffComp=="1 Offer"],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$EffComp=="2+ Offers"],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)`
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="No Comp."],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="1 Offer"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="2+ Offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)`
 )
 * CompOffr is a dummy variable based on competition and the number of offers. It's baseline value is No Competition, sole-source contracts, which are intentionally not assigned a dummy to avoid multicollinearity. `r  summary(def_serv$CompOffr);
 debug(NA_stats)
 NA_stats(def_serv,"CompOffr")
-sum(def_serv$Action.Obligation[def_serv$CompOffr=="No Competition"],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$CompOffr=="1 offer"],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$CompOffr=="2 offers"],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$CompOffr=="3-4 offers"],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$CompOffr=="5+ offers"],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="No Competition"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="1 offer"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="2 offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="3-4 offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="5+ offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
 
 length(def_serv$CompOffr[def_serv$CompOffr=="No Competition" & !is.na(def_serv$CompOffr)])/nrow(def_serv)
 length(def_serv$CompOffr[def_serv$CompOffr=="1 offer"& !is.na(def_serv$CompOffr)])/nrow(def_serv)
@@ -173,7 +170,7 @@ NA_stats(def_serv,"cl_def6_ratio_lag1")
 ### Initial Contract Scope
 
 #### Ceiling
-* cl_Ceil is the natural log of the initial contract cost ceiling, in then-year dollars. `r centered_log_description(def_serv$UnmodifiedContractBaseAndAllOptionsValue,"dollars");
+* cl_Ceil is the natural log of the initial contract cost ceiling, in then-year dollars. `r centered_log_description(def_serv$UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18,"dollars");
 NA_stats(def_serv,"cl_Ceil")`
 
 
@@ -183,11 +180,10 @@ NA_stats(def_serv,"capped_cl_Days")`
 
 
 ```{r statistic summary table for continuous variables: cl_Ceil, capped_cl_Days}
-#original variable for cl_Ceil: UnmodifiedContractBaseAndAllOptionsValue
+#original variable for cl_Ceil: UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18
 #original variable for capped_cl_Days: UnmodifiedDays
 
-
-statsummary_continuous(c("UnmodifiedDays","UnmodifiedContractBaseAndAllOptionsValue"), def_serv)
+statsummary_continuous(c("UnmodifiedDays","UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18"), def_serv)
 
 
 
@@ -214,9 +210,9 @@ statsummary_discrete("Veh", def_serv)
 ### Pricing Fee
 * n_Fixed is a numeric variable based on contract pricing. It has a value of 0 for cost-based, 0.5 or "combination or other", 1 for any fixed price (excluding fixed-price level of effort which is classified as cost-based). (`r summary(def_serv$n_Fixed);
 NA_stats(def_serv,"n_Fixed")
-sum(def_serv$Action.Obligation[def_serv$n_Fixed==0],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$n_Fixed==0.5],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
-sum(def_serv$Action.Obligation[def_serv$n_Fixed==1],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$n_Fixed==0],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$n_Fixed==0.5],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$n_Fixed==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
 nrow(def_serv[def_serv$n_Fixed==0,])/nrow(def_serv)
 nrow(def_serv[def_serv$n_Fixed==0.5,])/nrow(def_serv)
 nrow(def_serv[def_serv$n_Fixed==1,])/nrow(def_serv)
@@ -235,11 +231,11 @@ NA_stats(def_serv,"PricingFee")
 `)
 NA_stats(def_serv,"n_Incent")`)
 * b_UCA is a binary variable with a value of 1 for contracts/task orders that begin as letter contracts or undefinitized contract awards (UCA) and a value of 0 otherwise. `r summary(def_serv$b_UCA);
-sum(def_serv$Action.Obligation[def_serv$b_UCA==1],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$b_UCA==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
 length(def_serv$b_UCA[def_serv$b_UCA==1 & !is.na(def_serv$b_UCA)])/nrow(def_serv)
 NA_stats(def_serv,"b_UCA")`
 * b_Intl is a binary variable with a value of 1 for contracts/task orders with any transactions performed internationally and a value of 0 otherwise. `r summary(def_serv$b_Intl);
-sum(def_serv$Action.Obligation[def_serv$b_Intl==1],na.rm=TRUE)/sum(def_serv$Action.Obligation,na.rm=TRUE)
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$b_Intl==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
 NA_stats(def_serv,"b_Intl")`
 * NAICS is a factor reporting the top North American Industrial Classification Code of each contract. 
 `r summary(def_serv$NAICS);
@@ -330,7 +326,7 @@ Agency_Freq <- left_join(Agency_Freq, Agency_Lookup, by = "Agency")
 #Add obligation percent information to data frame
 Percent_Obli <- c()
 for (i in Agency_Freq$Agency) {
-  Percent_Obligation <- round(sum(def_serv$Action.Obligation[def_serv$Agency == i], na.rm = TRUE)/sum(def_serv$Action.Obligation, na.rm = TRUE),5)
+  Percent_Obligation <- round(sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$Agency == i], na.rm = TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18, na.rm = TRUE),5)
   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
 }
 Agency_Freq$Agency_Description <- as.character(Agency_Freq$Agency_Description)
@@ -384,7 +380,7 @@ def_serv$NAICS_Code<-def_serv$NAICS2
 def_serv<-csis360::read_and_join(def_serv,
                             lookup_file = "Lookup_NAICS_code.csv",
                             path="https://raw.githubusercontent.com/CSISdefense/Vendor/master/",
-                            dir="Lookup\\",
+                            dir="Data/Clean/NAICS/",
                             by="NAICS_Code",
                             skip_check_var="NAICS_DESCRIPTION"
 )
@@ -410,8 +406,8 @@ NAICS2digit<-ggplot(def_serv,
   labs(x="2-Digit NAICS Code",y="Number of Contracts and Task Orders in Unfiltered Dataset")
 
 NAICS2digit
-ggsave(NAICS2digit,file="Output\\NAICS2digitCount.png",width=10,height=6,dpi=600)
-ggsave(NAICS2digit,file="Output\\NAICS2digitCount.eps",width=10,height=6,dpi=600)
+ggsave(NAICS2digit,file="..\\Output\\NAICS2digitCount.png",width=10,height=6,dpi=600)
+ggsave(NAICS2digit,file="..\\Output\\NAICS2digitCount.eps",width=10,height=6,dpi=600)
 ```
 
 
@@ -422,7 +418,7 @@ NAICS2_Freq$Percent_Freq <- round(NAICS2_Freq$Freq/sum(NAICS2_Freq$Freq),4)*100
 colnames(NAICS2_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 
 #Get detail description for NAICS2 code
-NAICS_Lookup <- read.csv(file = "Lookup/Lookup_NAICS_code.csv")
+NAICS_Lookup <- read.csv(file = "https://raw.githubusercontent.com/CSISdefense/Vendor/master/Data/Clean/NAICS/Lookup_NAICS_code.csv")
 colnames(NAICS_Lookup) <- c("NAICS_Code", "NAICS_DESCRIPTION")
 NAICS2_Freq <- left_join(NAICS2_Freq, NAICS_Lookup, by = "NAICS_Code")
 NAICS2_Freq <- NAICS2_Freq[order(-NAICS2_Freq$Percent_Freq),]
@@ -449,14 +445,12 @@ NAICS2_Freq$Percent_Freq <- round(NAICS2_Freq$Freq/sum(NAICS2_Freq$Freq),4)*100
 colnames(NAICS2_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 
 #Get detail description for NAICS2 code
-NAICS_Lookup <- read.csv(file = "Lookup/Lookup_NAICS_code.csv")
-colnames(NAICS_Lookup) <- c("NAICS_Code", "NAICS_DESCRIPTION")
 NAICS2_Freq <- left_join(NAICS2_Freq, NAICS_Lookup, by = "NAICS_Code")
 
 Percent_Obli <- c()
-Total_Obli <- sum(def_serv$Action.Obligation, na.rm = TRUE)
+Total_Obli <- sum(def_serv$Action_Obligation.OMB20_GDP18, na.rm = TRUE)
 for (i in NAICS2_Freq$NAICS_Code) {
-  Percent_Obligation <- round(sum(def_serv$Action.Obligation[def_serv$NAICS2 == i], na.rm = TRUE)/Total_Obli,5)
+  Percent_Obligation <- round(sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$NAICS2 == i], na.rm = TRUE)/Total_Obli,5)
   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
 }
 
@@ -496,7 +490,7 @@ NAICS2_barplot
 
 ```{r NAICS3_Summary, fig.width=7.5 , fig.height=3}
 NAICS_summary<-def_serv %>% group_by(NAICS3,StartCY,def3_HHI_lag1,def3_obl_lag1,def3_ratio_lag1,US3_avg_sal_lag1) %>%
-  dplyr::summarise(annual_action_obligation=sum(Action.Obligation),
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation.OMB20_GDP18),
                    annual_count=length(StartCY)) 
 
 top_NAICS <- NAICS_summary %>% group_by(NAICS3) %>% 
@@ -512,16 +506,16 @@ colnames(NAICS_summary)[colnames(NAICS_summary)=="NAICS3"]<-"principalnaicscode"
 
 NAICS_summary$principalnaicscode<-as.character(NAICS_summary$principalnaicscode)
 NAICS_summary<-as.data.frame(NAICS_summary)
-NAICS_summary<-csis360::read_and_join(NAICS_summary,
-                        lookup_file = "Lookup_PrincipalNAICScode.csv",
-                        path="",
-                        dir="Lookup\\",
-                        by="principalnaicscode",
-                        skip_check_var=c("principalnaicscodeText",
-"NAICS_shorthand",
-"principalNAICS4DigitCode")
-
-               )
+debug(read_and_join_experiment)
+NAICS_summary<-read_and_join_experiment(NAICS_summary,
+                                                 lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                                 path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                                 dir="economic/",
+                                                 by="principalnaicscode",
+                                                 skip_check_var=c("principalnaicscodeText",
+                                                                  "NAICS_shorthand",
+                                                                  "principalNAICS4DigitCode")
+)
 
 # https://stackoverflow.com/questions/37174316/how-to-fit-long-text-into-ggplot2-facet-titles
 
@@ -540,13 +534,13 @@ NAICS3top<-ggplot(subset(NAICS_summary,naics_dollar_rank<=4 |
   geom_hline(yintercept=c(1500,2500),linetype="dotted")
 
 NAICS3top_paper<-NAICS3top+ facet_wrap(~NAICS_shorthand,ncol=2)
-ggsave(NAICS3top_paper,file="Output\\NAICS3top.png",width=4,height=8,dpi=600)
-ggsave(NAICS3top_paper,file="Output\\NAICS3top.eps",width=4,height=8,dpi=600)
+ggsave(NAICS3top_paper,file="..\\Output\\NAICS3top.png",width=4,height=8,dpi=600)
+ggsave(NAICS3top_paper,file="..\\Output\\NAICS3top.eps",width=4,height=8,dpi=600)
 
 NAICS3top_pp<-NAICS3top+ facet_wrap(~NAICS_shorthand,ncol=4)
 NAICS3top_pp
-ggsave(NAICS3top_pp,file="Output\\NAICS3top_pp.png",width=10.5,height=5.5,dpi=600)
-ggsave(NAICS3top_pp,file="Output\\NAICS3top_pp.eps",width=10.5,height=5.5,dpi=600)
+ggsave(NAICS3top_pp,file="..\\Output\\NAICS3top_pp.png",width=10.5,height=5.5,dpi=600)
+ggsave(NAICS3top_pp,file="..\\Output\\NAICS3top_pp.eps",width=10.5,height=5.5,dpi=600)
 
 summary(NAICS_summary$naics_count_rank)
 
@@ -563,8 +557,8 @@ NAICS3top8<-ggplot(subset(NAICS_summary,naics_dollar_rank<=8),
   geom_hline(yintercept=c(1500,2500),linetype="dotted")
 
 NAICS3top8_wide<-NAICS3top8+ facet_grid(.~NAICS_shorthand)
-ggsave(NAICS3top8_wide,file="Output\\NAICS3top8.png",width=9.5,height=4,dpi=600)
-ggsave(NAICS3top8_wide,file="Output\\NAICS3top8.eps",width=9.5,height=4,dpi=600)
+ggsave(NAICS3top8_wide,file="..\\Output\\NAICS3top8.png",width=9.5,height=4,dpi=600)
+ggsave(NAICS3top8_wide,file="..\\Output\\NAICS3top8.eps",width=9.5,height=4,dpi=600)
 
 colnames(NAICS_summary)
 NAICS_long<-NAICS_summary[,colnames(NAICS_summary) %in% c( "principalnaicscode",
@@ -609,10 +603,10 @@ NAICS3long<-ggplot(subset(NAICS_long,naics_dollar_rank<=8),
 
 
 NAICS3long_wide<-NAICS3long+ facet_grid(variable~NAICS_shorthand,scales="free_y")
-ggsave(NAICS3long_wide,file="Output\\NAICS3long.png",width=9.5,height=5.5,dpi=600)
-ggsave(NAICS3long_wide,file="Output\\NAICS3long.eps",width=9.5,height=5.5,dpi=600)
+ggsave(NAICS3long_wide,file="..\\Output\\NAICS3long.png",width=9.5,height=5.5,dpi=600)
+ggsave(NAICS3long_wide,file="..\\Output\\NAICS3long.eps",width=9.5,height=5.5,dpi=600)
 
-write.csv(NAICS_summary,file="Output/NAICS3_summary.csv",row.names = FALSE)
+write.csv(NAICS_summary,file="..\\Output/NAICS3_summary.csv",row.names = FALSE)
 ```
 
 
@@ -626,15 +620,13 @@ Frequency[["Percent_Freq"]] <- round(Frequency[["Freq"]]/sum(Frequency[["Freq"]]
 colnames(Frequency) <- c("NAICS3", "Count_Freq", "Percent_Freq")
 Percent_Obli <- c()
 for (i in Frequency[["NAICS3"]]) {
-  Percent_Obligation <- round(sum(def_serv[["Action.Obligation"]][def_serv$NAICS3 == i], na.rm = TRUE)/sum(def_serv[["Action.Obligation"]], na.rm = TRUE),5)
+  Percent_Obligation <- round(sum(def_serv[["Action_Obligation.OMB20_GDP18"]][def_serv$NAICS3 == i], na.rm = TRUE)/sum(def_serv[["Action_Obligation.OMB20_GDP18"]], na.rm = TRUE),5)
     Percent_Obli <- c(Percent_Obli, Percent_Obligation)
   }
 Frequency[["Percent_Obli"]] <- Percent_Obli*100
 NAICS3_Freq <- Frequency
 
 #Add detail description to unique NAICS3 code
-NAICS_Lookup <- read.csv(file = "https://raw.githubusercontent.com/CSISdefense/Vendor/master/Lookup/Lookup_NAICS_code.csv")
-colnames(NAICS_Lookup) <- c("NAICS3", "Description")
 NAICS3_Freq <- left_join(NAICS3_Freq, NAICS_Lookup, by = "NAICS3")
 NAICS3_Freq$Description <- as.character(NAICS3_Freq$Description)
 NAICS3_Freq$Description <- paste(NAICS3_Freq$NAICS, " - ", NAICS3_Freq$Description)
@@ -674,9 +666,9 @@ Office_Freq$Office_Full <- ifelse(Office_Freq$OfficeName == "NULL", Office_Freq$
 
 
 Percent_Obli <- c()
-Total_Obli <- sum(def_dup$Action.Obligation, na.rm = TRUE)
+Total_Obli <- sum(def_dup$Action_Obligation.OMB20_GDP18, na.rm = TRUE)
 for (i in Office_Freq$OfficeID) {
-  Percent_Obligation <- round(sum(def_dup$Action.Obligation[def_dup$Office == i], na.rm = TRUE)/Total_Obli,5)
+  Percent_Obligation <- round(sum(def_dup$Action_Obligation.OMB20_GDP18[def_dup$Office == i], na.rm = TRUE)/Total_Obli,5)
   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
 }
 Office_Freq$Percent_Obli <- Percent_Obli * 100
@@ -728,7 +720,7 @@ Office_barplot
 
 ```{r NAICS6_Summary, fig.width=7.5 , fig.height=3}
 NAICS_summary<-def_serv %>% group_by(NAICS,StartCY,def6_HHI_lag1,def6_obl_lag1,def6_ratio_lag1,US6_avg_sal_lag1) %>%
-  dplyr::summarise(annual_action_obligation=sum(Action.Obligation),
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation.OMB20_GDP18),
                    annual_count=length(StartCY)) 
 
 top_NAICS <- NAICS_summary %>% group_by(NAICS) %>% 
@@ -746,9 +738,9 @@ NAICS_summary$principalnaicscode<-as.character(NAICS_summary$principalnaicscode)
 NAICS_summary<-as.data.frame(NAICS_summary)
 
 NAICS_summary<-read_and_join(NAICS_summary,
-                        lookup_file = "Lookup_PrincipalNAICScode.csv",
-                        path="",
-                        dir="Lookup\\",
+                        lookup_file = "https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                        path="https://raw.githubusercontent.com/CSISdefense/Vendor/master/",
+                        dir="economic/",
                         by="principalnaicscode",
                         skip_check_var=c("principalnaicscodeText",
 "NAICS_shorthand")
@@ -772,13 +764,13 @@ NAICS6top<-ggplot(subset(NAICS_summary,naics_dollar_rank<=4 |
   geom_hline(yintercept=c(1500,2500),linetype="dotted")
 
 NAICS6top_paper<-NAICS6top+ facet_wrap(~NAICS_shorthand,ncol=2)
-ggsave(NAICS6top_paper,file="Output\\NAICS6top.png",width=4,height=8,dpi=600)
-ggsave(NAICS6top_paper,file="Output\\NAICS6top.eps",width=4,height=8,dpi=600)
+ggsave(NAICS6top_paper,file="..\\Output\\NAICS6top.png",width=4,height=8,dpi=600)
+ggsave(NAICS6top_paper,file="..\\Output\\NAICS6top.eps",width=4,height=8,dpi=600)
 
 NAICS6top_pp<-NAICS6top+ facet_wrap(~NAICS_shorthand,ncol=4)
 NAICS6top_pp
-ggsave(NAICS6top_pp,file="Output\\NAICS6top_pp.png",width=10.5,height=5.5,dpi=600)
-ggsave(NAICS6top_pp,file="Output\\NAICS6top_pp.eps",width=10.5,height=5.5,dpi=600)
+ggsave(NAICS6top_pp,file="..\\Output\\NAICS6top_pp.png",width=10.5,height=5.5,dpi=600)
+ggsave(NAICS6top_pp,file="..\\Output\\NAICS6top_pp.eps",width=10.5,height=5.5,dpi=600)
 
 summary(NAICS_summary$naics_count_rank)
 
@@ -795,8 +787,8 @@ NAICS6top8<-ggplot(subset(NAICS_summary,naics_dollar_rank<=8),
   geom_hline(yintercept=c(1500,2500),linetype="dotted")
 
 NAICS6top8_wide<-NAICS6top8+ facet_grid(.~NAICS_shorthand)
-ggsave(NAICS6top8_wide,file="Output\\NAICS6top8.png",width=9.5,height=4,dpi=600)
-ggsave(NAICS6top8_wide,file="Output\\NAICS6top8.eps",width=9.5,height=4,dpi=600)
+ggsave(NAICS6top8_wide,file="..\\Output\\NAICS6top8.png",width=9.5,height=4,dpi=600)
+ggsave(NAICS6top8_wide,file="..\\Output\\NAICS6top8.eps",width=9.5,height=4,dpi=600)
 
 
 colnames(NAICS_summary)
@@ -842,10 +834,10 @@ NAICS6long<-ggplot(subset(NAICS_long,naics_dollar_rank<=8),
 
 
 NAICS6long_wide<-NAICS6long+ facet_grid(variable~NAICS_shorthand,scales="free_y")
-ggsave(NAICS6long_wide,file="Output\\NAICS6long.png",width=9.5,height=5.5,dpi=600)
-ggsave(NAICS6long_wide,file="Output\\NAICS6long.eps",width=9.5,height=5.5,dpi=600)
+ggsave(NAICS6long_wide,file="..\\Output\\NAICS6long.png",width=9.5,height=5.5,dpi=600)
+ggsave(NAICS6long_wide,file="..\\Output\\NAICS6long.eps",width=9.5,height=5.5,dpi=600)
 
-write.csv(NAICS_summary,file="Output/NAICS6_summary.csv",row.names = FALSE)
+write.csv(NAICS_summary,file="..\\Output/NAICS6_summary.csv",row.names = FALSE)
 ```
 
 ```{r barplot for top 20 most frequently appeared NAICS}
@@ -857,8 +849,6 @@ NAICS_Freq_TOP20$Percent_Freq <- round(NAICS_Freq_TOP20$Freq/sum(NAICS_Freq$Freq
 colnames(NAICS_Freq_TOP20) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 
 #Get detail description for each NAICS code
-NAICS_Lookup <- read.csv(file = "Lookup/Lookup_NAICS_code.csv")
-colnames(NAICS_Lookup) <- c("NAICS_Code", "NAICS_DESCRIPTION")
 NAICS_Freq_TOP20 <- left_join(NAICS_Freq_TOP20, NAICS_Lookup, by = "NAICS_Code")
 NAICS_Freq_TOP20 <- NAICS_Freq_TOP20[order(-NAICS_Freq_TOP20$Percent_Freq),]
 NAICS_Freq_TOP20$NAICS_DESCRIPTION <- factor(NAICS_Freq_TOP20$NAICS_DESCRIPTION, levels = rev(NAICS_Freq_TOP20$NAICS_DESCRIPTION))
@@ -888,17 +878,15 @@ Frequency_Plot
 # colnames(NAICS_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 # 
 # #Get detail description for each NAICS code
-# NAICS_Lookup <- read.csv(file = "Lookup/Lookup_NAICS_code.csv")
-# colnames(NAICS_Lookup) <- c("NAICS_Code", "NAICS_DESCRIPTION")
 # NAICS_Freq <- left_join(NAICS_Freq, NAICS_Lookup, by = "NAICS_Code")
 # NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Percent_Freq),]
 # NAICS_Freq$NAICS_DESCRIPTION <- factor(NAICS_Freq$NAICS_DESCRIPTION, levels = rev(NAICS_Freq$NAICS_DESCRIPTION))
 # 
 # Percent_Obli <- c()
-# Total_Obli <- sum(def_serv$Action.Obligation, na.rm = TRUE)
+# Total_Obli <- sum(def_serv$Action_Obligation.OMB20_GDP18, na.rm = TRUE)
 # memory.limit(56000)
 # for (i in NAICS_Freq$NAICS_Code) {
-#   Percent_Obligation <- round(sum(def_serv$Action.Obligation[def_serv$NAICS == i], na.rm = TRUE)/Total_Obli,5)
+#   Percent_Obligation <- round(sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$NAICS == i], na.rm = TRUE)/Total_Obli,5)
 #   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
 #   print(i)
 # }
@@ -978,7 +966,7 @@ statsummary_discrete("CompOffr",def_serv)
 def_serv$office_entity_ca_inc<-def_serv$office_entity_numberofactions_1year+1
 hhi<-statsummary_continuous(HHI_category, def_serv)
 hhi
-write.csv(hhi,file="output/hhi_summary.csv")
+write.csv(hhi,file="..\\Output/hhi_summary.csv")
 statsummary_continuous(complex_category, def_serv)
 statsummary_continuous(capacity_category, def_serv,log=FALSE)
 statsummary_continuous(pair_category, def_serv)
@@ -991,7 +979,7 @@ statsummary_continuous(pair_category, def_serv)
 ```{r Platform, fig.width=6.5 , fig.height=3.25}
 
 library(readr)
-annual_platform_summary<-read_csv(file="output//annual_platform_summary.csv")
+annual_platform_summary<-read_csv(file="..\\Output//annual_platform_summary.csv")
 colnames(annual_platform_summary)[colnames(annual_platform_summary)=="platformPortfolio"]<-"PlatformPortfolio"
 
 platform_no_na<-subset(annual_platform_summary,!is.na(PlatformPortfolio))
@@ -1100,8 +1088,7 @@ def_serv$l_pMarket<-log(def_serv$pMarket+1)
 
 # Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
 # Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
-# ggsave(Effplot,file="Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
-save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
+# ggsave(Effplot,file="..\\Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
 ```
 
 ## Missing Data Measures
@@ -1207,7 +1194,7 @@ sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
 
 #Missing data, how many records
 nrow(def_serv[!complete,])/nrow(def_serv)
-sum(def_serv[!complete,]$Action.Obligation.OMB20_GDP18,na.rm=TRUE)/sum(def_serv$Action.Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv[!complete,]$Action_Obligation.OMB20_GDP18.OMB20,na.rm=TRUE)/sum(def_serv$Action.Obligation.OMB20_GDP18,na.rm=TRUE)
 
 #Missing data how much money?
 length(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1])/
