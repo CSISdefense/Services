@@ -648,25 +648,39 @@ NAICS3_Freq_TOP <- melt(NAICS3_Freq_TOP, id = c("NAICS3", "Count_Freq", "Descrip
 part_grouped_barplot("NAICS3", NAICS3_Freq_TOP) + ggtitle("Top 15 of the most frequently appeared NAICS3")
 ```
 
-
+### Office 
 ```{r grouped percent frequency/obligation barplot for all Office}
 #grouped bar plot for variable Office
 #Perpare data for plot
 #get the detailed desceription for Office by AgencyID and OfficeID
-Office_Lookup <- read.delim("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/office/Office.ContractingOfficeCode.txt")
-def_dup <- def_serv
+# Office_Lookup <- read.delim("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/office/Office.ContractingOfficeCode.txt")
+# def_dup <- def_serv
+
 memory.limit(56000)
-def_dup <- left_join(def_dup, Office_Lookup, by = c("Agency" = "AgencyID", "Office" = "ContractingOfficeCode"))
-Office_Freq <- as.data.frame(table(def_dup$Office, def_dup$ContractingOfficeName))
-colnames(Office_Freq) <- c("OfficeID", "OfficeName","Count_Freq")
+Office_Freq <- def_serv %>% group_by(Office,ContractingOfficeName) %>% summarise(
+  Count_Freq=length(CSIScontractID),
+  Action_Obligation.OMB20_GDP18=sum(Action_Obligation.OMB20_GDP18)
+)
+  
+  # Office_Freq <- Office_Freq[order(-Office_Freq$Freq),]
+# Office_Freq_TOP20 <- Office_Freq[1:20,]   #Get top 20 NAICS has largest frequency count
+Office_Freq$Percent_Freq <- round(Office_Freq$Count_Freq/
+                                   sum(Office_Freq$Count_Freq),4)*100
+Office_Freq$Percent_Obli <- round(Office_Freq$Action_Obligation.OMB20_GDP18/
+                                         sum(Office_Freq$Action_Obligation.OMB20_GDP18),4)*100
+
+colnames(Office_Freq)[colnames(Office_Freq)=="Office"] <- "OfficeID"
+colnames(Office_Freq)[colnames(Office_Freq)=="ContractingOfficeName"] <- "OfficeName"
+
 Office_Freq$Percent_Freq <- round(Office_Freq$Count_Freq/sum(Office_Freq$Count_Freq),4)*100
 Office_Freq <- subset(Office_Freq, (Office_Freq$Count_Freq != 0)&(Office_Freq$Percent_Freq!=0))
 Office_Freq[,1:2] <- lapply(Office_Freq[,1:2], function(x) as.character(x))
-Office_Freq$Office_Full <- ifelse(Office_Freq$OfficeName == "NULL", Office_Freq$OfficeID, Office_Freq$OfficeName)
+
+Office_Freq$Office_Full <- ifelse(is.na(Office_Freq$OfficeName), Office_Freq$OfficeID, Office_Freq$OfficeName)
 
 
 Percent_Obli <- c()
-Total_Obli <- sum(def_dup$Action_Obligation.OMB20_GDP18, na.rm = TRUE)
+Total_Obli <- sum(def_serv$Action_Obligation.OMB20_GDP18, na.rm = TRUE)
 for (i in Office_Freq$OfficeID) {
   Percent_Obligation <- round(sum(def_dup$Action_Obligation.OMB20_GDP18[def_dup$Office == i], na.rm = TRUE)/Total_Obli,5)
   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
@@ -737,17 +751,17 @@ colnames(NAICS_summary)[colnames(NAICS_summary)=="NAICS"]<-"principalnaicscode"
 NAICS_summary$principalnaicscode<-as.character(NAICS_summary$principalnaicscode)
 NAICS_summary<-as.data.frame(NAICS_summary)
 
-NAICS_summary<-read_and_join(NAICS_summary,
-                        lookup_file = "https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
-                        path="https://raw.githubusercontent.com/CSISdefense/Vendor/master/",
-                        dir="economic/",
-                        by="principalnaicscode",
-                        skip_check_var=c("principalnaicscodeText",
-"NAICS_shorthand")
-               )
 
+NAICS_summary<-read_and_join_experiment(NAICS_summary,
+                                                 lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                                 path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                                 dir="economic/",
+                                                 by="principalnaicscode",
+                                                 skip_check_var=c("principalnaicscodeText",
+                                                                  "NAICS_shorthand",
+                                                                  "principalNAICS4DigitCode")
 
-
+)
 
 summary(NAICS_summary$NAICS_shorthand)
 
@@ -869,31 +883,33 @@ Frequency_Plot
 ```
 
 ```{r grouped barplot for NAICS most frequency appeared/has the largest percent obligation }
-# #Percent frequency/obligation grouped bar plot for variable NAICS
-# #Prepare dateframe for plot
-# NAICS_Freq <- as.data.frame(table(def_serv$NAICS))
-# # NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Freq),]
-# # NAICS_Freq_TOP20 <- NAICS_Freq[1:20,]   #Get top 20 NAICS has largest frequency count
-# NAICS_Freq$Percent_Freq <- round(NAICS_Freq$Freq/sum(NAICS_Freq$Freq),4)*100
-# colnames(NAICS_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
-# 
-# #Get detail description for each NAICS code
-# NAICS_Freq <- left_join(NAICS_Freq, NAICS_Lookup, by = "NAICS_Code")
-# NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Percent_Freq),]
-# NAICS_Freq$NAICS_DESCRIPTION <- factor(NAICS_Freq$NAICS_DESCRIPTION, levels = rev(NAICS_Freq$NAICS_DESCRIPTION))
-# 
-# Percent_Obli <- c()
-# Total_Obli <- sum(def_serv$Action_Obligation.OMB20_GDP18, na.rm = TRUE)
-# memory.limit(56000)
-# for (i in NAICS_Freq$NAICS_Code) {
-#   Percent_Obligation <- round(sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$NAICS == i], na.rm = TRUE)/Total_Obli,5)
-#   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
-#   print(i)
-# }
-# NAICS_Freq$Percent_Obli <- Percent_Obli*100
+#Percent frequency/obligation grouped bar plot for variable NAICS
+#Prepare dateframe for plot
+NAICS_Freq <- def_serv %>% group_by(NAICS) %>% summarise(
+  Count_Freq=length(CSIScontractID),
+  Action_Obligation.OMB20_GDP18=sum(Action_Obligation.OMB20_GDP18)
+)
+  
+  # NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Freq),]
+# NAICS_Freq_TOP20 <- NAICS_Freq[1:20,]   #Get top 20 NAICS has largest frequency count
+NAICS_Freq$Percent_Freq <- round(NAICS_Freq$Count_Freq/
+                                   sum(NAICS_Freq$Count_Freq),4)*100
+NAICS_Freq$Percent_Obli <- round(NAICS_Freq$Action_Obligation.OMB20_GDP18/
+                                         sum(NAICS_Freq$Action_Obligation.OMB20_GDP18),4)*100
 
-#The above code need more than 30 mins to run, so just load RData in practice
-load(file = "Data/NAICS_Freq_all.RData")
+colnames(NAICS_Freq)[colnames(NAICS_Freq)=="NAICS"] <- "NAICS_Code"
+NAICS_Freq$NAICS_Code<-factor(NAICS_Freq$NAICS_Code)
+
+#Get detail description for each NAICS code
+NAICS_Freq <- left_join(NAICS_Freq, NAICS_Lookup, by = "NAICS_Code")
+NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Percent_Freq),]
+NAICS_Freq$NAICS_DESCRIPTION <- factor(NAICS_Freq$NAICS_DESCRIPTION, levels = rev(NAICS_Freq$NAICS_DESCRIPTION))
+
+
+
+
+memory.limit(56000)
+
 
 NAICS_Freq_top10Freq <- NAICS_Freq[order(-NAICS_Freq$Percent_Freq),]
 NAICS_Freq_top10Freq <- NAICS_Freq_top10Freq[1:10, ]
@@ -909,6 +925,7 @@ NAICS_Freq_TOP$NAICS_DESCRIPTION <- factor(NAICS_Freq_TOP$NAICS_DESCRIPTION, lev
 NAICS_Freq_TOP <- melt(NAICS_Freq_TOP, id = c("NAICS_Code","Count_Freq","NAICS_DESCRIPTION"))
 #NAICS_Freq_TOP <- merge(NAICS_Freq_top20Freq, NAICS_Freq_top20Obli, by= "NAICS_Code", all=TRUE)
 
+(
 NAICS_barPlot <- ggplot(data = NAICS_Freq_TOP, 
                          aes(x = NAICS_DESCRIPTION, 
                              y = value,
@@ -927,8 +944,7 @@ NAICS_barPlot <- ggplot(data = NAICS_Freq_TOP,
                         legend.margin = margin(t=-0.8, r=0, b=0.5, l=0, unit = "cm"),
                         legend.text = element_text(margin = margin(r=0.5, unit = "cm")),
                         plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm"))
-
-NAICS_barPlot
+)
 ```
 
 ##### Detailed Industry HHI                            
@@ -951,16 +967,16 @@ NA_stats(def_serv,"cl_def3_HHI_lag1")
 `
 ```{r statistic summary table for continuous variables: cl_def_HHI_lag1, cl_def_ratio_lag1, cl_US_avg_sal_lag1, cl_def_obl_lag1, all use original variables instead}
 
-!is.na(def_serv$cl_US6_avg_sal_lag1)&
-  !is.na(def_serv$pPBSC)&
-!is.na(def_serv$pOffPSC)&
+# !is.na(def_serv$cl_US6_avg_sal_lag1)&
+#   !is.na(def_serv$pPBSC)&
+# !is.na(def_serv$pOffPSC)&
 
-
+HHI_category<-c("def3_HHI_lag1","def6_HHI_lag1")
 complex_category <- c("US6_avg_sal_lag1","CFTE_Rate_1year")
 capacity_category <- c("pPBSC", "pOffPSC")
 pair_category <- c("office_entity_ca_inc")
 
-def_serv$CFTE_Rate_1year
+# def_serv$CFTE_Rate_1year
 statsummary_discrete("CompOffr",def_serv)
 
 def_serv$office_entity_ca_inc<-def_serv$office_entity_numberofactions_1year+1
@@ -972,64 +988,6 @@ statsummary_continuous(capacity_category, def_serv,log=FALSE)
 statsummary_continuous(pair_category, def_serv)
 
 
-
-```
-
-### Platform Portfolio
-```{r Platform, fig.width=6.5 , fig.height=3.25}
-
-library(readr)
-annual_platform_summary<-read_csv(file="..\\Output//annual_platform_summary.csv")
-colnames(annual_platform_summary)[colnames(annual_platform_summary)=="platformPortfolio"]<-"PlatformPortfolio"
-
-platform_no_na<-subset(annual_platform_summary,!is.na(PlatformPortfolio))
-labels_and_colors<-csis360::prepare_labels_and_colors(platform_no_na,"PlatformPortfolio")
-
-
-
-platform_no_na$plat_short <-swr(platform_no_na$PlatformPortfolio,nwrap = 21)
-platform_no_na<-subset(platform_no_na,Fiscal.Year>=2000 & Fiscal.Year<=2017)
-
- 
-
-# plat<-ggplot(platform_no_na,
-#        aes(x=Fiscal.Year,y=hh_index))+#color=NAICS_Code
-#   geom_line()+
-#   scale_y_continuous(label=scales::comma)+ 
-#   # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
-#   labs(x="Fiscal Year",y="Herfindahl-Herschman Index")+ 
-#   geom_hline(yintercept=c(1500,2500),linetype="dotted")+
-#   facet_wrap(~plat_short)
-# add_preassigned_scales(plat,labels_and_colors = labels_and_colors)
-
-# str(platform_no_na)
-# summary(platform_no_na$Fiscal.Year)
-#
-# undebug(add_preassigned_scales)
-plat<-build_plot(
-  data=platform_no_na,
-  chart_geom = "Line Chart",
-  share = FALSE,
-  x_var="Fiscal.Year",
-  y_var="hh_index", #Name of variable to plot on y-axis
-  color_var="PlatformPortfolio",       # name of coloration variable, as string
-  facet_var="PlatformPortfolio",        # name of facet variable, as string
-  legend=FALSE, #Include a legend
-  caption=FALSE, #Include a source caption
-  labels_and_colors=labels_and_colors,
-  column_key=NULL
-)
-
-
-# add_preassigned_scales(plat, labels_and_colors,  var="PlatformPortfolio"
-
-plat<-plat+geom_hline(yintercept=c(1500,2500),linetype="dotted")+
-  labs(x="Fiscal Year",y="Herfindahl-Herschman Indetx")
-plat
-ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index,color=PlatformPortfolio),size=1),filename="Output//platform_hhi.png",height=3.25, width=6.5)
-ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index)),filename="Output//platform_hhi_bw.png",height=3.25, width=6.5)
-ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index,color=PlatformPortfolio),size=1),filename="Output//platform_hhi.eps",height=3.25, width=6.5)
-ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index)),filename="Output//platform_hhi_bw.eps",height=3.25, width=6.5)
 
 ```
 
