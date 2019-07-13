@@ -1,0 +1,2210 @@
+---
+title: "Contract Termination and Ceiling Breaches "
+author: "Greg Sanders"
+date: "Wednesday, February 8, 2117"
+output:
+  html_document:
+    keep_md: yes
+--- 
+
+Modeling Likelihood of Contract Termination, Ceiling Breach, or Exercised Option
+============================================================================
+
+#Setup
+```{r Libraries, echo = FALSE}
+library(csis360)
+library(ggplot2)
+library(arm)
+library(R2WinBUGS)
+library(dplyr)
+library(Hmisc)
+library(stargazer)
+library(dummies)
+library(optimx)
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+
+axis.text.size<-10
+strip.text.size<-10
+legend.text.size<-8
+# table.text.size<-5.75
+title.text.size<-12
+geom.text.size<-12
+
+main.text.size<-1
+note.text.size<-1.40
+
+
+```
+
+
+
+##Load Data
+First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from FPDS.
+
+```{r ReadInData, echo = TRUE}
+load(file="..//data//clean//def_sample.Rdata")
+```
+
+
+The sample is created by including the entirity of the ARRA and Disaster datasets, as well as 100,000 records each from the OCO datase and another 100,000 from all remaining records.
+
+#Study Variables
+
+##Services Complexity
+Expectation: Higher service complexity would make work more demanding and thus raises the risks of negative contracting outcomes, namely the likelihood of cost ceiling breaches and terminations increases and the likelihood exercised options decraeses.
+
+### 01A NAICS Salary
+Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS salary increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases) and exercised options decreases (increases).
+
+```{r Model01A}
+
+ # !is.na(def_serv$cl_US6_avg_sal_lag1)&
+ #  !is.na(def_serv$cl_CFTE)&
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1Const")
+
+#Scatter Plot of Opt_01A
+ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1Const, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_01A <- glm (data=serv_smp,
+                 b_CBre ~ cl_US6_avg_sal_lag1Const, family=binomial(link="logit"))
+display(CBre_01A)
+
+#Model
+Term_01A <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const, family=binomial(link="logit"))
+
+
+Opt_01A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_US6_avg_sal_lag1Const)
+
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_01A,Term_01A,Opt_01A,type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_01A,Term_01A,skip_vif = TRUE)
+
+
+
+```
+
+Individually, except for terminations (which is not significant), expectations are matched for ceiing breaches and exercised options, as higher average salaries estimate a higher risk of ceiling breaches and lower possibility of exercised options. 
+
+
+### 01B Invoice Rate
+Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employees who are supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases), and exercised options decrease (increase).
+
+```{r Model01B}
+
+ # !is.na(def_serv$cl_US6_avg_sal_lag1)&
+ #  !is.na(def_serv$cl_CFTE)&
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+summary_continuous_plot(serv_smp,"cl_CFTE")
+
+#Scatter Plot 
+ggplot(serv_opt, aes(x=cl_CFTE, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_01B <- glm (data=serv_smp,
+                 b_CBre ~ cl_CFTE, family=binomial(link="logit"))
+display(CBre_01B)
+
+#Model
+Term_01B <- glm (data=serv_smp,
+                 b_Term ~ cl_CFTE, family=binomial(link="logit"))
+
+
+Opt_01B <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_CFTE)
+
+
+
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_01A,CBre_01B,
+                       Term_01A,Term_01B,
+                       Opt_01A,Opt_01B,
+                       type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_01B,Term_01B, skip_vif = TRUE)
+summary_residual_compare(CBre_01A,CBre_01B,Term_01A,Term_01B, skip_vif = TRUE)
+
+
+
+```
+
+When considered alone, expectations are matched for ceiling breaches and exercised options, as higher invoice rate estimates a higher risk of ceiling breaches and lower possibility of exercised options. No significant relationship between invoice rate and terminations.
+
+
+
+### 01C Service Complexity
+Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), the higher risk of ceiling breaches and terminations and the less exercised options there would be. Also we expect the result of combined model would be the same as individual models.
+
+ 
+```{r Model01C}
+
+
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+
+#Model
+CBre_01C <- glm (data=serv_smp,
+                 b_CBre ~ cl_US6_avg_sal_lag1Const + cl_CFTE, family=binomial(link="logit"))
+glmer_examine(CBre_01C)
+
+#Model
+Term_01C <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + cl_CFTE, family=binomial(link="logit"))
+
+glmer_examine(Term_01C)
+
+Opt_01C <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_US6_avg_sal_lag1Const +  cl_CFTE)
+
+glmer_examine(Opt_01C)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_01A,CBre_01B,CBre_01C,
+                       Term_01A,Term_01B,Term_01C,
+                       Opt_01A,Opt_01B,Opt_01C,
+                       type="text",
+                       digits=2)
+
+
+  summary_residual_compare(CBre_01C,Term_01C, skip_vif = TRUE)
+  summary_residual_compare(CBre_01A,CBre_01C,Term_01A,Term_01C)
+  summary_residual_compare(CBre_01B,CBre_01C,Term_01B,Term_01C)
+
+
+
+```
+
+Both average salary and invoiced rate have a not inconsiderable VIF but one well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
+
+Both individually and pair-wise, higher average salary and invoiced rate estimate higher possibility of cost ceiling breaches and lower likelihood of exercised options as expected. But the termination expectation is not supported or not significant for two measures of service complexity resepctively.
+
+
+
+## Office Capacity
+
+### 02A: Performance Based Services
+Expectation: Performance-based services contracting ties a portion of a contractor's payment, contract extensions, or contract renewals to the achievement of specific, measurable performance standards and requirements, which encourages better contracting results. PBSC has the potential to reduce terminations and ceiling breaches and bring more possibility of exercised options.
+
+```{r Model02A}
+
+summary_continuous_plot(serv_smp,"pPBSC")
+
+#Scatter Plot 
+ggplot(serv_opt, aes(x=c_pPBSC, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_02A <- glm (data=serv_smp,
+                 b_CBre ~ c_pPBSC, family=binomial(link="logit"))
+display(CBre_02A)
+
+#Model
+Term_02A <- glm (data=serv_smp,
+                 b_Term ~ c_pPBSC, family=binomial(link="logit"))
+
+display(Term_02A)
+
+Opt_02A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ c_pPBSC)
+
+display(Opt_02A)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_01C,CBre_02A,
+                       Term_01C,Term_02A,
+                       Opt_01C,Opt_02A,
+                       type="text",
+                       digits=2)
+
+
+
+```
+
+When considering PBSC alone, none of the expected sign was found in ceiling breaches, terminations or exercised options.
+
+
+### 02B: No.Office PSC History
+Expectation: The increasing share of contracting office obligations for a given service indicates high capcaity in that area, lower likelihood of cost ceiling breaches and termination and higher likelihood of exercised options are expected to be observed.
+
+```{r Model02B}
+
+ # !is.na(def_serv$cl_US6_avg_sal_lag1)&
+ #  !is.na(def_serv$cl_CFTE)&
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+summary_continuous_plot(serv_smp,"c_pOffPSC")
+
+#Scatter Plot 
+ggplot(serv_opt, aes(x=c_pOffPSC, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_02B <- glm (data=serv_smp,
+                 b_CBre ~ c_pOffPSC, family=binomial(link="logit"))
+display(CBre_02B)
+
+#Model
+Term_02B <- glm (data=serv_smp,
+                 b_Term ~ c_pOffPSC, family=binomial(link="logit"))
+
+display(Term_02B)
+
+Opt_02B <- glm(data=serv_opt,
+                        lp_OptGrowth ~ c_pOffPSC)
+
+display(Opt_02B)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_01C,CBre_02A,CBre_02B,
+                       Term_01C,Term_02A,Term_02B,
+                       Opt_01C,Opt_02A,Opt_02B,
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(CBre_02A,CBre_02B,Term_02A,Term_02B, skip_vif = TRUE)
+
+```
+
+When considering number of contracting office obligations for a given service alone, expectation was only fulfilled for options growth.
+
+
+### 02C: Office Capacity
+Expectation: Collaberactively, the larger share of PBSC and contracting office obligations for a given service, the less risk of ceiling breaches and terminations and the more exercised options there would be. Also we expect the results of combined model would be the same as two individual models above. 
+
+```{r Model02C}
+
+
+#Model
+CBre_02C <- glm (data=serv_smp,
+                 b_CBre ~ c_pPBSC+c_pOffPSC, family=binomial(link="logit"))
+glmer_examine(CBre_02C)
+
+#Model
+Term_02C <- glm (data=serv_smp,
+                 b_Term ~ c_pPBSC+c_pOffPSC, family=binomial(link="logit"))
+
+glmer_examine(Term_02C)
+
+Opt_02C <- glm(data=serv_opt,
+                        lp_OptGrowth ~ c_pPBSC+c_pOffPSC)
+
+glmer_examine(Opt_02C)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_01C,CBre_02A,CBre_02B,CBre_02C,
+                       Term_01C,Term_02A,Term_02B,Term_02C,
+                       Opt_01C,Opt_02A,Opt_02B,Opt_02C,
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(CBre_02A,CBre_02C,Term_02A,Term_02C)
+summary_residual_compare(CBre_02B,CBre_02C,Term_02B,Term_02C)
+
+
+```
+
+No high correlation is observed between PBSC and Contract Office Obligations for PSC based on the vif score.
+
+After combining PBSC and Contract office obligations for PSC, PBSC had a flipped relationship with ceiling breaches that matches with expectation (A look at summary statistics for Performance-Based experience did find that as the percent of performance-based service went from 0 percent to 75 percent, the ceiling breach rate declined. Above 75 percent, it rose dramatically, suggesting an additional variable may influence that relationship.) but lost significance with terminations. Contract office obligations for PSC is associate with more exercised options. The rest of results remained unmatching with expectations.
+
+
+### 02D: Cumulative  Model
+Expectation: When all the four variables are combined into one model, same expectations are applied as individual ones. Per service complexity indicator increases, higher risk of ceiling breaches and terminations and less exercised options expected. Per office capacity indicator increases, lower risk of ceiling breaches and terminations and more exercised options expected.
+
+```{r Model02D}
+
+
+#Model
+CBre_02D <- glm (data=serv_smp,
+                 b_CBre ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC, family=binomial(link="logit"))
+glmer_examine(CBre_02D)
+
+#Model
+Term_02D <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + cl_CFTE+c_pPBSC+c_pOffPSC, family=binomial(link="logit"))
+
+glmer_examine(Term_02D)
+
+Opt_02D <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC)
+
+glmer_examine(Opt_02D)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_01C,CBre_02C,CBre_02D,
+                       Term_01C,Term_02C,Term_02D,
+                       Opt_01C,Opt_02C,Opt_02D,
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(CBre_02C,CBre_02D,Term_02C,Term_02D)
+summary_residual_compare(CBre_01C,CBre_02D,Term_01C,Term_02D)
+
+```
+
+No high correlation is observed among all of the 4 predictors (average salary, invoiced rate, PBSC and Contract Office Obligations for PSC) so far based on the vif score. When all measures for sevice complexity and office capacity are combined, per dependent variable:
+
+1. Ceiling Breaches: All variables remain the same within each subgroup (Services Complexity and Office Capacity). Except for Contract office obligations for PSC, the results of other varibles matched with the expectation for ceiling breaches so far. 
+
+2. Terminations: Except for Contract office obligations for PSC, the rest of variables didn't show significant relationships with Termination. The only significant relationship between Contract office obligations for PSC and Temrination didn't match the expectation.
+
+3. Exercised Options: Except for PBSC, all other three variables are associated with exercised options as expected.
+
+
+
+## Office-Vendor Relationship
+
+### 03A: Pair History
+Expactation: The number of past years of the relationship between the contracting office or the contractors with a single transaction in a given fiscal year enough to qualify, namely, pair history increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and the exercised options increase (decrease) for that partnership.
+
+```{r Model03A}
+
+ # !is.na(def_serv$cl_US6_avg_sal_lag1)&
+ #  !is.na(def_serv$cl_CFTE)&
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+summary_discrete_plot(serv_smp,"c_pairHist")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=c_pairHist, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_03A <- glm (data=serv_smp,
+                 b_CBre ~ c_pairHist, family=binomial(link="logit"))
+display(CBre_03A)
+
+#Model
+Term_03A <- glm (data=serv_smp,
+                 b_Term ~ c_pairHist, family=binomial(link="logit"))
+
+display(Term_03A)
+
+Opt_03A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ c_pairHist)
+
+display(Opt_03A)
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_02D,CBre_03A,
+                       Term_02D,Term_03A,
+                       Opt_02D,Opt_03A,
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(CBre_02D,CBre_03A,Term_02D,Term_03A, skip_vif = TRUE)
+
+```
+
+When considering pair history alone, expectations were met for ceiling breaches and terminations, but not for exercised options. 
+
+
+### 03B: Interaction
+Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and that of exercised options increases (decreases) for that partnership.
+
+```{r Model03B}
+
+ # !is.na(def_serv$cl_US6_avg_sal_lag1)&
+ #  !is.na(def_serv$cl_CFTE)&
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+summary_continuous_plot(serv_smp,"cl_pairCA")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_pairCA, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_03B <- glm (data=serv_smp,
+                 b_CBre ~ cl_pairCA, family=binomial(link="logit"))
+display(CBre_03B)
+
+
+Term_03B <- glm (data=serv_smp,
+                 b_Term ~ cl_pairCA, family=binomial(link="logit"))
+
+display(Term_03B)
+
+Opt_03B <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_pairCA)
+
+display(Opt_03B)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_02D,CBre_03A,CBre_03B,
+                       Term_02D,Term_03A,Term_03B,
+                       Opt_02D,Opt_03A,Opt_03B,
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(CBre_03A,CBre_03B,Term_03A,Term_03B, skip_vif = TRUE)
+summary_residual_compare(CBre_02D,CBre_03B,Term_02D,Term_03B, skip_vif = TRUE)
+
+```
+
+When considering contract actions alone, no expectation were met. The patterns in the plots are complex, ceiling breaches has a sinusoidal or perhaps exponential relationship while terminations has an neative relationship, until the number of ations grows extreme at which point the risk jumps up.
+
+### 03C: Office-Vendor Relationship
+Expectation: 
+The importance of partnership, trust, and handling difficult problems and uncertainty together naturally lead into the last characteristic: the relationship between the contractor and buyer. The higher level of interaction provides the more opportunity to build a deeper relationship, the likelihood of cost ceiling breaches and terminations decreases and the exercised options increase for that partnership. Also we expect the result of combined model would be the same as individual models above.
+
+```{r Model03C}
+
+ # !is.na(def_serv$cl_US6_avg_sal_lag1)&
+ #  !is.na(def_serv$cl_CFTE)&
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+#Model
+CBre_03C <- glm (data=serv_smp,
+                 b_CBre ~ c_pairHist+cl_pairCA, family=binomial(link="logit"))
+glmer_examine(CBre_03C)
+
+#Model
+Term_03C <- glm (data=serv_smp,
+                 b_Term ~ c_pairHist+cl_pairCA, family=binomial(link="logit"))
+
+glmer_examine(Term_03C)
+
+Opt_03C <- glm(data=serv_opt,
+                        lp_OptGrowth ~ c_pairHist+cl_pairCA)
+
+glmer_examine(Opt_03C)
+
+#Plot residuals versus fitted
+  stargazer::stargazer(CBre_02D,CBre_03A,CBre_03B,CBre_03C,
+                       Term_02D,Term_03A,Term_03B,Term_03C,
+                       Opt_02D,Opt_03A,Opt_03B,Opt_03C,
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(CBre_03A,CBre_03C,Term_03A,Term_03C)
+summary_residual_compare(CBre_03B,CBre_03C,Term_03B,Term_03C)
+summary_residual_compare(CBre_02D,CBre_03C,Term_02D,Term_03C)
+
+```
+
+When combining pair history and contract actions, magnitude of relationships with dependent variables incraesed, but the agreement with expectations splited in the same way as individually.  
+
+
+### 03D: Cumulative  Model
+
+Expectation: Under each subgroup, the predictors are expected to have similar impacts on dependent variables individually and cumulatively:
+1. Higher Services Complexity: Higher likelihood of cost ceiling breaches and terminations; Less exercised options
+2. Larger Office Capacity: Lower likelihood of cost ceiling breaches and terminations; More exercised options
+3. Deeper Office-Vendor Relationship: Lower likelihood of cost ceiling breaches and terminations; More exercised options
+
+```{r Model03D}
+
+#Model
+CBre_03D <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA, family=binomial(link="logit"))
+glmer_examine(CBre_03D)
+
+#Model
+Term_03D <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA, family=binomial(link="logit"))
+
+glmer_examine(Term_03D)
+
+Opt_03D <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA)
+
+glmer_examine(Opt_03D)
+
+#Plot residuals versus fitted   
+
+stargazer::stargazer(CBre_02D,CBre_03C,CBre_03D,
+                       Term_02D,Term_03C,Term_03D,
+                       Opt_02D,Opt_03C,Opt_03D,
+                       type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_03C,CBre_03D,Term_03C,Term_03D)
+summary_residual_compare(CBre_02D,CBre_03D,Term_02D,Term_03D)
+
+```
+
+None of the predictors has high level of correlation (vif over 1.7) with each other. 
+In the cumulative model, per dependent variable and independent variable:
+
+1. Ceiling breaches:
+   A. Service Complexity:
+      The relationship with average salary gained significance in line with expectation.
+      The result for both average salary and invoice rate matched with expectation.
+      
+   B. Office Capacity: 
+      The relationship with PBSC matched with expectation but with less magnitude.
+      The result for office obligations did not match with expectation.
+     
+   C. Office-Vendor Relationship:
+      The result for pair history matched with expectation 
+      The relationship with contract actions reverse and now align with expectations.
+
+2. Terminations:
+   A. Service Complexity:
+      The reult for average salary did not match with expectation.
+      The result for invoice rate did matach with expectation, only significant (for p-value <0.5), which is still sufficient.
+      
+   B. Office Capacity: 
+      The relationship with PBSC was not significant.
+      The result for office obligations did not match with expectation.
+     
+   C. Office-Vendor Relationship:
+      The result for pair history matched with expectation once all variables included.
+      The result for contract actions did not match with expectation.
+
+3. Exercised Options:
+  A. Service Complexity:
+      The result for both average salary and invoice rate matached with expectation but with less magnitude.
+      
+   B. Office Capacity: 
+      The result for PBSC didn't match with expectation.
+      The result for office obligations matched with expectation.
+     
+   C. Office-Vendor Relationship:
+      The result for pair history lost significance and didn't match with expectations.
+      The result for contract actions didn't match with expectation.
+
+
+
+## Study Variables Summary
+
+```{r StudyVariableSummary}
+
+
+ # !is.na(def_serv$cl_US6_avg_sal_lag1)&
+ #  !is.na(def_serv$cl_CFTE)&
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+coef.list<-list("(Intercept)"="(Intercept)",
+                "cl_US6_avg_sal_lag1"="Log(Det. Ind. Salary)",
+                                     "cl_CFTE"="Log(Service Invoice Rate)",
+                                     "c_pPBSC"="Office Perf.-Based %",
+                                     "c_pOffPSC"="Office Service Exp. %",
+                                     "c_pairHist"="Paired Years",
+                                     "cl_pairCA"="Log(Paired Actions)",
+                                     "cl_def3_HHI_lag1"="Log(Subsector HHI)",
+                                     "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
+                                     "CompOffr1 offer"="Comp=1 offer",
+                                     "CompOffr2 offers"="Comp=2 offers",
+                                     "CompOffr3-4 offers"="Comp=3-4 offers",
+                                     "CompOffr5+ offers"="Comp=5+ offers",
+                                     "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
+                                     "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
+                                     "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
+                                     
+                                     "cl_Ceil"="Log(Init. Ceiling)",
+                                     "capped_cl_Days"="Log(Init. Days)",
+                                     "VehS-IDC"="Vehicle=S-IDC",
+                                     "VehM-IDC"="Vehicle=M-IDC",
+                                     "VehFSS/GWAC"="Vehicle=FSS/GWAC",
+                                     "VehBPA/BOA"="Vehicle=BPA/BOA",
+                                     "PricingFeeOther FP"="Pricing=Other FP",
+                                     "PricingFeeIncentive"="Pricing=Incentive Fee",
+                                     "PricingFeeCombination or Other"="Pricing=Combination or Other",
+                                     "PricingFeeOther CB"="Pricing=Other CB",
+                                     "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
+                                     "b_UCA"="UCA",
+                                     "b_Intl"="Performed Abroad",
+                                     # # "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
+                                     # "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
+                                     # # "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
+                                     "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
+                                     # "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
+                                     # "CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
+                                     # "CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
+                                     # "CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
+                                     # "CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
+                                     "VehS-IDC:b_Intl"="Vehicle=S-IDC:Performed Abroad",
+                                     "VehM-IDC:b_Intl"="Vehicle=M-IDC:Performed Abroad",
+                                     "VehFSS/GWAC:b_Intl"="Vehicle=FSS/GWAC:Performed Abroad",
+                                     "VehBPA/BOA:b_Intl"="Vehicle=BPA/BOA:Performed Abroad",
+                                     "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
+                                     "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
+                                     "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"="Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
+                                     "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
+                                     "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
+                                     
+                )
+
+
+
+#Ceiling Breaches
+  stargazer::stargazer(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,
+                       type="text",
+                       digits=2)
+
+
+
+texreg::htmlreg(list(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D),file="..//Output//CBre_Model.html",
+                single.row = TRUE,
+                # custom.model.name=c("Ceiling Breaches"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              "Services Complexity" = 2:3,
+                              "Office Capacity" =4:5,
+                              "Past Relationship"=6:7
+                              ),
+                custom.coef.map=coef.list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 6: Logit Bivariate Look at Study Variables and Ceiling Breaches",
+                caption.above=TRUE)
+
+
+
+#Terminations
+stargazer::stargazer(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D,
+                       type="text",
+                       digits=2)
+
+
+
+
+texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D),file="..//Output//Term_Model.html",
+                single.row = TRUE,
+                # custom.model.name=c("Ceiling Breaches"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              "Services Complexity" = 2:3,
+                              "Office Capacity" =4:5,
+                              "Past Relationship"=6:7
+                              ),
+                custom.coef.map=coef.list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 7: Logit Bivariate Look at Study Variables and Terminations",
+                caption.above=TRUE)
+
+
+
+
+
+#Exercised Options
+stargazer::stargazer(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,
+                       type="text",
+                       digits=2)
+
+
+texreg::htmlreg(list(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D),file="..//Output//Opt_Model.html",
+                single.row = TRUE,
+                # custom.model.name=c("Ceiling Breaches"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              "Services Complexity" = 2:3,
+                              "Office Capacity" =4:5,
+                              "Past Relationship"=6:7
+                              ),
+                custom.coef.map=coef.list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 8: Regression Bivariate Look at Study Variables and Log(Options Growth)",
+                caption.above=TRUE)
+
+
+
+
+
+```
+
+# Controls
+
+##Contract-Level Controls
+###Scope Variables
+#### 04A: Cost Ceiling
+
+Expectation: Initial Ceiling size positively estimates increasing probability of ceiling breaches and terminations and negatively estimates the option growth. Terminations and ceiling breaches simply comes down to large being associated with higher risk, while for option growth size imply makes it harder to grow proportionally.
+
+
+```{r Model04A}
+
+#Frequency Plot for unlogged ceiling
+freq_continuous_cbre_plot(serv_smp,"UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
+               bins=1000)
+freq_continuous_cbre_plot(subset(serv_smp,UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18<100000000),
+               "UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
+               bins=1000)
+
+summary_continuous_plot(serv_smp,"cl_Ceil",bins=50)
+summary(serv_smp$cl_Ceil)
+
+str(serv_smp)
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_Ceil, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_04A <- glm (data=serv_smp,
+                 b_CBre ~ cl_Ceil, family=binomial(link="logit"))
+display(CBre_04A)
+
+
+Term_04A <- glm (data=serv_smp,
+                 b_Term ~ cl_Ceil, family=binomial(link="logit"))
+
+display(Term_04A)
+
+Opt_04A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_Ceil)
+
+display(Opt_04A)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_03D,CBre_04A,
+                       Term_03D,Term_04A,
+                       Opt_03D,Opt_04A,
+                       type="text",
+                       digits=2)
+
+
+
+#summary_residual_compare(CBre_03D,CBre_04A,Term_03D,Term_04A, skip_vif = TRUE)
+
+
+```
+
+Contract ceiling has a significant relationship, though the residuals show a possible non-linear patterns. This is most remarkable in the positive centered values between 0 and 1. This may be driven  by a missing value and is worth watching.
+Expectations upheld for ceiling breaches and terminations. Weak expectations for options growth were countered.
+
+#### 04B: Maximum Duration
+
+Expectation: Greater maximum duration will positively estimate the probability ceiling of  breaches and terminations. Greater growth for options is also expected, because year-on-year options may be more of a default, though the scatter plot seems to go the other way.
+
+```{r Model04B}
+#Frequency Plot for max duration
+freq_continuous_cbre_plot(serv_smp,"UnmodifiedDays",
+               bins=1000)
+
+summary_continuous_plot(serv_smp,"capped_cl_Days")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=capped_cl_Days, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_04B <- glm (data=serv_smp,
+                 b_CBre ~ capped_cl_Days, family=binomial(link="logit"))
+display(CBre_04B)
+
+
+Term_04B <- glm (data=serv_smp,
+                 b_Term ~ capped_cl_Days, family=binomial(link="logit"))
+
+display(Term_04B)
+
+Opt_04B <- glm(data=serv_opt,
+                        lp_OptGrowth ~ capped_cl_Days)
+
+display(Opt_04B)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_03D,CBre_04A,CBre_04B,
+                       Term_03D,Term_04A,Term_04B,
+                       Opt_03D,Opt_04A,Opt_04B,
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(CBre_03D,CBre_04B,Term_03D,Term_04B, skip_vif = TRUE)
+summary_residual_compare(CBre_04A,CBre_04B,Term_04A,Term_04B, skip_vif = TRUE)
+
+```
+
+All expections were upheld.
+
+#### 04C: Both Scope variables
+
+```{r Model04C}
+
+#Model
+CBre_04C <- glm (data=serv_smp,
+                 b_CBre ~ cl_Ceil + capped_cl_Days, family=binomial(link="logit"))
+display(CBre_04C)
+
+
+Term_04C <- glm (data=serv_smp,
+                 b_Term ~ cl_Ceil +capped_cl_Days, family=binomial(link="logit"))
+
+display(Term_04C)
+
+Opt_04C <- glm(data=serv_opt,
+                        lp_OptGrowth ~cl_Ceil + capped_cl_Days)
+
+display(Opt_04C)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_03D,CBre_04A,CBre_04B,CBre_04C,
+                       Term_03D,Term_04A,Term_04B,Term_04C,
+                       Opt_03D,Opt_04A,Opt_04B,Opt_04C,
+                       type="text",
+                       digits=2)
+
+
+
+#summary_residual_compare(CBre_03D,CBre_04C,Term_03D,Term_04C)
+#summary_residual_compare(CBre_04A,CBre_04C,Term_04A,Term_04C)
+#summary_residual_compare(CBre_04B,CBre_04C,Term_04B,Term_04C)
+
+```
+Days loses significance for ceiling breaches. Ceiling has a smaller coefficient for terminations. Otherwise largely unchanged.
+
+#### 04D: Cumulative  Model
+
+```{r Model04D}
+
+#Model
+CBre_04D <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days, family=binomial(link="logit"))
+glmer_examine(CBre_04D)
+
+#Model
+Term_04D <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Ceil + capped_cl_Days, family=binomial(link="logit"))
+
+glmer_examine(Term_04D)
+
+Opt_04D <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days)
+
+glmer_examine(Opt_04D)
+
+#Plot residuals versus fitted   
+
+stargazer::stargazer(CBre_03D,CBre_04C,CBre_04D,
+                       Term_03D,Term_04C,Term_04D,
+                       Opt_03D,Opt_04C,Opt_04D,
+                       type="text",
+                       digits=2)
+
+
+#summary_residual_compare(CBre_03D,CBre_04D,Term_03D,Term_04D)
+#summary_residual_compare(CBre_04C,CBre_04D,Term_04C,Term_04D)
+
+
+```
+Salary no longer matches expectations for ceiling breaches. Invoice rate is no longer significant for terminations. 
+
+
+### Competition
+#### 05A: No Competition / 1 / 2-4 / 5+ Offers
+Expectations
+No Competition (Baseline)			+	-	-
+1 Offer			+	-	-
+2-4 Offers			-	+	+
+5+ Offers			-	+	-
+
+```{r Model05A}
+summary_discrete_plot(serv_smp,"Comp1or5")
+
+
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=Comp1or5, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_05A <- glm (data=serv_smp,
+                 b_CBre ~ Comp1or5, family=binomial(link="logit"))
+display(CBre_05A)
+
+
+Term_05A <- glm (data=serv_smp,
+                 b_Term ~ Comp1or5, family=binomial(link="logit"))
+
+display(Term_05A)
+
+Opt_05A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ Comp1or5)
+
+display(Opt_05A)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_04D,CBre_05A,
+                       Term_04D,Term_05A,
+                       Opt_04D,Opt_05A,
+                       type="text",
+                       digits=2)
+
+
+
+
+
+```
+Expectations were completely unmet for ceiling breaches. For terminations, expectations were met for 2-4 offers and 5+ offers, but not for 1 offer. For ceiling breaches expectations were met for 1 offer, but not for 2-4 or 5+.
+
+#### 05B: Cumulative  Model
+
+```{r Model05B}
+
+#Model
+CBre_05B <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5, family=binomial(link="logit"))
+glmer_examine(CBre_05B)
+
+#Model
+Term_05B <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5, family=binomial(link="logit"))
+
+glmer_examine(Term_05B)
+
+Opt_05B <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5)
+
+glmer_examine(Opt_05B)
+
+#Plot residuals versus fitted   
+
+stargazer::stargazer(CBre_04D,CBre_05A,CBre_05B,
+                       Term_04D,Term_05A,Term_05B,
+                       Opt_04D,Opt_05A,Opt_05B,
+                       type="text",
+                       digits=2)
+
+
+#summary_residual_compare(CBre_04D,CBre_05B,Term_04D,Term_05B)
+
+```
+Minimal effect on study variables. 2-4 offers for terminations is not  longer significant, it's really 5+ that boosts the risks. But for exercised options, 5+ leads to more options while fewer having negative relationship with 2-4 offers, but only significant with p-value < 0.1 
+
+### Contract Vehicle
+
+#### 06A: Def/Pur; S-IDC; M-IDC; FSS-GWAC; BPA-BOA.
+
+Old text:
+Expectation: Indefinite delivery vehicles, means that the government has an existing relationship with the vendor and administration is easier. The downside is that the government may be locked into the vendor, although exit does not necessarily require outright termination, instead the government may simply cease to use a vehicle. Taken together, across the board the four categories of vehicles are expected to  negatively estimate the probability of termination. Ceiling breaches are a more complex topic and the study team does not have immediate expecations aside from likely significance.
+Definitive Contract (base)			+	+	+
+Single-Award IDC			-	-	-
+Multi-Award IDC			-	-	-
+FSS/GWAC			-	-	-
+BPA/BOA			-	-	-
+
+
+```{r Model06A}
+
+summary_discrete_plot(serv_smp,"Veh")
+
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=Veh, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_06A <- glm (data=serv_smp,
+                 b_CBre ~ Veh, family=binomial(link="logit"))
+display(CBre_06A)
+
+
+Term_06A <- glm (data=serv_smp,
+                 b_Term ~ Veh, family=binomial(link="logit"))
+
+display(Term_06A)
+
+Opt_06A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ Veh)
+
+display(Opt_06A)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_05B,CBre_06A,
+                       Term_05B,Term_06A,
+                       Opt_05B,Opt_06A,
+                       type="text",
+                       digits=2)
+
+#summary_residual_compare(CBre_05D,CBre_06A,Term_05D,Term_06A)
+
+
+```
+For ceiling breaches, IDCs, particularly multiaward IDCs, were more likely to have breaches contrary to expecatitions.
+
+For terminations expectation were upheld or S-IDCs and BPA/BOA. They were not upheld for multi-award, which is significantly more likely to be terminated.
+
+Expectations were largely upheld for options exercised, with the exception of FSS/GWAC.
+
+
+#### 06B: Cumulative  Model
+
+```{r Model06B}
+
+#Model
+CBre_06B <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh, family=binomial(link="logit"))
+glmer_examine(CBre_06B)
+
+#Model
+Term_06B <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh, family=binomial(link="logit"))
+
+glmer_examine(Term_06B)
+
+Opt_06B <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5+
+                   Veh)
+
+glmer_examine(Opt_06B)
+
+#Plot residuals versus fitted   
+
+stargazer::stargazer(CBre_05B,CBre_06A,CBre_06B,
+                       Term_05B,Term_06A,Term_06B,
+                       Opt_05B,Opt_06A,Opt_06B,
+                       type="text",
+                       digits=2)
+
+
+#summary_residual_compare(CBre_05B,CBre_06B,Term_05B,Term_06B)
+
+```
+Expectations for vehicle are now upheld for both ceiling breaches and terminations. For other variables the addition of vehicle proved less pivotal, though coefficients were often decreased.
+
+### Type of Contract
+
+The next step adds a measure for whether the contract was cost-based or fixed-price. 
+
+Expectation Prior CSIS research has found that fixed-price contracts estimate a higher probability of terminations but did not find a notable relationship for ceiling breaches.
+
+#### 07A: FFP / Other FP / Incentive / T&M/FP:LOE;LH / Other CB / Combination
+
+Firm-Fixed Price (base)			+	++	+
+Other Fixed Price			-	-	-
+Time & Materials / Labor Hours / FP: LoE			+	-	-
+Incentive Fee (both FPIF or CBIF)			-	-	+
+Other Cost Based			-	-	-
+Undefinitized Contract Award			++	++	--
+Combination			+	+	-
+
+
+```{r Model07A}
+serv_smp$PricingUCA<-factor(serv_smp$PricingUCA,
+                            levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
+serv_opt$PricingUCA<-factor(serv_opt$PricingUCA,
+                            levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
+  summary_discrete_plot(serv_smp,"PricingUCA")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=PricingUCA, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+
+#Model
+CBre_07A <- glm (data=serv_smp,
+                 b_CBre ~ PricingUCA, family=binomial(link="logit"))
+display(CBre_07A)
+
+
+Term_07A <- glm (data=serv_smp,
+                 b_Term ~ PricingUCA, family=binomial(link="logit"))
+
+display(Term_07A)
+
+Opt_07A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ PricingUCA)
+
+display(Opt_07A)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_06B,CBre_07A,
+                       Term_06B,Term_07A,
+                       Opt_06B,Opt_07A,
+                       type="text",
+                       digits=2)
+
+
+#summary_residual_compare(CBre_06B,CBre_07A,Term_06B,Term_07A,30)
+
+```
+
+Other fixed price and other cost based aligned with expecations for ceiling breaches.
+For terminations, other fixed price, incentive, cost-based, were line with expectations. 
+For options exercied Other fixed-price, incentive, and UCA were in line with expectations
+
+#### 07B: Cumulative  Model
+
+```{r Model07B}
+
+#Model
+CBre_07B <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA, family=binomial(link="logit"))
+glmer_examine(CBre_07B)
+
+#Model
+Term_07B <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA, family=binomial(link="logit"))
+
+glmer_examine(Term_07B)
+
+Opt_07B <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA)
+
+glmer_examine(Opt_07B)
+
+#Plot residuals versus fitted   
+
+stargazer::stargazer(CBre_06B,CBre_07A,CBre_07B,
+                       Term_06B,Term_07A,Term_07B,
+                       Opt_06B,Opt_07A,Opt_07B,
+                       type="text",
+                       digits=2)
+
+
+#summary_residual_compare(CBre_06B,CBre_07B,Term_06B,Term_07B)
+#summary_residual_compare(CBre_07A,CBre_07B,Term_07A,Term_07B,bins=3)
+
+```
+
+Incentive contracts are no longer significantly associated with a greater risk of ceiling breaches, though they have also lost significance in options. Suprirsingly, UCA and Combination or Other have both become significant in for lower risk of ceiling breaches.
+
+
+### Crisis Dataset
+Expectation: Service Contract replying on crisis funds would have more likelihood of cost-ceiling breaches and exercised options but less terminations.  
+
+#### 08A: Crisis Funding
+```{r Model08A}
+summary_discrete_plot(serv_smp,"Crisis")
+#Scatter Plot
+ggplot(serv_opt, aes(x=Crisis, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+
+#Model
+CBre_08A <- glm (data=serv_smp,
+                 b_CBre ~ Crisis, family=binomial(link="logit"))
+display(CBre_08A)
+
+
+Term_08A <- glm (data=serv_smp,
+                 b_Term ~ Crisis, family=binomial(link="logit"))
+
+display(Term_08A)
+
+Opt_08A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ Crisis)
+
+display(Opt_08A)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_07B,CBre_08A,
+                       Term_07B,Term_08A,
+                       Opt_07B,Opt_08A,
+                       type="text",
+                       digits=2)
+
+
+# summary_residual_compare(CBre_07B,CBre_08A,Term_07B,Term_08A,30)
+
+```
+
+For ceiling breaches ARRA and Disaster results were in keeping with expcetations but OCO results were not. There were no significant results for terminations. For options, contrary to exepectation, all forms of crisis funding have a lower rate of usage.
+
+
+
+#### 08B: Cumulative  Model
+
+```{r Model08B}
+
+#Model
+CBre_08B <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis, family=binomial(link="logit"))
+glmer_examine(CBre_08B)
+
+#Model
+Term_08B <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis, family=binomial(link="logit"))
+
+glmer_examine(Term_08B)
+
+Opt_08B <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis)
+
+glmer_examine(Opt_08B)
+
+#Plot residuals versus fitted   
+
+stargazer::stargazer(CBre_07B,CBre_08A,CBre_08B,
+                       Term_07B,Term_08A,Term_08B,
+                       Opt_07B,Opt_08A,Opt_08B,
+                       type="text",
+                       digits=2)
+
+
+#summary_residual_compare(CBre_07B,CBre_08B,Term_07B,Term_08B)
+
+```
+
+Terminatins for OCO and ARRA are now significant in the expected direction.
+
+
+## Industrial Sector
+
+### Level 6
+
+#### Model 09A: l_def6_HHI_lag1
+HHI (logged, + means more consolidation)	cl_def6_HHI_lag1+		+	-	-
+
+Expectations are  unchanged.
+```{r Model09A}
+#Frequency Plot for unlogged ceiling
+summary_continuous_plot(serv_smp,"def6_HHI_lag1")
+summary_continuous_plot(serv_smp,"cl_def6_HHI_lag1")
+summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_def6_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+
+#Model
+CBre_09A <- glm (data=serv_smp,
+                 b_CBre ~ cl_def6_HHI_lag1, family=binomial(link="logit"))
+display(CBre_09A)
+
+
+Term_09A <- glm (data=serv_smp,
+                 b_Term ~ cl_def6_HHI_lag1, family=binomial(link="logit"))
+
+display(Term_09A)
+
+Opt_09A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_def6_HHI_lag1)
+
+display(Opt_09A)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_08B,CBre_09A,
+                       Term_08B,Term_09A,
+                       Opt_08B,Opt_09A,
+                       type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_08B,CBre_09A,Term_08B,Term_09A, skip_vif = TRUE)
+
+```
+
+Expected direction for ceiling breach and termination, but no real results on options.
+
+#### Model 09B: Defense to Overall ratio
+The higher the ratio of defense obligations to reciepts in the overall economy, the DoD holds a monosopy over a sector. Given the challenges of monosopy, the a higher ratio estimates a greater  risk of ceiling breaches.
+
+Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
+
+```{r Model09B}
+#Frequency Plot for unlogged ceiling
+      summary_continuous_plot(serv_smp,"def6_ratio_lag1")
+
+      summary_continuous_plot(serv_smp,"cl_def6_ratio_lag1")
+      
+
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_def6_ratio_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+
+#Model
+CBre_09B <- glm (data=serv_smp,
+                 b_CBre ~ cl_def6_ratio_lag1, family=binomial(link="logit"))
+display(CBre_09B)
+
+
+Term_09B <- glm (data=serv_smp,
+                 b_Term ~ cl_def6_ratio_lag1, family=binomial(link="logit"))
+
+display(Term_09B)
+
+Opt_09B <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_def6_ratio_lag1)
+
+display(Opt_09B)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_08B,CBre_09A,CBre_09B,
+                       Term_08B,Term_09A,Term_09B,
+                       Opt_08B,Opt_09A,Opt_09B,
+                       type="text",
+                       digits=2)
+
+
+#summary_residual_compare(CBre_08B,CBre_09B,Term_08A,Term_09A)
+#summary_residual_compare(CBre_09A,CBre_09B,Term_09A,Term_09B)
+
+
+
+```
+
+
+#### Model 09C: Defense Obligations
+Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
+
+```{r Model09C}
+#Frequency Plot for unlogged ceiling
+      summary_continuous_plot(serv_smp,"def6_obl_lag1Const")
+
+      summary_continuous_plot(serv_smp,"cl_def6_obl_lag1Const")
+      
+
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_def6_obl_lag1Const, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+
+#Model
+CBre_09C <- glm (data=serv_smp,
+                 b_CBre ~ cl_def6_obl_lag1Const, family=binomial(link="logit"))
+display(CBre_09C)
+
+
+Term_09C <- glm (data=serv_smp,
+                 b_Term ~ cl_def6_obl_lag1Const, family=binomial(link="logit"))
+
+display(Term_09C)
+
+Opt_09C <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_def6_obl_lag1Const)
+
+display(Opt_09C)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_09A,CBre_09B,CBre_09C,
+                       Term_09A,Term_09B,Term_09C,
+                       Opt_09A,Opt_09B,Opt_09C,
+                       type="text",
+                       digits=2)
+
+
+#summary_residual_compare(CBre_08B,CBre_09C,Term_08A,Term_09C)
+#summary_residual_compare(CBre_09A,CBre_09C,Term_09A,Term_09C)
+#summary_residual_compare(CBre_09B,CBre_09C,Term_09B,Term_09C)
+
+
+
+```
+
+Contrary to expectation. for termination and options.
+
+#### Model 09D: NAICS 6 Combined
+Consolidation at lessa nd more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS levels, e.g. power plants, rather than more specific NAICS levels, like solar vs. coal. As a result, consolidation for more granular NAICS codes should estimate higher rates of ceiling breaches compared to less granular NAICS code.
+
+We'll start by adding in everything from both models and seeing what violates VIF.
+```{r Model09D}
+#Frequency Plot for unlogged ceiling
+
+
+
+#Model
+CBre_09D <- glm (data=serv_smp,
+                 b_CBre ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1+cl_def6_obl_lag1Const
+                 , family=binomial(link="logit"))
+glmer_examine(CBre_09D)
+
+
+Term_09D <- glm (data=serv_smp,
+                 b_Term ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1+cl_def6_obl_lag1Const
+                 , family=binomial(link="logit"))
+
+glmer_examine(Term_09D)
+
+Opt_09D <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
+
+glmer_examine(Opt_09D)
+
+
+CBre_09D2 <- glm (data=serv_smp,
+                 b_CBre ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1
+                 , family=binomial(link="logit"))
+glmer_examine(CBre_09D2)
+
+
+Term_09D2 <- glm (data=serv_smp,
+                 b_Term ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1
+                 , family=binomial(link="logit"))
+
+glmer_examine(Term_09D2)
+
+Opt_09D2 <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
+
+glmer_examine(Opt_09D2)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_09D,CBre_09D2,
+                     Term_09D,Term_09D2,
+                     Opt_09D,Opt_09D2,
+                       type="text",
+                       digits=2)
+
+summary_residual_compare(CBre_09D,CBre_09D2,Term_09D,Term_09D2)
+```
+The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
+
+NAICS Subsector (Level 3)					
+HHI (logged, + means more consolidation)	cl_def3_HHI_lag1+		+	++	-
+Ratio Def. obligatons : US revenue	cl_def3_ratio_lag1+		+	+	-
+
+Ratio at either level is no longer in line with expectations for ceiling breaches.
+
+
+#### Model 09E: Cumulative Model
+Consolidation at lessa nd more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS levels, e.g. power plants, rather than more specific NAICS levels, like solar vs. coal. As a result, consolidation for more granular NAICS codes should estimate higher rates of ceiling breaches compared to less granular NAICS code.
+
+We'll start by adding in everything from both models and seeing what violates VIF.
+```{r Model09E}
+#Frequency Plot for unlogged ceiling
+
+
+#Model
+CBre_09E <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1, family=binomial(link="logit"))
+glmer_examine(CBre_09E)
+
+#Model
+Term_09E <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1, family=binomial(link="logit"))
+
+glmer_examine(Term_09E)
+
+Opt_09E <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1)
+
+glmer_examine(Opt_09E)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_08B,CBre_09D2,CBre_09E,
+                     Term_08B,Term_09D2,Term_09E,
+                     Opt_08B,Opt_09D2,Opt_09E,
+                       type="text",
+                       digits=2)
+
+#summary_residual_compare(CBre_09D2,CBre_09E,Term_09D2,Term_09E)
+#summary_residual_compare(CBre_08B,CBre_09E,Term_08B,Term_09E)
+```
+
+Expectations are not upheld.
+
+### Level 3
+#### Model 10A: cl_def3_HHI
+HHI (logged, + means more consolidation)	cl_def3_HHI_lag1+		+	++	-
+
+```{r Model10A}
+#Frequency Plot for unlogged ceiling
+summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
+
+
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+
+#Model
+CBre_10A <- glm (data=serv_smp,
+                 b_CBre ~ cl_def3_HHI_lag1, family=binomial(link="logit"))
+display(CBre_10A)
+
+
+Term_10A <- glm (data=serv_smp,
+                 b_Term ~ cl_def3_HHI_lag1, family=binomial(link="logit"))
+
+display(Term_10A)
+
+Opt_10A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_def3_HHI_lag1)
+
+display(Opt_10A)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_09A,CBre_10A,
+                       Term_09A,Term_10A,
+                       Opt_09A,Opt_10A,
+                       type="text",
+                       digits=2)
+
+summary_residual_compare(CBre_09A,CBre_10A,Term_09A,Term_10A, skip_vif =  TRUE)
+
+
+
+```
+
+Contrary to expectation on Ceiling breach and otions growth, in line with expectations on terminations.
+
+Level 3 HHI seems to slightly out perform level 6.
+
+
+#### Model 10B: Defense to Overall ratio
+Ratio Def. obligatons : US revenue	cl_def3_ratio_lag1+		+	+	-
+
+```{r Model10B}
+#Frequency Plot for unlogged ceiling
+summary_continuous_plot(serv_smp,"capped_def3_ratio_lag1")
+summary_continuous_plot(serv_smp,"cl_def3_ratio_lag1")
+
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+
+#Model
+CBre_10B <- glm (data=serv_smp,
+                 b_CBre ~ cl_def3_ratio_lag1, family=binomial(link="logit"))
+display(CBre_10B)
+
+
+Term_10B <- glm (data=serv_smp,
+                 b_Term ~ cl_def3_ratio_lag1, family=binomial(link="logit"))
+
+display(Term_10B)
+
+Opt_10B <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_def3_ratio_lag1)
+
+display(Opt_10B)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_09B,CBre_10A,CBre_10B,
+                       Term_09B,Term_10A,Term_10B,
+                       Opt_09B,Opt_10A,Opt_10B,
+                       type="text",
+                       digits=2)
+
+summary_residual_compare(CBre_09B,CBre_10B,Term_09B,Term_10B, skip_vif = TRUE)
+```
+
+Expectations were in lined with ceiling breaches and options, not with termination, and 
+
+
+#### Model 10C: NAICS 6 and NAICS 3
+Consolidation at lessa nd more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS levels, e.g. power plants, rather than more specific NAICS levels, like solar vs. coal. As a result, consolidation for more granular NAICS codes should estimate higher rates of ceiling breaches compared to less granular NAICS code.
+
+We'll start by adding in everything from both models and seeing what violates VIF.
+```{r Model10C}
+#Frequency Plot for unlogged ceiling
+
+
+
+#Model
+CBre_10C <- glm (data=serv_smp,
+                 b_CBre ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
+glmer_examine(CBre_10C)
+
+
+Term_10C <- glm (data=serv_smp,
+                 b_Term ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
+
+glmer_examine(Term_10C)
+
+Opt_10C <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1)
+
+glmer_examine(Opt_10C)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_09E,CBre_10A,CBre_10B,CBre_10C,
+                     Term_09E,Term_10A,Term_10B,Term_10C,
+                     Opt_09E,Opt_10A,Opt_10B,Opt_10C,
+                       type="text",
+                       digits=2)
+
+summary_residual_compare(CBre_08B,CBre_10C,Term_08B,Term_10C)
+```
+
+NAICS Subsector (Level 3)					
+HHI (logged, + means more consolidation)	cl_def3_HHI_lag1+		+	++	-
+Ratio Def. obligatons : US revenue	cl_def3_ratio_lag1+		+	+	-
+
+Expectations matched for def3_HHI, not matched for ceiling  breach or options
+ratio expectations for ceiling breach and options but not terminations.
+
+
+#### Model 10D: Cumulative Model
+.
+```{r Model10D}
+#Frequency Plot for unlogged ceiling
+
+
+#Model
+CBre_10D <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
+glmer_examine(CBre_10D)
+
+#Model
+Term_10D <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
+
+glmer_examine(Term_10D)
+
+Opt_10D <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 cl_def3_HHI_lag1+cl_def3_ratio_lag1)
+
+glmer_examine(Opt_10D)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_09E,CBre_10C,CBre_10D,
+                     Term_09E,Term_10C,Term_10D,
+                     Opt_09E,Opt_10C,Opt_10D,
+                       type="text",
+                       digits=2)
+
+summary_residual_compare(CBre_09D2,CBre_10D,Term_09D2,Term_10D)
+summary_residual_compare(CBre_08B,CBre_10D,Term_08B,Term_10D)
+```
+HHI6 for ceiling breach now matches expectations but HHI6 for term went in the opposite direction. s
+
+## Office 
+### Office and Vendor-Office Pair
+
+#### Model 11A: Vendor Market Share
+Expectation: Contracts of offices partnered with vendors who have larger market shares would be more likely to experience cost ceiling breaches and exercised options, but less likely to have terminations.
+Market Share Vendor for that Office	c_pMarket		++	-	+
+
+```{r Model11A}
+
+summary_continuous_plot(serv_smp,"c_pMarket")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=c_pMarket, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+
+#Model
+CBre_11A <- glm (data=serv_smp,
+                 b_CBre ~ c_pMarket, family=binomial(link="logit"))
+display(CBre_11A)
+
+
+Term_11A <- glm (data=serv_smp,
+                 b_Term ~ c_pMarket, family=binomial(link="logit"))
+
+display(Term_11A)
+
+Opt_11A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ c_pMarket)
+
+display(Opt_11A)
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_11A,
+                      Term_11A,
+                       Opt_11A,
+                       type="text",
+                       digits=2)
+
+summary_residual_compare(CBre_11A,Term_11A, skip_vif =  TRUE)
+
+
+```
+
+Aligns with expectations on terminatio, but not for ceiling  breach or for options.
+
+
+#### Model 11B: Cumulative Model
+
+```{r Model11B}
+#Frequency Plot for unlogged ceiling
+
+
+#Model
+CBre_11B <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket, family=binomial(link="logit"))
+glmer_examine(CBre_11B)
+
+#Model
+Term_11B <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket, family=binomial(link="logit"))
+
+glmer_examine(Term_11B)
+
+Opt_11B <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                 c_pMarket)
+
+glmer_examine(Opt_11B)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_10D,CBre_11A,CBre_11B,
+                     Term_10D,Term_11A,Term_11B,
+                     Opt_10D,Opt_11A,Opt_11B,
+                       type="text",
+                       digits=2)
+
+#summary_residual_compare(CBre_10D,CBre_11B,Term_10D,Term_11B)
+#summary_residual_compare(CBre_11A,CBre_11B,Term_11S,Term_11B)
+```
+Note that the VIF is getting high on pair_CA.
+
+### Other Office Characteristics
+#### 12A: Past Office Volume (dollars)
+
+Expectation: Contracting offices previously had more contract volume in dollars would have more experience managing cost and preventing cost-ceiling breaches, therefore larger past office volume would lower the likelihood of cost-ceiling breaches but no substantial relationships with likelihood of terminations or exercised options.
+
+Past Office Volume $s	cl_OffVol		-	+	+
+From looking at data, terminations, easier for big, less dependent. - less dependenct
+
+```{r Model12A}
+
+summary_continuous_plot(serv_smp,"cl_OffVol")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_OffVol, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_12A <- glm (data=serv_smp,
+                 b_CBre ~ cl_OffVol, family=binomial(link="logit"))
+display(CBre_12A)
+
+#Model
+Term_12A <- glm (data=serv_smp,
+                 b_Term ~ cl_OffVol, family=binomial(link="logit"))
+
+display(Term_12A)
+
+Opt_12A <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_OffVol)
+
+display(Opt_12A)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_12A,
+                       Term_12A,
+                       Opt_12A,
+                       type="text",
+                       digits=2)
+
+
+summary_residual_compare(CBre_11A,CBre_12A,Term_11A,Term_12A, skip_vif = TRUE)
+summary_residual_compare(CBre_03D,CBre_12A,Term_03D,Term_12A, skip_vif = TRUE)
+
+
+
+```
+Fully 
+When considering past office volume alone, the relationship was as expected with cost-ceiling breaches. Out of our expectation, the results also showed increasing post office volume would reduce the possibility of exercised options but increase likelihood of having terminations.
+
+
+
+
+#### 12B: Detailed Industry Diveristy
+
+Expectation: More diverse industries of contracts contracting offices handle, the higher complexity they deal with, which would increase the likelihood of having cost ceiling breaches and terminations, and decreasing the likelihood of having options exercised.
+
+
+```{r Model12B}
+summary_continuous_plot(serv_smp,"cl_hh_index_k")
+
+#Scatter Plot
+ggplot(serv_opt, aes(x=cl_hh_index_k, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+CBre_12B <- glm (data=serv_smp,
+                 b_CBre ~ cl_hh_index_k, family=binomial(link="logit"))
+display(CBre_12B)
+
+#Model
+Term_12B <- glm (data=serv_smp,
+                 b_Term ~ cl_hh_index_k, family=binomial(link="logit"))
+
+display(Term_12B)
+
+Opt_12B <- glm(data=serv_opt,
+                        lp_OptGrowth ~ cl_hh_index_k)
+
+display(Opt_12B)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_12B,
+                       Term_12B,
+                       Opt_12B,
+                       type="text",
+                       digits=2)
+
+
+# summary_residual_compare(CBre_11A,CBre_12B,Term_11A,Term_12B, skip_vif = TRUE)
+# summary_residual_compare(CBre_03D,CBre_12B,Term_03D,Term_12B, skip_vif = TRUE)
+
+```
+
+When using hhi calculated based on contracting office obligation: considering hhi alone, expectation for Temrination was not met.
+When using hhi calculated based on contracting office number of contarcts: considering hhi alone, all expectation were met.
+
+#### 12C: Cumulative Model
+
+```{r Model12C}
+#Frequency Plot for unlogged ceiling
+
+
+#Model
+CBre_12C <- glm (data=serv_smp,
+                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_hh_index_k , family=binomial(link="logit"))
+glmer_examine(CBre_12C)
+
+#Model
+Term_12C <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_hh_index_k, family=binomial(link="logit"))
+
+glmer_examine(Term_12C)
+
+Opt_12C <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+cl_hh_index_k)
+
+glmer_examine(Opt_12C)
+
+#Plot residuals versus fitted
+stargazer::stargazer(CBre_11B,CBre_12A,CBre_12C,
+                     Term_11B,Term_12A,Term_12C,
+                     Opt_11B,Opt_12A,Opt_12C,
+                       type="text",
+                       digits=2)
+
+summary_residual_compare(CBre_10D,CBre_12C,Term_10D,Term_12C)
+summary_residual_compare(CBre_11A,CBre_12C,Term_11S,Term_12C)
+```
+
+
+## Pre-Multilevel Model Summary
+
+```{r StudyVariableSummary}
+
+
+ # !is.na(def_serv$cl_US6_avg_sal_lag1)&
+ #  !is.na(def_serv$cl_CFTE)&
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+coef.list<-list("(Intercept)"="(Intercept)",
+                "cl_US6_avg_sal_lag1"="Log(Det. Ind. Salary)",
+                                     "cl_CFTE"="Log(Service Invoice Rate)",
+                                     "c_pPBSC"="Office Perf.-Based %",
+                                     "c_pOffPSC"="Office Service Exp. %",
+                                     "c_pairHist"="Paired Years",
+                                     "cl_pairCA"="Log(Paired Actions)"
+                                     # "cl_def3_HHI_lag1"="Log(Subsector HHI)",
+                                     # "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
+                                     # "CompOffr1 offer"="Comp=1 offer",
+                                     # "CompOffr2 offers"="Comp=2 offers",
+                                     # "CompOffr3-4 offers"="Comp=3-4 offers",
+                                     # "CompOffr5+ offers"="Comp=5+ offers",
+                                     # "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
+                                     # "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
+                                     # "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
+                                     # 
+                                     # "cl_Ceil"="Log(Init. Ceiling)",
+                                     # "capped_cl_Days"="Log(Init. Days)",
+                                     # "VehS-IDC"="Vehicle=S-IDC",
+                                     # "VehM-IDC"="Vehicle=M-IDC",
+                                     # "VehFSS/GWAC"="Vehicle=FSS/GWAC",
+                                     # "VehBPA/BOA"="Vehicle=BPA/BOA",
+                                     # "PricingFeeOther FP"="Pricing=Other FP",
+                                     # "PricingFeeIncentive"="Pricing=Incentive Fee",
+                                     # "PricingFeeCombination or Other"="Pricing=Combination or Other",
+                                     # "PricingFeeOther CB"="Pricing=Other CB",
+                                     # "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
+                                     # "b_UCA"="UCA",
+                                     # "b_Intl"="Performed Abroad",
+                                     # # # "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
+                                     # # "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
+                                     # # # "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
+                                     # "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
+                                     # # "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
+                                     # # "CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
+                                     # # "CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
+                                     # # "CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
+                                     # # "CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
+                                     # "VehS-IDC:b_Intl"="Vehicle=S-IDC:Performed Abroad",
+                                     # "VehM-IDC:b_Intl"="Vehicle=M-IDC:Performed Abroad",
+                                     # "VehFSS/GWAC:b_Intl"="Vehicle=FSS/GWAC:Performed Abroad",
+                                     # "VehBPA/BOA:b_Intl"="Vehicle=BPA/BOA:Performed Abroad",
+                                     # "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
+                                     # "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
+                                     # "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"="Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
+                                     # "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
+                                     # "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
+              )
+
+
+
+#Ceiling Breaches
+  stargazer::stargazer(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,CBre_12C,
+                       type="text",
+                       digits=2)
+
+
+
+texreg::htmlreg(list(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,CBre_12C),file="..//Output//CBre_model_lvl1.html",
+                single.row = TRUE,
+                # custom.model.name=c("Ceiling Breaches"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              "Services Complexity" = 2:3,
+                              "Office Capacity" =4:5,
+                              "Past Relationship"=6:7
+                              ),
+                custom.coef.map=coef.list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 6: Logit Bivariate Look at Study Variables and Ceiling Breaches",
+                caption.above=TRUE)
+
+
+
+#Terminations
+stargazer::stargazer(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D,Term_12C,
+                       type="text",
+                       digits=2)
+
+
+
+
+texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D,Term_12C),file="..//Output//Term_model_lvl1.html",
+                single.row = TRUE,
+                # custom.model.name=c("Ceiling Breaches"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              "Services Complexity" = 2:3,
+                              "Office Capacity" =4:5,
+                              "Past Relationship"=6:7
+                              ),
+                custom.coef.map=coef.list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 7: Logit Bivariate Look at Study Variables and Terminations",
+                caption.above=TRUE)
+
+
+
+
+
+#Exercised Options
+stargazer::stargazer(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,Opt_12C,
+                       type="text",
+                       digits=2)
+
+
+texreg::htmlreg(list(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,Opt_12C),file="..//Output//Opt_model_lvl1.html",
+                single.row = TRUE,
+                # custom.model.name=c("Ceiling Breaches"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              "Services Complexity" = 2:3,
+                              "Office Capacity" =4:5,
+                              "Past Relationship"=6:7
+                              ),
+                custom.coef.map=coef.list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 8: Regression Bivariate Look at Study Variables and Log(Options Growth)",
+                caption.above=TRUE)
+
+
+
+
+
+```

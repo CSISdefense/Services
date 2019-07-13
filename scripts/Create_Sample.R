@@ -149,6 +149,27 @@ serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
 #                                            drop_and_replace=TRUE)
 # 
 
+
+
+# read hhi data and join on sample
+hh_index = read.csv("..//data//clean//office_naics_hhi.csv", header = TRUE, row.names = "X")
+
+serv_opt <- serv_opt %>%
+  mutate("StartFY_lag1" = StartFY - 1) %>%
+  left_join(hh_index, by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
+  select(-c("StartFY_lag1","obligatedAmount","numberOfContracts")) %>%
+  mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)), "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)) )
+
+serv_smp <- serv_smp %>%
+  mutate("StartFY_lag1" = StartFY - 1) %>%
+  left_join(hh_index, by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
+  select(-c("StartFY_lag1", "obligatedAmount","numberOfContracts")) %>%
+  mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)), "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)))
+
+rm(hhi_index)
+
+
+
 save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt)
 write.foreign(df=serv_smp,
               datafile="Data//clean//def_serv_sample250k.dat",

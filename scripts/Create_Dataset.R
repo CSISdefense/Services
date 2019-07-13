@@ -8,7 +8,6 @@
 # ---
 
 #Setup
-```{r Libraries, echo = FALSE}
 library(csis360)
 library(ggplot2)
 library(dplyr)
@@ -47,7 +46,7 @@ note.text.size<-1.40
 
 
 
-load(file="../data/clean/defense_contract_complete.RData")
+load(file="data/clean/defense_contract_complete.RData")
 
 def_serv<-def %>% filter(PSR %in% c("Services"))
 def_serv<-def_serv[def_serv$MinOfSignedDate>=as.Date("2008-01-01") & def_serv$MinOfSignedDate<=as.Date("2015-12-31"),]
@@ -57,7 +56,7 @@ rm(def)
     def_serv<-read_and_join_experiment( def_serv,
                                                    "Contract.sp_ContractEntityID.txt",
                                                    path="",
-                                                   directory="..\\data\\semi_clean\\",
+                                                   directory="data\\semi_clean\\",
                                                    by=c("CSIScontractID"),
                                                    add_var=c("EntityID","UnmodifiedEntityID"),
                                                    new_var_checked=FALSE,
@@ -69,7 +68,7 @@ rm(def)
 
 
 
-load("..\\data\\clean\\fed_transformed.rdata")
+load("data\\clean\\fed_transformed.rdata")
 fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,PlaceCountryISO3,Crisis)
 def_serv<-left_join(def_serv,fed)
 summary(def_serv$PlaceCountryISO3)
@@ -133,8 +132,6 @@ colnames(def_serv[colnames(def_serv)=="cl_def6_obl_lag1"])<-"cl_def6_obl_lag1_th
 
 # def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
 
-save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
-
 
 #********************Still not done***************************
 #Def NAICS size
@@ -166,7 +163,7 @@ save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
 # def_serv<-read_and_join_experiment( def_serv,
 #                                     "Office.sp_OfficeHistoryCapacityLaggedConst.txt",
 #                                     path="",
-#                                     directory="..\\data\\semi_clean\\",
+#                                     directory="data\\semi_clean\\",
 #                                     by=c("ContractingOfficeCode","fiscal_year"),
 #                                     add_var=c("office_obligatedamount_1year",
 #                                               "office_numberofactions_1year",
@@ -176,7 +173,7 @@ save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
 # def_serv<-read_and_join_experiment( def_serv,
 #                                           "Office.sp_ProdServOfficeHistoryLaggedConst.txt",
 #                                           path="",
-#                                           directory="..\\data\\semi_clean\\",
+#                                           directory="data\\semi_clean\\",
 #                                           by=c("ContractingOfficeCode","fiscal_year","ProductOrServiceCode"),
 #                                           add_var=c("office_psc_obligatedamount_7year"),
 #                                           new_var_checked=FALSE,
@@ -184,7 +181,7 @@ save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
 # def_serv<-read_and_join_experiment( def_serv,
 #                                           "Office.sp_EntityIDofficeHistoryLaggedConst.txt",
 #                                           path="",
-#                                           directory="..\\data\\semi_clean\\",
+#                                           directory="data\\semi_clean\\",
 #                                           by=c("EntityID","ContractingOfficeCode","fiscal_year"),
 #                                           add_var=c("office_entity_paircount_7year","office_entity_numberofactions_1year",
 #                                                     "office_entity_obligatedamount_7year"),
@@ -192,7 +189,7 @@ save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
 # def_serv<-read_and_join( def_serv,
 #                            "ProductOrServiceCode.ProdServHistoryCFTEcoalesceLaggedConst.txt",
 #                            path="",
-#                            directory="..\\data\\semi_clean\\",
+#                            directory="data\\semi_clean\\",
 #                            by=c("fiscal_year","OCO_GF","ProductOrServiceCode"),
 #                            add_var=c("CFTE_Rate_1year"),
 #                            new_var_checked=FALSE)
@@ -280,4 +277,3 @@ def_serv$l_pMarket<-log(def_serv$pMarket+1)
 # Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
 # Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
 # ggsave(Effplot,file="Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
-save(file="../data/clean/transformed_def_serv.Rdata", def_serv)
