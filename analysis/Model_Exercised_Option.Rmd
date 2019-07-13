@@ -65,13 +65,13 @@ Expectation: Given the fact that one source for higher salaries is the difficult
  #  !is.na(def_serv$c_pairHist)&
  #  !is.na(def_serv$cl_pairCA)&
 
-summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1Const")
+summary_continuous_plot(serv_opt,"cl_US6_avg_sal_lag1Const")
 
 #Scatter Plot of p_Opt_01A
 ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1Const, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_01A <- glm (data=serv_smp,
+n_Opt_01A <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_US6_avg_sal_lag1Const)
 display(n_Opt_01A)
 
@@ -105,13 +105,13 @@ Expectation: The invoice rate approximates how much the government is charged an
  #  !is.na(def_serv$c_pairHist)&
  #  !is.na(def_serv$cl_pairCA)&
 
-summary_continuous_plot(serv_smp,"cl_CFTE")
+summary_continuous_plot(serv_opt,"cl_CFTE")
 
 #Scatter Plot 
 ggplot(serv_opt, aes(x=cl_CFTE, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_01B <- glm (data=serv_smp,
+n_Opt_01B <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_CFTE)
 display(n_Opt_01B)
 
@@ -153,7 +153,7 @@ Expectation: Collectively, the higher average salary and invoice rate (more comp
 
 
 #Model
-n_Opt_01C <- glm (data=serv_smp,
+n_Opt_01C <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE)
 glmer_examine(n_Opt_01C)
 
@@ -190,13 +190,13 @@ Expectation: Performance-based services contracting ties a portion of a contract
 
 ```{r Model02A}
 
-summary_continuous_plot(serv_smp,"pPBSC")
+summary_continuous_plot(serv_opt,"pPBSC")
 
 #Scatter Plot 
 ggplot(serv_opt, aes(x=c_pPBSC, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_02A <- glm (data=serv_smp,
+n_Opt_02A <- glm (data=serv_opt,
                  ln_OptGrowth ~ c_pPBSC)
 display(n_Opt_02A)
 
@@ -230,13 +230,13 @@ Expectation: The increasing share of contracting office obligations for a given 
  #  !is.na(def_serv$c_pairHist)&
  #  !is.na(def_serv$cl_pairCA)&
 
-summary_continuous_plot(serv_smp,"c_pOffPSC")
+summary_continuous_plot(serv_opt,"c_pOffPSC")
 
 #Scatter Plot 
 ggplot(serv_opt, aes(x=c_pOffPSC, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_02B <- glm (data=serv_smp,
+n_Opt_02B <- glm (data=serv_opt,
                  ln_OptGrowth ~ c_pOffPSC)
 display(n_Opt_02B)
 
@@ -267,7 +267,7 @@ Expectation: Collaberactively, the larger share of PBSC and contracting office o
 
 
 #Model
-n_Opt_02C <- glm (data=serv_smp,
+n_Opt_02C <- glm (data=serv_opt,
                  ln_OptGrowth ~ c_pPBSC+c_pOffPSC)
 glmer_examine(n_Opt_02C)
 
@@ -302,7 +302,7 @@ Expectation: When all the four variables are combined into one model, same expec
 
 
 #Model
-n_Opt_02D <- glm (data=serv_smp,
+n_Opt_02D <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC)
 glmer_examine(n_Opt_02D)
 
@@ -348,13 +348,13 @@ Expactation: The number of past years of the relationship between the contractin
  #  !is.na(def_serv$c_pairHist)&
  #  !is.na(def_serv$cl_pairCA)&
 
-summary_discrete_plot(serv_smp,"c_pairHist")
+summary_discrete_plot(serv_opt,"c_pairHist")
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=c_pairHist, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_03A <- glm (data=serv_smp,
+n_Opt_03A <- glm (data=serv_opt,
                  ln_OptGrowth ~ c_pairHist)
 display(n_Opt_03A)
 
@@ -390,13 +390,13 @@ Expectation: As the number of contract actions a vendor has performed for an off
  #  !is.na(def_serv$c_pairHist)&
  #  !is.na(def_serv$cl_pairCA)&
 
-summary_continuous_plot(serv_smp,"cl_pairCA")
+summary_continuous_plot(serv_opt,"cl_pairCA")
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=cl_pairCA, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_03B <- glm (data=serv_smp,
+n_Opt_03B <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_pairCA)
 display(n_Opt_03B)
 
@@ -434,7 +434,7 @@ The importance of partnership, trust, and handling difficult problems and uncert
  #  !is.na(def_serv$cl_pairCA)&
 
 #Model
-n_Opt_03C <- glm (data=serv_smp,
+n_Opt_03C <- glm (data=serv_opt,
                  ln_OptGrowth ~ c_pairHist+cl_pairCA)
 glmer_examine(n_Opt_03C)
 
@@ -471,7 +471,7 @@ Expectation: Under each subgroup, the predictors are expected to have similar im
 ```{r Model03D}
 
 #Model
-n_Opt_03D <- glm (data=serv_smp,
+n_Opt_03D <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA)
@@ -667,22 +667,22 @@ Expectation: Initial Ceiling size positively estimates increasing probability of
 ```{r Model04A}
 
 #Frequency Plot for unlogged ceiling
-freq_continuous_cbre_plot(serv_smp,"UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
+freq_continuous_cbre_plot(serv_opt,"UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
                bins=1000)
-freq_continuous_cbre_plot(subset(serv_smp,UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18<100000000),
+freq_continuous_cbre_plot(subset(serv_opt,UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18<100000000),
                "UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
                bins=1000)
 
-summary_continuous_plot(serv_smp,"cl_Ceil",bins=50)
-summary(serv_smp$cl_Ceil)
+summary_continuous_plot(serv_opt,"cl_Ceil",bins=50)
+summary(serv_opt$cl_Ceil)
 
-str(serv_smp)
+str(serv_opt)
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=cl_Ceil, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_04A <- glm (data=serv_smp,
+n_Opt_04A <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_Ceil)
 display(n_Opt_04A)
 
@@ -713,16 +713,16 @@ Expectation: Greater maximum duration will positively estimate the probability c
 
 ```{r Model04B}
 #Frequency Plot for max duration
-freq_continuous_cbre_plot(serv_smp,"UnmodifiedDays",
+freq_continuous_cbre_plot(serv_opt,"UnmodifiedDays",
                bins=1000)
 
-summary_continuous_plot(serv_smp,"capped_cl_Days")
+summary_continuous_plot(serv_opt,"capped_cl_Days")
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=capped_cl_Days, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_04B <- glm (data=serv_smp,
+n_Opt_04B <- glm (data=serv_opt,
                  ln_OptGrowth ~ capped_cl_Days)
 display(n_Opt_04B)
 
@@ -751,7 +751,7 @@ All expections were upheld.
 ```{r Model04C}
 
 #Model
-n_Opt_04C <- glm (data=serv_smp,
+n_Opt_04C <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_Ceil + capped_cl_Days)
 display(n_Opt_04C)
 
@@ -780,7 +780,7 @@ Days loses significance for ceiling breaches. Ceiling has a smaller coefficient 
 ```{r Model04D}
 
 #Model
-n_Opt_04D <- glm (data=serv_smp,
+n_Opt_04D <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
@@ -821,7 +821,7 @@ No Competition (Baseline)			+	-	-
 5+ Offers			-	+	-
 
 ```{r Model05A}
-summary_discrete_plot(serv_smp,"Comp1or5")
+summary_discrete_plot(serv_opt,"Comp1or5")
 
 
 
@@ -829,7 +829,7 @@ summary_discrete_plot(serv_smp,"Comp1or5")
 ggplot(serv_opt, aes(x=Comp1or5, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_05A <- glm (data=serv_smp,
+n_Opt_05A <- glm (data=serv_opt,
                  ln_OptGrowth ~ Comp1or5)
 display(n_Opt_05A)
 
@@ -856,7 +856,7 @@ Expectations were completely unmet for ceiling breaches. For terminations, expec
 ```{r Model05B}
 
 #Model
-n_Opt_05B <- glm (data=serv_smp,
+n_Opt_05B <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
@@ -902,14 +902,14 @@ BPA/BOA			-	-	-
 
 ```{r Model06A}
 
-summary_discrete_plot(serv_smp,"Veh")
+summary_discrete_plot(serv_opt,"Veh")
 
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=Veh, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_06A <- glm (data=serv_smp,
+n_Opt_06A <- glm (data=serv_opt,
                  ln_OptGrowth ~ Veh)
 display(n_Opt_06A)
 
@@ -940,7 +940,7 @@ Expectations were largely upheld for options exercised, with the exception of FS
 ```{r Model06B}
 
 #Model
-n_Opt_06B <- glm (data=serv_smp,
+n_Opt_06B <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
@@ -991,18 +991,18 @@ Combination			+	+	-
 
 
 ```{r Model07A}
-serv_smp$PricingUCA<-factor(serv_smp$PricingUCA,
+serv_opt$PricingUCA<-factor(serv_opt$PricingUCA,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
 serv_opt$PricingUCA<-factor(serv_opt$PricingUCA,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-  summary_discrete_plot(serv_smp,"PricingUCA")
+  summary_discrete_plot(serv_opt,"PricingUCA")
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=PricingUCA, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
-n_Opt_07A <- glm (data=serv_smp,
+n_Opt_07A <- glm (data=serv_opt,
                  ln_OptGrowth ~ PricingUCA)
 display(n_Opt_07A)
 
@@ -1031,7 +1031,7 @@ For options exercied Other fixed-price, incentive, and UCA were in line with exp
 ```{r Model07B}
 
 #Model
-n_Opt_07B <- glm (data=serv_smp,
+n_Opt_07B <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
@@ -1074,13 +1074,13 @@ Expectation: Service Contract replying on crisis funds would have more likelihoo
 
 #### 08A: Crisis Funding
 ```{r Model08A}
-summary_discrete_plot(serv_smp,"Crisis")
+summary_discrete_plot(serv_opt,"Crisis")
 #Scatter Plot
 ggplot(serv_opt, aes(x=Crisis, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
-n_Opt_08A <- glm (data=serv_smp,
+n_Opt_08A <- glm (data=serv_opt,
                  ln_OptGrowth ~ Crisis)
 display(n_Opt_08A)
 
@@ -1109,7 +1109,7 @@ For ceiling breaches ARRA and Disaster results were in keeping with expcetations
 ```{r Model08B}
 
 #Model
-n_Opt_08B <- glm (data=serv_smp,
+n_Opt_08B <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
@@ -1158,16 +1158,16 @@ HHI (logged, + means more consolidation)	cl_def6_HHI_lag1+		+	-	-
 Expectations are  unchanged.
 ```{r Model09A}
 #Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp,"def6_HHI_lag1")
-summary_continuous_plot(serv_smp,"cl_def6_HHI_lag1")
-summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
+summary_continuous_plot(serv_opt,"def6_HHI_lag1")
+summary_continuous_plot(serv_opt,"cl_def6_HHI_lag1")
+summary_continuous_plot(serv_opt,"cl_def3_HHI_lag1")
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=cl_def6_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
-n_Opt_09A <- glm (data=serv_smp,
+n_Opt_09A <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_def6_HHI_lag1)
 display(n_Opt_09A)
 
@@ -1196,9 +1196,9 @@ Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 
 ```{r Model09B}
 #Frequency Plot for unlogged ceiling
-      summary_continuous_plot(serv_smp,"def6_ratio_lag1")
+      summary_continuous_plot(serv_opt,"def6_ratio_lag1")
 
-      summary_continuous_plot(serv_smp,"cl_def6_ratio_lag1")
+      summary_continuous_plot(serv_opt,"cl_def6_ratio_lag1")
       
 
 
@@ -1207,7 +1207,7 @@ ggplot(serv_opt, aes(x=cl_def6_ratio_lag1, y=lp_OptGrowth)) + geom_point(alpha =
 
 
 #Model
-n_Opt_09B <- glm (data=serv_smp,
+n_Opt_09B <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_def6_ratio_lag1)
 display(n_Opt_09B)
 
@@ -1236,9 +1236,9 @@ Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 
 ```{r Model09C}
 #Frequency Plot for unlogged ceiling
-      summary_continuous_plot(serv_smp,"def6_obl_lag1Const")
+      summary_continuous_plot(serv_opt,"def6_obl_lag1Const")
 
-      summary_continuous_plot(serv_smp,"cl_def6_obl_lag1Const")
+      summary_continuous_plot(serv_opt,"cl_def6_obl_lag1Const")
       
 
 
@@ -1247,7 +1247,7 @@ ggplot(serv_opt, aes(x=cl_def6_obl_lag1Const, y=lp_OptGrowth)) + geom_point(alph
 
 
 #Model
-n_Opt_09C <- glm (data=serv_smp,
+n_Opt_09C <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_def6_obl_lag1Const)
 display(n_Opt_09C)
 
@@ -1283,7 +1283,7 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 
 #Model
-n_Opt_09D <- glm (data=serv_smp,
+n_Opt_09D <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1+cl_def6_obl_lag1Const
                  )
 glmer_examine(n_Opt_09D)
@@ -1294,7 +1294,7 @@ p_Opt_09D <- glm(data=serv_opt,
 glmer_examine(p_Opt_09D)
 
 
-n_Opt_09D2 <- glm (data=serv_smp,
+n_Opt_09D2 <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1
                  )
 glmer_examine(n_Opt_09D2)
@@ -1330,7 +1330,7 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 
 #Model
-n_Opt_09E <- glm (data=serv_smp,
+n_Opt_09E <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
@@ -1374,7 +1374,7 @@ HHI (logged, + means more consolidation)	cl_def3_HHI_lag1+		+	++	-
 
 ```{r Model10A}
 #Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
+summary_continuous_plot(serv_opt,"cl_def3_HHI_lag1")
 
 
 
@@ -1383,7 +1383,7 @@ ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0
 
 
 #Model
-n_Opt_10A <- glm (data=serv_smp,
+n_Opt_10A <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_def3_HHI_lag1)
 display(n_Opt_10A)
 
@@ -1414,8 +1414,8 @@ Ratio Def. obligatons : US revenue	cl_def3_ratio_lag1+		+	+	-
 
 ```{r Model10B}
 #Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp,"capped_def3_ratio_lag1")
-summary_continuous_plot(serv_smp,"cl_def3_ratio_lag1")
+summary_continuous_plot(serv_opt,"capped_def3_ratio_lag1")
+summary_continuous_plot(serv_opt,"cl_def3_ratio_lag1")
 
 
 #Scatter Plot
@@ -1423,7 +1423,7 @@ ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0
 
 
 #Model
-n_Opt_10B <- glm (data=serv_smp,
+n_Opt_10B <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_def3_ratio_lag1)
 display(n_Opt_10B)
 
@@ -1454,7 +1454,7 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 
 #Model
-n_Opt_10C <- glm (data=serv_smp,
+n_Opt_10C <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1)
 glmer_examine(n_Opt_10C)
 
@@ -1487,7 +1487,7 @@ ratio expectations for ceiling breach and options but not terminations.
 
 
 #Model
-n_Opt_10D <- glm (data=serv_smp,
+n_Opt_10D <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
@@ -1535,14 +1535,14 @@ Market Share Vendor for that Office	c_pMarket		++	-	+
 
 ```{r Model11A}
 
-summary_continuous_plot(serv_smp,"c_pMarket")
+summary_continuous_plot(serv_opt,"c_pMarket")
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=c_pMarket, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
-n_Opt_11A <- glm (data=serv_smp,
+n_Opt_11A <- glm (data=serv_opt,
                  ln_OptGrowth ~ c_pMarket)
 display(n_Opt_11A)
 
@@ -1572,7 +1572,7 @@ Aligns with expectations on terminatio, but not for ceiling  breach or for optio
 
 
 #Model
-n_Opt_11B <- glm (data=serv_smp,
+n_Opt_11B <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
@@ -1623,13 +1623,13 @@ From looking at data, terminations, easier for big, less dependent. - less depen
 
 ```{r Model12A}
 
-summary_continuous_plot(serv_smp,"cl_OffVol")
+summary_continuous_plot(serv_opt,"cl_OffVol")
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=cl_OffVol, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_12A <- glm (data=serv_smp,
+n_Opt_12A <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_OffVol)
 display(n_Opt_12A)
 
@@ -1664,13 +1664,13 @@ Expectation: More diverse industries of contracts contracting offices handle, th
 
 
 ```{r Model12B}
-summary_continuous_plot(serv_smp,"cl_hh_index_k")
+summary_continuous_plot(serv_opt,"cl_hh_index_k")
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=cl_hh_index_k, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_Opt_12B <- glm (data=serv_smp,
+n_Opt_12B <- glm (data=serv_opt,
                  ln_OptGrowth ~ cl_hh_index_k)
 display(n_Opt_12B)
 
@@ -1702,7 +1702,7 @@ When using hhi calculated based on contracting office number of contarcts: consi
 
 
 #Model
-n_Opt_12C <- glm (data=serv_smp,
+n_Opt_12C <- glm (data=serv_opt,
                  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
