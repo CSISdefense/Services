@@ -188,20 +188,11 @@ summary_continuous_plot(serv_smp,"pPBSC")
 ggplot(serv_opt, aes(x=c_pPBSC, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_02A <- glm (data=serv_smp,
-                 b_CBre ~ c_pPBSC, family=binomial(link="logit"))
-display(CBre_02A)
-
-#Model
 Term_02A <- glm (data=serv_smp,
                  b_Term ~ c_pPBSC, family=binomial(link="logit"))
 
 display(Term_02A)
 
-Opt_02A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ c_pPBSC)
-
-display(Opt_02A)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_01C,CBre_02A,
                        Term_01C,Term_02A,
@@ -234,20 +225,11 @@ summary_continuous_plot(serv_smp,"c_pOffPSC")
 ggplot(serv_opt, aes(x=c_pOffPSC, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_02B <- glm (data=serv_smp,
-                 b_CBre ~ c_pOffPSC, family=binomial(link="logit"))
-display(CBre_02B)
-
-#Model
 Term_02B <- glm (data=serv_smp,
                  b_Term ~ c_pOffPSC, family=binomial(link="logit"))
 
 display(Term_02B)
 
-Opt_02B <- glm(data=serv_opt,
-                        lp_OptGrowth ~ c_pOffPSC)
-
-display(Opt_02B)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_01C,CBre_02A,CBre_02B,
                        Term_01C,Term_02A,Term_02B,
@@ -271,20 +253,11 @@ Expectation: Collaberactively, the larger share of PBSC and contracting office o
 
 
 #Model
-CBre_02C <- glm (data=serv_smp,
-                 b_CBre ~ c_pPBSC+c_pOffPSC, family=binomial(link="logit"))
-glmer_examine(CBre_02C)
-
-#Model
 Term_02C <- glm (data=serv_smp,
                  b_Term ~ c_pPBSC+c_pOffPSC, family=binomial(link="logit"))
 
 glmer_examine(Term_02C)
 
-Opt_02C <- glm(data=serv_opt,
-                        lp_OptGrowth ~ c_pPBSC+c_pOffPSC)
-
-glmer_examine(Opt_02C)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_01C,CBre_02A,CBre_02B,CBre_02C,
                        Term_01C,Term_02A,Term_02B,Term_02C,
@@ -312,20 +285,11 @@ Expectation: When all the four variables are combined into one model, same expec
 
 
 #Model
-CBre_02D <- glm (data=serv_smp,
-                 b_CBre ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC, family=binomial(link="logit"))
-glmer_examine(CBre_02D)
-
-#Model
 Term_02D <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + cl_CFTE+c_pPBSC+c_pOffPSC, family=binomial(link="logit"))
 
 glmer_examine(Term_02D)
 
-Opt_02D <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC)
-
-glmer_examine(Opt_02D)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_01C,CBre_02C,CBre_02D,
                        Term_01C,Term_02C,Term_02D,
@@ -370,20 +334,11 @@ summary_discrete_plot(serv_smp,"c_pairHist")
 ggplot(serv_opt, aes(x=c_pairHist, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_03A <- glm (data=serv_smp,
-                 b_CBre ~ c_pairHist, family=binomial(link="logit"))
-display(CBre_03A)
-
-#Model
 Term_03A <- glm (data=serv_smp,
                  b_Term ~ c_pairHist, family=binomial(link="logit"))
 
 display(Term_03A)
 
-Opt_03A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ c_pairHist)
-
-display(Opt_03A)
 #Plot residuals versus fitted
   stargazer::stargazer(CBre_02D,CBre_03A,
                        Term_02D,Term_03A,
@@ -417,21 +372,11 @@ summary_continuous_plot(serv_smp,"cl_pairCA")
 #Scatter Plot
 ggplot(serv_opt, aes(x=cl_pairCA, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
-#Model
-CBre_03B <- glm (data=serv_smp,
-                 b_CBre ~ cl_pairCA, family=binomial(link="logit"))
-display(CBre_03B)
-
-
 Term_03B <- glm (data=serv_smp,
                  b_Term ~ cl_pairCA, family=binomial(link="logit"))
 
 display(Term_03B)
 
-Opt_03B <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_pairCA)
-
-display(Opt_03B)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_02D,CBre_03A,CBre_03B,
                        Term_02D,Term_03A,Term_03B,
@@ -462,20 +407,10 @@ The importance of partnership, trust, and handling difficult problems and uncert
  #  !is.na(def_serv$cl_pairCA)&
 
 #Model
-CBre_03C <- glm (data=serv_smp,
-                 b_CBre ~ c_pairHist+cl_pairCA, family=binomial(link="logit"))
-glmer_examine(CBre_03C)
-
-#Model
 Term_03C <- glm (data=serv_smp,
                  b_Term ~ c_pairHist+cl_pairCA, family=binomial(link="logit"))
 
 glmer_examine(Term_03C)
-
-Opt_03C <- glm(data=serv_opt,
-                        lp_OptGrowth ~ c_pairHist+cl_pairCA)
-
-glmer_examine(Opt_03C)
 
 #Plot residuals versus fitted
   stargazer::stargazer(CBre_02D,CBre_03A,CBre_03B,CBre_03C,
@@ -505,26 +440,12 @@ Expectation: Under each subgroup, the predictors are expected to have similar im
 ```{r Model03D}
 
 #Model
-CBre_03D <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA, family=binomial(link="logit"))
-glmer_examine(CBre_03D)
-
-#Model
 Term_03D <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA, family=binomial(link="logit"))
 
 glmer_examine(Term_03D)
-
-Opt_03D <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA)
-
-glmer_examine(Opt_03D)
 
 #Plot residuals versus fitted   
 
@@ -543,19 +464,6 @@ summary_residual_compare(CBre_02D,CBre_03D,Term_02D,Term_03D)
 None of the predictors has high level of correlation (vif over 1.7) with each other. 
 In the cumulative model, per dependent variable and independent variable:
 
-1. Ceiling breaches:
-   A. Service Complexity:
-      The relationship with average salary gained significance in line with expectation.
-      The result for both average salary and invoice rate matched with expectation.
-      
-   B. Office Capacity: 
-      The relationship with PBSC matched with expectation but with less magnitude.
-      The result for office obligations did not match with expectation.
-     
-   C. Office-Vendor Relationship:
-      The result for pair history matched with expectation 
-      The relationship with contract actions reverse and now align with expectations.
-
 2. Terminations:
    A. Service Complexity:
       The reult for average salary did not match with expectation.
@@ -568,19 +476,6 @@ In the cumulative model, per dependent variable and independent variable:
    C. Office-Vendor Relationship:
       The result for pair history matched with expectation once all variables included.
       The result for contract actions did not match with expectation.
-
-3. Exercised Options:
-  A. Service Complexity:
-      The result for both average salary and invoice rate matached with expectation but with less magnitude.
-      
-   B. Office Capacity: 
-      The result for PBSC didn't match with expectation.
-      The result for office obligations matched with expectation.
-     
-   C. Office-Vendor Relationship:
-      The result for pair history lost significance and didn't match with expectations.
-      The result for contract actions didn't match with expectation.
-
 
 
 ## Study Variables Summary
@@ -648,30 +543,6 @@ coef.list<-list("(Intercept)"="(Intercept)",
 
 
 
-#Ceiling Breaches
-  stargazer::stargazer(CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,
-                       type="text",
-                       digits=2)
-
-
-
-texreg::htmlreg(list(CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D),file="..//Output//CBre_Model.html",
-                single.row = TRUE,
-                # custom.model.name=c("Ceiling Breaches"),
-                stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7
-                              ),
-                custom.coef.map=coef.list,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 6: Logit Bivariate Look at Study Variables and Ceiling Breaches",
-                caption.above=TRUE)
-
-
-
 #Terminations
 stargazer::stargazer(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D,
                        type="text",
@@ -694,33 +565,6 @@ texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 7: Logit Bivariate Look at Study Variables and Terminations",
                 caption.above=TRUE)
-
-
-
-
-
-#Exercised Options
-stargazer::stargazer(Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,
-                       type="text",
-                       digits=2)
-
-
-texreg::htmlreg(list(Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D),file="..//Output//Opt_Model.html",
-                single.row = TRUE,
-                # custom.model.name=c("Ceiling Breaches"),
-                stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7
-                              ),
-                custom.coef.map=coef.list,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 8: Regression Bivariate Look at Study Variables and Log(Options Growth)",
-                caption.above=TRUE)
-
-
 
 
 
@@ -753,20 +597,10 @@ str(serv_smp)
 ggplot(serv_opt, aes(x=cl_Ceil, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_04A <- glm (data=serv_smp,
-                 b_CBre ~ cl_Ceil, family=binomial(link="logit"))
-display(CBre_04A)
-
-
 Term_04A <- glm (data=serv_smp,
                  b_Term ~ cl_Ceil, family=binomial(link="logit"))
-
 display(Term_04A)
 
-Opt_04A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_Ceil)
-
-display(Opt_04A)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_03D,CBre_04A,
                        Term_03D,Term_04A,
@@ -799,20 +633,11 @@ summary_continuous_plot(serv_smp,"capped_cl_Days")
 ggplot(serv_opt, aes(x=capped_cl_Days, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_04B <- glm (data=serv_smp,
-                 b_CBre ~ capped_cl_Days, family=binomial(link="logit"))
-display(CBre_04B)
-
-
 Term_04B <- glm (data=serv_smp,
                  b_Term ~ capped_cl_Days, family=binomial(link="logit"))
 
 display(Term_04B)
 
-Opt_04B <- glm(data=serv_opt,
-                        lp_OptGrowth ~ capped_cl_Days)
-
-display(Opt_04B)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_03D,CBre_04A,CBre_04B,
                        Term_03D,Term_04A,Term_04B,
@@ -834,20 +659,10 @@ All expections were upheld.
 ```{r Model04C}
 
 #Model
-CBre_04C <- glm (data=serv_smp,
-                 b_CBre ~ cl_Ceil + capped_cl_Days, family=binomial(link="logit"))
-display(CBre_04C)
-
-
 Term_04C <- glm (data=serv_smp,
                  b_Term ~ cl_Ceil +capped_cl_Days, family=binomial(link="logit"))
-
 display(Term_04C)
 
-Opt_04C <- glm(data=serv_opt,
-                        lp_OptGrowth ~cl_Ceil + capped_cl_Days)
-
-display(Opt_04C)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_03D,CBre_04A,CBre_04B,CBre_04C,
                        Term_03D,Term_04A,Term_04B,Term_04C,
@@ -869,29 +684,12 @@ Days loses significance for ceiling breaches. Ceiling has a smaller coefficient 
 ```{r Model04D}
 
 #Model
-CBre_04D <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days, family=binomial(link="logit"))
-glmer_examine(CBre_04D)
-
-#Model
 Term_04D <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
                    cl_Ceil + capped_cl_Days, family=binomial(link="logit"))
-
 glmer_examine(Term_04D)
-
-Opt_04D <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Ceil + capped_cl_Days)
-
-glmer_examine(Opt_04D)
 
 #Plot residuals versus fitted   
 
@@ -927,20 +725,11 @@ summary_discrete_plot(serv_smp,"Comp1or5")
 ggplot(serv_opt, aes(x=Comp1or5, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_05A <- glm (data=serv_smp,
-                 b_CBre ~ Comp1or5, family=binomial(link="logit"))
-display(CBre_05A)
-
-
 Term_05A <- glm (data=serv_smp,
                  b_Term ~ Comp1or5, family=binomial(link="logit"))
 
 display(Term_05A)
 
-Opt_05A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ Comp1or5)
-
-display(Opt_05A)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_04D,CBre_05A,
                        Term_04D,Term_05A,
@@ -960,15 +749,6 @@ Expectations were completely unmet for ceiling breaches. For terminations, expec
 ```{r Model05B}
 
 #Model
-CBre_05B <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5, family=binomial(link="logit"))
-glmer_examine(CBre_05B)
-
-#Model
 Term_05B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -977,15 +757,6 @@ Term_05B <- glm (data=serv_smp,
                    Comp1or5, family=binomial(link="logit"))
 
 glmer_examine(Term_05B)
-
-Opt_05B <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Ceil + capped_cl_Days+
-                 Comp1or5)
-
-glmer_examine(Opt_05B)
 
 #Plot residuals versus fitted   
 
@@ -1023,20 +794,11 @@ summary_discrete_plot(serv_smp,"Veh")
 ggplot(serv_opt, aes(x=Veh, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_06A <- glm (data=serv_smp,
-                 b_CBre ~ Veh, family=binomial(link="logit"))
-display(CBre_06A)
-
-
 Term_06A <- glm (data=serv_smp,
                  b_Term ~ Veh, family=binomial(link="logit"))
 
 display(Term_06A)
 
-Opt_06A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ Veh)
-
-display(Opt_06A)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_05B,CBre_06A,
                        Term_05B,Term_06A,
@@ -1060,16 +822,6 @@ Expectations were largely upheld for options exercised, with the exception of FS
 ```{r Model06B}
 
 #Model
-CBre_06B <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5+
-                   Veh, family=binomial(link="logit"))
-glmer_examine(CBre_06B)
-
-#Model
 Term_06B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -1079,16 +831,6 @@ Term_06B <- glm (data=serv_smp,
                    Veh, family=binomial(link="logit"))
 
 glmer_examine(Term_06B)
-
-Opt_06B <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Ceil + capped_cl_Days+
-                 Comp1or5+
-                   Veh)
-
-glmer_examine(Opt_06B)
 
 #Plot residuals versus fitted   
 
@@ -1133,20 +875,11 @@ ggplot(serv_opt, aes(x=PricingUCA, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + 
 
 
 #Model
-CBre_07A <- glm (data=serv_smp,
-                 b_CBre ~ PricingUCA, family=binomial(link="logit"))
-display(CBre_07A)
-
-
 Term_07A <- glm (data=serv_smp,
                  b_Term ~ PricingUCA, family=binomial(link="logit"))
 
 display(Term_07A)
 
-Opt_07A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ PricingUCA)
-
-display(Opt_07A)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_06B,CBre_07A,
                        Term_06B,Term_07A,
@@ -1168,17 +901,6 @@ For options exercied Other fixed-price, incentive, and UCA were in line with exp
 ```{r Model07B}
 
 #Model
-CBre_07B <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5+
-                   Veh+
-                   PricingUCA, family=binomial(link="logit"))
-glmer_examine(CBre_07B)
-
-#Model
 Term_07B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -1189,17 +911,6 @@ Term_07B <- glm (data=serv_smp,
                    PricingUCA, family=binomial(link="logit"))
 
 glmer_examine(Term_07B)
-
-Opt_07B <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Ceil + capped_cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA)
-
-glmer_examine(Opt_07B)
 
 #Plot residuals versus fitted   
 
@@ -1229,20 +940,10 @@ ggplot(serv_opt, aes(x=Crisis, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggti
 
 
 #Model
-CBre_08A <- glm (data=serv_smp,
-                 b_CBre ~ Crisis, family=binomial(link="logit"))
-display(CBre_08A)
-
-
 Term_08A <- glm (data=serv_smp,
                  b_Term ~ Crisis, family=binomial(link="logit"))
-
 display(Term_08A)
 
-Opt_08A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ Crisis)
-
-display(Opt_08A)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_07B,CBre_08A,
                        Term_07B,Term_08A,
@@ -1264,18 +965,6 @@ For ceiling breaches ARRA and Disaster results were in keeping with expcetations
 ```{r Model08B}
 
 #Model
-CBre_08B <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis, family=binomial(link="logit"))
-glmer_examine(CBre_08B)
-
-#Model
 Term_08B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -1288,20 +977,7 @@ Term_08B <- glm (data=serv_smp,
 
 glmer_examine(Term_08B)
 
-Opt_08B <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Ceil + capped_cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis)
-
-glmer_examine(Opt_08B)
-
 #Plot residuals versus fitted   
-
 stargazer::stargazer(CBre_07B,CBre_08A,CBre_08B,
                        Term_07B,Term_08A,Term_08B,
                        Opt_07B,Opt_08A,Opt_08B,
@@ -1335,20 +1011,11 @@ ggplot(serv_opt, aes(x=cl_def6_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0
 
 
 #Model
-CBre_09A <- glm (data=serv_smp,
-                 b_CBre ~ cl_def6_HHI_lag1, family=binomial(link="logit"))
-display(CBre_09A)
-
-
 Term_09A <- glm (data=serv_smp,
                  b_Term ~ cl_def6_HHI_lag1, family=binomial(link="logit"))
 
 display(Term_09A)
 
-Opt_09A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_def6_HHI_lag1)
-
-display(Opt_09A)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_08B,CBre_09A,
                        Term_08B,Term_09A,
@@ -1381,20 +1048,11 @@ ggplot(serv_opt, aes(x=cl_def6_ratio_lag1, y=lp_OptGrowth)) + geom_point(alpha =
 
 
 #Model
-CBre_09B <- glm (data=serv_smp,
-                 b_CBre ~ cl_def6_ratio_lag1, family=binomial(link="logit"))
-display(CBre_09B)
-
-
 Term_09B <- glm (data=serv_smp,
                  b_Term ~ cl_def6_ratio_lag1, family=binomial(link="logit"))
 
 display(Term_09B)
 
-Opt_09B <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_def6_ratio_lag1)
-
-display(Opt_09B)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_08B,CBre_09A,CBre_09B,
                        Term_08B,Term_09A,Term_09B,
@@ -1427,20 +1085,11 @@ ggplot(serv_opt, aes(x=cl_def6_obl_lag1Const, y=lp_OptGrowth)) + geom_point(alph
 
 
 #Model
-CBre_09C <- glm (data=serv_smp,
-                 b_CBre ~ cl_def6_obl_lag1Const, family=binomial(link="logit"))
-display(CBre_09C)
-
-
 Term_09C <- glm (data=serv_smp,
                  b_Term ~ cl_def6_obl_lag1Const, family=binomial(link="logit"))
 
 display(Term_09C)
 
-Opt_09C <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_def6_obl_lag1Const)
-
-display(Opt_09C)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_09A,CBre_09B,CBre_09C,
                        Term_09A,Term_09B,Term_09C,
@@ -1469,29 +1118,11 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 
 #Model
-CBre_09D <- glm (data=serv_smp,
-                 b_CBre ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1+cl_def6_obl_lag1Const
-                 , family=binomial(link="logit"))
-glmer_examine(CBre_09D)
-
-
 Term_09D <- glm (data=serv_smp,
                  b_Term ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1+cl_def6_obl_lag1Const
                  , family=binomial(link="logit"))
 
 glmer_examine(Term_09D)
-
-Opt_09D <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
-
-glmer_examine(Opt_09D)
-
-
-CBre_09D2 <- glm (data=serv_smp,
-                 b_CBre ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1
-                 , family=binomial(link="logit"))
-glmer_examine(CBre_09D2)
-
 
 Term_09D2 <- glm (data=serv_smp,
                  b_Term ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1
@@ -1499,10 +1130,6 @@ Term_09D2 <- glm (data=serv_smp,
 
 glmer_examine(Term_09D2)
 
-Opt_09D2 <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
-
-glmer_examine(Opt_09D2)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_09D,CBre_09D2,
                      Term_09D,Term_09D2,
@@ -1528,20 +1155,6 @@ We'll start by adding in everything from both models and seeing what violates VI
 ```{r Model09E}
 #Frequency Plot for unlogged ceiling
 
-
-#Model
-CBre_09E <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1, family=binomial(link="logit"))
-glmer_examine(CBre_09E)
-
 #Model
 Term_09E <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
@@ -1553,21 +1166,7 @@ Term_09E <- glm (data=serv_smp,
                    PricingUCA+
                    Crisis+
                    cl_def6_HHI_lag1+cl_def6_ratio_lag1, family=binomial(link="logit"))
-
 glmer_examine(Term_09E)
-
-Opt_09E <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Ceil + capped_cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1)
-
-glmer_examine(Opt_09E)
 
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_08B,CBre_09D2,CBre_09E,
@@ -1597,20 +1196,10 @@ ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0
 
 
 #Model
-CBre_10A <- glm (data=serv_smp,
-                 b_CBre ~ cl_def3_HHI_lag1, family=binomial(link="logit"))
-display(CBre_10A)
-
-
 Term_10A <- glm (data=serv_smp,
                  b_Term ~ cl_def3_HHI_lag1, family=binomial(link="logit"))
-
 display(Term_10A)
 
-Opt_10A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_def3_HHI_lag1)
-
-display(Opt_10A)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_09A,CBre_10A,
                        Term_09A,Term_10A,
@@ -1643,20 +1232,10 @@ ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0
 
 
 #Model
-CBre_10B <- glm (data=serv_smp,
-                 b_CBre ~ cl_def3_ratio_lag1, family=binomial(link="logit"))
-display(CBre_10B)
-
-
 Term_10B <- glm (data=serv_smp,
                  b_Term ~ cl_def3_ratio_lag1, family=binomial(link="logit"))
-
 display(Term_10B)
 
-Opt_10B <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_def3_ratio_lag1)
-
-display(Opt_10B)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_09B,CBre_10A,CBre_10B,
                        Term_09B,Term_10A,Term_10B,
@@ -1680,20 +1259,11 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 
 #Model
-CBre_10C <- glm (data=serv_smp,
-                 b_CBre ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
-glmer_examine(CBre_10C)
-
-
 Term_10C <- glm (data=serv_smp,
                  b_Term ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
-
 glmer_examine(Term_10C)
 
-Opt_10C <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1)
 
-glmer_examine(Opt_10C)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_09E,CBre_10A,CBre_10B,CBre_10C,
                      Term_09E,Term_10A,Term_10B,Term_10C,
@@ -1719,20 +1289,6 @@ ratio expectations for ceiling breach and options but not terminations.
 
 
 #Model
-CBre_10D <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
-glmer_examine(CBre_10D)
-
-#Model
 Term_10D <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -1746,20 +1302,6 @@ Term_10D <- glm (data=serv_smp,
                    cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
 
 glmer_examine(Term_10D)
-
-Opt_10D <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Ceil + capped_cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                 cl_def3_HHI_lag1+cl_def3_ratio_lag1)
-
-glmer_examine(Opt_10D)
 
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_09E,CBre_10C,CBre_10D,
@@ -1789,20 +1331,11 @@ ggplot(serv_opt, aes(x=c_pMarket, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + g
 
 
 #Model
-CBre_11A <- glm (data=serv_smp,
-                 b_CBre ~ c_pMarket, family=binomial(link="logit"))
-display(CBre_11A)
-
-
 Term_11A <- glm (data=serv_smp,
                  b_Term ~ c_pMarket, family=binomial(link="logit"))
 
 display(Term_11A)
 
-Opt_11A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ c_pMarket)
-
-display(Opt_11A)
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_11A,
                       Term_11A,
@@ -1825,21 +1358,6 @@ Aligns with expectations on terminatio, but not for ceiling  breach or for optio
 
 
 #Model
-CBre_11B <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket, family=binomial(link="logit"))
-glmer_examine(CBre_11B)
-
-#Model
 Term_11B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -1854,21 +1372,6 @@ Term_11B <- glm (data=serv_smp,
                    c_pMarket, family=binomial(link="logit"))
 
 glmer_examine(Term_11B)
-
-Opt_11B <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Ceil + capped_cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                 cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                 c_pMarket)
-
-glmer_examine(Opt_11B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_10D,CBre_11A,CBre_11B,
@@ -1898,20 +1401,10 @@ summary_continuous_plot(serv_smp,"cl_OffVol")
 ggplot(serv_opt, aes(x=cl_OffVol, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_12A <- glm (data=serv_smp,
-                 b_CBre ~ cl_OffVol, family=binomial(link="logit"))
-display(CBre_12A)
-
-#Model
 Term_12A <- glm (data=serv_smp,
                  b_Term ~ cl_OffVol, family=binomial(link="logit"))
 
 display(Term_12A)
-
-Opt_12A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_OffVol)
-
-display(Opt_12A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_12A,
@@ -1945,20 +1438,10 @@ summary_continuous_plot(serv_smp,"cl_hh_index_k")
 ggplot(serv_opt, aes(x=cl_hh_index_k, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_12B <- glm (data=serv_smp,
-                 b_CBre ~ cl_hh_index_k, family=binomial(link="logit"))
-display(CBre_12B)
-
-#Model
 Term_12B <- glm (data=serv_smp,
                  b_Term ~ cl_hh_index_k, family=binomial(link="logit"))
 
 display(Term_12B)
-
-Opt_12B <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_hh_index_k)
-
-display(Opt_12B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_12B,
@@ -1983,22 +1466,6 @@ When using hhi calculated based on contracting office number of contarcts: consi
 
 
 #Model
-CBre_12C <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_hh_index_k , family=binomial(link="logit"))
-glmer_examine(CBre_12C)
-
-#Model
 Term_12C <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -2014,22 +1481,6 @@ Term_12C <- glm (data=serv_smp,
                    cl_OffVol+cl_hh_index_k, family=binomial(link="logit"))
 
 glmer_examine(Term_12C)
-
-Opt_12C <- glm(data=serv_opt,
-                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Ceil + capped_cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                 cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                 c_pMarket+
-                   cl_OffVol+cl_hh_index_k)
-
-glmer_examine(Opt_12C)
 
 #Plot residuals versus fitted
 stargazer::stargazer(CBre_11B,CBre_12A,CBre_12C,
