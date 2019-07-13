@@ -54,7 +54,7 @@ The sample is created by including the entirity of the ARRA and Disaster dataset
 Expectation: Higher service complexity would make work more demanding and thus raises the risks of negative contracting outcomes, namely the likelihood of cost ceiling breaches and terminations increases and the likelihood exercised options decraeses.
 
 ### 01A NAICS Salary
-Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS salary increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases) and exercised options decreases (increases).
+Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS salary increases (decreases), the likelihood of terminations increases (decreases).
 
 ```{r Model01A}
 
@@ -71,35 +71,21 @@ summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1Const")
 ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1Const, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-CBre_01A <- glm (data=serv_smp,
-                 b_CBre ~ cl_US6_avg_sal_lag1Const, family=binomial(link="logit"))
-display(CBre_01A)
-
-#Model
 Term_01A <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const, family=binomial(link="logit"))
 
 
-Opt_01A <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_US6_avg_sal_lag1Const)
-
-
 #Plot residuals versus fitted
-stargazer::stargazer(CBre_01A,Term_01A,Opt_01A,type="text",
+stargazer::stargazer(Term_01A,type="text",
                        digits=2)
-
-
-summary_residual_compare(CBre_01A,Term_01A,skip_vif = TRUE)
-
 
 
 ```
 
-Individually, except for terminations (which is not significant), expectations are matched for ceiing breaches and exercised options, as higher average salaries estimate a higher risk of ceiling breaches and lower possibility of exercised options. 
-
+Expectations are matched  for terminations but the results are not significant.
 
 ### 01B Invoice Rate
-Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employees who are supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases), and exercised options decrease (increase).
+Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employees who are supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood terminations increases (decreases).
 
 ```{r Model01B}
 
@@ -112,34 +98,24 @@ Expectation: The invoice rate approximates how much the government is charged an
 
 summary_continuous_plot(serv_smp,"cl_CFTE")
 
-#Scatter Plot 
-ggplot(serv_opt, aes(x=cl_CFTE, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
-
 #Model
-CBre_01B <- glm (data=serv_smp,
-                 b_CBre ~ cl_CFTE, family=binomial(link="logit"))
-display(CBre_01B)
 
 #Model
 Term_01B <- glm (data=serv_smp,
                  b_Term ~ cl_CFTE, family=binomial(link="logit"))
 
-
-Opt_01B <- glm(data=serv_opt,
-                        lp_OptGrowth ~ cl_CFTE)
-
+display(Term_01B)
 
 
 #Plot residuals versus fitted
-  stargazer::stargazer(CBre_01A,CBre_01B,
+  stargazer::stargazer(
                        Term_01A,Term_01B,
-                       Opt_01A,Opt_01B,
+                       
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(CBre_01B,Term_01B, skip_vif = TRUE)
-summary_residual_compare(CBre_01A,CBre_01B,Term_01A,Term_01B, skip_vif = TRUE)
+summary_residual_compare(Term_01A,Term_01B, skip_vif = TRUE)
 
 
 
@@ -178,16 +154,16 @@ Opt_01C <- glm(data=serv_opt,
 
 glmer_examine(Opt_01C)
 #Plot residuals versus fitted
-stargazer::stargazer(CBre_01A,CBre_01B,CBre_01C,
+stargazer::stargazer(CBre_01C,
                        Term_01A,Term_01B,Term_01C,
-                       Opt_01A,Opt_01B,Opt_01C,
+                       Opt_01C,
                        type="text",
                        digits=2)
 
 
   summary_residual_compare(CBre_01C,Term_01C, skip_vif = TRUE)
-  summary_residual_compare(CBre_01A,CBre_01C,Term_01A,Term_01C)
-  summary_residual_compare(CBre_01B,CBre_01C,Term_01B,Term_01C)
+  summary_residual_compare(CBre_01C,Term_01A,Term_01C)
+  summary_residual_compare(CBre_01C,Term_01B,Term_01C)
 
 
 
@@ -673,13 +649,13 @@ coef.list<-list("(Intercept)"="(Intercept)",
 
 
 #Ceiling Breaches
-  stargazer::stargazer(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,
+  stargazer::stargazer(CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,
                        type="text",
                        digits=2)
 
 
 
-texreg::htmlreg(list(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D),file="..//Output//CBre_Model.html",
+texreg::htmlreg(list(CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D),file="..//Output//CBre_Model.html",
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -724,12 +700,12 @@ texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 
 
 #Exercised Options
-stargazer::stargazer(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,
+stargazer::stargazer(Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,
                        type="text",
                        digits=2)
 
 
-texreg::htmlreg(list(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D),file="..//Output//Opt_Model.html",
+texreg::htmlreg(list(Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D),file="..//Output//Opt_Model.html",
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -2132,13 +2108,13 @@ coef.list<-list("(Intercept)"="(Intercept)",
 
 
 #Ceiling Breaches
-  stargazer::stargazer(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,CBre_12C,
+  stargazer::stargazer(CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,CBre_12C,
                        type="text",
                        digits=2)
 
 
 
-texreg::htmlreg(list(CBre_01A,CBre_01B,CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,CBre_12C),file="..//Output//CBre_model_lvl1.html",
+texreg::htmlreg(list(CBre_02A,CBre_02B,CBre_03A,CBre_03B,CBre_03D,CBre_12C),file="..//Output//CBre_model_lvl1.html",
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -2183,12 +2159,12 @@ texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 
 
 #Exercised Options
-stargazer::stargazer(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,Opt_12C,
+stargazer::stargazer(Opt_02B,Opt_03A,Opt_03B,Opt_03D,Opt_12C,
                        type="text",
                        digits=2)
 
 
-texreg::htmlreg(list(Opt_01A,Opt_01B,Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,Opt_12C),file="..//Output//Opt_model_lvl1.html",
+texreg::htmlreg(list(Opt_02A,Opt_02B,Opt_03A,Opt_03B,Opt_03D,Opt_12C),file="..//Output//Opt_model_lvl1.html",
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
