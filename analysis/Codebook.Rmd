@@ -506,7 +506,6 @@ colnames(NAICS_summary)[colnames(NAICS_summary)=="NAICS3"]<-"principalnaicscode"
 
 NAICS_summary$principalnaicscode<-as.character(NAICS_summary$principalnaicscode)
 NAICS_summary<-as.data.frame(NAICS_summary)
-debug(read_and_join_experiment)
 NAICS_summary<-read_and_join_experiment(NAICS_summary,
                                                  lookup_file = "Lookup_PrincipalNAICScode.csv",
                                                  path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
@@ -627,7 +626,8 @@ Frequency[["Percent_Obli"]] <- Percent_Obli*100
 NAICS3_Freq <- Frequency
 
 #Add detail description to unique NAICS3 code
-NAICS3_Freq <- left_join(NAICS3_Freq, NAICS_Lookup, by = "NAICS3")
+NAICS3_Freq <- left_join(NAICS3_Freq, NAICS_Lookup, by = c("NAICS3"="NAICS_Code"))
+colnames(NAICS3_Freq)[colnames(NAICS3_Freq)=="NAICS_DESCRIPTION"]<-"Description"
 NAICS3_Freq$Description <- as.character(NAICS3_Freq$Description)
 NAICS3_Freq$Description <- paste(NAICS3_Freq$NAICS, " - ", NAICS3_Freq$Description)
 
