@@ -368,7 +368,7 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//all_v
                               "Past Relationship"=6:7,
                               "Contract Characteristics"=8:25,
                               "NAICS Characteristics" =26:29,
-                                                            "Office Characteristics" =31:33
+                                                            "Office Characteristics" =30:32
                               
                               ),
                 custom.coef.map=all_coef_list,
@@ -534,29 +534,29 @@ gridExtra::grid.arrange(dotplot(ranef(p_Opt_12C, condVar = T), strip = T, scales
 
 ### Ceiling Breach 
 ```{r Output-CBre}
-or1<-odds_ratio(b_CBre12C.restart,"b_CBre12C","Concentration","Ceiling Breaches")
-or2<-odds_ratio(CBre_Comp_13C,"CBre_Comp_13C","Competition","Ceiling Breaches")
-or3<-odds_ratio(CBre_Cons_Comp_15A,"CBre_Cons_Comp_15A","Both","Ceiling Breaches")
-comp.or<-rbind(or1,or2,or3)
-
-write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio.csv",row.names=FALSE)
-
-
-
-or1<-odds_ratio(b_CBre12C,"b_CBre12C","Concentration","Ceiling Breaches")
-or2<-odds_ratio(CBre_Comp_13C_1m,"CBre_Comp_13C_1m","Competition","Ceiling Breaches")
-or3<-odds_ratio(CBre_Cons_Comp_15A_1m,"CBre_Cons_Comp_15A_1m","Both","Ceiling Breaches")
-comp.or<-rbind(or1,or2,or3)
-
-write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio_1m.csv",row.names=FALSE)
-get_icc(CBre_Cons_Comp_15A_1m)
-
-#https://www.lcampanelli.org/mixed-effects-modeling-lme4/
-gridExtra::grid.arrange(dotplot(ranef(b_CBre12C.restart, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-             dotplot(ranef(CBre_Comp_13C, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-             dotplot(ranef(CBre_Cons_Comp_15A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-             nrow=1)
-
+# or1<-odds_ratio(b_CBre12C_1m,"b_CBre12C","Both","Both")
+# or2<-odds_ratio(CBre_Comp_13C,"CBre_Comp_13C","Competition","Ceiling Breaches")
+# or3<-odds_ratio(CBre_Cons_Comp_15A,"CBre_Cons_Comp_15A","Both","Ceiling Breaches")
+# comp.or<-rbind(or1,or2,or3)
+# 
+# write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio.csv",row.names=FALSE)
+# 
+# 
+# 
+# or1<-odds_ratio(b_CBre12C,"b_CBre12C","Concentration","Ceiling Breaches")
+# or2<-odds_ratio(CBre_Comp_13C_1m,"CBre_Comp_13C_1m","Competition","Ceiling Breaches")
+# or3<-odds_ratio(CBre_Cons_Comp_15A_1m,"CBre_Cons_Comp_15A_1m","Both","Ceiling Breaches")
+# comp.or<-rbind(or1,or2,or3)
+# 
+# write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio_1m.csv",row.names=FALSE)
+# get_icc(CBre_Cons_Comp_15A_1m)
+# 
+# #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
+# gridExtra::grid.arrange(dotplot(ranef(b_CBre12C.restart, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+#              dotplot(ranef(CBre_Comp_13C, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+#              dotplot(ranef(CBre_Cons_Comp_15A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+#              nrow=1)
+# 
 
 ```
 
@@ -565,27 +565,27 @@ gridExtra::grid.arrange(dotplot(ranef(b_CBre12C.restart, condVar = T), strip = T
 
 ```{r Output-CBre}
 
-gridExtra::grid.arrange(dotplot(ranef(Term_12C, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-             dotplot(ranef(Term_Comp_13E2, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-             dotplot(ranef(Term_Cons_Comp_14A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-             nrow=1)
-dotplot(ranef(Term_12C, condVar = T), strip = T, scales=list(relation='free'))$NAICS3
-
-
-or1<-odds_ratio(Term_12C,"Term_12C","Concentration","Ceiling Breaches")
-or2<-odds_ratio(Term_Comp_13E2,"Term_Comp_13E2","Competition","Ceiling Breaches")
-or3<-odds_ratio(Term_Cons_Comp_14C,"Term_Cons_Comp_14C","Both","Ceiling Breaches")
-term.or<-rbind(or1,or2,or3)
-
-write.csv(get_study_variables_odds_ratio(term.or),file="..//output//termination_study_odds_ratio.csv",row.names=FALSE)
-
-or1<-odds_ratio(Term_12C_1m,"Term_12C_1m","Concentration","Ceiling Breaches")
-  or2<-odds_ratio(Term_Comp_13E2,"Term_Comp_13F_1m","Competition","Ceiling Breaches")
-or3<-odds_ratio(Term_Cons_Comp_14C_1m,"Term_Cons_Comp_14C_1m","Both","Ceiling Breaches")
-term.or<-rbind(or1,or2,or3)
-
-write.csv(get_study_variables_odds_ratio(term.or),file="..//output//termination_study_odds_ratio_1m.csv",row.names=FALSE)
-
+# gridExtra::grid.arrange(dotplot(ranef(Term_12C, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+#              dotplot(ranef(Term_Comp_13E2, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+#              dotplot(ranef(Term_Cons_Comp_14A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+#              nrow=1)
+# dotplot(ranef(Term_12C, condVar = T), strip = T, scales=list(relation='free'))$NAICS3
+# 
+# 
+# or1<-odds_ratio(Term_12C,"Term_12C","Concentration","Ceiling Breaches")
+# or2<-odds_ratio(Term_Comp_13E2,"Term_Comp_13E2","Competition","Ceiling Breaches")
+# or3<-odds_ratio(Term_Cons_Comp_14C,"Term_Cons_Comp_14C","Both","Ceiling Breaches")
+# term.or<-rbind(or1,or2,or3)
+# 
+# write.csv(get_study_variables_odds_ratio(term.or),file="..//output//termination_study_odds_ratio.csv",row.names=FALSE)
+# 
+# or1<-odds_ratio(Term_12C_1m,"Term_12C_1m","Concentration","Ceiling Breaches")
+#   or2<-odds_ratio(Term_Comp_13E2,"Term_Comp_13F_1m","Competition","Ceiling Breaches")
+# or3<-odds_ratio(Term_Cons_Comp_14C_1m,"Term_Cons_Comp_14C_1m","Both","Ceiling Breaches")
+# term.or<-rbind(or1,or2,or3)
+# 
+# write.csv(get_study_variables_odds_ratio(term.or),file="..//output//termination_study_odds_ratio_1m.csv",row.names=FALSE)
+# 
 
 ```
 
@@ -594,99 +594,25 @@ write.csv(get_study_variables_odds_ratio(term.or),file="..//output//termination_
 
 
 ```{r Residuals, fig.width=7.5 , fig.height=8.5}
-
-residual_cbre<-gridExtra::grid.arrange(
-  binned_fitted_versus_residuals(b_CBre12C.restart,bins=50)+
-    labs(title="Concentration Binned Actuals",caption=NULL,
+(
+residual_logit<-gridExtra::grid.arrange(
+  binned_fitted_versus_residuals(b_CBre12C_1m,bins=50)+
+    labs(title="Ceiling Breach Binned Actuals",caption=NULL,
          x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
-  residuals_plot(b_CBre12C.restart, bins=50)+labs(title="Concentration Binned Residual Plot"),
-  binned_fitted_versus_residuals(CBre_Comp_13C,bins=50)+
-    labs(title="Competition Binned Actuals Plot",caption=NULL,
-         x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
-residuals_plot(CBre_Comp_13C, bins=50)+labs(title="Competition Binned Residuals Plot"),
-binned_fitted_versus_residuals(CBre_Cons_Comp_15A,bins=50)+
-  labs(title="Both Binned Actuals",
-       caption=NULL,
-         x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
-residuals_plot(CBre_Cons_Comp_15A, bins=50)+labs(title="Both Binned Residuals Plot"),ncol=2)
-
-residual_cbre
-ggsave(residual_cbre,file="..//output//residual_cbre.png",width=7.5, height=8.5)
-ggsave(residual_cbre,file="..//output//residual_cbre.eps",width=7.5, height=8.5)
-
-residual_term<-gridExtra::grid.arrange(
-  binned_fitted_versus_residuals(Term_12C,bins=50)+
-    labs(title="Concentration Binned Actuals",caption=NULL,
-         x="Estimated Pr(Termination)",y="Actual Pr(Termination)"),
-  residuals_plot(Term_12C, bins=50)+labs(title="Binned Residual Plot"),
-  binned_fitted_versus_residuals(Term_Cons_Comp_14B,bins=50)+
-    labs(title="Competition Binned Actuals Plot",caption=NULL,
-         x="Estimated Pr(Termination)",y="Actual Pr(Termination)"),
-residuals_plot(Term_Cons_Comp_14B, bins=50)+labs(title="Binned Residuals Plot"),
-binned_fitted_versus_residuals(Term_Cons_Comp_14B,bins=50)+
-  labs(title="Both Binned Actuals",
-       caption=NULL,
-         x="Estimated Pr(Termination)",y="Actual Pr(Termination)"),
-residuals_plot(Term_Cons_Comp_14B, bins=50)+labs(title="Binned Residuals Plot"),ncol=2)
-
-
-residual_term
-ggsave(residual_term,file="..//output//residual_term.png",width=7.5, height=8.5)
-ggsave(residual_term,file="..//output//residual_term.eps",width=7.5, height=8.5)
-
-
-
-# debug(residuals_plot)
-gridExtra::grid.arrange(residuals_plot(Term_12C, bins=50)+labs(title="Concentration Binned Residuals Plot"),
-residuals_plot(Term_Comp_13E2, bins=50)+labs(title="Competition Binned Residuals Plot"),
-residuals_plot(Term_Cons_Comp_14B, bins=50)+labs(title="Both Binned Residuals Plot"),ncol=1)
-```
-
-
-```{r Residuals_250k, fig.width=7.5 , fig.height=8.5}
-
-residual_cbre<-gridExtra::grid.arrange(
-  binned_fitted_versus_residuals(b_CBre12C,bins=50)+
-    labs(title="Concentration Binned Actuals",caption=NULL,
-         x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
-  residuals_plot(b_CBre12C, bins=50)+labs(title="Concentration Binned Residual Plot"),
-  binned_fitted_versus_residuals(CBre_Comp_13C_1m,bins=50)+
-    labs(title="Competition Binned Actuals Plot",caption=NULL,
-         x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
-residuals_plot(CBre_Comp_13C_1m, bins=50)+labs(title="Competition Binned Residuals Plot"),
-binned_fitted_versus_residuals(CBre_Cons_Comp_15A_1m,bins=50)+
-  labs(title="Both Binned Actuals",
-       caption=NULL,
-         x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
-residuals_plot(CBre_Cons_Comp_15A_1m, bins=50)+labs(title="Both Binned Residuals Plot"),ncol=2)
-
-residual_cbre
-ggsave(residual_cbre,file="..//output//residual_cbre_1m.png",width=7.5, height=8.5)
-ggsave(residual_cbre,file="..//output//residual_cbre_1m.eps",width=7.5, height=8.5)
-
-residual_term<-gridExtra::grid.arrange(
+  residuals_plot(b_CBre12C_1m, bins=50)+labs(title="Ceiling Breach Binned Residual Plot"),
   binned_fitted_versus_residuals(Term_12C_1m,bins=50)+
-    labs(title="Concentration Binned Actuals",caption=NULL,
+    labs(title="Termination Binned Actuals Plot",caption=NULL,
          x="Estimated Pr(Termination)",y="Actual Pr(Termination)"),
-  residuals_plot(Term_12C_1m, bins=50)+labs(title="Binned Residual Plot"),
-  binned_fitted_versus_residuals(Term_Comp_13F_1m,bins=50)+
-    labs(title="Competition Binned Actuals Plot",caption=NULL,
-         x="Estimated Pr(Termination)",y="Actual Pr(Termination)"),
-residuals_plot(Term_Comp_13F_1m, bins=50)+labs(title="Binned Residuals Plot"),
-binned_fitted_versus_residuals(Term_Cons_Comp_14C_1m,bins=50)+
-  labs(title="Both Binned Actuals",
-       caption=NULL,
-         x="Estimated Pr(Termination)",y="Actual Pr(Termination)"),
-residuals_plot(Term_Cons_Comp_14C_1m, bins=50)+labs(title="Binned Residuals Plot"),ncol=2)
+residuals_plot(Term_12C_1m, bins=50)+labs(title="Termination Residuals Plot")#,
+# binned_fitted_versus_residuals(CBre_Cons_Comp_15A,bins=50)+
+#   labs(title="Both Binned Actuals",
+#        caption=NULL,
+#          x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
+# residuals_plot(CBre_Cons_Comp_15A, bins=50)+labs(title="Both Binned Residuals Plot")
+,ncol=2)
+)
 
+ggsave(residual_logit,file="..//output//residual_logit.png",width=7.5, height=8.5)
+ggsave(residual_logit,file="..//output//residual_lot.eps",width=7.5, height=8.5)
 
-residual_term
-ggsave(residual_term,file="..//output//residual_term_1m.png",width=7.5, height=8.5)
-ggsave(residual_term,file="..//output//residual_term_1m.eps",width=7.5, height=8.5)
-
-
-# debug(residuals_plot)
-gridExtra::grid.arrange(residuals_plot(Term_12C, bins=50)+labs(title="Concentration Binned Residuals Plot"),
-residuals_plot(Term_Comp_13E2, bins=50)+labs(title="Competition Binned Residuals Plot"),
-residuals_plot(Term_Cons_Comp_14B, bins=50)+labs(title="Both Binned Residuals Plot"),ncol=1)
 ```
