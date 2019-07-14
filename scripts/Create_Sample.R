@@ -166,25 +166,20 @@ serv_smp <- serv_smp %>%
   dplyr::select(-c("StartFY_lag1", "obligatedAmount","numberOfContracts")) %>%
   mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)), "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)))
 
-rm(hhi_index)
+rm(hh_index)
 
 
 
-# save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt)
-# write.foreign(df=serv_smp,
-#               datafile="Data//clean//def_serv_sample250k.dat",
-#               codefile="Data//clean//def_serv_sample250k_code.do",
-#               package = "Stata")
-# write.foreign(df=serv_smp1m,
-#               datafile="Data//clean//def_serv_sample1m.dat",
-#               codefile="Data//clean//def_serv_sample1m_code.do",
-#               package = "Stata")
-# write.foreign(df=serv_opt,
-#               datafile="Data//clean//def_serv_opt.dat",
-#               codefile="Data//clean//def_serv_opt_code.do",
-#               package = "Stata")
-
-# levels(serv_smp$Intl)<- list("Just U.S."=c("Just U.S."), 
-#                                 "Any Intl."=c("Any International"))
-# levels(serv_smp1m$Intl)<- list("Just U.S."=c("Just U.S."), 
-#                                 "Any Intl."=c("Any International"))
+save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt)
+write.foreign(df=serv_smp,
+              datafile="data//clean//def_serv_sample250k.dat",
+              codefile="data//clean//def_serv_sample250k_code.do",
+              package = "Stata")
+write.foreign(df=serv_smp1m,
+              datafile="data//clean//def_serv_sample1m.dat",
+              codefile="data//clean//def_serv_sample1m_code.do",
+              package = "Stata")
+write.foreign(df=serv_opt,
+              datafile="data//clean//def_serv_opt.dat",
+              codefile="data//clean//def_serv_opt_code.do",
+              package = "Stata")
