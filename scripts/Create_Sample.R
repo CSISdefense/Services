@@ -152,7 +152,7 @@ serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
 
 
 # read hhi data and join on sample
-hh_index = read.csv("..//data//clean//office_naics_hhi.csv", header = TRUE, row.names = "X")
+hh_index = read.csv("data//clean//office_naics_hhi.csv", header = TRUE, row.names = "X")
 
 serv_opt <- serv_opt %>%
   mutate("StartFY_lag1" = StartFY - 1) %>%
@@ -170,19 +170,19 @@ rm(hhi_index)
 
 
 
-save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt)
-write.foreign(df=serv_smp,
-              datafile="Data//clean//def_serv_sample250k.dat",
-              codefile="Data//clean//def_serv_sample250k_code.do",
-              package = "Stata")
-write.foreign(df=serv_smp1m,
-              datafile="Data//clean//def_serv_sample1m.dat",
-              codefile="Data//clean//def_serv_sample1m_code.do",
-              package = "Stata")
-write.foreign(df=serv_opt,
-              datafile="Data//clean//def_serv_opt.dat",
-              codefile="Data//clean//def_serv_opt_code.do",
-              package = "Stata")
+# save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt)
+# write.foreign(df=serv_smp,
+#               datafile="Data//clean//def_serv_sample250k.dat",
+#               codefile="Data//clean//def_serv_sample250k_code.do",
+#               package = "Stata")
+# write.foreign(df=serv_smp1m,
+#               datafile="Data//clean//def_serv_sample1m.dat",
+#               codefile="Data//clean//def_serv_sample1m_code.do",
+#               package = "Stata")
+# write.foreign(df=serv_opt,
+#               datafile="Data//clean//def_serv_opt.dat",
+#               codefile="Data//clean//def_serv_opt_code.do",
+#               package = "Stata")
 
 # levels(serv_smp$Intl)<- list("Just U.S."=c("Just U.S."), 
 #                                 "Any Intl."=c("Any International"))

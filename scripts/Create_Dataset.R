@@ -78,7 +78,7 @@ rm(fed)
 #About 25.4k inexplicably missing
 # summary(def_serv[is.na(def_serv$Crisis),])
 # 
-debug(transform_contract)
+# debug(transform_contract)
 # # head(def_serv)
 def_serv<-transform_contract(def_serv)
 #
@@ -277,3 +277,4 @@ def_serv$l_pMarket<-log(def_serv$pMarket+1)
 # Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
 # Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
 # ggsave(Effplot,file="Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
+save(file="data/clean/transformed_def_serv.Rdata",def_serv)
