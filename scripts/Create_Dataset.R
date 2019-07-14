@@ -222,9 +222,21 @@ length(unique((def_serv$NAICS3)))
 
 
 
+#********** NAICS - Office hhi
+hh_index <- read.csv("data//clean//office_naics_hhi.csv", header = TRUE, row.names = "X")
+
+def_serv <- def_serv %>%
+  mutate("StartFY_lag1" = StartFY - 1) %>%
+  left_join(hh_index %>% dplyr::select(-c("obligatedAmount","numberOfContracts")), 
+            by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
+  dplyr::select(-c("StartFY_lag1")) %>%
+  mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)),
+         "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)))
+rm(hh_index)
 
 
-### Tuning the new services variables
+
+#*********** Options Growth
 summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
 def_serv$UnmodifiedBaseandExercisedOptionsValue[def_serv$UnmodifiedBaseandExercisedOptionsValue<=0]<-NA
 
@@ -234,44 +246,51 @@ def_serv$lp_OptGrowth<-log(def_serv$p_OptGrowth)
 def_serv$n_OptGrowth<-def_serv$ExercisedOptions+1
 def_serv$ln_OptGrowth<-log(def_serv$n_OptGrowth)
 
-
 def_serv$Opt<-NA
 def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==1& def_serv$ExercisedOptions>0]<-"Option Growth"
 def_serv$Opt[(def_serv$AnyUnmodifiedUnexercisedOptions==1)& def_serv$ExercisedOptions==0]<-"No Growth"
 def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-"Initial Base=Ceiling"
 def_serv$Opt<-factor(def_serv$Opt)
 
-
-def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
-def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
-def_serv$l_pMarket<-log(def_serv$pMarket+1)
-def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
-def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
-
-summary(def_serv$l_CFTE)
-
-
-freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50)
-freq_continuous_plot(def_serv,"l_CFTE",bins=50)
 freq_continuous_plot(def_serv,"UnmodifiedBaseandExercisedOptionsValue",bins=50)
 freq_continuous_plot(def_serv,"l_base",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"lp_OptGrowth",bins=50)
 
 
-
+#********** Performance Based Services Contracting
+def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
 freq_continuous_plot(def_serv,"pPBSC",bins=50)
 freq_continuous_plot(def_serv,"l_pPBSC",bins=50) #No real point, stick with PBSC
+
+#********** Office experience in PSC
+def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
 freq_continuous_plot(def_serv,"pOffPSC",bins=50)
 freq_continuous_plot(def_serv,"l_pOffPSC",bins=50)  #No real point here either
+
+#********** Vendor Market Share
+def_serv$l_pMarket<-log(def_serv$pMarket+1)
 freq_continuous_plot(def_serv,"pMarket",bins=50)
 freq_continuous_plot(def_serv,"l_pMarket",bins=50)
-freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
-freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
-freq_continuous_plot(def_serv,"l_CA",bins=50)
 summary(def_serv$pMarket)
 
-def_serv$l_pMarket<-log(def_serv$pMarket+1)
+
+#********* Office Entity Pair Count
+freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
+
+
+#********* Number of actions between vendor and office
+def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
+freq_continuous_plot(def_serv,"l_CA",bins=50)
+freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
+
+#********8 Invoice rate  for PSC
+def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
+summary(def_serv$l_CFTE)
+
+freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50)
+freq_continuous_plot(def_serv,"l_CFTE",bins=50)
+
 
 
 # Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))

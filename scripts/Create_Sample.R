@@ -100,8 +100,8 @@ complete<-
   !is.na(def_serv$cl_OffCA)& #summary(def_serv$cl_OffCA)
   !is.na(def_serv$cl_OffVol)& #summary(def_serv$cl_OffVol)
   !is.na(def_serv$c_pMarket)&  #summary(def_serv$c_pMarket)
-  !is.na(def_serv$Crisis)  #summary(def_serv$c_pMarket)
-
+  !is.na(def_serv$Crisis)&  #summary(def_serv$c_pMarket)
+  !is.na(def_serv$cl_hh_index_k)
 
 summary(complete)
 summary(def_serv$Action_Obligation.OMB20_GDP18)
@@ -149,31 +149,6 @@ serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
 #                                            drop_and_replace=TRUE)
 # 
 
-
-
-# read hhi data and join on sample
-hh_index <- read.csv("data//clean//office_naics_hhi.csv", header = TRUE, row.names = "X")
-
-serv_opt <- serv_opt %>%
-  mutate("StartFY_lag1" = StartFY - 1) %>%
-  left_join(hh_index, by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
-  dplyr::select(-c("StartFY_lag1","obligatedAmount","numberOfContracts")) %>%
-  mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)), "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)) )
-
-serv_smp <- serv_smp %>%
-  mutate("StartFY_lag1" = StartFY - 1) %>%
-  left_join(hh_index, by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
-  dplyr::select(-c("StartFY_lag1", "obligatedAmount","numberOfContracts")) %>%
-  mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)), "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)))
-
-serv_smp_1m <- serv_smp_1m %>%
-  mutate("StartFY_lag1" = StartFY - 1) %>%
-  left_join(hh_index, by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
-  dplyr::select(-c("StartFY_lag1", "obligatedAmount","numberOfContracts")) %>%
-  mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)), "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)))
-
-
-rm(hh_index)
 
 
 
