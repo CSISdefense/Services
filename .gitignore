@@ -38,3 +38,15 @@ data/semi_clean/Office\.sp_ProdServOfficeHistoryLaggedConst\.rda
 data/semi_clean/Office\.sp_OfficeHistoryCapacityLaggedConst\.rda
 
 data/semi_clean/Office\.sp_EntityIDofficeHistoryLaggedConst\.rda
+
+data/clean/def_serv_opt_code\.do
+
+data/clean/def_serv_opt\.dat
+
+data/clean/def_serv_sample1m\.dat
+
+data/clean/def_serv_sample1m_code\.do
+
+data/clean/def_serv_sample250k\.dat
+
+data/clean/def_serv_sample250k_code\.do

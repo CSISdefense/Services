@@ -166,6 +166,13 @@ serv_smp <- serv_smp %>%
   dplyr::select(-c("StartFY_lag1", "obligatedAmount","numberOfContracts")) %>%
   mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)), "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)))
 
+serv_smp_1m <- serv_smp_1m %>%
+  mutate("StartFY_lag1" = StartFY - 1) %>%
+  left_join(hh_index, by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
+  dplyr::select(-c("StartFY_lag1", "obligatedAmount","numberOfContracts")) %>%
+  mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)), "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)))
+
+
 rm(hh_index)
 
 
