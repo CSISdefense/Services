@@ -72,6 +72,18 @@ statsummary_continuous(c("p_OptGrowth"), def_serv)
 ```
 
 
+### Options
+```{r Options}
+summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
+def_serv$UnmodifiedBaseandExercisedOptionsValue[def_serv$UnmodifiedBaseandExercisedOptionsValue<=0]<-NA
+
+freq_continuous_plot(def_serv,"UnmodifiedBaseandExercisedOptionsValue",bins=50)
+freq_continuous_plot(def_serv,"l_base",bins=50)
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50)
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"lp_OptGrowth",bins=50)
+
+```
+
 ### Contract Terminations
 
 Contract terminations and the number of change orders can be calculated for the entire sample.  Contract termination is determined using the *Reason for Modification* field in FPDS.  A contract is considered to be terminated if it has at least one modification with the following values:
@@ -82,6 +94,8 @@ Contract terminations and the number of change orders can be calculated for the 
 * "Legal Contract Cancellation"
 
 These four categories and the "Close Out" category are used to mark a contract as closed.  Many contracts in FPDS and in the sample are never marked closed.  
+
+
 # Independent Variables
 
 ## Study Variables
@@ -114,62 +128,55 @@ grouped_barplot("Offr", def_serv)
 
 ```
 
-### Variable examination
-```{r VarGraph}
-summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
-def_serv$UnmodifiedBaseandExercisedOptionsValue[def_serv$UnmodifiedBaseandExercisedOptionsValue<=0]<-NA
-
-
-
-def_serv$l_base<-log(def_serv$UnmodifiedBaseandExercisedOptionsValue+1)
-def_serv$p_OptGrowth<-def_serv$ExercisedOptions/def_serv$UnmodifiedBaseandExercisedOptionsValue+1
-def_serv$lp_OptGrowth<-log(def_serv$p_OptGrowth)
-def_serv$n_OptGrowth<-def_serv$ExercisedOptions+1
-def_serv$ln_OptGrowth<-log(def_serv$n_OptGrowth)
-
-
-def_serv$Opt<-NA
-def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==1& def_serv$ExercisedOptions>0]<-"Option Growth"
-def_serv$Opt[(def_serv$AnyUnmodifiedUnexercisedOptions==1)& def_serv$ExercisedOptions==0]<-"No Growth"
-def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-"Initial Base=Ceiling"
-def_serv$Opt<-factor(def_serv$Opt)
-
-
-def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
-def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
-def_serv$l_pMarket<-log(def_serv$pMarket+1)
-def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
-def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
-
+### Service Complexity 
+#### CFTE
+```{r CFTE}
 summary(def_serv$l_CFTE)
-
-
 freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50)
 freq_continuous_plot(def_serv,"l_CFTE",bins=50)
-freq_continuous_plot(def_serv,"UnmodifiedBaseandExercisedOptionsValue",bins=50)
-freq_continuous_plot(def_serv,"l_base",bins=50)
-freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50)
-freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"lp_OptGrowth",bins=50)
+```
 
+
+
+### Office Capacity
+#### PBSC
+```{r PBSC}
 
 
 freq_continuous_plot(def_serv,"pPBSC",bins=50)
 freq_continuous_plot(def_serv,"l_pPBSC",bins=50) #No real point, stick with PBSC
+```
+
+#### Office Experience withthe Product or Service Code
+```{r OffPSC}
+
+
 freq_continuous_plot(def_serv,"pOffPSC",bins=50)
 freq_continuous_plot(def_serv,"l_pOffPSC",bins=50)  #No real point here either
-freq_continuous_plot(def_serv,"pMarket",bins=50)
-freq_continuous_plot(def_serv,"l_pMarket",bins=50)
-freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
-freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
-freq_continuous_plot(def_serv,"l_CA",bins=50)
+
 summary(def_serv$pMarket)
 
-def_serv$l_pMarket<-log(def_serv$pMarket+1)
+```
 
 
-# Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
-# Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
-# ggsave(Effplot,file="..\\Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
+
+### Office-Vendor Relationship
+
+#### Number of  Paired Years
+```{r PairCount}
+
+freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
+freq_continuous_plot(def_serv,"l_CA",bins=50)
+
+```
+
+#### Number of Prior Year Contract Action
+```{r PairCount}
+
+
+freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
+freq_continuous_plot(def_serv,"l_CA",bins=50)
+
 ```
 
 ## Controls
@@ -185,7 +192,10 @@ sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="No Comp."],na.rm=T
 sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="1 Offer"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
 sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="2+ Offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)`
 )
-* CompOffr is a dummy variable based on competition and the number of offers. It's baseline value is No Competition, sole-source contracts, which are intentionally not assigned a dummy to avoid multicollinearity. `r  summary(def_serv$CompOffr);
+* CompOffr is a dummy variable based on competition and the number of offers. It's baseline value is No Competition, sole-source contracts, which are intentionally not assigned a dummy to avoid multicollinearity. 
+
+```{r Competition}  
+summary(def_serv$CompOffr);
 debug(NA_stats)
 NA_stats(def_serv,"CompOffr")
 sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="No Competition"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
@@ -200,16 +210,16 @@ length(def_serv$CompOffr[def_serv$CompOffr=="2 offers"& !is.na(def_serv$CompOffr
 length(def_serv$CompOffr[def_serv$CompOffr=="3-4 offers"& !is.na(def_serv$CompOffr)])/nrow(def_serv)
 length(def_serv$CompOffr[def_serv$CompOffr=="5+ offers"& !is.na(def_serv$CompOffr)])/nrow(def_serv)
 
-`
-)
+
+
 summary(def_serv$offer)
 centered_description(def_serv$UnmodifiedNumberOfOffersReceived,"number of offers")
 centered_log_description(def_serv$UnmodifiedNumberOfOffersReceived,"number of offers")
 NA_stats(def_serv,"cl_Offr")
-<!-- cl_def3_HHI_lag1+cl_def3_ratio_lag1+#cl_def3_obl_lag1+ -->
-                            <!-- #cl_US3_avg_sal_lag1+ -->
-                            <!-- cl_def6_HHI_lag1+cl_def6_obl_lag1+cl_def6_ratio_lag1+ -->
-                            <!-- cl_US6_avg_sal_lag1Const+ -->
+# <!-- cl_def3_HHI_lag1+cl_def3_ratio_lag1+#cl_def3_obl_lag1+ -->
+#                             <!-- #cl_US3_avg_sal_lag1+ -->
+#                             <!-- cl_def6_HHI_lag1+cl_def6_obl_lag1+cl_def6_ratio_lag1+ -->
+#                             <!-- cl_US6_avg_sal_lag1Const+ -->
 
 
 centered_log_description(def_serv$l_def3_obl_lag1,"obligations")
@@ -223,10 +233,14 @@ def_serv$cl_def6_ratio_lag1[is.nan(def_serv$cl_def6_ratio_lag1) | is.infinite(de
 centered_log_description(def_serv$l_def3_ratio_lag1,"obligations")
 
 centered_log_description(def_serv$l_def6_ratio_lag1,"obligations")
-centered_log_description(def_serv$l_def6_ratio_lag1[!
 NA_stats(def_serv,"cl_def3_ratio_lag1")
 NA_stats(def_serv,"cl_def6_ratio_lag1")
 
+
+# Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
+# Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
+# ggsave(Effplot,file="..\\Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
+```
 
 ### Initial Contract Scope
 
@@ -1044,6 +1058,19 @@ statsummary_continuous(pair_category, def_serv)
 
 ```
 
+### Office and Vendor
+
+#### pMarket
+```{r VarGraph}
+
+
+freq_continuous_plot(def_serv,"pMarket",bins=50)
+freq_continuous_plot(def_serv,"l_pMarket",bins=50)
+summary(def_serv$pMarket)
+
+```
+
+### Office and Vendor
 
 
 # Missing Data Measures
