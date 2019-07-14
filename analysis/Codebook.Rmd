@@ -173,7 +173,6 @@ freq_continuous_plot(def_serv,"l_CA",bins=50)
 #### Number of Prior Year Contract Action
 ```{r PairCount}
 
-
 freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
 freq_continuous_plot(def_serv,"l_CA",bins=50)
 

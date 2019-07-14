@@ -18,11 +18,11 @@ contracting_office_naics<-remove_bom(contracting_office_naics)
 
 contracting_office_naics<-contracting_office_naics %>% group_by(Fiscal_year,ContractingOfficeCode)
 contracting_office_naics<-contracting_office_naics %>%
-  filter(Fiscal_year > 2000) 
+  dplyr::filter(Fiscal_year > 2000 & !is.na(ContractingOfficeCode))  
 
 
 #Rank and calculated HHI by obligation amount
-contracting_office_naics_ob<-contracting_office_naics %>%
+contracting_office_naics<-contracting_office_naics %>%
   dplyr::mutate(
     posObl = rank(-obligatedAmount,
                ties.method ="min"),
@@ -41,8 +41,12 @@ office_naics_hhi<-contracting_office_naics %>%
     numberOfContracts=sum(numberOfContracts),
     hh_index_obl=sum((pctObl*100)^2,na.rm=TRUE),
     hh_index_k=sum((pctK*100)^2,na.rm=TRUE),
-    sumcheck_obl=sum(hh_index_obl,na.rm=TRUE),
-    sumcheck_obl=sum(hh_index_obl,na.rm=TRUE)
+    sumcheck_obl=sum(pctObl,na.rm=TRUE),
+    sumcheck_k=sum(pctK,na.rm=TRUE)
   )
+
+if(any(office_naics_hhi$sumcheck_obl != 1)) stop("Obligated Sumcheck failed")
+if(any(office_naics_hhi$sumcheck_k != 1)) stop("Count Sumcheck failed")
+office_naics_hhi<-office_naics_hhi %>% dplyr::select(c(-sumcheck_obl,-sumcheck_k))
 
 write.csv(office_naics_hhi,"data//clean//office_naics_hhi.csv")
