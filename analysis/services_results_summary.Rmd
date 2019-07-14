@@ -138,7 +138,7 @@ if(!exists("b_CBre12C")){
        file="..//output//b_CBre12C.rdata")
 }
 glmer_examine(b_CBre12C_1m,display=TRUE)
-odds_ratio(b_CBre12C_1m,"b_CBre12C")
+# odds_ratio(b_CBre12C_1m,"b_CBre12C")
 stargazer::stargazer(b_CBre12C,b_CBre12C,type="text",
                        digits=2)
 
@@ -205,7 +205,7 @@ if(!exists("Term_12C")){
                    )
   glmer_examine(Term_12C)
   
-    Term_12C_1m <- glm (data=serv_smp,
+    Term_12C_1m <- glm (data=serv_smp1m,
                    b_Term ~ cl_US6_avg_sal_lag1Const + 
                      cl_CFTE+ c_pPBSC+c_pOffPSC+
                      c_pairHist+cl_pairCA+
@@ -226,7 +226,7 @@ if(!exists("Term_12C")){
 }
 
 glmer_examine(Term_12C_1m,display=TRUE)
-odds_ratio(Term_12C_1m,"Term_12C")
+# odds_ratio(Term_12C_1m,"Term_12C")
 stargazer::stargazer(Term_12C,Term_12C_1m,type="text",
                        digits=2)
 
@@ -235,54 +235,91 @@ stargazer::stargazer(Term_12C,Term_12C_1m,type="text",
 ## Tables for Paper
 ```{r CoefficientList}
 study_coef_list<-list("(Intercept)"="(Intercept)",
-                "cl_US6_avg_sal_lag1"="Log(Det. Ind. Salary)",
-                                     "cl_CFTE"="Log(Service Invoice Rate)",
-                                     "c_pPBSC"="Office Perf.-Based %",
-                                     "c_pOffPSC"="Office Service Exp. %",
-                                     "c_pairHist"="Paired Years",
-                                     "cl_pairCA"="Log(Paired Actions)"
-                                     # "cl_def3_HHI_lag1"="Log(Subsector HHI)",
-                                     # "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
-                                     # "CompOffr1 offer"="Comp=1 offer",
-                                     # "CompOffr2 offers"="Comp=2 offers",
-                                     # "CompOffr3-4 offers"="Comp=3-4 offers",
-                                     # "CompOffr5+ offers"="Comp=5+ offers",
-                                     # "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
-                                     # "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
-                                     # "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
-                                     # 
-                                     # "cl_Ceil"="Log(Init. Ceiling)",
-                                     # "capped_cl_Days"="Log(Init. Days)",
-                                     # "VehS-IDC"="Vehicle=S-IDC",
-                                     # "VehM-IDC"="Vehicle=M-IDC",
-                                     # "VehFSS/GWAC"="Vehicle=FSS/GWAC",
-                                     # "VehBPA/BOA"="Vehicle=BPA/BOA",
-                                     # "PricingFeeOther FP"="Pricing=Other FP",
-                                     # "PricingFeeIncentive"="Pricing=Incentive Fee",
-                                     # "PricingFeeCombination or Other"="Pricing=Combination or Other",
-                                     # "PricingFeeOther CB"="Pricing=Other CB",
-                                     # "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
-                                     # "b_UCA"="UCA",
-                                     # "b_Intl"="Performed Abroad",
-                                     # # # "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
-                                     # # "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
-                                     # # # "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
-                                     # "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
-                                     # # "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
-                                     # # "CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
-                                     # # "CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
-                                     # # "CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
-                                     # # "CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
-                                     # "VehS-IDC:b_Intl"="Vehicle=S-IDC:Performed Abroad",
-                                     # "VehM-IDC:b_Intl"="Vehicle=M-IDC:Performed Abroad",
-                                     # "VehFSS/GWAC:b_Intl"="Vehicle=FSS/GWAC:Performed Abroad",
-                                     # "VehBPA/BOA:b_Intl"="Vehicle=BPA/BOA:Performed Abroad",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"="Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
-              )
+                      "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
+                      "cl_CFTE"="Log(Service Invoice Rate)",
+                      "c_pPBSC"="Office Perf.-Based %",
+                      "c_pOffPSC"="Office Service Exp. %",
+                      "c_pairHist"="Paired Years",
+                      "cl_pairCA"="Log(Paired Actions)"
+)
+
+
+all_coef_list<-list("(Intercept)"="(Intercept)",
+                    "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
+                    "cl_CFTE"="Log(Service Invoice Rate)",
+                    "c_pPBSC"="Office Perf.-Based %",
+                    "c_pOffPSC"="Office Service Exp. %",
+                    "c_pairHist"="Paired Years",
+                    "cl_pairCA"="Log(Paired Actions)",
+                    
+                    #Contract Controls
+                    
+                    "Comp1or51 offer"="Comp=1 offer",
+                    "Comp1or52-4 offers"="Comp=2-4 offers",
+                    "Comp1or55+ offers"="Comp=5+ offers",
+                    
+                    "CompOffr1 offer"="Comp=1 offer",
+                    "CompOffr2 offers"="Comp=2 offers",
+                    "CompOffr3-4 offers"="Comp=3-4 offers",
+                    "CompOffr5+ offers"="Comp=5+ offers",
+                    
+                    "cl_Ceil"="Log(Init. Ceiling)",
+                    "capped_cl_Days"="Log(Init. Days)",
+                    "VehS-IDC"="Vehicle=S-IDC",
+                    "VehM-IDC"="Vehicle=M-IDC",
+                    "VehFSS/GWAC"="Vehicle=FSS/GWAC",
+                    "VehBPA/BOA"="Vehicle=BPA/BOA",
+                    "PricingUCAFFP"="Pricing=FFP",
+                    "PricingUCAOther FP"="Pricing=Other FP",
+                    "PricingUCAIncentive"="Pricing=Incentive Fee",
+                    "PricingUCACombination or Other"="Pricing=Combination or Other",
+                    "PricingUCAOther CB"="Pricing=Other CB",
+                    "PricingUCAT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
+                    "PricingUCAUCA"="Pricing=UCA",
+                    
+                    "PricingFeeOther FP"="Pricing=Other FP",
+                    "PricingFeeIncentive"="Pricing=Incentive Fee",
+                    "PricingFeeCombination or Other"="Pricing=Combination or Other",
+                    "PricingFeeOther CB"="Pricing=Other CB",
+                    "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
+                    "b_UCA"="UCA",
+                    "CrisisARRA"="Crisis=ARRA",
+                    "CrisisDis"="Crisis=Disaster",
+                    "CrisisOCO"="Crisis=OCO",
+                    "b_Intl"="Performed Abroad",
+
+                    #NAICS
+                    "cl_def3_HHI_lag1"="Log(Subsector HHI)",
+                    "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
+                    "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
+                    "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
+                    "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
+                    #Office
+                    "c_pMarket"="Percent Market",
+                    "cl_OffVol"="Office Volume",
+                    "cl_hh_index_k"="Office Concentration",
+                    
+                    
+                    #interations
+                    # # "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
+                    # "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
+                    # # "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
+                    "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
+                    # "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
+                    # "CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
+                    # "CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
+                    # "CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
+                    # "CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
+                    "VehS-IDC:b_Intl"="Vehicle=S-IDC:Performed Abroad",
+                    "VehM-IDC:b_Intl"="Vehicle=M-IDC:Performed Abroad",
+                    "VehFSS/GWAC:b_Intl"="Vehicle=FSS/GWAC:Performed Abroad",
+                    "VehBPA/BOA:b_Intl"="Vehicle=BPA/BOA:Performed Abroad",
+                    "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"="Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
+)
 
 
 ```
@@ -292,7 +329,7 @@ study_coef_list<-list("(Intercept)"="(Intercept)",
 
 texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//study_var_model_lvl1.html",
                 single.row = TRUE,
-                # custom.model.name=c("Ceiling Breaches"),
+                custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
                 stars=c(0.1,0.05,0.01,0.001),
                 groups = list(
                               "Services Complexity" = 2:3,
@@ -302,12 +339,8 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//study
                 custom.coef.map=study_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 6: Logit Bivariate Look at Study Variables and Ceiling Breaches",
+                caption="Table 6: Study Variables and Outcomes",
                 caption.above=TRUE)
-
-
-
-
 
 ```
 
@@ -316,11 +349,34 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//study
 
 ```{r StudyVariableSummary}
 
-
 #Absolute Exercised Options
   stargazer::stargazer(p_Opt_12C,b_CBre12C_1m,Term_12C_1m,
+                       single.row = TRUE,
+                custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
+                stars=c(0.1,0.05,0.01,0.001),
                        type="text",
                        digits=2)
+
+
+texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//all_var_model_lvl1.html",
+                single.row = TRUE,
+                custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              "Services Complexity" = 2:3,
+                              "Office Capacity" =4:5,
+                              "Past Relationship"=6:7,
+                              "Contract Characteristics"=8:25,
+                              "NAICS Characteristics" =26:29,
+                                                            "Office Characteristics" =31:33
+                              
+                              ),
+                custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 7: All Variables and Outcomes",
+                caption.above=TRUE)
+
 
 
 ```
@@ -474,128 +530,10 @@ gridExtra::grid.arrange(dotplot(ranef(p_Opt_12C, condVar = T), strip = T, scales
 
 ```
 
+## Odds Ratios
+
 ### Ceiling Breach 
 ```{r Output-CBre}
-stargazer::stargazer(b_CBre12C,CBre_Comp_13C_1m,CBre_Cons_Comp_15A_1m,type="text",
-                       digits=2)
-# texreg::htmlreg(list(Term_Cons_08A3,
-#                   CBre_Cons_08C),#CBre_Cons_08B2
-#                 file="..//output//ConsModel.html",single.row = TRUE,
-#                 custom.model.name=c("Termination",
-#                                     "Ceiling Breach"),
-#                         stars=c(0.05))
-
-
-# texreg::htmlreg(list(b_CBre12C,CBre_Comp_13C,CBre_Cons_Comp_15A),file="..//output//CBre_Model.html",single.row = TRUE,
-#                 custom.model.name=c("Consolidation",
-#                                     "Competition",
-#                                     "Both"),
-#                         stars=c(0.05,0.01,0.001))
-
-
-texreg::htmlreg(list(b_CBre12C.restart,CBre_Comp_13C,CBre_Cons_Comp_15A),file="..//output//CBre_Model.html",
-                single.row = TRUE,
-                custom.model.name=c("Concentration",
-                                    "Competition",
-                                    "Both"),
-                        stars=c(0.1,0.05,0.01,0.001),
-                groups = list("Study Variables" = 2:7,
-                              "NAICS Characteristics" = 8:11,
-                              "Contract Characteristics"=12:24,
-"Interactions" = 25:31),
-                custom.coef.map=list("(Intercept)"="(Intercept)",
-                "cl_def3_HHI_lag1"="Log(Subsector HHI)",
-"cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
-"CompOffr1 offer"="Comp=1 offer",
-"CompOffr2 offers"="Comp=2 offers",
-"CompOffr3-4 offers"="Comp=3-4 offers",
-"CompOffr5+ offers"="Comp=5+ offers",
-"cl_def3_ratio_lag1"="Log(Subsector Ratio)",
-"cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
-"cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
-"cl_US6_avg_sal_lag1"="Log(Det. Ind. U.S. Avg. Salary)",
-"cl_Ceil"="Log(Init. Ceiling)",
-"capped_cl_Days"="Log(Init. Days)",
-"VehS-IDC"="Vehicle=S-IDC",
-"VehM-IDC"="Vehicle=M-IDC",
-"VehFSS/GWAC"="Vehicle=FSS/GWAC",
-"VehBPA/BOA"="Vehicle=BPA/BOA",
-"PricingFeeOther FP"="Pricing=Other FP",
-"PricingFeeIncentive"="Pricing=Incentive Fee",
-"PricingFeeCombination or Other"="Pricing=Combination or Other",
-"PricingFeeOther CB"="Pricing=Other CB",
-"PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
-"b_UCA"="UCA",
-"b_Intl"="Performed Abroad",
-# "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
-"cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
-# "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
-"cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
-"cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
-"CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
-"CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
-"CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
-"CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
-),
-                bold=0.05,
-custom.note="%stars. Logged inputs are rescaled.",
-caption="Table 2: Logit Model Results for Ceiling Breaches",
-caption.above=TRUE)
-
-
-
-texreg::htmlreg(list(b_CBre12C,CBre_Comp_13C_1m,CBre_Cons_Comp_15A_1m),file="..//output//CBre_Model_1m.html",
-                single.row = TRUE,
-                custom.model.name=c("Concentration",
-                                    "Competition",
-                                    "Both"),
-                        stars=c(0.1,0.05,0.01,0.001),
-                groups = list("Study Variables" = 2:7,
-                              "NAICS Characteristics" = 8:11,
-                              "Contract Characteristics"=12:24,
-"Interactions" = 25:31),
-                custom.coef.map=list("(Intercept)"="(Intercept)",
-                "cl_def3_HHI_lag1"="Log(Subsector HHI)",
-"cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
-"CompOffr1 offer"="Comp=1 offer",
-"CompOffr2 offers"="Comp=2 offers",
-"CompOffr3-4 offers"="Comp=3-4 offers",
-"CompOffr5+ offers"="Comp=5+ offers",
-"cl_def3_ratio_lag1"="Log(Subsector Ratio)",
-"cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
-"cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
-"cl_US6_avg_sal_lag1"="Log(Det. Ind. U.S. Avg. Salary)",
-"cl_Ceil"="Log(Init. Ceiling)",
-"capped_cl_Days"="Log(Init. Days)",
-"VehS-IDC"="Vehicle=S-IDC",
-"VehM-IDC"="Vehicle=M-IDC",
-"VehFSS/GWAC"="Vehicle=FSS/GWAC",
-"VehBPA/BOA"="Vehicle=BPA/BOA",
-"PricingFeeOther FP"="Pricing=Other FP",
-"PricingFeeIncentive"="Pricing=Incentive Fee",
-"PricingFeeCombination or Other"="Pricing=Combination or Other",
-"PricingFeeOther CB"="Pricing=Other CB",
-"PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
-"b_UCA"="UCA",
-"b_Intl"="Performed Abroad",
-# "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
-"cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
-# "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
-"cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
-"cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
-"CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
-"CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
-"CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
-"CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
-),
-                bold=0.05,
-custom.note="%stars. Logged inputs are rescaled.",
-caption="Table 2: Logit Model Results for Ceiling Breaches",
-caption.above=TRUE)
-
-
-
-
 or1<-odds_ratio(b_CBre12C.restart,"b_CBre12C","Concentration","Ceiling Breaches")
 or2<-odds_ratio(CBre_Comp_13C,"CBre_Comp_13C","Competition","Ceiling Breaches")
 or3<-odds_ratio(CBre_Cons_Comp_15A,"CBre_Cons_Comp_15A","Both","Ceiling Breaches")
@@ -624,157 +562,8 @@ gridExtra::grid.arrange(dotplot(ranef(b_CBre12C.restart, condVar = T), strip = T
 
 
 ### Terminations 
-#### Regression Tables
+
 ```{r Output-CBre}
-
-# texreg::htmlreg(list(Term_Cons_08A3,
-#                   CBre_Cons_08C),#CBre_Cons_08B2
-#                 file="..//output//ConsModel.html",single.row = TRUE,
-#                 custom.model.name=c("Termination",
-#                                     "Ceiling Breach"),
-#                         stars=c(0.05))
-
-
-
-texreg::htmlreg(list(Term_12C,Term_Comp_13F,Term_Cons_Comp_14C),file="..//output//Term_Model.html",
-                single.row = TRUE,
-                custom.model.name=c("Concentration",
-                                    "Competition",
-                                    "Both"
-                ),
-                stars=c(0.1,0.05,0.01,0.001),
-                groups = list("Study Variables" = 2:7,
-                              "NAICS Characteristics" = 8:11,
-                              "Contract Characteristics"=12:24,
-                              # "Contract Initial Scope" = 12:13,
-                              # "Contract Vehicle (Baseline=def_serv. Award" = 14:18,
-                              # "Contract Pricing (Baseline=FFP)" = 19:24,
-                              # "Place of Performance" = 25,
-                              "Interactions" = 25:27),
-                custom.coef.map=list(
-                  "(Intercept)"="(Intercept)",
-                  
-                  "cl_def3_HHI_lag1"="Log(Subsector HHI)",
-                  "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
-                  
-                  "CompOffr1 offer"="Comp=1 offer",
-                  "CompOffr2 offers"="Comp=2 offers",
-                  "CompOffr3-4 offers"="Comp=3-4 offers",
-                  "CompOffr5+ offers"="Comp=5+ offers",
-                  "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
-                  "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
-                  "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
-                  "cl_US6_avg_sal_lag1"="Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_Ceil"="Log(Init. Ceiling)",
-                  "cl_Days"="Log(Init. Days)",
-                  "VehS-IDC"="Vehicle=S-IDC",
-                  "VehM-IDC"="Vehicle=M-IDC",
-                  "VehFSS/GWAC"="Vehicle=FSS/GWAC",
-                  "VehBPA/BOA"="Vehicle=BPA/BOA",
-                  "PricingFeeOther FP"="Pricing=Other FP",
-                  "PricingFeeIncentive"="Pricing=Incentive Fee",
-                  "PricingFeeCombination or Other"="Pricing=Combination or Other",
-                  "PricingFeeOther CB"="Pricing=Other CB",
-                  "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
-                  "b_UCA"="UCA",
-                  "b_Intl"="Performed Abroad",
-                  "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
-                  "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
-                  "cl_def6_HHI_lag1:cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
-                  "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
-                  "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)",
-                  "cl_def6_HHI_lag1:cl_def6_ratio_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. Ratio)",
-                  "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"=
-                    "Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"=
-                    "Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
-                  
-                ),
-                bold=0.05,
-                custom.note="%stars. Logged inputs are rescaled.",
-                caption="Table 3: Logit Model Results for Terminations",
-                caption.above=TRUE)
-
-                       #  b_UCA:cl_Ceil+
-                       #  b_UCA:cl_def6_HHI_lag1 +
-                       # PricingFee:cl_US6_avg_sal_lag1+
-
-
-# texreg::htmlreg(list(Term_12C,Term_Comp_13E2,Term_Cons_Comp_14C,Term_Cons_Comp_14C_1m),file="..//output//Term_Model_1m.html",
-#                 single.row = TRUE,
-#                 custom.model.name=c("Concentration",
-#                                     "Competition",
-#                                     "Both",
-#                                     "Both 1m"
-texreg::htmlreg(list(Term_12C_1m,Term_Comp_13F_1m,Term_Cons_Comp_14C_1m),file="..//output//Term_Model_1m.html",
-                single.row = TRUE,
-                custom.model.name=c("Concentration",
-                                    "Competition",
-                                    "Both"
-                ),
-                stars=c(0.1,0.05,0.01,0.001),
-                groups = list("Study Variables" = 2:7,
-                              "NAICS Characteristics" = 8:11,
-                              "Contract Characteristics"=12:24,
-                              # "Contract Initial Scope" = 12:13,
-                              # "Contract Vehicle (Baseline=def_serv. Award" = 14:18,
-                              # "Contract Pricing (Baseline=FFP)" = 19:24,
-                              # "Place of Performance" = 25,
-                              "Interactions" = 25:27),
-                custom.coef.map=list(
-                  "(Intercept)"="(Intercept)",
-                  
-                  "cl_def3_HHI_lag1"="Log(Subsector HHI)",
-                  "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
-                  
-                  "CompOffr1 offer"="Comp=1 offer",
-                  "CompOffr2 offers"="Comp=2 offers",
-                  "CompOffr3-4 offers"="Comp=3-4 offers",
-                  "CompOffr5+ offers"="Comp=5+ offers",
-                  "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
-                  "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
-                  "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
-                  "cl_US6_avg_sal_lag1"="Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_Ceil"="Log(Init. Ceiling)",
-                  "cl_Days"="Log(Init. Days)",
-                  "VehS-IDC"="Vehicle=S-IDC",
-                  "VehM-IDC"="Vehicle=M-IDC",
-                  "VehFSS/GWAC"="Vehicle=FSS/GWAC",
-                  "VehBPA/BOA"="Vehicle=BPA/BOA",
-                  "PricingFeeOther FP"="Pricing=Other FP",
-                  "PricingFeeIncentive"="Pricing=Incentive Fee",
-                  "PricingFeeCombination or Other"="Pricing=Combination or Other",
-                  "PricingFeeOther CB"="Pricing=Other CB",
-                  "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
-                  "b_UCA"="UCA",
-                  "b_Intl"="Performed Abroad",
-                  "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
-                  "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
-                  "cl_def6_HHI_lag1:cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
-                  "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
-                  "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)",
-                  "cl_def6_HHI_lag1:cl_def6_ratio_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. Ratio)",
-                  "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"=
-                    "Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
-                  "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"=
-                    "Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
-                  
-                ),
-                bold=0.05,
-                custom.note="%stars. Logged inputs are rescaled.",
-                caption="Table 3: Logit Model Results for Terminations",
-                caption.above=TRUE)
-
-                       #  b_UCA:cl_Ceil+
-                       #  b_UCA:cl_def6_HHI_lag1 +
-                       # PricingFee:cl_US6_avg_sal_lag1+
-
 
 gridExtra::grid.arrange(dotplot(ranef(Term_12C, condVar = T), strip = T, scales=list(relation='free'))$Agency,
              dotplot(ranef(Term_Comp_13E2, condVar = T), strip = T, scales=list(relation='free'))$Agency,
@@ -796,41 +585,6 @@ or3<-odds_ratio(Term_Cons_Comp_14C_1m,"Term_Cons_Comp_14C_1m","Both","Ceiling Br
 term.or<-rbind(or1,or2,or3)
 
 write.csv(get_study_variables_odds_ratio(term.or),file="..//output//termination_study_odds_ratio_1m.csv",row.names=FALSE)
-
-
-```
-
-
-#### Odds Ratios 
-
-```{r Consolidation}
-or_ceil<-odds_ratio(CBre_Cons_Comp_15A,"CBre_Cons_Comp_15A","Both","Ceiling Breaches")
-or_term<-odds_ratio(Term_Cons_Comp_14B,"Term_Cons_Comp_14B","Both","Terminations")
-
-cons.or<-rbind(or_ceil,or_term)
-
-write.csv(get_study_variables_odds_ratio(subset(cons.or,variable %in% c("cl_def3_HHI_lag1","cl_def6_HHI_lag1"))),
-          file="..//output//consolidation_odds_ratio.csv",row.names=FALSE)
-
-
-or_ceil<-odds_ratio(CBre_Cons_Comp_15A_1m,"CBre_Cons_Comp_15A_1m","Both","Ceiling Breaches")
-or_term<-odds_ratio(Term_Cons_Comp_14C_1m,"Term_Cons_Comp_14C_1m","Both","Terminations")
-
-cons.or<-rbind(or_ceil,or_term)
-
-write.csv(get_study_variables_odds_ratio(subset(cons.or,variable %in% c("cl_def3_HHI_lag1","cl_def6_HHI_lag1"))),
-          file="..//output//consolidation_odds_ratio_1m.csv",row.names=FALSE)
-
-
-# centered_description(serv_smp1m$def6_HHI_lag1,"subsector HHI score")
-# centered_log_description(serv_smp1m$l_def6_HHI_lag1,"detailed industrial HHI score")
-# 
-# 
-# centered_description(serv_smp1m$def3_HHI_lag1,"subsector HHI score")
-# centered_log_description(serv_smp1m$l_def3_HHI_lag1,"detailed industrial HHI score")
-
-
-
 
 
 ```
