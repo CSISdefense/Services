@@ -16,9 +16,9 @@ contracting_office_naics = read.table("data//semi_clean//Office.OfficeIDhistoryN
 
 contracting_office_naics<-remove_bom(contracting_office_naics)
 
-contracting_office_naics<-contracting_office_naics %>% group_by(Fiscal_year,ContractingOfficeCode)
 contracting_office_naics<-contracting_office_naics %>%
-  dplyr::filter(Fiscal_year > 2000 & !is.na(ContractingOfficeCode))  
+  dplyr::filter(Fiscal_year > 2000 & !is.na(ContractingOfficeCode))  %>% 
+  group_by(Fiscal_year,ContractingOfficeCode)
 
 
 #Rank and calculated HHI by obligation amount
@@ -35,7 +35,7 @@ contracting_office_naics<-contracting_office_naics %>%
     pctK = numberOfContracts / sum(numberOfContracts)
   )
 
-office_naics_hhi<-contracting_office_naics %>%
+annual_office_naics_hhi<-contracting_office_naics %>%
   dplyr::summarize(
     obligatedAmount = sum(obligatedAmount),
     numberOfContracts=sum(numberOfContracts),
@@ -45,8 +45,28 @@ office_naics_hhi<-contracting_office_naics %>%
     sumcheck_k=sum(pctK,na.rm=TRUE)
   )
 
-if(any(office_naics_hhi$sumcheck_obl != 1)) stop("Obligated Sumcheck failed")
-if(any(office_naics_hhi$sumcheck_k != 1)) stop("Count Sumcheck failed")
-office_naics_hhi<-office_naics_hhi %>% dplyr::select(c(-sumcheck_obl,-sumcheck_k))
+# Managing odd cases, such as contracts for 0.
+annual_office_naics_hhi$sumcheck_obl[annual_office_naics_hhi$hh_index_obl==0]<-NA
+annual_office_naics_hhi$hh_index_obl[annual_office_naics_hhi$hh_index_obl==0]<-NA
 
-write.csv(office_naics_hhi,"data//clean//office_naics_hhi.csv")
+if(any(!is.na(annual_office_naics_hhi$sumcheck_obl) &
+       annual_office_naics_hhi$sumcheck_obl - 1 > 1e-9 )) stop("Obligated Sumcheck failed")
+if(any(!is.na(annual_office_naics_hhi$sumcheck_k) &
+       annual_office_naics_hhi$sumcheck_k - 1 > 1e-9 )) stop("Count Sumcheck failed")
+
+annual_office_naics_hhi<-annual_office_naics_hhi %>% dplyr::select(c(-sumcheck_obl,-sumcheck_k))
+
+#Creating an average to fill in when there isn't a prior year value to rely on.
+average_office_naics_hhi<-annual_office_naics_hhi %>% 
+  group_by(ContractingOfficeCode) %>%
+  dplyr::summarize(
+    obligatedAmount = sum(obligatedAmount),
+    numberOfContracts=sum(numberOfContracts),
+    avg_hh_index_obl=mean(hh_index_obl,na.rm=TRUE),
+    avg_hh_index_k=mean(hh_index_k,na.rm=TRUE)
+  )
+
+
+
+write.csv(annual_office_naics_hhi,"data//clean//annual_office_naics_hhi.csv")
+write.csv(average_office_naics_hhi,"data//clean//average_office_naics_hhi.csv")

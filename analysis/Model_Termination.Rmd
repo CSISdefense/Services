@@ -1432,7 +1432,7 @@ Expectation: More diverse industries of contracts contracting offices handle, th
 
 
 ```{r Model12B}
-summary_continuous_plot(serv_smp,"cl_hh_index_k")
+summary_continuous_plot(serv_smp,"cl_hh_index_k ")
 
 #Scatter Plot
 ggplot(serv_opt, aes(x=cl_hh_index_k, y=lp_OptGrowth)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
