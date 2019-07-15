@@ -254,6 +254,8 @@ facet_wrap(~Ceil,scales="free_y")#+, space="free_y"
 ```{r gt250k}
 inspect250<-opt_preclean %>% filter(Why_Outlier==">=$250M, Insepect")
 inspect250$CSIScontractID
+gt250k_exercised_opt_outliers.txt
+
 ```
 
 ## W912IM
