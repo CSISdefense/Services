@@ -9,7 +9,7 @@ library(csis360)
 library(dplyr)
 library(readr)
 
-contracting_office_naics = read.table("data//semi_clean//Office.OfficeIDhistoryNAICS_fy.txt", header = TRUE, 
+contracting_office_naics = read.table("data//semi_clean//Defense_Office.sp_OfficeHistoryNAICS.txt", header = TRUE, 
                                       na.strings = c("","NA","NULL"),
                                       quote = "\"",
                                       sep = "\t")
@@ -39,15 +39,15 @@ annual_office_naics_hhi<-contracting_office_naics %>%
   dplyr::summarize(
     obligatedAmount = sum(obligatedAmount),
     numberOfContracts=sum(numberOfContracts),
-    hh_index_obl=sum((pctObl*100)^2,na.rm=TRUE),
-    hh_index_k=sum((pctK*100)^2,na.rm=TRUE),
+    office_naics_hhi_obl=sum((pctObl*100)^2,na.rm=TRUE),
+    office_naics_hhi_k=sum((pctK*100)^2,na.rm=TRUE),
     sumcheck_obl=sum(pctObl,na.rm=TRUE),
     sumcheck_k=sum(pctK,na.rm=TRUE)
   )
 
 # Managing odd cases, such as contracts for 0.
-annual_office_naics_hhi$sumcheck_obl[annual_office_naics_hhi$hh_index_obl==0]<-NA
-annual_office_naics_hhi$hh_index_obl[annual_office_naics_hhi$hh_index_obl==0]<-NA
+annual_office_naics_hhi$sumcheck_obl[annual_office_naics_hhi$office_naics_hhi_obl==0]<-NA
+annual_office_naics_hhi$office_naics_hhi_obl[annual_office_naics_hhi$office_naics_hhi_obl==0]<-NA
 
 if(any(!is.na(annual_office_naics_hhi$sumcheck_obl) &
        annual_office_naics_hhi$sumcheck_obl - 1 > 1e-9 )) stop("Obligated Sumcheck failed")
@@ -62,8 +62,8 @@ average_office_naics_hhi<-annual_office_naics_hhi %>%
   dplyr::summarize(
     obligatedAmount = sum(obligatedAmount),
     numberOfContracts=sum(numberOfContracts),
-    avg_hh_index_obl=mean(hh_index_obl,na.rm=TRUE),
-    avg_hh_index_k=mean(hh_index_k,na.rm=TRUE)
+    avg_office_naics_hhi_obl=mean(office_naics_hhi_obl,na.rm=TRUE),
+    avg_office_naics_hhi_k=mean(office_naics_hhi_k,na.rm=TRUE)
   )
 
 

@@ -223,18 +223,32 @@ length(unique((def_serv$NAICS3)))
 
 
 #********** NAICS - Office hhi
-hh_index <- read.csv("data//clean//office_naics_hhi.csv", header = TRUE, row.names = "X")
+annual_office_naics_hhi <- read.csv("data//clean//annual_office_naics_hhi.csv", header = TRUE, row.names = "X") %>% 
+  dplyr::select(-c("obligatedAmount","numberOfContracts"))
 
+#Pulling in join annual_office_naics_hhi
 def_serv <- def_serv %>%
   mutate("StartFY_lag1" = StartFY - 1) %>%
-  left_join(hh_index %>% dplyr::select(-c("obligatedAmount","numberOfContracts")), 
-            by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
-  dplyr::select(-c("StartFY_lag1")) %>%
-  mutate("cl_hh_index_obl" = arm::rescale(na_non_positive_log(hh_index_obl)),
-         "cl_hh_index_k" = arm::rescale(na_non_positive_log(hh_index_k)))
-rm(hh_index)
+  left_join(annual_office_naics_hhi, by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
+  dplyr::select(-c("StartFY_lag1"))
+rm(annual_office_naics_hhi)
 
+#Pulling in join avg_office_naics_hhi
+avg_office_naics_hhi <- read.csv("data//clean//average_office_naics_hhi.csv", header = TRUE, row.names = "X") %>% 
+  dplyr::select(-c("obligatedAmount","numberOfContracts"))
+def_serv <- def_serv %>%
+  left_join(avg_office_naics_hhi, by = c("Office" = "ContractingOfficeCode"))
+rm(avg_office_naics_hhi)
 
+#Imputing missing
+summary(def_serv$office_naics_hhi_obl)
+def_serv$office_naics_hhi_obl[is.na(def_serv$office_naics_hhi_obl)]<-def_serv$avg_office_naics_hhi_obl[is.na(def_serv$office_naics_hhi_obl)]
+summary(def_serv$office_naics_hhi_k)
+def_serv$office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]<-def_serv$avg_office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]
+
+def_serv$cl_office_naics_hhi_obl <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_obl))
+def_serv$cl_office_naics_hhi_k <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_k))
+def_serv<- def_serv %>% select(-c(avg_office_naics_hhi_obl,avg_office_naics_hhi_k))
 
 #*********** Options Growth
 summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
@@ -252,48 +266,26 @@ def_serv$Opt[(def_serv$AnyUnmodifiedUnexercisedOptions==1)& def_serv$ExercisedOp
 def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-"Initial Base=Ceiling"
 def_serv$Opt<-factor(def_serv$Opt)
 
-freq_continuous_plot(def_serv,"UnmodifiedBaseandExercisedOptionsValue",bins=50)
-freq_continuous_plot(def_serv,"l_base",bins=50)
-freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50)
-freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"lp_OptGrowth",bins=50)
-
 
 #********** Performance Based Services Contracting
 def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
-freq_continuous_plot(def_serv,"pPBSC",bins=50)
-freq_continuous_plot(def_serv,"l_pPBSC",bins=50) #No real point, stick with PBSC
 
 #********** Office experience in PSC
 def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
-freq_continuous_plot(def_serv,"pOffPSC",bins=50)
-freq_continuous_plot(def_serv,"l_pOffPSC",bins=50)  #No real point here either
 
 #********** Vendor Market Share
-def_serv$l_pMarket<-log(def_serv$pMarket+1)
-freq_continuous_plot(def_serv,"pMarket",bins=50)
-freq_continuous_plot(def_serv,"l_pMarket",bins=50)
 summary(def_serv$pMarket)
+def_serv$l_pMarket<-log(def_serv$pMarket+1)
 
 
 #********* Office Entity Pair Count
 freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
 
-
 #********* Number of actions between vendor and office
 def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
-freq_continuous_plot(def_serv,"l_CA",bins=50)
-freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
 
 #********8 Invoice rate  for PSC
 def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
 summary(def_serv$l_CFTE)
 
-freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50)
-freq_continuous_plot(def_serv,"l_CFTE",bins=50)
-
-
-
-# Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
-# Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
-# ggsave(Effplot,file="Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
 save(file="data/clean/transformed_def_serv.Rdata",def_serv)

@@ -6,6 +6,34 @@ GO
 
 
 
+--Base and all options 250M examination
+select f.*, t.CSIScontractID
+from contract.csistransactionid t
+inner join contract.fpds f
+on f.csistransactionid = t.csistransactionid
+where f.CSIStransactionID in 
+(select CSIStransactionID
+from contract.csistransactionid ctid
+where ctid.csiscontractid in (
+1416351, 
+2141645, 
+2141646, 
+2141647,  
+3157486,  
+8441432,
+8441452,
+8441462,
+8568990,
+10060563,
+26427614,
+))
+  
+ 
+
+
+
+
+
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
 
@@ -61,6 +89,15 @@ EXEC	[Contract].[SP_ContractEntityID]
 		--@Customer = 'Defense'
 
 		
+		
+--SELECT	'Return Value' = @return_value
+SET ANSI_WARNINGS OFF;
+SET NOCOUNT ON;
+
+--EXEC	@return_value = [Vendor].[SP_EntityIDhistory]
+EXEC	Office.sp_OfficeHistoryNAICS
+--EXEC	@return_value = Contract.[SP_ContractBudgetDecisionTree]
+		@Customer = 'Defense'
 		
 
 ----SET ANSI_WARNINGS OFF;

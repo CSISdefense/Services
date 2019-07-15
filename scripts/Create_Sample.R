@@ -61,7 +61,8 @@ summary(def_serv$cl_OffCA)
 summary(def_serv$cl_OffCA)
 summary(def_serv$c_pMarket)
 summary(def_serv$Crisis)
-
+summary(def_serv$cl_office_naics_hhi_k)
+summary(def_serv$cl_office_naics_hhi_obl)
 
 complete<-
   #Dependent Variables
@@ -101,7 +102,7 @@ complete<-
   !is.na(def_serv$cl_OffVol)& #summary(def_serv$cl_OffVol)
   !is.na(def_serv$c_pMarket)&  #summary(def_serv$c_pMarket)
   !is.na(def_serv$Crisis)&  #summary(def_serv$c_pMarket)
-  !is.na(def_serv$cl_hh_index_k)
+  !is.na(def_serv$cl_office_naics_hhi_k)
 
 summary(complete)
 summary(def_serv$Action_Obligation.OMB20_GDP18)
@@ -110,7 +111,7 @@ any(def_serv$Action_Obligation.OMB20_GDP18<0)
 money[def_serv$Action_Obligation.OMB20_GDP18<0]<-0
 sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$Action_Obligation.OMB20_GDP18<0])
 
-#Overall
+#Missing data, how many records and how much money
 length(money[!complete])/length(money)
 sum(money[!complete],na.rm=TRUE)/sum(money,na.rm=TRUE)
 
@@ -118,12 +119,7 @@ sum(money[!complete],na.rm=TRUE)/sum(money,na.rm=TRUE)
 sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
   sum(money,na.rm=TRUE)
 
-
-#Missing data, how many records
-nrow(def_serv[!complete,])/nrow(def_serv)
-sum(def_serv[!complete,]$Action.Obligation.OMB20_GDP18,na.rm=TRUE)/sum(def_serv$Action.Obligation.OMB20_GDP18,na.rm=TRUE)
-
-#Missing data how much money?
+#Missing data with potential options how much money?
 length(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1])/
   length(money[def_serv$AnyUnmodifiedUnexercisedOptions==1])
 sum(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
@@ -148,6 +144,10 @@ serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
 #                                            col=NULL,
 #                                            drop_and_replace=TRUE)
 # 
+# serv_opt<-update_sample_col_CSIScontractID(serv_opt,
+#                                              def_serv[complete,],
+#                                              col=NULL,
+#                                              drop_and_replace=TRUE)
 
 
 

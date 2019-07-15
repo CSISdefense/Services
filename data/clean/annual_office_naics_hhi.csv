@@ -1,4 +1,4 @@
-"","Fiscal_year","ContractingOfficeCode","obligatedAmount","numberOfContracts","hh_index_obl","hh_index_k"
+"","Fiscal_year","ContractingOfficeCode","obligatedAmount","numberOfContracts","office_naics_hhi_obl","office_naics_hhi_k"
 "1",2001,"0000",190194716,492,1257.93051924468,1179.35752528257
 "2",2001,"00000",0,1,NA,10000
 "3",2001,"00001",541994532.3808,2396,516.702568357839,156.772138316225
