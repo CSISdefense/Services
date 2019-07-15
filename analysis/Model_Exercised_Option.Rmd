@@ -1,7 +1,7 @@
 ---
-title: "Contract Termination and Ceiling Breaches "
+title: "Contract Exercised Options "
 author: "Greg Sanders"
-date: "Wednesday, February 8, 2117"
+date: "Friday, July 14, 2019"
 output:
   html_document:
     keep_md: yes
@@ -80,11 +80,11 @@ p_Opt_01A <- glm(data=serv_opt,
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(n_Opt_01A,Term_01A,p_Opt_01A,type="text",
+stargazer::stargazer(n_Opt_01A,p_Opt_01A,type="text",
                        digits=2)
 
 
-summary_residual_compare(n_Opt_01A,Term_01A,skip_vif = TRUE)
+summary_residual_compare(n_Opt_01A,skip_vif = TRUE)
 
 
 
@@ -122,14 +122,14 @@ p_Opt_01B <- glm(data=serv_opt,
 
 #Plot residuals versus fitted
   stargazer::stargazer(n_Opt_01A,n_Opt_01B,
-                       Term_01A,Term_01B,
+                       
                        p_Opt_01A,p_Opt_01B,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(n_Opt_01B,Term_01B, skip_vif = TRUE)
-summary_residual_compare(n_Opt_01A,n_Opt_01B,Term_01A,Term_01B, skip_vif = TRUE)
+summary_residual_compare(n_Opt_01B, skip_vif = TRUE)
+summary_residual_compare(n_Opt_01A,n_Opt_01B, skip_vif = TRUE)
 
 
 
@@ -163,15 +163,15 @@ p_Opt_01C <- glm(data=serv_opt,
 glmer_examine(p_Opt_01C)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_01A,n_Opt_01B,n_Opt_01C,
-                       Term_01A,Term_01B,Term_01C,
+                       
                        p_Opt_01A,p_Opt_01B,p_Opt_01C,
                        type="text",
                        digits=2)
 
 
-  summary_residual_compare(n_Opt_01C,Term_01C, skip_vif = TRUE)
-  summary_residual_compare(n_Opt_01A,n_Opt_01C,Term_01A,Term_01C)
-  summary_residual_compare(n_Opt_01B,n_Opt_01C,Term_01B,Term_01C)
+  summary_residual_compare(n_Opt_01C, skip_vif = TRUE)
+  summary_residual_compare(n_Opt_01A,n_Opt_01C)
+  summary_residual_compare(n_Opt_01B,n_Opt_01C)
 
 
 
@@ -206,7 +206,7 @@ p_Opt_02A <- glm(data=serv_opt,
 display(p_Opt_02A)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_01C,n_Opt_02A,
-                       Term_01C,Term_02A,
+                       
                        p_Opt_01C,p_Opt_02A,
                        type="text",
                        digits=2)
@@ -246,14 +246,14 @@ p_Opt_02B <- glm(data=serv_opt,
 display(p_Opt_02B)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_01C,n_Opt_02A,n_Opt_02B,
-                       Term_01C,Term_02A,Term_02B,
+                       
                        p_Opt_01C,p_Opt_02A,p_Opt_02B,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(n_Opt_02A,n_Opt_02B,Term_02A,Term_02B, skip_vif = TRUE)
+summary_residual_compare(n_Opt_02A,n_Opt_02B, skip_vif = TRUE)
 
 ```
 
@@ -277,15 +277,15 @@ p_Opt_02C <- glm(data=serv_opt,
 glmer_examine(p_Opt_02C)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_01C,n_Opt_02A,n_Opt_02B,n_Opt_02C,
-                       Term_01C,Term_02A,Term_02B,Term_02C,
+                       
                        p_Opt_01C,p_Opt_02A,p_Opt_02B,p_Opt_02C,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(n_Opt_02A,n_Opt_02C,Term_02A,Term_02C)
-summary_residual_compare(n_Opt_02B,n_Opt_02C,Term_02B,Term_02C)
+summary_residual_compare(n_Opt_02A,n_Opt_02C)
+summary_residual_compare(n_Opt_02B,n_Opt_02C)
 
 
 ```
@@ -312,15 +312,15 @@ p_Opt_02D <- glm(data=serv_opt,
 glmer_examine(p_Opt_02D)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_01C,n_Opt_02C,n_Opt_02D,
-                       Term_01C,Term_02C,Term_02D,
+                       
                        p_Opt_01C,p_Opt_02C,p_Opt_02D,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(n_Opt_02C,n_Opt_02D,Term_02C,Term_02D)
-summary_residual_compare(n_Opt_01C,n_Opt_02D,Term_01C,Term_02D)
+summary_residual_compare(n_Opt_02C,n_Opt_02D)
+summary_residual_compare(n_Opt_01C,n_Opt_02D)
 
 ```
 
@@ -364,14 +364,14 @@ p_Opt_03A <- glm(data=serv_opt,
 display(p_Opt_03A)
 #Plot residuals versus fitted
   stargazer::stargazer(n_Opt_02D,n_Opt_03A,
-                       Term_02D,Term_03A,
+                       
                        p_Opt_02D,p_Opt_03A,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(n_Opt_02D,n_Opt_03A,Term_02D,Term_03A, skip_vif = TRUE)
+summary_residual_compare(n_Opt_02D,n_Opt_03A, skip_vif = TRUE)
 
 ```
 
@@ -406,15 +406,15 @@ p_Opt_03B <- glm(data=serv_opt,
 display(p_Opt_03B)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_02D,n_Opt_03A,n_Opt_03B,
-                       Term_02D,Term_03A,Term_03B,
+                       
                        p_Opt_02D,p_Opt_03A,p_Opt_03B,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(n_Opt_03A,n_Opt_03B,Term_03A,Term_03B, skip_vif = TRUE)
-summary_residual_compare(n_Opt_02D,n_Opt_03B,Term_02D,Term_03B, skip_vif = TRUE)
+summary_residual_compare(n_Opt_03A,n_Opt_03B, skip_vif = TRUE)
+summary_residual_compare(n_Opt_02D,n_Opt_03B, skip_vif = TRUE)
 
 ```
 
@@ -445,16 +445,16 @@ glmer_examine(p_Opt_03C)
 
 #Plot residuals versus fitted
   stargazer::stargazer(n_Opt_02D,n_Opt_03A,n_Opt_03B,n_Opt_03C,
-                       Term_02D,Term_03A,Term_03B,Term_03C,
+                       
                        p_Opt_02D,p_Opt_03A,p_Opt_03B,p_Opt_03C,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(n_Opt_03A,n_Opt_03C,Term_03A,Term_03C)
-summary_residual_compare(n_Opt_03B,n_Opt_03C,Term_03B,Term_03C)
-summary_residual_compare(n_Opt_02D,n_Opt_03C,Term_02D,Term_03C)
+summary_residual_compare(n_Opt_03A,n_Opt_03C)
+summary_residual_compare(n_Opt_03B,n_Opt_03C)
+summary_residual_compare(n_Opt_02D,n_Opt_03C)
 
 ```
 
@@ -487,14 +487,14 @@ glmer_examine(p_Opt_03D)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(n_Opt_02D,n_Opt_03C,n_Opt_03D,
-                       Term_02D,Term_03C,Term_03D,
+                       
                        p_Opt_02D,p_Opt_03C,p_Opt_03D,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(n_Opt_03C,n_Opt_03D,Term_03C,Term_03D)
-summary_residual_compare(n_Opt_02D,n_Opt_03D,Term_02D,Term_03D)
+summary_residual_compare(n_Opt_03C,n_Opt_03D)
+summary_residual_compare(n_Opt_02D,n_Opt_03D)
 
 ```
 
@@ -667,11 +667,11 @@ Expectation: Initial Ceiling size positively estimates increasing probability of
 ```{r Model04A}
 
 #Frequency Plot for unlogged ceiling
-freq_continuous_cbre_plot(serv_opt,"UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
-freq_continuous_cbre_plot(subset(serv_opt,UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18<100000000),
-               "UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
+# freq_continuous_cbre_plot(serv_opt,"UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
+#                bins=1000)
+# freq_continuous_cbre_plot(subset(serv_opt,UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18<100000000),
+#                "UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
+#                bins=1000)
 
 summary_continuous_plot(serv_opt,"cl_Ceil",bins=50)
 summary(serv_opt$cl_Ceil)
@@ -692,14 +692,14 @@ p_Opt_04A <- glm(data=serv_opt,
 display(p_Opt_04A)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_03D,n_Opt_04A,
-                       Term_03D,Term_04A,
+                       
                        p_Opt_03D,p_Opt_04A,
                        type="text",
                        digits=2)
 
 
 
-#summary_residual_compare(n_Opt_03D,n_Opt_04A,Term_03D,Term_04A, skip_vif = TRUE)
+#summary_residual_compare(n_Opt_03D,n_Opt_04A, skip_vif = TRUE)
 
 
 ```
@@ -713,8 +713,8 @@ Expectation: Greater maximum duration will positively estimate the probability c
 
 ```{r Model04B}
 #Frequency Plot for max duration
-freq_continuous_cbre_plot(serv_opt,"UnmodifiedDays",
-               bins=1000)
+# freq_continuous_cbre_plot(serv_opt,"UnmodifiedDays",
+#                bins=1000)
 
 summary_continuous_plot(serv_opt,"capped_cl_Days")
 
@@ -732,15 +732,15 @@ p_Opt_04B <- glm(data=serv_opt,
 display(p_Opt_04B)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_03D,n_Opt_04A,n_Opt_04B,
-                       Term_03D,Term_04A,Term_04B,
+                       
                        p_Opt_03D,p_Opt_04A,p_Opt_04B,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(n_Opt_03D,n_Opt_04B,Term_03D,Term_04B, skip_vif = TRUE)
-summary_residual_compare(n_Opt_04A,n_Opt_04B,Term_04A,Term_04B, skip_vif = TRUE)
+summary_residual_compare(n_Opt_03D,n_Opt_04B, skip_vif = TRUE)
+summary_residual_compare(n_Opt_04A,n_Opt_04B, skip_vif = TRUE)
 
 ```
 
@@ -761,16 +761,16 @@ p_Opt_04C <- glm(data=serv_opt,
 display(p_Opt_04C)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_03D,n_Opt_04A,n_Opt_04B,n_Opt_04C,
-                       Term_03D,Term_04A,Term_04B,Term_04C,
+                       
                        p_Opt_03D,p_Opt_04A,p_Opt_04B,p_Opt_04C,
                        type="text",
                        digits=2)
 
 
 
-#summary_residual_compare(n_Opt_03D,n_Opt_04C,Term_03D,Term_04C)
-#summary_residual_compare(n_Opt_04A,n_Opt_04C,Term_04A,Term_04C)
-#summary_residual_compare(n_Opt_04B,n_Opt_04C,Term_04B,Term_04C)
+#summary_residual_compare(n_Opt_03D,n_Opt_04C)
+#summary_residual_compare(n_Opt_04A,n_Opt_04C)
+#summary_residual_compare(n_Opt_04B,n_Opt_04C)
 
 ```
 Days loses significance for ceiling breaches. Ceiling has a smaller coefficient for terminations. Otherwise largely unchanged.
@@ -798,14 +798,14 @@ glmer_examine(p_Opt_04D)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(n_Opt_03D,n_Opt_04C,n_Opt_04D,
-                       Term_03D,Term_04C,Term_04D,
+                       
                        p_Opt_03D,p_Opt_04C,p_Opt_04D,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(n_Opt_03D,n_Opt_04D,Term_03D,Term_04D)
-#summary_residual_compare(n_Opt_04C,n_Opt_04D,Term_04C,Term_04D)
+#summary_residual_compare(n_Opt_03D,n_Opt_04D)
+#summary_residual_compare(n_Opt_04C,n_Opt_04D)
 
 
 ```
@@ -839,7 +839,7 @@ p_Opt_05A <- glm(data=serv_opt,
 display(p_Opt_05A)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_04D,n_Opt_05A,
-                       Term_04D,Term_05A,
+                       
                        p_Opt_04D,p_Opt_05A,
                        type="text",
                        digits=2)
@@ -876,13 +876,13 @@ glmer_examine(p_Opt_05B)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(n_Opt_04D,n_Opt_05A,n_Opt_05B,
-                       Term_04D,Term_05A,Term_05B,
+                       
                        p_Opt_04D,p_Opt_05A,p_Opt_05B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(n_Opt_04D,n_Opt_05B,Term_04D,Term_05B)
+#summary_residual_compare(n_Opt_04D,n_Opt_05B)
 
 ```
 Minimal effect on study variables. 2-4 offers for terminations is not  longer significant, it's really 5+ that boosts the risks. But for exercised options, 5+ leads to more options while fewer having negative relationship with 2-4 offers, but only significant with p-value < 0.1 
@@ -919,12 +919,12 @@ p_Opt_06A <- glm(data=serv_opt,
 display(p_Opt_06A)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_05B,n_Opt_06A,
-                       Term_05B,Term_06A,
+                       
                        p_Opt_05B,p_Opt_06A,
                        type="text",
                        digits=2)
 
-#summary_residual_compare(n_Opt_05D,n_Opt_06A,Term_05D,Term_06A)
+#summary_residual_compare(n_Opt_05D,n_Opt_06A)
 
 
 ```
@@ -962,13 +962,13 @@ glmer_examine(p_Opt_06B)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(n_Opt_05B,n_Opt_06A,n_Opt_06B,
-                       Term_05B,Term_06A,Term_06B,
+                       
                        p_Opt_05B,p_Opt_06A,p_Opt_06B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(n_Opt_05B,n_Opt_06B,Term_05B,Term_06B)
+#summary_residual_compare(n_Opt_05B,n_Opt_06B)
 
 ```
 Expectations for vehicle are now upheld for both ceiling breaches and terminations. For other variables the addition of vehicle proved less pivotal, though coefficients were often decreased.
@@ -1012,13 +1012,13 @@ p_Opt_07A <- glm(data=serv_opt,
 display(p_Opt_07A)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_06B,n_Opt_07A,
-                       Term_06B,Term_07A,
+                       
                        p_Opt_06B,p_Opt_07A,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(n_Opt_06B,n_Opt_07A,Term_06B,Term_07A,30)
+#summary_residual_compare(n_Opt_06B,n_Opt_07A,30)
 
 ```
 
@@ -1055,14 +1055,14 @@ glmer_examine(p_Opt_07B)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(n_Opt_06B,n_Opt_07A,n_Opt_07B,
-                       Term_06B,Term_07A,Term_07B,
+                       
                        p_Opt_06B,p_Opt_07A,p_Opt_07B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(n_Opt_06B,n_Opt_07B,Term_06B,Term_07B)
-#summary_residual_compare(n_Opt_07A,n_Opt_07B,Term_07A,Term_07B,bins=3)
+#summary_residual_compare(n_Opt_06B,n_Opt_07B)
+#summary_residual_compare(n_Opt_07A,n_Opt_07B,bins=3)
 
 ```
 
@@ -1090,13 +1090,13 @@ p_Opt_08A <- glm(data=serv_opt,
 display(p_Opt_08A)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_07B,n_Opt_08A,
-                       Term_07B,Term_08A,
+                       
                        p_Opt_07B,p_Opt_08A,
                        type="text",
                        digits=2)
 
 
-# summary_residual_compare(n_Opt_07B,n_Opt_08A,Term_07B,Term_08A,30)
+# summary_residual_compare(n_Opt_07B,n_Opt_08A,30)
 
 ```
 
@@ -1135,13 +1135,13 @@ glmer_examine(p_Opt_08B)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(n_Opt_07B,n_Opt_08A,n_Opt_08B,
-                       Term_07B,Term_08A,Term_08B,
+                       
                        p_Opt_07B,p_Opt_08A,p_Opt_08B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(n_Opt_07B,n_Opt_08B,Term_07B,Term_08B)
+#summary_residual_compare(n_Opt_07B,n_Opt_08B)
 
 ```
 
@@ -1177,13 +1177,13 @@ p_Opt_09A <- glm(data=serv_opt,
 display(p_Opt_09A)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_08B,n_Opt_09A,
-                       Term_08B,Term_09A,
+                       
                        p_Opt_08B,p_Opt_09A,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(n_Opt_08B,n_Opt_09A,Term_08B,Term_09A, skip_vif = TRUE)
+summary_residual_compare(n_Opt_08B,n_Opt_09A, skip_vif = TRUE)
 
 ```
 
@@ -1217,14 +1217,14 @@ p_Opt_09B <- glm(data=serv_opt,
 display(p_Opt_09B)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_08B,n_Opt_09A,n_Opt_09B,
-                       Term_08B,Term_09A,Term_09B,
+                       
                        p_Opt_08B,p_Opt_09A,p_Opt_09B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(n_Opt_08B,n_Opt_09B,Term_08A,Term_09A)
-#summary_residual_compare(n_Opt_09A,n_Opt_09B,Term_09A,Term_09B)
+#summary_residual_compare(n_Opt_08B,n_Opt_09B)
+#summary_residual_compare(n_Opt_09A,n_Opt_09B)
 
 
 
@@ -1257,15 +1257,15 @@ p_Opt_09C <- glm(data=serv_opt,
 display(p_Opt_09C)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_09A,n_Opt_09B,n_Opt_09C,
-                       Term_09A,Term_09B,Term_09C,
+                       
                        p_Opt_09A,p_Opt_09B,p_Opt_09C,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(n_Opt_08B,n_Opt_09C,Term_08A,Term_09C)
-#summary_residual_compare(n_Opt_09A,n_Opt_09C,Term_09A,Term_09C)
-#summary_residual_compare(n_Opt_09B,n_Opt_09C,Term_09B,Term_09C)
+#summary_residual_compare(n_Opt_08B,n_Opt_09C)
+#summary_residual_compare(n_Opt_09A,n_Opt_09C)
+#summary_residual_compare(n_Opt_09B,n_Opt_09C)
 
 
 
@@ -1305,12 +1305,12 @@ p_Opt_09D2 <- glm(data=serv_opt,
 glmer_examine(p_Opt_09D2)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_09D,n_Opt_09D2,
-                     Term_09D,Term_09D2,
+                     
                      p_Opt_09D,p_Opt_09D2,
                        type="text",
                        digits=2)
 
-summary_residual_compare(n_Opt_09D,n_Opt_09D2,Term_09D,Term_09D2)
+summary_residual_compare(n_Opt_09D,n_Opt_09D22)
 ```
 The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
 
@@ -1357,13 +1357,13 @@ glmer_examine(p_Opt_09E)
 
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_08B,n_Opt_09D2,n_Opt_09E,
-                     Term_08B,Term_09D2,Term_09E,
+                     
                      p_Opt_08B,p_Opt_09D2,p_Opt_09E,
                        type="text",
                        digits=2)
 
-#summary_residual_compare(n_Opt_09D2,n_Opt_09E,Term_09D2,Term_09E)
-#summary_residual_compare(n_Opt_08B,n_Opt_09E,Term_08B,Term_09E)
+#summary_residual_compare(n_Opt_09D2,n_Opt_09E)
+#summary_residual_compare(n_Opt_08B,n_Opt_09E)
 ```
 
 Expectations are not upheld.
@@ -1393,12 +1393,12 @@ p_Opt_10A <- glm(data=serv_opt,
 display(p_Opt_10A)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_09A,n_Opt_10A,
-                       Term_09A,Term_10A,
+                       
                        p_Opt_09A,p_Opt_10A,
                        type="text",
                        digits=2)
 
-summary_residual_compare(n_Opt_09A,n_Opt_10A,Term_09A,Term_10A, skip_vif =  TRUE)
+summary_residual_compare(n_Opt_09A,n_Opt_10A, skip_vif =  TRUE)
 
 
 
@@ -1433,12 +1433,12 @@ p_Opt_10B <- glm(data=serv_opt,
 display(p_Opt_10B)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_09B,n_Opt_10A,n_Opt_10B,
-                       Term_09B,Term_10A,Term_10B,
+                       
                        p_Opt_09B,p_Opt_10A,p_Opt_10B,
                        type="text",
                        digits=2)
 
-summary_residual_compare(n_Opt_09B,n_Opt_10B,Term_09B,Term_10B, skip_vif = TRUE)
+summary_residual_compare(n_Opt_09B,n_Opt_10B, skip_vif = TRUE)
 ```
 
 Expectations were in lined with ceiling breaches and options, not with termination, and 
@@ -1464,12 +1464,12 @@ p_Opt_10C <- glm(data=serv_opt,
 glmer_examine(p_Opt_10C)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_09E,n_Opt_10A,n_Opt_10B,n_Opt_10C,
-                     Term_09E,Term_10A,Term_10B,Term_10C,
+                     
                      p_Opt_09E,p_Opt_10A,p_Opt_10B,p_Opt_10C,
                        type="text",
                        digits=2)
 
-summary_residual_compare(n_Opt_08B,n_Opt_10C,Term_08B,Term_10C)
+summary_residual_compare(n_Opt_08B,n_Opt_10C)
 ```
 
 NAICS Subsector (Level 3)					
@@ -1516,13 +1516,13 @@ glmer_examine(p_Opt_10D)
 
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_09E,n_Opt_10C,n_Opt_10D,
-                     Term_09E,Term_10C,Term_10D,
+                     
                      p_Opt_09E,p_Opt_10C,p_Opt_10D,
                        type="text",
                        digits=2)
 
-summary_residual_compare(n_Opt_09D2,n_Opt_10D,Term_09D2,Term_10D)
-summary_residual_compare(n_Opt_08B,n_Opt_10D,Term_08B,Term_10D)
+summary_residual_compare(n_Opt_09D2,n_Opt_10D)
+summary_residual_compare(n_Opt_08B,n_Opt_10D)
 ```
 HHI6 for ceiling breach now matches expectations but HHI6 for term went in the opposite direction. s
 
@@ -1552,12 +1552,12 @@ p_Opt_11A <- glm(data=serv_opt,
 display(p_Opt_11A)
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_11A,
-                      Term_11A,
+                      
                        p_Opt_11A,
                        type="text",
                        digits=2)
 
-summary_residual_compare(n_Opt_11A,Term_11A, skip_vif =  TRUE)
+summary_residual_compare(n_Opt_11A, skip_vif =  TRUE)
 
 
 ```
@@ -1603,13 +1603,13 @@ glmer_examine(p_Opt_11B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_10D,n_Opt_11A,n_Opt_11B,
-                     Term_10D,Term_11A,Term_11B,
+                     
                      p_Opt_10D,p_Opt_11A,p_Opt_11B,
                        type="text",
                        digits=2)
 
-#summary_residual_compare(n_Opt_10D,n_Opt_11B,Term_10D,Term_11B)
-#summary_residual_compare(n_Opt_11A,n_Opt_11B,Term_11S,Term_11B)
+#summary_residual_compare(n_Opt_10D,n_Opt_11B)
+#summary_residual_compare(n_Opt_11A,n_Opt_11B)
 ```
 Note that the VIF is getting high on pair_CA.
 
@@ -1640,14 +1640,14 @@ display(p_Opt_12A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_12A,
-                       Term_12A,
+                       
                        p_Opt_12A,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(n_Opt_11A,n_Opt_12A,Term_11A,Term_12A, skip_vif = TRUE)
-summary_residual_compare(n_Opt_03D,n_Opt_12A,Term_03D,Term_12A, skip_vif = TRUE)
+summary_residual_compare(n_Opt_11A,n_Opt_12A, skip_vif = TRUE)
+summary_residual_compare(n_Opt_03D,n_Opt_12A, skip_vif = TRUE)
 
 
 
@@ -1681,14 +1681,14 @@ display(p_Opt_12B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_12B,
-                       Term_12B,
+                       
                        p_Opt_12B,
                        type="text",
                        digits=2)
 
 
-# summary_residual_compare(n_Opt_11A,n_Opt_12B,Term_11A,Term_12B, skip_vif = TRUE)
-# summary_residual_compare(n_Opt_03D,n_Opt_12B,Term_03D,Term_12B, skip_vif = TRUE)
+# summary_residual_compare(n_Opt_11A,n_Opt_12B, skip_vif = TRUE)
+# summary_residual_compare(n_Opt_03D,n_Opt_12B, skip_vif = TRUE)
 
 ```
 
@@ -1735,13 +1735,13 @@ glmer_examine(p_Opt_12C)
 
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_11B,n_Opt_12A,n_Opt_12C,
-                     Term_11B,Term_12A,Term_12C,
+                     
                      p_Opt_11B,p_Opt_12A,p_Opt_12C,
                        type="text",
                        digits=2)
 
-summary_residual_compare(n_Opt_10D,n_Opt_12C,Term_10D,Term_12C)
-summary_residual_compare(n_Opt_11A,n_Opt_12C,Term_11S,Term_12C)
+summary_residual_compare(n_Opt_10D,n_Opt_12C)
+summary_residual_compare(n_Opt_11A,n_Opt_12C)
 ```
 
 

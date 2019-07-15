@@ -1,13 +1,13 @@
 ---
-title: "Contract Termination and Ceiling Breaches "
+title: "Defense Services Ceiling Breaches "
 author: "Greg Sanders"
-date: "Wednesday, February 8, 2117"
+date: "Friday July 13, 2019"
 output:
   html_document:
     keep_md: yes
 --- 
 
-Modeling Likelihood of Contract Termination, Ceiling Breach, or Exercised Option
+Modeling Likelihood or size of Ceiling Breach
 ============================================================================
 
 #Setup
@@ -68,7 +68,7 @@ Expectation: Given the fact that one source for higher salaries is the difficult
 summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1Const")
 
 #Scatter Plot of n_CBre01A
-ggplot(serv_smp, aes(x=cl_US6_avg_sal_lag1Const, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_US6_avg_sal_lag1Const, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre01A <- glm (data=serv_smp,
@@ -80,11 +80,11 @@ n_CBre01A <- glm(data=serv_smp,
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_CBre01A,Term_01A,n_CBre01A,type="text",
+stargazer::stargazer(b_CBre01A,n_CBre01A,type="text",
                        digits=2)
 
 
-summary_residual_compare(b_CBre01A,Term_01A,skip_vif = TRUE)
+summary_residual_compare(b_CBre01A,skip_vif = TRUE)
 
 
 
@@ -108,7 +108,7 @@ Expectation: The invoice rate approximates how much the government is charged an
 summary_continuous_plot(serv_smp,"cl_CFTE")
 
 #Scatter Plot 
-ggplot(serv_smp, aes(x=cl_CFTE, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_CFTE, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre01B <- glm (data=serv_smp,
@@ -122,14 +122,14 @@ n_CBre01B <- glm(data=serv_smp,
 
 #Plot residuals versus fitted
   stargazer::stargazer(b_CBre01A,b_CBre01B,
-                       Term_01A,Term_01B,
+                       
                        n_CBre01A,n_CBre01B,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(b_CBre01B,Term_01B, skip_vif = TRUE)
-summary_residual_compare(b_CBre01A,b_CBre01B,Term_01A,Term_01B, skip_vif = TRUE)
+summary_residual_compare(b_CBre01B, skip_vif = TRUE)
+summary_residual_compare(b_CBre01A,b_CBre01B, skip_vif = TRUE)
 
 
 
@@ -157,27 +157,21 @@ b_CBre01C <- glm (data=serv_smp,
                  b_CBre ~ cl_US6_avg_sal_lag1Const + cl_CFTE, family=binomial(link="logit"))
 glmer_examine(b_CBre01C)
 
-#Model
-Term_01C <- glm (data=serv_smp,
-                 b_Term ~ cl_US6_avg_sal_lag1Const + cl_CFTE, family=binomial(link="logit"))
-
-glmer_examine(Term_01C)
-
 n_CBre01C <- glm(data=serv_smp,
                         ln_CBre ~ cl_US6_avg_sal_lag1Const +  cl_CFTE)
 
 glmer_examine(n_CBre01C)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01A,b_CBre01B,b_CBre01C,
-                       Term_01A,Term_01B,Term_01C,
+                       
                        n_CBre01A,n_CBre01B,n_CBre01C,
                        type="text",
                        digits=2)
 
 
-  summary_residual_compare(b_CBre01C,Term_01C, skip_vif = TRUE)
-  summary_residual_compare(b_CBre01A,b_CBre01C,Term_01A,Term_01C)
-  summary_residual_compare(b_CBre01B,b_CBre01C,Term_01B,Term_01C)
+  summary_residual_compare(b_CBre01C, skip_vif = TRUE)
+  summary_residual_compare(b_CBre01A,b_CBre01C)
+  summary_residual_compare(b_CBre01B,b_CBre01C)
 
 
 
@@ -199,7 +193,7 @@ Expectation: Performance-based services contracting ties a portion of a contract
 summary_continuous_plot(serv_smp,"pPBSC")
 
 #Scatter Plot 
-ggplot(serv_smp, aes(x=c_pPBSC, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=c_pPBSC, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre02A <- glm (data=serv_smp,
@@ -212,7 +206,7 @@ n_CBre02A <- glm(data=serv_smp,
 display(n_CBre02A)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01C,b_CBre02A,
-                       Term_01C,Term_02A,
+                       
                        n_CBre01C,n_CBre02A,
                        type="text",
                        digits=2)
@@ -239,7 +233,7 @@ Expectation: The increasing share of contracting office obligations for a given 
 summary_continuous_plot(serv_smp,"c_pOffPSC")
 
 #Scatter Plot 
-ggplot(serv_smp, aes(x=c_pOffPSC, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=c_pOffPSC, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre02B <- glm (data=serv_smp,
@@ -252,14 +246,14 @@ n_CBre02B <- glm(data=serv_smp,
 display(n_CBre02B)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01C,b_CBre02A,b_CBre02B,
-                       Term_01C,Term_02A,Term_02B,
+                       
                        n_CBre01C,n_CBre02A,n_CBre02B,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(b_CBre02A,b_CBre02B,Term_02A,Term_02B, skip_vif = TRUE)
+summary_residual_compare(b_CBre02A,b_CBre02B, skip_vif = TRUE)
 
 ```
 
@@ -283,15 +277,15 @@ n_CBre02C <- glm(data=serv_smp,
 glmer_examine(n_CBre02C)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01C,b_CBre02A,b_CBre02B,b_CBre02C,
-                       Term_01C,Term_02A,Term_02B,Term_02C,
+                       
                        n_CBre01C,n_CBre02A,n_CBre02B,n_CBre02C,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(b_CBre02A,b_CBre02C,Term_02A,Term_02C)
-summary_residual_compare(b_CBre02B,b_CBre02C,Term_02B,Term_02C)
+summary_residual_compare(b_CBre02A,b_CBre02C)
+summary_residual_compare(b_CBre02B,b_CBre02C)
 
 
 ```
@@ -318,15 +312,15 @@ n_CBre02D <- glm(data=serv_smp,
 glmer_examine(n_CBre02D)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01C,b_CBre02C,b_CBre02D,
-                       Term_01C,Term_02C,Term_02D,
+                       
                        n_CBre01C,n_CBre02C,n_CBre02D,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(b_CBre02C,b_CBre02D,Term_02C,Term_02D)
-summary_residual_compare(b_CBre01C,b_CBre02D,Term_01C,Term_02D)
+summary_residual_compare(b_CBre02C,b_CBre02D)
+summary_residual_compare(b_CBre01C,b_CBre02D)
 
 ```
 
@@ -357,7 +351,7 @@ Expactation: The number of past years of the relationship between the contractin
 summary_discrete_plot(serv_smp,"c_pairHist")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=c_pairHist, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=c_pairHist, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre03A <- glm (data=serv_smp,
@@ -370,14 +364,14 @@ n_CBre03A <- glm(data=serv_smp,
 display(n_CBre03A)
 #Plot residuals versus fitted
   stargazer::stargazer(b_CBre02D,b_CBre03A,
-                       Term_02D,Term_03A,
+                       
                        n_CBre02D,n_CBre03A,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(b_CBre02D,b_CBre03A,Term_02D,Term_03A, skip_vif = TRUE)
+summary_residual_compare(b_CBre02D,b_CBre03A, skip_vif = TRUE)
 
 ```
 
@@ -399,7 +393,7 @@ Expectation: As the number of contract actions a vendor has performed for an off
 summary_continuous_plot(serv_smp,"cl_pairCA")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_pairCA, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_pairCA, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre03B <- glm (data=serv_smp,
@@ -412,15 +406,15 @@ n_CBre03B <- glm(data=serv_smp,
 display(n_CBre03B)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre02D,b_CBre03A,b_CBre03B,
-                       Term_02D,Term_03A,Term_03B,
+                       
                        n_CBre02D,n_CBre03A,n_CBre03B,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(b_CBre03A,b_CBre03B,Term_03A,Term_03B, skip_vif = TRUE)
-summary_residual_compare(b_CBre02D,b_CBre03B,Term_02D,Term_03B, skip_vif = TRUE)
+summary_residual_compare(b_CBre03A,b_CBre03B, skip_vif = TRUE)
+summary_residual_compare(b_CBre02D,b_CBre03B, skip_vif = TRUE)
 
 ```
 
@@ -451,16 +445,16 @@ glmer_examine(n_CBre03C)
 
 #Plot residuals versus fitted
   stargazer::stargazer(b_CBre02D,b_CBre03A,b_CBre03B,b_CBre03C,
-                       Term_02D,Term_03A,Term_03B,Term_03C,
+                       
                        n_CBre02D,n_CBre03A,n_CBre03B,n_CBre03C,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(b_CBre03A,b_CBre03C,Term_03A,Term_03C)
-summary_residual_compare(b_CBre03B,b_CBre03C,Term_03B,Term_03C)
-summary_residual_compare(b_CBre02D,b_CBre03C,Term_02D,Term_03C)
+summary_residual_compare(b_CBre03A,b_CBre03C)
+summary_residual_compare(b_CBre03B,b_CBre03C)
+summary_residual_compare(b_CBre02D,b_CBre03C)
 
 ```
 
@@ -493,14 +487,14 @@ glmer_examine(n_CBre03D)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(b_CBre02D,b_CBre03C,b_CBre03D,
-                       Term_02D,Term_03C,Term_03D,
+                       
                        n_CBre02D,n_CBre03C,n_CBre03D,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(b_CBre03C,b_CBre03D,Term_03C,Term_03D)
-summary_residual_compare(b_CBre02D,b_CBre03D,Term_02D,Term_03D)
+summary_residual_compare(b_CBre03C,b_CBre03D)
+summary_residual_compare(b_CBre02D,b_CBre03D)
 
 ```
 
@@ -612,7 +606,7 @@ coef.list<-list("(Intercept)"="(Intercept)",
 
 
 
-#Ceiling Breaches
+#Ceiling Breaches Binary
   stargazer::stargazer(b_CBre01A,b_CBre01B,b_CBre02A,b_CBre02B,b_CBre03A,b_CBre03B,b_CBre03D,
                        type="text",
                        digits=2)
@@ -636,34 +630,8 @@ texreg::htmlreg(list(b_CBre01A,b_CBre01B,b_CBre02A,b_CBre02B,b_CBre03A,b_CBre03B
 
 
 
-#Terminations
-stargazer::stargazer(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D,
-                       type="text",
-                       digits=2)
 
-
-
-
-texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D),file="..//Output//Term_Model.html",
-                single.row = TRUE,
-                # custom.model.name=c("Ceiling Breaches"),
-                stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7
-                              ),
-                custom.coef.map=coef.list,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 7: Logit Bivariate Look at Study Variables and Terminations",
-                caption.above=TRUE)
-
-
-
-
-
-#Exercised Options
+#Ceiling Breach Absolute
 stargazer::stargazer(n_CBre01A,n_CBre01B,n_CBre02A,n_CBre02B,n_CBre03A,n_CBre03B,n_CBre03D,
                        type="text",
                        digits=2)
@@ -714,7 +682,7 @@ summary(serv_smp$cl_Ceil)
 str(serv_smp)
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_Ceil, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_Ceil, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre04A <- glm (data=serv_smp,
@@ -727,14 +695,14 @@ n_CBre04A <- glm(data=serv_smp,
 display(n_CBre04A)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre03D,b_CBre04A,
-                       Term_03D,Term_04A,
+                       
                        n_CBre03D,n_CBre04A,
                        type="text",
                        digits=2)
 
 
 
-#summary_residual_compare(b_CBre03D,b_CBre04A,Term_03D,Term_04A, skip_vif = TRUE)
+#summary_residual_compare(b_CBre03D,b_CBre04A, skip_vif = TRUE)
 
 
 ```
@@ -754,7 +722,7 @@ freq_continuous_cbre_plot(serv_smp,"UnmodifiedDays",
 summary_continuous_plot(serv_smp,"capped_cl_Days")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=capped_cl_Days, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=capped_cl_Days, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre04B <- glm (data=serv_smp,
@@ -767,15 +735,15 @@ n_CBre04B <- glm(data=serv_smp,
 display(n_CBre04B)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre03D,b_CBre04A,b_CBre04B,
-                       Term_03D,Term_04A,Term_04B,
+                       
                        n_CBre03D,n_CBre04A,n_CBre04B,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(b_CBre03D,b_CBre04B,Term_03D,Term_04B, skip_vif = TRUE)
-summary_residual_compare(b_CBre04A,b_CBre04B,Term_04A,Term_04B, skip_vif = TRUE)
+summary_residual_compare(b_CBre03D,b_CBre04B, skip_vif = TRUE)
+summary_residual_compare(b_CBre04A,b_CBre04B, skip_vif = TRUE)
 
 ```
 
@@ -790,28 +758,22 @@ b_CBre04C <- glm (data=serv_smp,
                  b_CBre ~ cl_Ceil + capped_cl_Days, family=binomial(link="logit"))
 display(b_CBre04C)
 
-
-Term_04C <- glm (data=serv_smp,
-                 b_Term ~ cl_Ceil +capped_cl_Days, family=binomial(link="logit"))
-
-display(Term_04C)
-
 n_CBre04C <- glm(data=serv_smp,
                         ln_CBre ~cl_Ceil + capped_cl_Days)
 
 display(n_CBre04C)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre03D,b_CBre04A,b_CBre04B,b_CBre04C,
-                       Term_03D,Term_04A,Term_04B,Term_04C,
+                       
                        n_CBre03D,n_CBre04A,n_CBre04B,n_CBre04C,
                        type="text",
                        digits=2)
 
 
 
-#summary_residual_compare(b_CBre03D,b_CBre04C,Term_03D,Term_04C)
-#summary_residual_compare(b_CBre04A,b_CBre04C,Term_04A,Term_04C)
-#summary_residual_compare(b_CBre04B,b_CBre04C,Term_04B,Term_04C)
+#summary_residual_compare(b_CBre03D,b_CBre04C)
+#summary_residual_compare(b_CBre04A,b_CBre04C)
+#summary_residual_compare(b_CBre04B,b_CBre04C)
 
 ```
 Days loses significance for ceiling breaches. Ceiling has a smaller coefficient for terminations. Otherwise largely unchanged.
@@ -839,14 +801,14 @@ glmer_examine(n_CBre04D)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(b_CBre03D,b_CBre04C,b_CBre04D,
-                       Term_03D,Term_04C,Term_04D,
+                       
                        n_CBre03D,n_CBre04C,n_CBre04D,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(b_CBre03D,b_CBre04D,Term_03D,Term_04D)
-#summary_residual_compare(b_CBre04C,b_CBre04D,Term_04C,Term_04D)
+#summary_residual_compare(b_CBre03D,b_CBre04D)
+#summary_residual_compare(b_CBre04C,b_CBre04D)
 
 
 ```
@@ -867,7 +829,7 @@ summary_discrete_plot(serv_smp,"Comp1or5")
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=Comp1or5, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=Comp1or5, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre05A <- glm (data=serv_smp,
@@ -880,7 +842,7 @@ n_CBre05A <- glm(data=serv_smp,
 display(n_CBre05A)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre04D,b_CBre05A,
-                       Term_04D,Term_05A,
+                       
                        n_CBre04D,n_CBre05A,
                        type="text",
                        digits=2)
@@ -917,13 +879,13 @@ glmer_examine(n_CBre05B)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(b_CBre04D,b_CBre05A,b_CBre05B,
-                       Term_04D,Term_05A,Term_05B,
+                       
                        n_CBre04D,n_CBre05A,n_CBre05B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(b_CBre04D,b_CBre05B,Term_04D,Term_05B)
+#summary_residual_compare(b_CBre04D,b_CBre05B)
 
 ```
 Minimal effect on study variables. 2-4 offers for terminations is not  longer significant, it's really 5+ that boosts the risks. But for exercised options, 5+ leads to more options while fewer having negative relationship with 2-4 offers, but only significant with p-value < 0.1 
@@ -947,7 +909,7 @@ summary_discrete_plot(serv_smp,"Veh")
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=Veh, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=Veh, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre06A <- glm (data=serv_smp,
@@ -960,12 +922,12 @@ n_CBre06A <- glm(data=serv_smp,
 display(n_CBre06A)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre05B,b_CBre06A,
-                       Term_05B,Term_06A,
+                       
                        n_CBre05B,n_CBre06A,
                        type="text",
                        digits=2)
 
-#summary_residual_compare(b_CBre05D,b_CBre06A,Term_05D,Term_06A)
+#summary_residual_compare(b_CBre05D,b_CBre06A)
 
 
 ```
@@ -1003,13 +965,13 @@ glmer_examine(n_CBre06B)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(b_CBre05B,b_CBre06A,b_CBre06B,
-                       Term_05B,Term_06A,Term_06B,
+                       
                        n_CBre05B,n_CBre06A,n_CBre06B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(b_CBre05B,b_CBre06B,Term_05B,Term_06B)
+#summary_residual_compare(b_CBre05B,b_CBre06B)
 
 ```
 Expectations for vehicle are now upheld for both ceiling breaches and terminations. For other variables the addition of vehicle proved less pivotal, though coefficients were often decreased.
@@ -1039,7 +1001,7 @@ serv_smp$PricingUCA<-factor(serv_smp$PricingUCA,
   summary_discrete_plot(serv_smp,"PricingUCA")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=PricingUCA, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=PricingUCA, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1053,13 +1015,13 @@ display(n_CBre07A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre06B,b_CBre07A,
-                       Term_06B,Term_07A,
+                       
                        n_CBre06B,n_CBre07A,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(b_CBre06B,b_CBre07A,Term_06B,Term_07A,30)
+#summary_residual_compare(b_CBre06B,b_CBre07A,30)
 
 ```
 
@@ -1096,14 +1058,14 @@ glmer_examine(n_CBre07B)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(b_CBre06B,b_CBre07A,b_CBre07B,
-                       Term_06B,Term_07A,Term_07B,
+                       
                        n_CBre06B,n_CBre07A,n_CBre07B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(b_CBre06B,b_CBre07B,Term_06B,Term_07B)
-#summary_residual_compare(b_CBre07A,b_CBre07B,Term_07A,Term_07B,bins=3)
+#summary_residual_compare(b_CBre06B,b_CBre07B)
+#summary_residual_compare(b_CBre07A,b_CBre07B,bins=3)
 
 ```
 
@@ -1117,7 +1079,7 @@ Expectation: Service Contract replying on crisis funds would have more likelihoo
 ```{r Model08A}
 summary_discrete_plot(serv_smp,"Crisis")
 #Scatter Plot
-ggplot(serv_smp, aes(x=Crisis, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=Crisis, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1132,13 +1094,13 @@ display(n_CBre08A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre07B,b_CBre08A,
-                       Term_07B,Term_08A,
+                       
                        n_CBre07B,n_CBre08A,
                        type="text",
                        digits=2)
 
 
-# summary_residual_compare(b_CBre07B,b_CBre08A,Term_07B,Term_08A,30)
+# summary_residual_compare(b_CBre07B,b_CBre08A,30)
 
 ```
 
@@ -1176,13 +1138,13 @@ glmer_examine(n_CBre08B)
 #Plot residuals versus fitted   
 
 stargazer::stargazer(b_CBre07B,b_CBre08A,b_CBre08B,
-                       Term_07B,Term_08A,Term_08B,
+                       
                        n_CBre07B,n_CBre08A,n_CBre08B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(b_CBre07B,b_CBre08B,Term_07B,Term_08B)
+#summary_residual_compare(b_CBre07B,b_CBre08B)
 
 ```
 
@@ -1204,7 +1166,7 @@ summary_continuous_plot(serv_smp,"cl_def6_HHI_lag1")
 summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def6_HHI_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def6_HHI_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1219,13 +1181,13 @@ display(n_CBre09A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre08B,b_CBre09A,
-                       Term_08B,Term_09A,
+                       
                        n_CBre08B,n_CBre09A,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(b_CBre08B,b_CBre09A,Term_08B,Term_09A, skip_vif = TRUE)
+summary_residual_compare(b_CBre08B,b_CBre09A, skip_vif = TRUE)
 
 ```
 
@@ -1245,7 +1207,7 @@ Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def6_ratio_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def6_ratio_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1259,14 +1221,14 @@ n_CBre09B <- glm(data=serv_smp,
 display(n_CBre09B)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre08B,b_CBre09A,b_CBre09B,
-                       Term_08B,Term_09A,Term_09B,
+                       
                        n_CBre08B,n_CBre09A,n_CBre09B,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(b_CBre08B,b_CBre09B,Term_08A,Term_09A)
-#summary_residual_compare(b_CBre09A,b_CBre09B,Term_09A,Term_09B)
+#summary_residual_compare(b_CBre08B,b_CBre09B)
+#summary_residual_compare(b_CBre09A,b_CBre09B)
 
 
 
@@ -1285,7 +1247,7 @@ Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def6_obl_lag1Const, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def6_obl_lag1Const, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1299,15 +1261,15 @@ n_CBre09C <- glm(data=serv_smp,
 display(n_CBre09C)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre09A,b_CBre09B,b_CBre09C,
-                       Term_09A,Term_09B,Term_09C,
+                       
                        n_CBre09A,n_CBre09B,n_CBre09C,
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(b_CBre08B,b_CBre09C,Term_08A,Term_09C)
-#summary_residual_compare(b_CBre09A,b_CBre09C,Term_09A,Term_09C)
-#summary_residual_compare(b_CBre09B,b_CBre09C,Term_09B,Term_09C)
+#summary_residual_compare(b_CBre08B,b_CBre09C)
+#summary_residual_compare(b_CBre09A,b_CBre09C)
+#summary_residual_compare(b_CBre09B,b_CBre09C)
 
 
 
@@ -1341,25 +1303,18 @@ b_CBre09D2 <- glm (data=serv_smp,
                  , family=binomial(link="logit"))
 glmer_examine(b_CBre09D2)
 
-
-Term_09D2 <- glm (data=serv_smp,
-                 b_Term ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1
-                 , family=binomial(link="logit"))
-
-glmer_examine(Term_09D2)
-
 n_CBre09D2 <- glm(data=serv_smp,
                         ln_CBre ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
 
 glmer_examine(n_CBre09D2)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre09D,b_CBre09D2,
-                     Term_09D,Term_09D2,
+                     
                      n_CBre09D,n_CBre09D2,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre09D,b_CBre09D2,Term_09D,Term_09D2)
+summary_residual_compare(b_CBre09D,b_CBre09D22)
 ```
 The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
 
@@ -1406,13 +1361,13 @@ glmer_examine(n_CBre09E)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre08B,b_CBre09D2,b_CBre09E,
-                     Term_08B,Term_09D2,Term_09E,
+                     
                      n_CBre08B,n_CBre09D2,n_CBre09E,
                        type="text",
                        digits=2)
 
-#summary_residual_compare(b_CBre09D2,b_CBre09E,Term_09D2,Term_09E)
-#summary_residual_compare(b_CBre08B,b_CBre09E,Term_08B,Term_09E)
+#summary_residual_compare(b_CBre09D2,b_CBre09E)
+#summary_residual_compare(b_CBre08B,b_CBre09E)
 ```
 
 Expectations are not upheld.
@@ -1428,7 +1383,7 @@ summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def3_HHI_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def3_HHI_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1442,12 +1397,12 @@ n_CBre10A <- glm(data=serv_smp,
 display(n_CBre10A)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre09A,b_CBre10A,
-                       Term_09A,Term_10A,
+                       
                        n_CBre09A,n_CBre10A,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre09A,b_CBre10A,Term_09A,Term_10A, skip_vif =  TRUE)
+summary_residual_compare(b_CBre09A,b_CBre10A, skip_vif =  TRUE)
 
 
 
@@ -1468,7 +1423,7 @@ summary_continuous_plot(serv_smp,"cl_def3_ratio_lag1")
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def3_HHI_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def3_HHI_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1482,12 +1437,12 @@ n_CBre10B <- glm(data=serv_smp,
 display(n_CBre10B)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre09B,b_CBre10A,b_CBre10B,
-                       Term_09B,Term_10A,Term_10B,
+                       
                        n_CBre09B,n_CBre10A,n_CBre10B,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre09B,b_CBre10B,Term_09B,Term_10B, skip_vif = TRUE)
+summary_residual_compare(b_CBre09B,b_CBre10B, skip_vif = TRUE)
 ```
 
 Expectations were in lined with ceiling breaches and options, not with termination, and 
@@ -1513,12 +1468,12 @@ glmer_examine(n_CBre10C)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre09E,b_CBre10A,b_CBre10B,b_CBre10C,
-                     Term_09E,Term_10A,Term_10B,Term_10C,
+                     
                      n_CBre09E,n_CBre10A,n_CBre10B,n_CBre10C,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre08B,b_CBre10C,Term_08B,Term_10C)
+summary_residual_compare(b_CBre08B,b_CBre10C)
 ```
 
 NAICS Subsector (Level 3)					
@@ -1564,13 +1519,13 @@ glmer_examine(n_CBre10D)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre09E,b_CBre10C,b_CBre10D,
-                     Term_09E,Term_10C,Term_10D,
+                     
                      n_CBre09E,n_CBre10C,n_CBre10D,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre09D2,b_CBre10D,Term_09D2,Term_10D)
-summary_residual_compare(b_CBre08B,b_CBre10D,Term_08B,Term_10D)
+summary_residual_compare(b_CBre09D2,b_CBre10D)
+summary_residual_compare(b_CBre08B,b_CBre10D)
 ```
 HHI6 for ceiling breach now matches expectations but HHI6 for term went in the opposite direction. s
 
@@ -1586,7 +1541,7 @@ Market Share Vendor for that Office	c_pMarket		++	-	+
 summary_continuous_plot(serv_smp,"c_pMarket")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=c_pMarket, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=c_pMarket, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1600,12 +1555,12 @@ n_CBre11A <- glm(data=serv_smp,
 display(n_CBre11A)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre11A,
-                      Term_11A,
+                      
                        n_CBre11A,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre11A,Term_11A, skip_vif =  TRUE)
+summary_residual_compare(b_CBre11A, skip_vif =  TRUE)
 
 
 ```
@@ -1651,13 +1606,13 @@ glmer_examine(n_CBre11B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre10D,b_CBre11A,b_CBre11B,
-                     Term_10D,Term_11A,Term_11B,
+                     
                      n_CBre10D,n_CBre11A,n_CBre11B,
                        type="text",
                        digits=2)
 
-#summary_residual_compare(b_CBre10D,b_CBre11B,Term_10D,Term_11B)
-#summary_residual_compare(b_CBre11A,b_CBre11B,Term_11S,Term_11B)
+#summary_residual_compare(b_CBre10D,b_CBre11B)
+#summary_residual_compare(b_CBre11A,b_CBre11B)
 ```
 Note that the VIF is getting high on pair_CA.
 
@@ -1674,7 +1629,7 @@ From looking at data, terminations, easier for big, less dependent. - less depen
 summary_continuous_plot(serv_smp,"cl_OffVol")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_OffVol, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_OffVol, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre12A <- glm (data=serv_smp,
@@ -1688,14 +1643,14 @@ display(n_CBre12A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre12A,
-                       Term_12A,
+                       
                        n_CBre12A,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(b_CBre11A,b_CBre12A,Term_11A,Term_12A, skip_vif = TRUE)
-summary_residual_compare(b_CBre03D,b_CBre12A,Term_03D,Term_12A, skip_vif = TRUE)
+summary_residual_compare(b_CBre11A,b_CBre12A, skip_vif = TRUE)
+summary_residual_compare(b_CBre03D,b_CBre12A, skip_vif = TRUE)
 
 
 
@@ -1715,7 +1670,7 @@ Expectation: More diverse industries of contracts contracting offices handle, th
 summary_continuous_plot(serv_smp,"cl_hh_index_k")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_hh_index_k, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_hh_index_k, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre12B <- glm (data=serv_smp,
@@ -1729,14 +1684,14 @@ display(n_CBre12B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre12B,
-                       Term_12B,
+                       
                        n_CBre12B,
                        type="text",
                        digits=2)
 
 
-# summary_residual_compare(b_CBre11A,b_CBre12B,Term_11A,Term_12B, skip_vif = TRUE)
-# summary_residual_compare(b_CBre03D,b_CBre12B,Term_03D,Term_12B, skip_vif = TRUE)
+# summary_residual_compare(b_CBre11A,b_CBre12B, skip_vif = TRUE)
+# summary_residual_compare(b_CBre03D,b_CBre12B, skip_vif = TRUE)
 
 ```
 
@@ -1783,13 +1738,13 @@ glmer_examine(n_CBre12C)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre11B,b_CBre12A,b_CBre12C,
-                     Term_11B,Term_12A,Term_12C,
+                     
                      n_CBre11B,n_CBre12A,n_CBre12C,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre10D,b_CBre12C,Term_10D,Term_12C)
-summary_residual_compare(b_CBre11A,b_CBre12C,Term_11S,Term_12C)
+summary_residual_compare(b_CBre10D,b_CBre12C)
+summary_residual_compare(b_CBre11A,b_CBre12C,)
 ```
 
 
