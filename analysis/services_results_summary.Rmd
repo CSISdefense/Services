@@ -73,7 +73,7 @@ if(!exists("p_Opt_12C")){
                       cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                       cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                       c_pMarket+
-                      cl_OffVol+cl_hh_index_k #,
+                      cl_OffVol+cl_office_naics_hhi_k #,
                     # verbose=1
                     )
   glmer_examine(p_Opt_12C)
@@ -112,7 +112,7 @@ if(!exists("b_CBre12C")){
                    cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                    cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                    c_pMarket+
-                   cl_OffVol+cl_hh_index_k , family=binomial(link="logit")#,
+                   cl_OffVol+cl_office_naics_hhi_k , family=binomial(link="logit")#,
                  # verbose=1
                  )
   
@@ -129,7 +129,7 @@ if(!exists("b_CBre12C")){
                    cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                    cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                    c_pMarket+
-                   cl_OffVol+cl_hh_index_k , family=binomial(link="logit")#,
+                   cl_OffVol+cl_office_naics_hhi_k , family=binomial(link="logit")#,
                  # verbose=1
                  )
   
@@ -200,7 +200,7 @@ if(!exists("Term_12C")){
                      cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                      cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                      c_pMarket+
-                     cl_OffVol+cl_hh_index_k, family=binomial(link="logit")#,
+                     cl_OffVol+cl_office_naics_hhi_k, family=binomial(link="logit")#,
                    # verbose=1
                    )
   glmer_examine(Term_12C)
@@ -217,7 +217,7 @@ if(!exists("Term_12C")){
                      cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                      cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                      c_pMarket+
-                     cl_OffVol+cl_hh_index_k, family=binomial(link="logit")#,
+                     cl_OffVol+cl_office_naics_hhi_k, family=binomial(link="logit")#,
                    # verbose=1
                    )
   glmer_examine(Term_12C_1m)
@@ -297,7 +297,7 @@ all_coef_list<-list("(Intercept)"="(Intercept)",
                     #Office
                     "c_pMarket"="Percent Market",
                     "cl_OffVol"="Office Volume",
-                    "cl_hh_index_k"="Office Concentration",
+                    "cl_office_naics_hhi_k"="Office Concentration",
                     
                     
                     #interations

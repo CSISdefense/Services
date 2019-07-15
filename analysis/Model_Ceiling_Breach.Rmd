@@ -84,7 +84,6 @@ stargazer::stargazer(b_CBre01A,n_CBre01A,type="text",
                        digits=2)
 
 
-summary_residual_compare(b_CBre01A,skip_vif = TRUE)
 
 
 
@@ -128,7 +127,6 @@ n_CBre01B <- glm(data=serv_smp,
                        digits=2)
 
 
-summary_residual_compare(b_CBre01B, skip_vif = TRUE)
 summary_residual_compare(b_CBre01A,b_CBre01B, skip_vif = TRUE)
 
 
@@ -169,7 +167,6 @@ stargazer::stargazer(b_CBre01A,b_CBre01B,b_CBre01C,
                        digits=2)
 
 
-  summary_residual_compare(b_CBre01C, skip_vif = TRUE)
   summary_residual_compare(b_CBre01A,b_CBre01C)
   summary_residual_compare(b_CBre01B,b_CBre01C)
 
@@ -206,7 +203,6 @@ n_CBre02A <- glm(data=serv_smp,
 display(n_CBre02A)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01C,b_CBre02A,
-                       
                        n_CBre01C,n_CBre02A,
                        type="text",
                        digits=2)
@@ -246,7 +242,6 @@ n_CBre02B <- glm(data=serv_smp,
 display(n_CBre02B)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01C,b_CBre02A,b_CBre02B,
-                       
                        n_CBre01C,n_CBre02A,n_CBre02B,
                        type="text",
                        digits=2)
@@ -541,7 +536,7 @@ In the cumulative model, per dependent variable and independent variable:
 
 
 
-## Study Variables Summary
+## Study Variables Alone
 
 ```{r StudyVariableSummary}
 
@@ -553,7 +548,16 @@ In the cumulative model, per dependent variable and independent variable:
  #  !is.na(def_serv$c_pairHist)&
  #  !is.na(def_serv$cl_pairCA)&
 
-coef.list<-list("(Intercept)"="(Intercept)",
+
+study_coef_list<-list("(Intercept)"="(Intercept)",
+                      "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
+                      "cl_CFTE"="Log(Service Invoice Rate)",
+                      "c_pPBSC"="Office Perf.-Based %",
+                      "c_pOffPSC"="Office Service Exp. %",
+                      "c_pairHist"="Paired Years",
+                      "cl_pairCA"="Log(Paired Actions)"
+)
+all_coef_list<-list("(Intercept)"="(Intercept)",
                 "cl_US6_avg_sal_lag1"="Log(Det. Ind. Salary)",
                                      "cl_CFTE"="Log(Service Invoice Rate)",
                                      "c_pPBSC"="Office Perf.-Based %",
@@ -622,7 +626,7 @@ texreg::htmlreg(list(b_CBre01A,b_CBre01B,b_CBre02A,b_CBre02B,b_CBre03A,b_CBre03B
                               "Office Capacity" =4:5,
                               "Past Relationship"=6:7
                               ),
-                custom.coef.map=coef.list,
+                custom.coef.map=all_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 6: Logit Bivariate Look at Study Variables and Ceiling Breaches",
@@ -646,7 +650,7 @@ texreg::htmlreg(list(n_CBre01A,n_CBre01B,n_CBre02A,n_CBre02B,n_CBre03A,n_CBre03B
                               "Office Capacity" =4:5,
                               "Past Relationship"=6:7
                               ),
-                custom.coef.map=coef.list,
+                custom.coef.map=all_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 8: Regression Bivariate Look at Study Variables and Log(Options Growth)",
@@ -1667,18 +1671,18 @@ Expectation: More diverse industries of contracts contracting offices handle, th
 
 
 ```{r Model12B}
-summary_continuous_plot(serv_smp,"cl_hh_index_k")
+summary_continuous_plot(serv_smp,"cl_office_naics_hhi_k")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_hh_index_k, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_office_naics_hhi_k, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre12B <- glm (data=serv_smp,
-                 b_CBre ~ cl_hh_index_k, family=binomial(link="logit"))
+                 b_CBre ~ cl_office_naics_hhi_k, family=binomial(link="logit"))
 display(b_CBre12B)
 
 n_CBre12B <- glm(data=serv_smp,
-                        ln_CBre ~ cl_hh_index_k)
+                        ln_CBre ~ cl_office_naics_hhi_k)
 
 display(n_CBre12B)
 
@@ -1717,7 +1721,7 @@ b_CBre12C <- glm (data=serv_smp,
                    cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                    cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                    c_pMarket+
-                   cl_OffVol+cl_hh_index_k , family=binomial(link="logit"))
+                   cl_OffVol+cl_office_naics_hhi_k , family=binomial(link="logit"))
 glmer_examine(b_CBre12C)
 
 n_CBre12C <- glm(data=serv_smp,
@@ -1732,7 +1736,7 @@ n_CBre12C <- glm(data=serv_smp,
                  cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                  cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                  c_pMarket+
-                   cl_OffVol+cl_hh_index_k)
+                   cl_OffVol+cl_office_naics_hhi_k)
 
 glmer_examine(n_CBre12C)
 
@@ -1744,7 +1748,7 @@ stargazer::stargazer(b_CBre11B,b_CBre12A,b_CBre12C,
                        digits=2)
 
 summary_residual_compare(b_CBre10D,b_CBre12C)
-summary_residual_compare(b_CBre11A,b_CBre12C,)
+summary_residual_compare(b_CBre11A,b_CBre12C)
 ```
 
 
@@ -1760,55 +1764,6 @@ summary_residual_compare(b_CBre11A,b_CBre12C,)
  #  !is.na(def_serv$c_pairHist)&
  #  !is.na(def_serv$cl_pairCA)&
 
-coef.list<-list("(Intercept)"="(Intercept)",
-                "cl_US6_avg_sal_lag1"="Log(Det. Ind. Salary)",
-                                     "cl_CFTE"="Log(Service Invoice Rate)",
-                                     "c_pPBSC"="Office Perf.-Based %",
-                                     "c_pOffPSC"="Office Service Exp. %",
-                                     "c_pairHist"="Paired Years",
-                                     "cl_pairCA"="Log(Paired Actions)"
-                                     # "cl_def3_HHI_lag1"="Log(Subsector HHI)",
-                                     # "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
-                                     # "CompOffr1 offer"="Comp=1 offer",
-                                     # "CompOffr2 offers"="Comp=2 offers",
-                                     # "CompOffr3-4 offers"="Comp=3-4 offers",
-                                     # "CompOffr5+ offers"="Comp=5+ offers",
-                                     # "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
-                                     # "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
-                                     # "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
-                                     # 
-                                     # "cl_Ceil"="Log(Init. Ceiling)",
-                                     # "capped_cl_Days"="Log(Init. Days)",
-                                     # "VehS-IDC"="Vehicle=S-IDC",
-                                     # "VehM-IDC"="Vehicle=M-IDC",
-                                     # "VehFSS/GWAC"="Vehicle=FSS/GWAC",
-                                     # "VehBPA/BOA"="Vehicle=BPA/BOA",
-                                     # "PricingFeeOther FP"="Pricing=Other FP",
-                                     # "PricingFeeIncentive"="Pricing=Incentive Fee",
-                                     # "PricingFeeCombination or Other"="Pricing=Combination or Other",
-                                     # "PricingFeeOther CB"="Pricing=Other CB",
-                                     # "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
-                                     # "b_UCA"="UCA",
-                                     # "b_Intl"="Performed Abroad",
-                                     # # # "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
-                                     # # "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
-                                     # # # "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
-                                     # "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
-                                     # # "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
-                                     # # "CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
-                                     # # "CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
-                                     # # "CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
-                                     # # "CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
-                                     # "VehS-IDC:b_Intl"="Vehicle=S-IDC:Performed Abroad",
-                                     # "VehM-IDC:b_Intl"="Vehicle=M-IDC:Performed Abroad",
-                                     # "VehFSS/GWAC:b_Intl"="Vehicle=FSS/GWAC:Performed Abroad",
-                                     # "VehBPA/BOA:b_Intl"="Vehicle=BPA/BOA:Performed Abroad",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"="Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
-                                     # "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
-              )
 
 
 
@@ -1828,7 +1783,7 @@ texreg::htmlreg(list(b_CBre01A,b_CBre01B,b_CBre02A,b_CBre02B,b_CBre03A,b_CBre03B
                               "Office Capacity" =4:5,
                               "Past Relationship"=6:7
                               ),
-                custom.coef.map=coef.list,
+                custom.coef.map=study_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 6: Logit Bivariate Look at Study Variables and Ceiling Breaches",
@@ -1850,7 +1805,7 @@ texreg::htmlreg(list(n_CBre01A,n_CBre01B,n_CBre02A,n_CBre02B,n_CBre03A,n_CBre03B
                               "Office Capacity" =4:5,
                               "Past Relationship"=6:7
                               ),
-                custom.coef.map=coef.list,
+                custom.coef.map=study_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 8: Regression Bivariate Look at Study Variables and Log(Options Growth)",
