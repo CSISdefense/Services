@@ -5,6 +5,8 @@ GO
 --For instructions see https://github.com/CSISdefense/DIIGsql/blob/master/Doc/Output_Large_Dataset.md
 
 
+SET ANSI_WARNINGS OFF;
+SET NOCOUNT ON;
 
 --Base and all options 250M examination
 select f.*, t.CSIScontractID
@@ -25,14 +27,9 @@ where ctid.csiscontractid in (
 8441462,
 8568990,
 10060563,
-26427614,
+26427614
 ))
-  
  
-
-
-
-
 
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;

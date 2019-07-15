@@ -1318,7 +1318,7 @@ stargazer::stargazer(b_CBre09D,b_CBre09D2,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre09D,b_CBre09D22)
+summary_residual_compare(b_CBre09D,b_CBre09D2)
 ```
 The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
 
@@ -1564,7 +1564,6 @@ stargazer::stargazer(b_CBre11A,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre11A, skip_vif =  TRUE)
 
 
 ```

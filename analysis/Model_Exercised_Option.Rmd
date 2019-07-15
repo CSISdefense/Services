@@ -123,7 +123,6 @@ p_Opt_01B <- glm(data=serv_opt,
                        type="text",
                        digits=2)
 
-
 summary_residual_compare(n_Opt_01A,n_Opt_01B, skip_vif = TRUE)
 
 
@@ -632,8 +631,6 @@ all_coef_list<-list("(Intercept)"="(Intercept)",
                     "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
                     "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
 )
-  
-                )
 
 
 
@@ -1341,7 +1338,7 @@ stargazer::stargazer(n_Opt_09D,n_Opt_09D2,
                        type="text",
                        digits=2)
 
-summary_residual_compare(n_Opt_09D,n_Opt_09D22)
+summary_residual_compare(n_Opt_09D,n_Opt_09D2)
 ```
 The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
 
@@ -1588,7 +1585,6 @@ stargazer::stargazer(n_Opt_11A,
                        type="text",
                        digits=2)
 
-summary_residual_compare(n_Opt_11A, skip_vif =  TRUE)
 
 
 ```
