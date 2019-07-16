@@ -68,6 +68,7 @@ summary(Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(1,
                                           100
                                           )))
 nrow(opt_preclean %>% filter((p_OptGrowth-1)>100 & UnmodifiedBaseandExercisedOptionsValue<=0))
+nrow(opt_preclean %>% filter((p_OptGrowth-1)>10 & (UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions)<UnmodifiedContractBaseAndAllOptionsValue.Then.Year))
 summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>10 & opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0])
 summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>100 & opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0])
 opt_preclean$Why_Outlier<-NA
@@ -75,10 +76,11 @@ opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBaseandExercisedOptionsValue<=0]
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$Actizon_Obligation_Then_Year*2>=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
                    opt_preclean$ExercisedOptions]<-
-  "Obligations at least half Bast+Opt"
+  "Obligations at least half Base+Opt"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$Office=="W912UM"]<-
   "Korean Office W912UM"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&((opt_preclean$UnmodifiedBaseandExercisedOptionsValue + opt_preclean$ExercisedOptions) < opt_preclean$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)] <- "Base + Growth < Unmodified Ceiling"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$ExercisedOptions>=2.5e8]<-
   ">=$250M, Insepect"
@@ -91,6 +93,7 @@ opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier,
                            "Obligations at least half Bast+Opt",
                            "Later Deobligated",
                            "Korean Office W912UM",
+                           "Base + Growth < Unmodified Ceiling",
                            ">=$250M, Insepect",
                            "Other Unexplained 10x Options Growth"
                          ))
@@ -125,9 +128,8 @@ summary(Hmisc::cut2(opt_preclean$ExercisedOptions,c(1e3,
 summary(opt_preclean$Ceil[opt_preclean$ExercisedOptions>=1e6])
 summary(opt_preclean$Ceil[opt_preclean$ExercisedOptions>=1e9])
 
-
-write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10),row.names = FALSE)
-write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
 ```
 Examining cases of large options growth, `r nrow(opt_preclean %>% filter(p_OptGrowth-1>10))` contracts experienced greater than 10 fold growth. An increase of that side strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
 
@@ -254,10 +256,10 @@ facet_wrap(~Ceil,scales="free_y")#+, space="free_y"
 ```{r gt250k}
 inspect250<-opt_preclean %>% filter(Why_Outlier==">=$250M, Insepect")
 inspect250$CSIScontractID
-inspect250trans<-read.delim(file="..\\data\\semi_clean\\gt250k_exercised_opt_outliers.txt", sep="\t")
+inspect250trans<-read.delim(file="..\\data\\semi_clean\\gt250k_n_exercised_opt_outliers.txt", sep="\t")
 
 
-gt250k_exercised_opt_outliers.txt
+#gt250k_n_exercised_opt_outliers.txt
 
 ```
 

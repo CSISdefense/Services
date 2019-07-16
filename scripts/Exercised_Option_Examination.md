@@ -39,6 +39,14 @@ output:
 ```
 
 ```
+## Warning: package 'ggplot2' was built under R version 3.5.3
+```
+
+```
+## Warning: package 'dplyr' was built under R version 3.5.3
+```
+
+```
 ## 
 ## Attaching package: 'dplyr'
 ```
@@ -53,6 +61,10 @@ output:
 ## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union
+```
+
+```
+## Warning: package 'arm' was built under R version 3.5.3
 ```
 
 ```
@@ -79,16 +91,28 @@ output:
 ```
 
 ```
+## Warning: package 'lme4' was built under R version 3.5.3
+```
+
+```
 ## 
 ## arm (Version 1.10-1, built: 2018-4-12)
 ```
 
 ```
-## Working directory is C:/Users/gsand/Repositories/Services/scripts
+## Working directory is C:/Users/JGraham/Documents/CSIS/Services/scripts
+```
+
+```
+## Warning: package 'R2WinBUGS' was built under R version 3.5.3
 ```
 
 ```
 ## Loading required package: coda
+```
+
+```
+## Warning: package 'coda' was built under R version 3.5.3
 ```
 
 ```
@@ -118,6 +142,14 @@ output:
 ```
 
 ```
+## Warning: package 'knitr' was built under R version 3.5.3
+```
+
+```
+## Warning: package 'stargazer' was built under R version 3.5.2
+```
+
+```
 ## 
 ## Please cite as:
 ```
@@ -128,6 +160,10 @@ output:
 
 ```
 ##  R package version 5.2.2. https://CRAN.R-project.org/package=stargazer
+```
+
+```
+## Warning: package 'texreg' was built under R version 3.5.3
 ```
 
 ```
@@ -150,7 +186,23 @@ output:
 ```
 
 ```
+## Warning: package 'reshape2' was built under R version 3.5.3
+```
+
+```
+## Warning: package 'sjstats' was built under R version 3.5.3
+```
+
+```
+## Warning: package 'car' was built under R version 3.5.3
+```
+
+```
 ## Loading required package: carData
+```
+
+```
+## Warning: package 'carData' was built under R version 3.5.2
 ```
 
 ```
@@ -177,6 +229,10 @@ output:
 ```
 
 ```
+## Warning: package 'scales' was built under R version 3.5.3
+```
+
+```
 ## 
 ## Attaching package: 'scales'
 ```
@@ -188,7 +244,7 @@ output:
 ```
 
 ```
-## [1] 16250
+## [1] 8076
 ```
 
 
@@ -262,6 +318,14 @@ nrow(opt_preclean %>% filter((p_OptGrowth-1)>100 & UnmodifiedBaseandExercisedOpt
 ```
 
 ```r
+nrow(opt_preclean %>% filter((p_OptGrowth-1)>10 & (UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions)<UnmodifiedContractBaseAndAllOptionsValue.Then.Year))
+```
+
+```
+## [1] 759
+```
+
+```r
 summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>10 & opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0])
 ```
 
@@ -289,7 +353,7 @@ opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBaseandExercisedOptionsValue<=0]
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$Actizon_Obligation_Then_Year*2>=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
                    opt_preclean$ExercisedOptions]<-
-  "Obligations at least half Bast+Opt"
+  "Obligations at least half Base+Opt"
 ```
 
 ```
@@ -300,6 +364,7 @@ opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$Office=="W912UM"]<-
   "Korean Office W912UM"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&((opt_preclean$UnmodifiedBaseandExercisedOptionsValue + opt_preclean$ExercisedOptions) < opt_preclean$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)] <- "Base + Growth < Unmodified Ceiling"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$ExercisedOptions>=2.5e8]<-
   ">=$250M, Insepect"
@@ -312,6 +377,7 @@ opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier,
                            "Obligations at least half Bast+Opt",
                            "Later Deobligated",
                            "Korean Office W912UM",
+                           "Base + Growth < Unmodified Ceiling",
                            ">=$250M, Insepect",
                            "Other Unexplained 10x Options Growth"
                          ))
@@ -323,10 +389,10 @@ summary(opt_preclean$Why_Outlier[(opt_preclean$p_OptGrowth-1)>10])
 ##                                    0                                    0 
 ##                    Later Deobligated                 Korean Office W912UM 
 ##                                    0                                    0 
-##                    >=$250M, Insepect Other Unexplained 10x Options Growth 
-##                                    4                                 1173 
-##                                 NA's 
-##                                  334
+##   Base + Growth < Unmodified Ceiling                    >=$250M, Insepect 
+##                                  759                                    2 
+## Other Unexplained 10x Options Growth                                 NA's 
+##                                  416                                  334
 ```
 
 ```r
@@ -338,10 +404,10 @@ summary(opt_preclean$Why_Outlier)
 ##                                    0                                    0 
 ##                    Later Deobligated                 Korean Office W912UM 
 ##                                    0                                   13 
-##                    >=$250M, Insepect Other Unexplained 10x Options Growth 
-##                                   11                                 1173 
-##                                 NA's 
-##                                51763
+##   Base + Growth < Unmodified Ceiling                    >=$250M, Insepect 
+##                                32419                                    4 
+## Other Unexplained 10x Options Growth                                 NA's 
+##                                  416                                20108
 ```
 
 ```r
@@ -396,8 +462,8 @@ summary(opt_preclean$Ceil[opt_preclean$ExercisedOptions>=1e9])
 ```
 
 ```r
-write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10),row.names = FALSE)
-write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
 ```
 Examining cases of large options growth, 1177 contracts experienced greater than 10 fold growth. An increase of that side strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
 
@@ -406,8 +472,9 @@ The study team broke down the outliers into 6 categories:
 
 Why_Outlier                             nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
 -------------------------------------  ----------  ----------------------  ----------------------  ---------------------------------
->=$250M, Insepect                               4              1185412154               327123958                         1151256942
-Other Unexplained 10x Options Growth         1173              5925651655               244663141                         9481530844
+Base + Growth < Unmodified Ceiling            759              4749223337               297118416                         7978035782
+>=$250M, Insepect                               2               607608842               327123958                          622718542
+Other Unexplained 10x Options Growth          416              1754231630               244663141                         2032033462
 
 
 * No Unmodified Base: Contracts with an initial base <=0. These are eliminated from the sample as missing data.
@@ -417,18 +484,19 @@ Other Unexplained 10x Options Growth         1173              5925651655       
 * There are nrow(opt_preclean %>% dplyr::filter(Why_Outlier ==">=$250M, Insepect" & (p_OptGrowth-1)>10)) contracts with options growth of over $250 million that account for hundreds of billions in change order growth. These merit manual inspection.
 * Finally a few score contrats have unexplained growth, but remain below the $10M threshold. The quantity and magnitude of these contrats is not sufficient to risk the overall model.
 
-This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  1.1512569\times 10^{9}.
+This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  6.2271854\times 10^{8}.
 
 Shifting the focus to all contracts with growth of at least 250 million, there are far fewer contracts that account for far more money.
 
 
-Why_Outlier          nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
-------------------  ----------  ----------------------  ----------------------  ---------------------------------
->=$250M, Insepect           11              3763783860               504504112                         7107747274
+Why_Outlier                           nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
+-----------------------------------  ----------  ----------------------  ----------------------  ---------------------------------
+Base + Growth < Unmodified Ceiling            7              2452597812               504504112                         5249839311
+>=$250M, Insepect                             4              1311186048               368576019                         1857907964
 
 
 
-Inspecting W912UM, either to remove or fix its oversized growth, is an imperative as it accounts for the majority of these contracts or task orders. Even so, there are still 11 That merit special inspection for given that there growth far outpaces their spending.
+Inspecting W912UM, either to remove or fix its oversized growth, is an imperative as it accounts for the majority of these contracts or task orders. Even so, there are still 4 That merit special inspection for given that there growth far outpaces their spending.
 
 
 ## Options Growth
@@ -584,8 +652,14 @@ inspect250$CSIScontractID
 ```
 
 ```
-##  [1]  8441452  2141645  2141646  1416351  8568990  8441432 26427614
-##  [8] 10060563  2141647  3157486  8441462
+## [1] 1416351 8568990 8441432 8441462
+```
+
+```r
+inspect250trans<-read.delim(file="..\\data\\semi_clean\\gt250k_n_exercised_opt_outliers.txt", sep="\t")
+
+
+#gt250k_n_exercised_opt_outliers.txt
 ```
 
 ## W912IM
