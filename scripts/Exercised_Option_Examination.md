@@ -451,9 +451,9 @@ summary(opt_preclean$Ceil[opt_preclean$ExercisedOptions>=1e9])
 write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
 write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
 ```
-Examining cases of large options growth, 1177 contracts experienced greater than 10 fold growth. An increase of that side strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
+Examining cases of large options growth, 1177 contracts experienced greater than 10 fold growth. An increase of that size strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
 
-The study team broke down the outliers into 6 categories:
+The study team broke down the outliers into 4 categories:
 
 
 Why_Outlier                             nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
@@ -464,11 +464,9 @@ Other Unexplained 10x Options Growth           20                31106344       
 
 
 * No Unmodified Base: Contracts with an initial base <=0. These are eliminated from the sample as missing data.
-* Obligations at least half Bast+Opt: For this category, total obligations of the contract were at least half the value of the initial base plus options growth under exercised options. These contrats have had spending that massively exceeded their original base, so the growth in absolute terrms seems plausible. This category accounts for the overwhelming majority of outlier spending but only a tiny fraction of change order growth.
-* Later Deobligated: The change order growth metrics only counts increases. These may simply have been mistaken increases, as when including deobligation the growth no longer exceeded 10x the original base. The number, obligations, and change order growth of these contracts are comparatively small, and thus should not distort the overall data.
+* Obligations at least half Base+Opt: For this category, total obligations of the contract were at least half the value of the initial base plus options growth under exercised options. These contracts have had spending that massively exceeded their original base, so the growth in absolute terrms seems plausible. This category accounts for the overwhelming majority of outlier spending but only a tiny fraction of change order growth.###################
 * Korean Office W912UM refers to a contracting office that sometimes records base and all options values in Korean Won, approximate exchange rate 1,000 Won : 1 USD. 
-* There are nrow(opt_preclean %>% dplyr::filter(Why_Outlier ==">=$250M, Insepect" & (p_OptGrowth-1)>10)) contracts with options growth of over $250 million that account for hundreds of billions in change order growth. These merit manual inspection.
-* Finally a few score contrats have unexplained growth, but remain below the $10M threshold. The quantity and magnitude of these contrats is not sufficient to risk the overall model.
+* Finally a few score contrats have unexplained growth, but remain below the $10M threshold. The quantity and magnitude of these contracts is not sufficient to risk the overall model.
 
 This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  0.
 
