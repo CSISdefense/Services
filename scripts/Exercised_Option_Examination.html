@@ -343,11 +343,10 @@ summary(def_serv$ExercisedOptions)</code></pre>
 <pre class="r"><code>opt_preclean$Why_Outlier&lt;-NA
 opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBaseandExercisedOptionsValue&lt;=0]&lt;-&quot;No Unmodified Base&quot;
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&amp;
-                   opt_preclean$Actizon_Obligation_Then_Year*2&gt;=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
+                   opt_preclean$Action_Obligation.Then.Year*2&gt;=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
                    opt_preclean$ExercisedOptions]&lt;-
-  &quot;Obligations at least half Base+Opt&quot;</code></pre>
-<pre><code>## Warning: Unknown or uninitialised column: 'Actizon_Obligation_Then_Year'.</code></pre>
-<pre class="r"><code>opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&amp;
+  &quot;Obligations at least half Base+Opt&quot;
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&amp;
                    opt_preclean$Office==&quot;W912UM&quot;]&lt;-
   &quot;Korean Office W912UM&quot;
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&amp;((opt_preclean$UnmodifiedBaseandExercisedOptionsValue + opt_preclean$ExercisedOptions) &lt; opt_preclean$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)] &lt;- &quot;Base + Growth &lt; Unmodified Ceiling&quot;
@@ -357,34 +356,27 @@ opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&amp;
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&amp;
                    opt_preclean$p_OptGrowth-1&gt;10]&lt;-
   &quot;Other Unexplained 10x Options Growth&quot;
-opt_preclean$Why_Outlier&lt;-factor(opt_preclean$Why_Outlier,
-                         levels=c(
-                           &quot;No Unmodified Base&quot;,
-                           &quot;Obligations at least half Bast+Opt&quot;,
-                           &quot;Later Deobligated&quot;,
-                           &quot;Korean Office W912UM&quot;,
-                           &quot;Base + Growth &lt; Unmodified Ceiling&quot;,
-                           &quot;&gt;=$250M, Insepect&quot;,
-                           &quot;Other Unexplained 10x Options Growth&quot;
-                         ))
+
+opt_preclean$Why_Outlier&lt;-factor(opt_preclean$Why_Outlier, levels = c(&quot;No Unmodified Base&quot;, &quot;Obligations at least half Base+Opt&quot;, &quot;Korean Office W912UM&quot;, &quot;Base + Growth &lt; Unmodified Ceiling&quot;, &quot;&gt;=$250M, Insepect&quot;, &quot;Other Unexplained 10x Options Growth&quot;))
+
 summary(opt_preclean$Why_Outlier[(opt_preclean$p_OptGrowth-1)&gt;10])</code></pre>
-<pre><code>##                   No Unmodified Base   Obligations at least half Bast+Opt 
-##                                    0                                    0 
-##                    Later Deobligated                 Korean Office W912UM 
-##                                    0                                    0 
-##   Base + Growth &lt; Unmodified Ceiling                    &gt;=$250M, Insepect 
-##                                  759                                    2 
-## Other Unexplained 10x Options Growth                                 NA's 
-##                                  416                                  334</code></pre>
+<pre><code>##                   No Unmodified Base   Obligations at least half Base+Opt 
+##                                    0                                 1127 
+##                 Korean Office W912UM   Base + Growth &lt; Unmodified Ceiling 
+##                                    0                                   30 
+##                    &gt;=$250M, Insepect Other Unexplained 10x Options Growth 
+##                                    0                                   20 
+##                                 NA's 
+##                                  334</code></pre>
 <pre class="r"><code>summary(opt_preclean$Why_Outlier)</code></pre>
-<pre><code>##                   No Unmodified Base   Obligations at least half Bast+Opt 
-##                                    0                                    0 
-##                    Later Deobligated                 Korean Office W912UM 
-##                                    0                                   13 
-##   Base + Growth &lt; Unmodified Ceiling                    &gt;=$250M, Insepect 
-##                                32419                                    4 
-## Other Unexplained 10x Options Growth                                 NA's 
-##                                  416                                20108</code></pre>
+<pre><code>##                   No Unmodified Base   Obligations at least half Base+Opt 
+##                                    0                                50432 
+##                 Korean Office W912UM   Base + Growth &lt; Unmodified Ceiling 
+##                                    1                                 1449 
+##                    &gt;=$250M, Insepect Other Unexplained 10x Options Growth 
+##                                    0                                   20 
+##                                 NA's 
+##                                 1058</code></pre>
 <pre class="r"><code>p_outlier_summary&lt;-opt_preclean %&gt;% filter(p_OptGrowth-1&gt;10) %&gt;% group_by(Why_Outlier) %&gt;%
   dplyr::summarise(nContract=length(ExercisedOptions),
     SumOfExercisedOptions=sum(ExercisedOptions),
@@ -434,25 +426,25 @@ write.csv(file=&quot;..\\Data\\semi_clean\\n_opt_outliers.csv&quot;,opt_preclean
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Base + Growth &lt; Unmodified Ceiling</td>
-<td align="right">759</td>
-<td align="right">4749223337</td>
-<td align="right">297118416</td>
-<td align="right">7978035782</td>
+<td align="left">Obligations at least half Base+Opt</td>
+<td align="right">1127</td>
+<td align="right">6937211681</td>
+<td align="right">327123958</td>
+<td align="right">10579287244</td>
 </tr>
 <tr class="even">
-<td align="left">&gt;=$250M, Insepect</td>
-<td align="right">2</td>
-<td align="right">607608842</td>
-<td align="right">327123958</td>
-<td align="right">622718542</td>
+<td align="left">Base + Growth &lt; Unmodified Ceiling</td>
+<td align="right">30</td>
+<td align="right">142745783</td>
+<td align="right">51557340</td>
+<td align="right">42558356</td>
 </tr>
 <tr class="odd">
 <td align="left">Other Unexplained 10x Options Growth</td>
-<td align="right">416</td>
-<td align="right">1754231630</td>
-<td align="right">244663141</td>
-<td align="right">2032033462</td>
+<td align="right">20</td>
+<td align="right">31106344</td>
+<td align="right">8087198</td>
+<td align="right">10942186</td>
 </tr>
 </tbody>
 </table>
@@ -464,7 +456,7 @@ write.csv(file=&quot;..\\Data\\semi_clean\\n_opt_outliers.csv&quot;,opt_preclean
 <li>There are nrow(opt_preclean %&gt;% dplyr::filter(Why_Outlier ==“&gt;=$250M, Insepect” &amp; (p_OptGrowth-1)&gt;10)) contracts with options growth of over $250 million that account for hundreds of billions in change order growth. These merit manual inspection.</li>
 <li>Finally a few score contrats have unexplained growth, but remain below the $10M threshold. The quantity and magnitude of these contrats is not sufficient to risk the overall model.</li>
 </ul>
-<p>This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team’s confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over 10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by 6.227185410^{8}.</p>
+<p>This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team’s confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over 10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by 0.</p>
 <p>Shifting the focus to all contracts with growth of at least 250 million, there are far fewer contracts that account for far more money.</p>
 <table>
 <thead>
@@ -478,22 +470,15 @@ write.csv(file=&quot;..\\Data\\semi_clean\\n_opt_outliers.csv&quot;,opt_preclean
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Base + Growth &lt; Unmodified Ceiling</td>
-<td align="right">7</td>
-<td align="right">2452597812</td>
+<td align="left">Obligations at least half Base+Opt</td>
+<td align="right">11</td>
+<td align="right">3763783860</td>
 <td align="right">504504112</td>
-<td align="right">5249839311</td>
-</tr>
-<tr class="even">
-<td align="left">&gt;=$250M, Insepect</td>
-<td align="right">4</td>
-<td align="right">1311186048</td>
-<td align="right">368576019</td>
-<td align="right">1857907964</td>
+<td align="right">7107747274</td>
 </tr>
 </tbody>
 </table>
-<p>Inspecting W912UM, either to remove or fix its oversized growth, is an imperative as it accounts for the majority of these contracts or task orders. Even so, there are still 4 That merit special inspection for given that there growth far outpaces their spending.</p>
+<p>Inspecting W912UM, either to remove or fix its oversized growth, is an imperative as it accounts for the majority of these contracts or task orders. Even so, there are still 0 That merit special inspection for given that there growth far outpaces their spending.</p>
 <div id="options-growth" class="section level2">
 <h2><span class="header-section-number">2.1</span> Options Growth</h2>
 <pre class="r"><code>(
@@ -596,7 +581,7 @@ facet_wrap(~Ceil,scales=&quot;free_y&quot;)#+, space=&quot;free_y&quot;
 <h2><span class="header-section-number">2.2</span> &gt;250 Inspect</h2>
 <pre class="r"><code>inspect250&lt;-opt_preclean %&gt;% filter(Why_Outlier==&quot;&gt;=$250M, Insepect&quot;)
 inspect250$CSIScontractID</code></pre>
-<pre><code>## [1] 1416351 8568990 8441432 8441462</code></pre>
+<pre><code>## numeric(0)</code></pre>
 <pre class="r"><code>inspect250trans&lt;-read.delim(file=&quot;..\\data\\semi_clean\\gt250k_n_exercised_opt_outliers.txt&quot;, sep=&quot;\t&quot;)
 
 

@@ -74,7 +74,7 @@ summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>100 & opt_preclean$Unmodi
 opt_preclean$Why_Outlier<-NA
 opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBaseandExercisedOptionsValue<=0]<-"No Unmodified Base"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$Actizon_Obligation_Then_Year*2>=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
+                   opt_preclean$Action_Obligation.Then.Year*2>=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
                    opt_preclean$ExercisedOptions]<-
   "Obligations at least half Base+Opt"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
@@ -87,16 +87,9 @@ opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$p_OptGrowth-1>10]<-
   "Other Unexplained 10x Options Growth"
-opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier,
-                         levels=c(
-                           "No Unmodified Base",
-                           "Obligations at least half Bast+Opt",
-                           "Later Deobligated",
-                           "Korean Office W912UM",
-                           "Base + Growth < Unmodified Ceiling",
-                           ">=$250M, Insepect",
-                           "Other Unexplained 10x Options Growth"
-                         ))
+
+opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier, levels = c("No Unmodified Base", "Obligations at least half Base+Opt", "Korean Office W912UM", "Base + Growth < Unmodified Ceiling", ">=$250M, Insepect", "Other Unexplained 10x Options Growth"))
+
 summary(opt_preclean$Why_Outlier[(opt_preclean$p_OptGrowth-1)>10])
 summary(opt_preclean$Why_Outlier)
 

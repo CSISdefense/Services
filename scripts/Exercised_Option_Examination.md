@@ -351,16 +351,9 @@ summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>100 & opt_preclean$Unmodi
 opt_preclean$Why_Outlier<-NA
 opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBaseandExercisedOptionsValue<=0]<-"No Unmodified Base"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$Actizon_Obligation_Then_Year*2>=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
+                   opt_preclean$Action_Obligation.Then.Year*2>=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
                    opt_preclean$ExercisedOptions]<-
   "Obligations at least half Base+Opt"
-```
-
-```
-## Warning: Unknown or uninitialised column: 'Actizon_Obligation_Then_Year'.
-```
-
-```r
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$Office=="W912UM"]<-
   "Korean Office W912UM"
@@ -371,28 +364,21 @@ opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$p_OptGrowth-1>10]<-
   "Other Unexplained 10x Options Growth"
-opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier,
-                         levels=c(
-                           "No Unmodified Base",
-                           "Obligations at least half Bast+Opt",
-                           "Later Deobligated",
-                           "Korean Office W912UM",
-                           "Base + Growth < Unmodified Ceiling",
-                           ">=$250M, Insepect",
-                           "Other Unexplained 10x Options Growth"
-                         ))
+
+opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier, levels = c("No Unmodified Base", "Obligations at least half Base+Opt", "Korean Office W912UM", "Base + Growth < Unmodified Ceiling", ">=$250M, Insepect", "Other Unexplained 10x Options Growth"))
+
 summary(opt_preclean$Why_Outlier[(opt_preclean$p_OptGrowth-1)>10])
 ```
 
 ```
-##                   No Unmodified Base   Obligations at least half Bast+Opt 
-##                                    0                                    0 
-##                    Later Deobligated                 Korean Office W912UM 
-##                                    0                                    0 
-##   Base + Growth < Unmodified Ceiling                    >=$250M, Insepect 
-##                                  759                                    2 
-## Other Unexplained 10x Options Growth                                 NA's 
-##                                  416                                  334
+##                   No Unmodified Base   Obligations at least half Base+Opt 
+##                                    0                                 1127 
+##                 Korean Office W912UM   Base + Growth < Unmodified Ceiling 
+##                                    0                                   30 
+##                    >=$250M, Insepect Other Unexplained 10x Options Growth 
+##                                    0                                   20 
+##                                 NA's 
+##                                  334
 ```
 
 ```r
@@ -400,14 +386,14 @@ summary(opt_preclean$Why_Outlier)
 ```
 
 ```
-##                   No Unmodified Base   Obligations at least half Bast+Opt 
-##                                    0                                    0 
-##                    Later Deobligated                 Korean Office W912UM 
-##                                    0                                   13 
-##   Base + Growth < Unmodified Ceiling                    >=$250M, Insepect 
-##                                32419                                    4 
-## Other Unexplained 10x Options Growth                                 NA's 
-##                                  416                                20108
+##                   No Unmodified Base   Obligations at least half Base+Opt 
+##                                    0                                50432 
+##                 Korean Office W912UM   Base + Growth < Unmodified Ceiling 
+##                                    1                                 1449 
+##                    >=$250M, Insepect Other Unexplained 10x Options Growth 
+##                                    0                                   20 
+##                                 NA's 
+##                                 1058
 ```
 
 ```r
@@ -472,9 +458,9 @@ The study team broke down the outliers into 6 categories:
 
 Why_Outlier                             nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
 -------------------------------------  ----------  ----------------------  ----------------------  ---------------------------------
-Base + Growth < Unmodified Ceiling            759              4749223337               297118416                         7978035782
->=$250M, Insepect                               2               607608842               327123958                          622718542
-Other Unexplained 10x Options Growth          416              1754231630               244663141                         2032033462
+Obligations at least half Base+Opt           1127              6937211681               327123958                        10579287244
+Base + Growth < Unmodified Ceiling             30               142745783                51557340                           42558356
+Other Unexplained 10x Options Growth           20                31106344                 8087198                           10942186
 
 
 * No Unmodified Base: Contracts with an initial base <=0. These are eliminated from the sample as missing data.
@@ -484,19 +470,18 @@ Other Unexplained 10x Options Growth          416              1754231630       
 * There are nrow(opt_preclean %>% dplyr::filter(Why_Outlier ==">=$250M, Insepect" & (p_OptGrowth-1)>10)) contracts with options growth of over $250 million that account for hundreds of billions in change order growth. These merit manual inspection.
 * Finally a few score contrats have unexplained growth, but remain below the $10M threshold. The quantity and magnitude of these contrats is not sufficient to risk the overall model.
 
-This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  6.2271854\times 10^{8}.
+This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  0.
 
 Shifting the focus to all contracts with growth of at least 250 million, there are far fewer contracts that account for far more money.
 
 
 Why_Outlier                           nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
 -----------------------------------  ----------  ----------------------  ----------------------  ---------------------------------
-Base + Growth < Unmodified Ceiling            7              2452597812               504504112                         5249839311
->=$250M, Insepect                             4              1311186048               368576019                         1857907964
+Obligations at least half Base+Opt           11              3763783860               504504112                         7107747274
 
 
 
-Inspecting W912UM, either to remove or fix its oversized growth, is an imperative as it accounts for the majority of these contracts or task orders. Even so, there are still 4 That merit special inspection for given that there growth far outpaces their spending.
+Inspecting W912UM, either to remove or fix its oversized growth, is an imperative as it accounts for the majority of these contracts or task orders. Even so, there are still 0 That merit special inspection for given that there growth far outpaces their spending.
 
 
 ## Options Growth
@@ -652,7 +637,7 @@ inspect250$CSIScontractID
 ```
 
 ```
-## [1] 1416351 8568990 8441432 8441462
+## numeric(0)
 ```
 
 ```r
