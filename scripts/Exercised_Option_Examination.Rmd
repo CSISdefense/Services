@@ -39,22 +39,22 @@ memory.limit()
 ```
 
 ```{r vargraphs: ExercisedOptions}
-load("../data/clean/transformed_def_serv.Rdata")
-# load(file="..\\data\\semi_clean\\opt_pre_clean.rdata")
+#load("../data/clean/transformed_def_serv.Rdata")
+load(file="..\\data\\semi_clean\\opt_pre_clean.rdata")
   
 
-
-W912UM <- def_serv %>% filter(Office=="W912UM")
-W912UMtrans<-read.delim(file="..\\data\\semi_clean\\W912UM_trans.csv", sep=",")
-W912UMtrans<-remove_bom(W912UMtrans)
-opt_preclean<-def_serv %>% filter(ExercisedOptions>1)
-opt_preclean$q_OptGrowth<-Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(0,1e-10,1,10))
+#File Pre-processed and Loaded
+#W912UM <- def_serv %>% filter(Office=="W912UM")
+#W912UMtrans<-read.delim(file="..\\data\\semi_clean\\W912UM_trans.csv", sep=",")
+#W912UMtrans<-remove_bom(W912UMtrans)
+#opt_preclean<-def_serv %>% filter(ExercisedOptions>1)
+#opt_preclean$q_OptGrowth<-Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(0,1e-10,1,10))
 summary(opt_preclean$q_OptGrowth)
-# save(W912UM,W912UMtrans,opt_preclean,file="..\\data\\semi_clean\\opt_pre_clean.rdata")
+#save(W912UM,W912UMtrans,opt_preclean,file="..\\data\\semi_clean\\opt_pre_clean.rdata")
 
 
-summary(def_serv$ExercisedOptions)
-summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
+summary(opt_preclean$ExercisedOptions)
+summary(opt_preclean$UnmodifiedBaseandExercisedOptionsValue)
 ```
 
 
@@ -126,20 +126,16 @@ write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filte
 ```
 Examining cases of large options growth, `r nrow(opt_preclean %>% filter(p_OptGrowth-1>10))` contracts experienced greater than 10 fold growth. An increase of that size strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
 
-The study team broke down the outliers into 4 categories:
+The study team broke down the outliers into three categories:
 `r knitr::kable(p_outlier_summary)`
 * No Unmodified Base: Contracts with an initial base <=0. These are eliminated from the sample as missing data.
-* Obligations at least half Base+Opt: For this category, total obligations of the contract were at least half the value of the initial base plus options growth under exercised options. These contracts have had spending that massively exceeded their original base, so the growth in absolute terrms seems plausible. This category accounts for the overwhelming majority of outlier spending but only a tiny fraction of change order growth.###################
-* Korean Office W912UM refers to a contracting office that sometimes records base and all options values in Korean Won, approximate exchange rate 1,000 Won : 1 USD. 
+* Obligations at least half Base+Opt: For this category, total obligations of the contract were at least half the value of the initial base plus options growth under exercised options. These contracts have had spending that massively exceeded their original base, so the growth in absolute terrms seems plausible. This category accounts for the majority of outlier spending and an overwhelming majority of all exercised options growth amongst outliers (but less than 10% of total exercised options growth when compared to the full sample).
 * Finally a few score contrats have unexplained growth, but remain below the $10M threshold. The quantity and magnitude of these contracts is not sufficient to risk the overall model.
 
 This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  `r sum(opt_preclean$Action_Obligation.Then.Year[opt_preclean$Why_Outlier ==">=$250M, Insepect"& (opt_preclean$p_OptGrowth-1)>10] ,na.rm=TRUE)`.
 
-Shifting the focus to all contracts with growth of at least 250 million, there are far fewer contracts that account for far more money.
+Shifting the focus to all contracts with absolute growth of at least 250 million, there are far fewer contracts that account for far less money.
 `r knitr::kable(n_outlier_summary)`
-
-Inspecting W912UM, either to remove or fix its oversized growth, is an imperative as it accounts for the majority of these contracts or task orders. Even so, there are still `r nrow(opt_preclean %>% filter(Why_Outlier ==">=$250M, Insepect"))` That merit special inspection for given that there growth far outpaces their spending.
-
 
 ## Options Growth
 ```{r OptionsGrowthGraphs}
@@ -177,13 +173,13 @@ ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue,y=ExercisedOpt
 ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions,y=Action_Obligation.Then.Year)) +#,color=q_OptGrowth
   geom_point(alpha=0.25,shape=".")+
   # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()#+
+  scale_x_log10()+scale_y_log10()+
   #+
 #   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
 # # facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-#   labs(title="Distribution of Exercised Options",
+   labs(title="Distribution of Exercised Options",
 #        y="Percent of Options Growth from Base",
-#        x="Unmodified Contract Base")#,
+        x="Unmodified Contract Base + Exercised Options")#,
 #        # fill="Termination Completion"
 )
 
@@ -216,9 +212,9 @@ ggplot(opt_preclean, aes(x=ExercisedOptions,fill=q_OptGrowth)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+
   #+
-  geom_vline(xintercept = 1)#+geom_vline(xintercept = 0.1)+
+  geom_vline(xintercept = 1)+#+geom_vline(xintercept = 0.1)+
 #facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
-  # labs(title="Distribution of Contracts with Obligations After Last termination",
+   labs(title="Distribution of Contracts by Exercised Options Growth")#,
   #      y="Contract Count",
   #      x="Percent of Obligations After Day of Termination",
   #      fill="Termination Completion"
@@ -231,10 +227,10 @@ ggplot(opt_preclean, aes(x=ExercisedOptions,fill=q_OptGrowth)) +
   scale_x_log10()+
   #+
   geom_vline(xintercept = 1)+
-facet_wrap(~Ceil,scales="free_y")#+, space="free_y"
+facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
 #+geom_vline(xintercept = 0.1)+
 #facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
-  # labs(title="Distribution of Contracts with Obligations After Last termination",
+   labs(title="Distribution of Contracts by Exercised Options Growth, Grouped by Ceiling")#,
   #      y="Contract Count",
   #      x="Percent of Obligations After Day of Termination",
   #      fill="Termination Completion"
@@ -253,591 +249,7 @@ inspect250trans<-read.delim(file="..\\data\\semi_clean\\gt250k_n_exercised_opt_o
 #gt250k_n_exercised_opt_outliers.txt
 
 ```
+No contracts with unexplained >=\$250M absolute growth exist in the dataset.  4 such contracts demonstrate absolute growth >=\$250M, but are coded instead as 'Obligations at least half Base+Opt.'  Manual inspection of these makes clear that the growth identified is legitimate, and should be included in the dataset.
 
-## W912IM
-
-### Contract Initial Examination
-```{r W912UM}
-sum(W912UM$Action_Obligation.Then.Year[])
-
-(
-ggplot(W912UM, aes(x=UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions,y=Action_Obligation.Then.Year)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25,shape=".")+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()+
-  #+
-#   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-facet_wrap(~StartFY,scales="free_y")#+, space="free_y"
-#   labs(title="Distribution of Exercised Options",
-#        y="Percent of Options Growth from Base",
-#        x="Unmodified Contract Base")#,
-#        # fill="Termination Completion"
-)
-
-summary(W912UM$UnmodifiedBaseandExercisedOptionsValue)
-W912UM$unmodWon<-NA
-W912UM$unmodWon[W912UM$UnmodifiedBaseandExercisedOptionsValue>=W912UM$Action_Obligation.Then.Year*400&
-                  W912UM$Action_Obligation.Then.Year>0]<-'WON Base'
-W912UM$unmodWon[is.na(W912UM$unmodWon) &
-                    W912UM$UnmodifiedBaseandExercisedOptionsValue>=W912UM$Action_Obligation.Then.Year*20 &
-                  W912UM$UnmodifiedBaseandExercisedOptionsValue>10000
-                  ]<-'? Base'
-W912UM$unmodWon[is.na(W912UM$unmodWon) &
-                    (W912UM$UnmodifiedBaseandExercisedOptionsValue<W912UM$Action_Obligation.Then.Year*20|
-                  W912UM$UnmodifiedBaseandExercisedOptionsValue<10000)]<-'$ Base'
-summary(factor(W912UM$unmodWon))
-
-
-W912UM$optWon<-NA
-W912UM$optWon[abs(W912UM$ExercisedOptions)==0]<-'0 Opt'
-W912UM$optWon[abs(W912UM$ExercisedOptions)>=W912UM$Action_Obligation.Then.Year*100&
-                  W912UM$ExercisedOptions>10000]<-'WON Opt'
-W912UM$optWon[is.na(W912UM$optWon) &
-                    abs(W912UM$ExercisedOptions)>=W912UM$Action_Obligation.Then.Year*10&
-                  W912UM$ExercisedOptions>10000]<-'? Opt'
-W912UM$optWon[is.na(W912UM$optWon) &
-                  (abs(W912UM$ExercisedOptions)<W912UM$Action_Obligation.Then.Year*10|
-                   W912UM$ExercisedOptions<=10000)]<-'$ Opt'
-summary(factor(W912UM$optWon))
-
-
-W912UM$sumWon<-NA
-W912UM$sumWon[W912UM$Action_Obligation.Then.Year==0]<-'0 Obl'
-W912UM$sumWon[W912UM$UnmodifiedBaseandExercisedOptionsValue+
-                W912UM$ExercisedOptions>=W912UM$Action_Obligation.Then.Year*400&
-                 W912UM$UnmodifiedBaseandExercisedOptionsValue+
-                W912UM$ExercisedOptions>10000]<-'WON Sum'
-W912UM$sumWon[is.na(W912UM$sumWon) &
-                    W912UM$UnmodifiedBaseandExercisedOptionsValue+
-                W912UM$ExercisedOptions>=W912UM$Action_Obligation.Then.Year*20&
-                 W912UM$UnmodifiedBaseandExercisedOptionsValue+
-                W912UM$ExercisedOptions>10000]<-'? Sum'
-W912UM$sumWon[is.na(W912UM$sumWon) &
-                    (W912UM$UnmodifiedBaseandExercisedOptionsValue+
-                W912UM$ExercisedOptions<W912UM$Action_Obligation.Then.Year*20|
-                 W912UM$UnmodifiedBaseandExercisedOptionsValue+
-                W912UM$ExercisedOptions>10000)]<-'$ Sum'
-summary(factor(W912UM$sumWon))
-
-
-
-(
-ggplot(W912UM, aes(x=UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions,y=Action_Obligation.Then.Year,color=sumWon)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25)+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()+
-  #+
-#   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-facet_grid(unmodWon~optWon)#+, space="free_y"
-#   labs(title="Distribution of Exercised Options",
-#        y="Percent of Options Growth from Base",
-#        x="Unmodified Contract Base")#,
-#        # fill="Termination Completion"
-)
-
-
-(
-ggplot(W912UM, aes(x=UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions,y=Action_Obligation.Then.Year,color=sumWon)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25)+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()+
-  #+
-#   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-facet_wrap(~Veh)#+, space="free_y"
-#   labs(title="Distribution of Exercised Options",
-#        y="Percent of Options Growth from Base",
-#        x="Unmodified Contract Base")#,
-#        # fill="Termination Completion"
-)
-
-(
-ggplot(W912UM, aes(x=UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions,y=Action_Obligation.Then.Year,color=sumWon)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25)+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()+
-  #+
-#   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-facet_wrap(~Intl)#+, space="free_y"
-#   labs(title="Distribution of Exercised Options",
-#        y="Percent of Options Growth from Base",
-#        x="Unmodified Contract Base")#,
-#        # fill="Termination Completion"
-)
-
-summary(W912UM$Intl)
-W912UM$unmodWon<-factor(W912UM$unmodWon)
-summary(W912UM$Veh)
-summary(W912UM$unmodWon)
-summary(factor(W912UM$optWon))
-statsummary_discrete(c("unmodWon"), W912UM %>% filter(Intl=="Any Intl."&
-                                                        !Veh %in% c("FSS/GWAC","BPA/BOA")),
-                     value_col="Action_Obligation.Then.Year")
-
-```
-
-All of the questionable contracts take place internationally and none use BPA/BOA or FSS/GWACs. That makes sense and raises confidence, but given that the clearly USD contract categories are less common, this doesn't help in resolving the ambiguous cases. That said, Single Award IDCs appear to have most of the ambigious cases, which suggests that this might be resolvable by looking at parent IDVs in those cases. 
-### Transaction
-#### Unmodified Transactions
-```{r W912UM_transction_unmodified}
-# W912UMtrans<-read.delim(file="..\\data\\semi_clean\\W912UM_complete.txt", sep="\t")
-
-
-
-W912UMtrans<-inner_join(W912UMtrans,W912UM %>% group_by() %>%
-                          dplyr::select(CSIScontractID,
-                                        unmodWon,sumWon,optWon,
-                                        ExercisedOptions,
-                                        UnmodifiedBaseandExercisedOptionsValue,
-                                        Action_Obligation.Then.Year,
-                                        ExercisedOptions),
-                        by="CSIScontractID")
-
-W912UMtrans$ExercisedOptions[is.na(W912UMtrans$ExercisedOptions)]<-0
-W912UMtrans$baseandexercisedoptionsvalue<-as.numeric(as.character(W912UMtrans$baseandexercisedoptionsvalue))
-W912UMtrans$baseWonT<-NA
-W912UMtrans$baseWonT[W912UMtrans$baseandexercisedoptionsvalue>=W912UMtrans$obligatedamount*400&
-                        W912UMtrans$baseandexercisedoptionsvalue>10000&
-                        W912UMtrans$baseandexercisedoptionsvalue>=W912UMtrans$Action_Obligation.Then.Year*400&
-                       (W912UMtrans$obligatedamount>0 | W912UMtrans$Action_Obligation.Then.Year>0)& 
-                       W912UMtrans$modnumber=='0']<-'WON Base'
-W912UMtrans$baseWonT[is.na(W912UMtrans$baseWonT) &
-                    W912UMtrans$baseandexercisedoptionsvalue>=W912UMtrans$obligatedamount*20&
-                      W912UMtrans$baseandexercisedoptionsvalue>10000&
-                        W912UMtrans$baseandexercisedoptionsvalue>=W912UMtrans$Action_Obligation.Then.Year*20&
-                      W912UMtrans$modnumber=='0']<-'? Base'
-W912UMtrans$baseWonT[is.na(W912UMtrans$baseWonT) &
-                    (W912UMtrans$baseandexercisedoptionsvalue<W912UMtrans$obligatedamount*20|
-                        W912UMtrans$baseandexercisedoptionsvalue<W912UMtrans$Action_Obligation.Then.Year*20|
-                       W912UMtrans$baseandexercisedoptionsvalue<=10000) &
-                      W912UMtrans$modnumber=='0']<-'$ Base'
-W912UMtrans$baseWonT[W912UMtrans$modnumber!='0']<-"Not Unmodified Transaction"
-
-
-
-
-summary(factor(W912UMtrans$baseWonT))
-
-if(any(is.na(W912UMtrans$baseWonT))) stop("Unclassified baseWonT")
-# View(W912UMtrans[is.na(),])
-# write.csv(file="..\\Data\\semi_clean\\NA_baseWonT.csv",W912UMtrans[is.na(W912UMtrans$baseWonT),],row.names = FALSE)
-
-#Examining disagreements
-# View(W912UMtrans %>% filter(baseWonT=='WON Base'& unmodWon!='WON Base') )
-# View(W912UMtrans %>% filter(baseWonT!='WON Base'& unmodWon=='WON Base') )
-#Examining ?s
-# View(W912UMtrans %>% filter(baseWonT=='? Base'& obligatedamount>0) )
-# View(W912UMtrans %>% filter(baseWonT=='? Base'& obligatedamount==0) )
-  
-
-statsummary_discrete(c("unmodWon"),W912UMtrans %>% filter(modnumber=='0'),
-                     value_col="Action_Obligation.Then.Year")
-grouped_barplot(c("unmodWon"),W912UMtrans %>% filter(modnumber=='0'),
-                     value_col="Action_Obligation.Then.Year")
-
-UnmodDisagree<-W912UMtrans %>% filter(baseWonT=='WON Base'& unmodWon!='WON Base') 
-# View(W912UM %>% filter(CSIScontractID %in% UnmodDisagree$CSIScontractID))
-CSIScontractID_ceil_to_na<-W912UMtrans$CSIScontractID[W912UMtrans$baseWonT == 'WON Base'&
-                                                        !is.na(W912UMtrans$baseWonT)]
-
-
-#Spreading  the labeled values to modified entries, which helps in the next step.
-W912UMtrans$baseWonT[W912UMtrans$baseWonT=="Not Unmodified Transaction" &
-  W912UMtrans$CSIScontractID %in% CSIScontractID_ceil_to_na]<-'WON Base'
-# 
-W912UMtrans$baseWonT[W912UMtrans$baseWonT=="Not Unmodified Transaction" &
-  W912UMtrans$CSIScontractID %in% W912UMtrans$CSIScontractID[W912UMtrans$baseWonT == '? Base'&
-                                                        !is.na(W912UMtrans$baseWonT)]]<- '? Base'
-W912UMtrans$baseWonT[W912UMtrans$baseWonT=="Not Unmodified Transaction" &
-  W912UMtrans$CSIScontractID %in% W912UMtrans$CSIScontractID[W912UMtrans$baseWonT == '$ Base'&
-                                                        !is.na(W912UMtrans$baseWonT)]]<- '$ Base'
-
-summary(factor(W912UMtrans$baseWonT))
-```
-
-
-Contracts bases are marked null if:
-* Contracting office W912UM 
-* Initial transaction has a base 400 times obligations.
-* initial base 400 times total obligations.
-* Initial or total obligations are positive.
-Then it the base is set to NA and it will not be in the sample.
-
-
-#### Change Order Transactions
-```{r W912UM_transaction}
-
-W912UMtrans$optWonT<-NA
-W912UMtrans$optWonT[W912UMtrans$modnumber=='0']<-"Unmodified Transaction"
-W912UMtrans$optWonT[is.na(W912UMtrans$optWonT)&
-                      (W912UMtrans$baseandexercisedoptionsvalue==0 | 
-                       W912UMtrans$ExercisedOptions==0)
-                    &W912UMtrans$modnumber!='0']<-'0 Opt Growth'
-W912UMtrans$optWonT[is.na(W912UMtrans$optWonT)&
-                      abs(W912UMtrans$baseandexercisedoptionsvalue)>=abs(W912UMtrans$obligatedamount*400)&
-                        (abs(W912UMtrans$ExercisedOptions)+
-                           W912UMtrans$UnmodifiedBaseandExercisedOptionsValue)>=
-                       W912UMtrans$Action_Obligation.Then.Year*10&
-                      abs(W912UMtrans$ExercisedOptions)>10000
-                        # (W912UMtrans$baseandexercisedoptionsvalue>=
-                        #    W912UMtrans$UnmodifiedBaseandExercisedOptionsValue*100 |
-                       #   (!is.na(W912UMtrans$baseWonT) & W912UMtrans$baseWonT %in% c('WON Base','? Base')))&
-                       # # (W912UMtrans$obligatedamount>0 | W912UMtrans$Action_Obligation.Then.Year>0)& 
-                      # abs(W912UMtrans$baseandexercisedoptionsvalue)>0 & W912UMtrans$ExercisedOptions>0
-                    ]<-'WON Opt'
-W912UMtrans$optWonT[is.na(W912UMtrans$optWonT) &
-                        abs(W912UMtrans$baseandexercisedoptionsvalue)>=abs(W912UMtrans$obligatedamount*20)&
-                        (abs(W912UMtrans$ExercisedOptions)+
-                           W912UMtrans$UnmodifiedBaseandExercisedOptionsValue)>=
-                       W912UMtrans$Action_Obligation.Then.Year*5&
-                      abs(W912UMtrans$ExercisedOptions)
-                        # (W912UMtrans$baseandexercisedoptionsvalue>=
-                        #    W912UMtrans$UnmodifiedBaseandExercisedOptionsValue*10 |
-                        #  (!is.na(W912UMtrans$baseWonT) & W912UMtrans$baseWonT %in% c('WON Base','? Base')))&
-                      # abs(W912UMtrans$baseandexercisedoptionsvalue)>0 & W912UMtrans$ExercisedOptions>0
-                      ]<-'? Opt'
-W912UMtrans$optWonT[is.na(W912UMtrans$optWonT) &
-                        (abs(W912UMtrans$baseandexercisedoptionsvalue)<abs(W912UMtrans$obligatedamount*20)|
-                        (abs(W912UMtrans$ExercisedOptions)+
-                           W912UMtrans$UnmodifiedBaseandExercisedOptionsValue)<
-                       W912UMtrans$Action_Obligation.Then.Year*5 |
-                         abs(W912UMtrans$ExercisedOptions)<=10000)
-                        # (W912UMtrans$baseandexercisedoptionsvalue<
-                        #    W912UMtrans$UnmodifiedBaseandExercisedOptionsValue*10 |
-                        #  (!is.na(W912UMtrans$baseWonT) & W912UMtrans$baseWonT %in% c('WON Base','? Base')))&
-                      # abs(W912UMtrans$baseandexercisedoptionsvalue)>0 & W912UMtrans$ExercisedOptions>0
-                      ]<-'$ Opt'
-
-summary(factor(W912UMtrans$optWonT))
-
-if(any(is.na(W912UMtrans$optWonT))) stop("Unclassified optWonT")
-# View(W912UMtrans[is.na(W912UMtrans$optWonT),])
-write.csv(file="..\\Data\\semi_clean\\optWonT.csv",W912UMtrans %>% filter(optWonT=="WON Opt"),row.names = FALSE)
-
-```
-
-
-#### Examining International Related Vars
-```{r tran_related_vars}
-
-levels(W912UMtrans$vendorcountrycode)<-list(
-  # ""="",
-  "ABW: ARUBA"="ABW: ARUBA",
-  "JPN: JAPAN"="JPN: JAPAN",
-  "KOR: KOREA, REPUBLIC OF"=c("KOR: KOREA, REPUBLIC OF","KOR","SOUTH KOREA"),
-  "USA: UNITED STATES OF AMERICA"=c("USA: UNITED STATES OF AMERICA","UNITED STATES","USA")
-)
-
-summary(W912UMtrans$optWonT)
-ggplot(W912UMtrans %>% filter(modnumber=='0') ,aes(x=baseWonT))+geom_bar()+facet_wrap(~vendorcountrycode)
-ggplot(W912UMtrans %>% filter(modnumber!='0'),aes(x=optWonT))+geom_bar()+facet_wrap(~vendorcountrycode)
-ggplot(W912UMtrans %>% filter(modnumber!='0'),aes(x=optWonT))+geom_bar()+facet_wrap(~baseWonT)
-ggplot(W912UMtrans,aes(x=sumWon))+geom_bar()+facet_wrap(~vendorcountrycode)
-
-W912UMtrans$placeofperformancecountrycode
-ggplot(W912UMtrans %>% filter(modnumber=='0'),aes(x=unmodWon))+
-  geom_bar()+facet_wrap(~placeofmanufacture)
-ggplot(W912UMtrans %>% filter(modnumber=='0'),aes(x=unmodWon))+
-  geom_bar()+facet_wrap(~countryoforigin)
-ggplot(W912UMtrans %>% filter(modnumber=='0'),aes(x=unmodWon))+
-  geom_bar()+facet_wrap(~placeofperformancecountrycode)
-                 
-
-# View(W912UMtrans %>% filter(unmodWon %in% c("? Base","Won Base") & vendorcountrycode=="USA: UNITED STATES OF AMERICA" & modnumber=='0'))
-
-# Miscategorized<-W912UMtrans %>% filter(unmodWon %in% c("? Base","WON Base") & (
-#   vendorcountrycode=="USA: UNITED STATES OF AMERICA" |
-#     countryoforigin=="USA" |
-#     placeofperformancecountrycode=="USA")
-#   & modnumber=='0')
-
-summary(factor(W912UMtrans$optWonT))
-
-Miscategorized<-W912UMtrans %>% filter((unmodWon %in% c("? Base","WON Base")|
-                                          baseWonT %in% c("? Base","WON Base")|
-                                          optWon %in% c("? Opt","WON Opt")|
-                                          optWonT %in% c("? Opt","WON Opt")
-                                        )& (
-  
-    placeofperformancecountrycode=="USA")
-  & modnumber=='0')
-
-if(nrow(Miscategorized)>0) stop("False positive contract in Won performed in US")
-# View(W912UM %>% filter(CSIScontractID %in% Miscategorized$CSIScontractID))
-
-
-```
-
-# Cleaning
-
-
-```{r clean_setup}
-load("../data/clean/transformed_def_serv.Rdata")
-
-
-summary(def_serv$ExercisedOptions)
-summary(def_serv$p_OptGrowth)
-
-
-summary(factor(W912UMtrans$optWonT))
-summary(factor(W912UMtrans$optWon))
-summary(factor(W912UM$optWon))
-
-
-def_serv$UnmodifiedBaseandExercisedOptionsValue[
-  def_serv$CSIScontractID %in% c(W912UM$CSIScontractID[W912UM$unmodWon=="WON Base"],
-                                     W912UMtrans$CSIScontractID[W912UMtrans$baseWonT=="WON Base"])]<-NA
-def_serv$UnmodifiedBaseandExercisedOptionsValue[def_serv$UnmodifiedBaseandExercisedOptionsValue==0]<-NA
-
-def_serv$Ceil[
-  def_serv$CSIScontractID %in% c(W912UM$CSIScontractID[W912UM$unmodWon=="WON Base"],
-                                     W912UMtrans$CSIScontractID[W912UMtrans$baseWonT=="WON Base"])]<-NA
-def_serv$Ceil[def_serv$UnmodifiedBaseandExercisedOptionsValue==0]<-NA
-
-def_serv$cl_Ceil[
-  def_serv$CSIScontractID %in% c(W912UM$CSIScontractID[W912UM$unmodWon=="WON Base"],
-                                     W912UMtrans$CSIScontractID[W912UMtrans$baseWonT=="WON Base"])]<-NA
-def_serv$cl_Ceil[def_serv$UnmodifiedBaseandExercisedOptionsValue==0]<-NA
-
-
-summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
-
-
-def_serv$ExercisedOptions[def_serv$CSIScontractID %in% c(W912UM$CSIScontractID[W912UM$optWon=="WON Opt"],
-                                                       W912UMtrans$CSIScontractID[W912UMtrans$optWonT=="WON Opt"]
-                                                         )]<-NA
-def_serv$ExercisedOptions[def_serv$CSIScontractID %in% c(W912UM$CSIScontractID[W912UM$optWon=="WON Opt"],
-                                                       W912UMtrans$CSIScontractID[W912UMtrans$optWonT=="WON Opt"]
-                                                         )]<-NA
-def_serv$p_OptGrowth[def_serv$CSIScontractID %in% c(W912UM$CSIScontractID[W912UM$optWon=="WON Opt"],
-                                                       W912UMtrans$CSIScontractID[W912UMtrans$optWonT=="WON Opt"]
-                                                         )]<-NA
-def_serv$lp_OptGrowth[def_serv$CSIScontractID %in% c(W912UM$CSIScontractID[W912UM$optWon=="WON Opt"],
-                                                       W912UMtrans$CSIScontractID[W912UMtrans$optWonT=="WON Opt"]
-                                                         )]<-NA
-
-
-summary(def_serv$ExercisedOptions)
-summary(def_serv$Ceil)
-summary(def_serv$cl_Ceil)
-
-
-#The original variables for b_Term and b_ are Term and opt
-grouped_barplot("Opt", def_serv,value_col="Action_Obligation.Then.Year")
-statsummary_discrete(c("Opt"), def_serv,value_col="Action_Obligation.Then.Year")
-opt<-def_serv %>% filter(AnyUnmodifiedUnexercisedOptions==1)
-opt$q_OptGrowth<-Hmisc::cut2(opt$p_OptGrowth-1,c(1,10))
-summary(opt$q_OptGrowth)
-
-
-```
-
-## Examining Outliers
-
-```{r OptionOutlier_post}
-
-opt$Why_Outlier<-NA
-opt$Why_Outlier[is.na(opt$UnmodifiedBaseandExercisedOptionsValue)]<-"No Unmodified Base"
-opt$Why_Outlier[is.na(opt$Why_Outlier)&
-                   opt$Action_Obligation.Then.Year*2>=opt$UnmodifiedBaseandExercisedOptionsValue+
-                   opt$ExercisedOptions]<-
-  "Obligations at least half Bast+Opt"
-opt$Why_Outlier[is.na(opt$Why_Outlier)&
-                   opt$Office=="W912UM"]<-
-  "Korean Office W912UM"
-opt$Why_Outlier[is.na(opt$Why_Outlier)&
-                   opt$ExercisedOptions>=2.5e8]<-
-  ">=$250M, Insepect"
-opt$Why_Outlier[is.na(opt$Why_Outlier)&
-                   opt$p_OptGrowth-1>10]<-
-  "Other Unexplained 10x Options Growth"
-opt$Why_Outlier<-factor(opt$Why_Outlier,
-                         levels=c(
-                           "No Unmodified Base",
-                           "Obligations at least half Bast+Opt",
-                           "Later Deobligated",
-                           "Korean Office W912UM",
-                           ">=$250M, Insepect",
-                           "Other Unexplained 10x Options Growth"
-                         ))
-
-#Percent Growth
-summary(Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(1,
-                                          10,
-                                          100
-                                          )))
-summary(Hmisc::cut2(opt$p_OptGrowth-1,c(1,
-                                          10,
-                                          100
-                                          )))
-
-summary(opt$Ceil[(opt$p_OptGrowth-1)>10])
-summary(opt$Ceil[(opt$p_OptGrowth-1)>100])
-
-
-p_outlier_summary<-opt %>% filter(p_OptGrowth-1>10) %>% group_by(Why_Outlier) %>%
-  dplyr::summarise(nContract=length(ExercisedOptions),
-    SumOfExercisedOptions=sum(ExercisedOptions),
-                   MaxOfExercisedOptions=max(ExercisedOptions),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
-
-#Absolute Growth
-summary(Hmisc::cut2(opt_preclean$ExercisedOptions,c(1e3,
-                                          1e6,
-                                          1e7,
-                                          1e8,
-                                          2.5e8,
-                                          1e9,
-                                          1e10,
-                                          2e10
-                                          ))
-)
-summary(Hmisc::cut2(opt$ExercisedOptions,c(1e3,
-                                          1e6,
-                                          1e7,
-                                          1e8,
-                                          2.5e8,
-                                          1e9,
-                                          1e10,
-                                          2e10
-                                          ))
-)
-
-summary(opt$Ceil[opt$ExercisedOptions>=1e6])
-summary(opt$Ceil[opt$ExercisedOptions>=1e9])
-
-
-
-n_outlier_summary<-opt %>% filter(ExercisedOptions>2.5e8) %>% group_by(Why_Outlier) %>%
-  dplyr::summarise(nContract=length(ExercisedOptions),
-    SumOfExercisedOptions=sum(ExercisedOptions),
-                   MaxOfExercisedOptions=max(ExercisedOptions),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
-
-```
-
-The cleaning has cut in half the outliers with growth >=100,000,000, although the influence has been much smaller on the percentage growth outliers, reinforcing the choice to switch to absolute growth. The study team chose to set a threshold of Shifting the focus to all contracts with growth of at least 250 million, there are far fewer contracts that account for far more money.
-`r knitr::kable(n_outlier_summary)`
-
-After the cleaning, 2 categories remain relevant.
-
-`r knitr::kable(p_outlier_summary)`
-* Obligations at least half Bast+Opt: For this category, total obligations of the contract were at least half the value of the initial base plus options growth under exercised options. As before, this category accounts for the overwhelming majority of outlier spending but only a tiny fraction of change order growth.
-* There are `r nrow(opt %>% dplyr::filter(Why_Outlier ==">=$250M, Insepect" ))` contracts with options growth of over $250 million that account for hundreds of billions in change order growth. These merit manual inspection.
-
-## Graphs after Cleaning
-
-```{r OptionsGrowthAfterCleaning}
-
-(
-ggplot(opt, aes(x=UnmodifiedBaseandExercisedOptionsValue,y=p_OptGrowth-1)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25,shape=".")+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()+
-  #+
-  geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-  labs(title="Distribution of Exercised Options",
-       y="Percent of Options Growth from Base",
-       x="Unmodified Contract Base")#,
-       # fill="Termination Completion"
-)
-
-
-(
-ggplot(opt, aes(x=UnmodifiedBaseandExercisedOptionsValue,y=ExercisedOptions)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25,shape=".")+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()+
-  #+
-  geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-  labs(title="Distribution of Exercised Options",
-       y="Percent of Options Growth from Base",
-       x="Unmodified Contract Base")#,
-       # fill="Termination Completion"
-)
-
-(
-ggplot(opt, aes(x=UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions,y=Action_Obligation.Then.Year)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25,shape=".")+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()#+
-  #+
-#   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# # facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-#   labs(title="Distribution of Exercised Options",
-#        y="Percent of Options Growth from Base",
-#        x="Unmodified Contract Base")#,
-#        # fill="Termination Completion"
-)
-
-summary(opt$ExercisedOptions)
-
-
-
-
-(
-ggplot(opt, aes(x=ExercisedOptions,y=ExercisedOptions)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25,shape=".")+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()#+
-  #+
-#   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# # facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-#   labs(title="Distribution of Exercised Options",
-#        y="Percent of Options Growth from Base",
-#        x="Unmodified Contract Base")#,
-#        # fill="Termination Completion"
-)
-
-(
-ggplot(opt, aes(x=p_OptGrowth-1,fill=q_OptGrowth)) +
-  geom_histogram(bins=100)+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+
-  #+
-  geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-  labs(title="Distribution of Exercised Options",
-       y="Contract Count",
-       x="Percent of Options Growth from Base")#,
-       # fill="Termination Completion"
-)
-
-
-
-
-
-
-(
-ggplot(opt, aes(x=ExercisedOptions,fill=q_OptGrowth)) +
-  geom_histogram(bins=100)+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+
-  #+
-  geom_vline(xintercept = 1)#+geom_vline(xintercept = 0.1)+
-#facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
-  # labs(title="Distribution of Contracts with Obligations After Last termination",
-  #      y="Contract Count",
-  #      x="Percent of Obligations After Day of Termination",
-  #      fill="Termination Completion"
-)
-
-(
-ggplot(opt, aes(x=ExercisedOptions,fill=q_OptGrowth)) +
-  geom_histogram(bins=100)+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+
-  #+
-  geom_vline(xintercept = 1)+
-facet_wrap(~Ceil,scales="free_y")#+, space="free_y"
-#+geom_vline(xintercept = 0.1)+
-#facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
-  # labs(title="Distribution of Contracts with Obligations After Last termination",
-  #      y="Contract Count",
-  #      x="Percent of Obligations After Day of Termination",
-  #      fill="Termination Completion"
-)
-
-
-```
+## Other Unexplained x10 Inspect
+The contracts coded as 'other unexplained' above were inspected manually given their relative scarcity.  Several were found to contain suspect transactions that were later corrected, meaning these contracts should be dropped from our sample, which will occur through use of the CSIS360 repository, and the lookup table "override_lookup.Rda".
