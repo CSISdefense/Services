@@ -24,6 +24,20 @@ source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIG
 if(!exists("def_serv")) load("data/clean/transformed_def_serv.Rdata")
 ## Computational Sample Creation
 
+
+
+def_serv$p_CBre<-(def_serv$ChangeOrderBaseAndAllOptionsValue/
+                    def_serv$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)+1
+def_serv$p_CBre[
+  is.na(def_serv$p_CBre) & def_serv$b_CBre==0]<-1
+
+#lp_CBre
+contract$lp_CBre<-na_non_positive_log(contract$p_CBre)
+#ln_CBre
+contract$ln_CBre<-na_non_positive_log(contract$ChangeOrderCeilingGrowth)
+
+
+
 #Output variables
 summary(def_serv$b_Term)
 summary(def_serv$b_CBre)

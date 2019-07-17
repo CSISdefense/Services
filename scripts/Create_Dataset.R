@@ -45,7 +45,6 @@ note.text.size<-1.40
 ###Data Transformations and Summary
 
 
-
 load(file="data/clean/defense_contract_complete.RData")
 
 def_serv<-def %>% filter(PSR %in% c("Services"))
@@ -259,6 +258,8 @@ def_serv$p_OptGrowth<-def_serv$ExercisedOptions/def_serv$UnmodifiedBaseandExerci
 def_serv$lp_OptGrowth<-log(def_serv$p_OptGrowth)
 def_serv$n_OptGrowth<-def_serv$ExercisedOptions+1
 def_serv$ln_OptGrowth<-log(def_serv$n_OptGrowth)
+
+
 
 def_serv$Opt<-NA
 def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==1& def_serv$ExercisedOptions>0]<-"Option Growth"
