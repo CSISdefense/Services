@@ -538,7 +538,7 @@ In the cumulative model, per dependent variable and independent variable:
 
 ## Study Variables Alone
 
-```{r StudyVariableSummary}
+```{r StudyVariableAlone}
 
 
  # !is.na(def_serv$cl_US6_avg_sal_lag1)&
