@@ -69,13 +69,13 @@ rm(def)
 
 load("data\\clean\\fed_transformed.rdata")
 fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,Crisis)
-def_serv<-left_join(def_serv,fed,by=CSIScontractID)
+def_serv<-left_join(def_serv,fed,by="CSIScontractID")
 summary(factor(def_serv$Crisis))
 rm(fed)
 #About 25.4k inexplicably missing
 # summary(def_serv[is.na(def_serv$Crisis),])
 # 
-# debug(transform_contract)
+debug(transform_contract)
 # # head(def_serv)
 def_serv<-transform_contract(def_serv)
 #
@@ -245,7 +245,7 @@ def_serv$office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]<-def_serv$avg_of
 
 def_serv$cl_office_naics_hhi_obl <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_obl))
 def_serv$cl_office_naics_hhi_k <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_k))
-def_serv<- def_serv %>% select(-c(avg_office_naics_hhi_obl,avg_office_naics_hhi_k))
+def_serv<- def_serv %>% dplyr::select(-c(avg_office_naics_hhi_obl,avg_office_naics_hhi_k))
 
 #*********** Options Growth
 summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
