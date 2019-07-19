@@ -77,7 +77,7 @@ display(b_CBre01A)
 
 n_CBre01A <- glm(data=serv_smp,
                         ln_CBre ~ cl_US6_avg_sal_lag1Const)
-
+display(n_CBre01A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01A,n_CBre01A,type="text",
