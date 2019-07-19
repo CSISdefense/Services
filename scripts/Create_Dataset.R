@@ -68,10 +68,8 @@ rm(def)
 
 
 load("data\\clean\\fed_transformed.rdata")
-fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,PlaceCountryISO3,Crisis)
-def_serv<-left_join(def_serv,fed)
-summary(def_serv$PlaceCountryISO3)
-summary(fed$PlaceCountryISO)
+fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,Crisis)
+def_serv<-left_join(def_serv,fed,by=CSIScontractID)
 summary(factor(def_serv$Crisis))
 rm(fed)
 #About 25.4k inexplicably missing
