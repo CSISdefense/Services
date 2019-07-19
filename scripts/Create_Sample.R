@@ -24,6 +24,14 @@ source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIG
 if(!exists("def_serv")) load("data/clean/transformed_def_serv.Rdata")
 ## Computational Sample Creation
 
+
+
+def_serv$p_CBre<-(def_serv$ChangeOrderBaseAndAllOptionsValue/
+                    def_serv$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)+1
+def_serv$p_CBre[
+  is.na(def_serv$p_CBre) & def_serv$b_CBre==0]<-1
+
+
 #Output variables
 summary(def_serv$b_Term)
 summary(def_serv$b_CBre)
@@ -134,22 +142,24 @@ serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
 
 #To instead replace entries in existing sample, use  this code.
 # load(file="data/clean/def_sample.Rdata")
-# serv_smp<-update_sample_col_CSIScontractID(serv_smp,
-#                                            def_serv[complete,],
-#                                            col=NULL,
-#                                            drop_and_replace=TRUE)
-# 
-# serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
-#                                            def_serv[complete,],
-#                                            col=NULL,
-#                                            drop_and_replace=TRUE)
-# 
-# serv_opt<-update_sample_col_CSIScontractID(serv_opt,
-#                                              def_serv[complete,],
-#                                              col=NULL,
-#                                              drop_and_replace=TRUE)
+serv_smp<-update_sample_col_CSIScontractID(serv_smp,
+                                           def_serv[complete,],
+                                           col=NULL,
+                                           drop_and_replace=TRUE)
 
+serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
+                                           def_serv[complete,],
+                                           col=NULL,
+                                           drop_and_replace=TRUE)
 
+serv_opt<-update_sample_col_CSIScontractID(serv_opt,
+                                             def_serv[complete,],
+                                             col=NULL,
+                                             drop_and_replace=TRUE)
+
+# serv_smp<-serv_smp %>% dplyr::select(-c(Ceil, qCRais))
+# serv_smp1m<-serv_smp1m %>% dplyr::select(-c(Ceil, qCRais))
+# serv_opt<-serv_opt %>% dplyr::select(-c(Ceil, qCRais))
 
 
 save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt)

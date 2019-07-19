@@ -45,7 +45,6 @@ note.text.size<-1.40
 ###Data Transformations and Summary
 
 
-
 load(file="data/clean/defense_contract_complete.RData")
 
 def_serv<-def %>% filter(PSR %in% c("Services"))
@@ -69,16 +68,14 @@ rm(def)
 
 
 load("data\\clean\\fed_transformed.rdata")
-fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,PlaceCountryISO3,Crisis)
-def_serv<-left_join(def_serv,fed)
-summary(def_serv$PlaceCountryISO3)
-summary(fed$PlaceCountryISO)
+fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,Crisis)
+def_serv<-left_join(def_serv,fed,by="CSIScontractID")
 summary(factor(def_serv$Crisis))
 rm(fed)
 #About 25.4k inexplicably missing
 # summary(def_serv[is.na(def_serv$Crisis),])
 # 
-# debug(transform_contract)
+debug(transform_contract)
 # # head(def_serv)
 def_serv<-transform_contract(def_serv)
 #
@@ -248,7 +245,7 @@ def_serv$office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]<-def_serv$avg_of
 
 def_serv$cl_office_naics_hhi_obl <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_obl))
 def_serv$cl_office_naics_hhi_k <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_k))
-def_serv<- def_serv %>% select(-c(avg_office_naics_hhi_obl,avg_office_naics_hhi_k))
+def_serv<- def_serv %>% dplyr::select(-c(avg_office_naics_hhi_obl,avg_office_naics_hhi_k))
 
 #*********** Options Growth
 summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
@@ -259,6 +256,8 @@ def_serv$p_OptGrowth<-def_serv$ExercisedOptions/def_serv$UnmodifiedBaseandExerci
 def_serv$lp_OptGrowth<-log(def_serv$p_OptGrowth)
 def_serv$n_OptGrowth<-def_serv$ExercisedOptions+1
 def_serv$ln_OptGrowth<-log(def_serv$n_OptGrowth)
+
+
 
 def_serv$Opt<-NA
 def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==1& def_serv$ExercisedOptions>0]<-"Option Growth"
@@ -289,3 +288,4 @@ def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
 summary(def_serv$l_CFTE)
 
 save(file="data/clean/transformed_def_serv.Rdata",def_serv)
+
