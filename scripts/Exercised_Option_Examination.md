@@ -14,253 +14,9 @@ output:
 #Setup
 
 ```
-## Warning: replacing previous import 'Hmisc::summarize' by 'dplyr::summarize'
-## when loading 'csis360'
+## [1] 16250
 ```
 
-```
-## Warning: replacing previous import 'Hmisc::src' by 'dplyr::src' when
-## loading 'csis360'
-```
-
-```
-## Warning: replacing previous import 'dplyr::intersect' by
-## 'lubridate::intersect' when loading 'csis360'
-```
-
-```
-## Warning: replacing previous import 'dplyr::union' by 'lubridate::union'
-## when loading 'csis360'
-```
-
-```
-## Warning: replacing previous import 'dplyr::setdiff' by 'lubridate::setdiff'
-## when loading 'csis360'
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 3.5.3
-```
-
-```
-## Warning: package 'dplyr' was built under R version 3.5.3
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```
-## Warning: package 'arm' was built under R version 3.5.3
-```
-
-```
-## Loading required package: MASS
-```
-
-```
-## 
-## Attaching package: 'MASS'
-```
-
-```
-## The following object is masked from 'package:dplyr':
-## 
-##     select
-```
-
-```
-## Loading required package: Matrix
-```
-
-```
-## Loading required package: lme4
-```
-
-```
-## Warning: package 'lme4' was built under R version 3.5.3
-```
-
-```
-## 
-## arm (Version 1.10-1, built: 2018-4-12)
-```
-
-```
-## Working directory is C:/Users/JGraham/Documents/CSIS/Services/scripts
-```
-
-```
-## Warning: package 'R2WinBUGS' was built under R version 3.5.3
-```
-
-```
-## Loading required package: coda
-```
-
-```
-## Warning: package 'coda' was built under R version 3.5.3
-```
-
-```
-## 
-## Attaching package: 'coda'
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     traceplot
-```
-
-```
-## Loading required package: boot
-```
-
-```
-## 
-## Attaching package: 'boot'
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     logit
-```
-
-```
-## Warning: package 'knitr' was built under R version 3.5.3
-```
-
-```
-## Warning: package 'stargazer' was built under R version 3.5.2
-```
-
-```
-## 
-## Please cite as:
-```
-
-```
-##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
-```
-
-```
-##  R package version 5.2.2. https://CRAN.R-project.org/package=stargazer
-```
-
-```
-## Warning: package 'texreg' was built under R version 3.5.3
-```
-
-```
-## Version:  1.36.23
-## Date:     2017-03-03
-## Author:   Philip Leifeld (University of Glasgow)
-## 
-## Please cite the JSS article in your publications -- see citation("texreg").
-```
-
-```
-## 
-## Attaching package: 'texreg'
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     coefplot
-```
-
-```
-## Warning: package 'reshape2' was built under R version 3.5.3
-```
-
-```
-## Warning: package 'sjstats' was built under R version 3.5.3
-```
-
-```
-## Warning: package 'car' was built under R version 3.5.3
-```
-
-```
-## Loading required package: carData
-```
-
-```
-## Warning: package 'carData' was built under R version 3.5.2
-```
-
-```
-## 
-## Attaching package: 'car'
-```
-
-```
-## The following object is masked from 'package:boot':
-## 
-##     logit
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     logit
-```
-
-```
-## The following object is masked from 'package:dplyr':
-## 
-##     recode
-```
-
-```
-## Warning: package 'scales' was built under R version 3.5.3
-```
-
-```
-## 
-## Attaching package: 'scales'
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     rescale
-```
-
-```
-## [1] 8076
-```
-
-
-```r
-#load("../data/clean/transformed_def_serv.Rdata")
-load(file="..\\data\\semi_clean\\opt_pre_clean.rdata")
-  
-
-#File Pre-processed and Loaded
-#W912UM <- def_serv %>% filter(Office=="W912UM")
-#W912UMtrans<-read.delim(file="..\\data\\semi_clean\\W912UM_trans.csv", sep=",")
-#W912UMtrans<-remove_bom(W912UMtrans)
-#opt_preclean<-def_serv %>% filter(ExercisedOptions>1)
-#opt_preclean$q_OptGrowth<-Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(0,1e-10,1,10))
-summary(opt_preclean$q_OptGrowth)
-```
 
 ```
 ##            0.00e+00 [1.00e-10,1.00e+00) [1.00e+00,1.00e+01) 
@@ -269,20 +25,9 @@ summary(opt_preclean$q_OptGrowth)
 ##                1177                 334
 ```
 
-```r
-#save(W912UM,W912UMtrans,opt_preclean,file="..\\data\\semi_clean\\opt_pre_clean.rdata")
-
-
-summary(opt_preclean$ExercisedOptions)
-```
-
 ```
 ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 ##         2     21200     93814   1442378    535214 504504112
-```
-
-```r
-summary(opt_preclean$UnmodifiedBaseandExercisedOptionsValue)
 ```
 
 ```
@@ -293,6 +38,41 @@ summary(opt_preclean$UnmodifiedBaseandExercisedOptionsValue)
 
 
 # Before Cleaning
+## Options Growth
+
+```
+## Warning: Removed 334 rows containing missing values (geom_point).
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-1.png)<!-- -->
+
+```
+## Warning: Removed 334 rows containing missing values (geom_point).
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-2.png)<!-- -->
+
+```
+## Warning in self$trans$transform(x): NaNs produced
+```
+
+```
+## Warning: Transformation introduced infinite values in continuous y-axis
+```
+
+```
+## Warning: Removed 347 rows containing missing values (geom_point).
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-3.png)<!-- -->
+
+```
+## Warning: Removed 334 rows containing non-finite values (stat_bin).
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-4.png)<!-- -->![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-5.png)<!-- -->![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-6.png)<!-- -->
+
+## Why Outlier
 
 ```r
 summary(Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(1,
@@ -310,107 +90,26 @@ summary(Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(1,
 ```
 
 ```r
-nrow(opt_preclean %>% filter((p_OptGrowth-1)>100 & UnmodifiedBaseandExercisedOptionsValue<=0))
-```
-
-```
-## [1] 0
-```
-
-```r
-nrow(opt_preclean %>% filter((p_OptGrowth-1)>10 & (UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions)<UnmodifiedContractBaseAndAllOptionsValue.Then.Year))
-```
-
-```
-## [1] 759
-```
-
-```r
-summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>10 & opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0])
+summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>10 & opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0 &
+                            !is.na(opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0 )])
 ```
 
 ```
 ##    [0,15k) [15k,100k)  [100k,1m)   [1m,10m)  [10m,75m)     [75m+] 
-##         51        351        331        299        110         35 
-##       NA's 
-##        334
+##         51        351        331        299        110         35
 ```
 
 ```r
-summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>100 & opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0])
+summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>100 & opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0&
+                            !is.na(opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0)])
 ```
 
 ```
 ##    [0,15k) [15k,100k)  [100k,1m)   [1m,10m)  [10m,75m)     [75m+] 
-##         16          7          8         18         17         19 
-##       NA's 
-##        334
+##         16          7          8         18         17         19
 ```
 
 ```r
-opt_preclean$Why_Outlier<-NA
-opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBaseandExercisedOptionsValue<=0]<-"No Unmodified Base"
-opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$Action_Obligation.Then.Year*2>=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
-                   opt_preclean$ExercisedOptions]<-
-  "Obligations at least half Base+Opt"
-opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$Office=="W912UM"]<-
-  "Korean Office W912UM"
-opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&((opt_preclean$UnmodifiedBaseandExercisedOptionsValue + opt_preclean$ExercisedOptions) < opt_preclean$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)] <- "Base + Growth < Unmodified Ceiling"
-opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$ExercisedOptions>=2.5e8]<-
-  ">=$250M, Insepect"
-opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$p_OptGrowth-1>10]<-
-  "Other Unexplained 10x Options Growth"
-
-opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier, levels = c("No Unmodified Base", "Obligations at least half Base+Opt", "Korean Office W912UM", "Base + Growth < Unmodified Ceiling", ">=$250M, Insepect", "Other Unexplained 10x Options Growth"))
-
-summary(opt_preclean$Why_Outlier[(opt_preclean$p_OptGrowth-1)>10])
-```
-
-```
-##                   No Unmodified Base   Obligations at least half Base+Opt 
-##                                    0                                 1127 
-##                 Korean Office W912UM   Base + Growth < Unmodified Ceiling 
-##                                    0                                   30 
-##                    >=$250M, Insepect Other Unexplained 10x Options Growth 
-##                                    0                                   20 
-##                                 NA's 
-##                                  334
-```
-
-```r
-summary(opt_preclean$Why_Outlier)
-```
-
-```
-##                   No Unmodified Base   Obligations at least half Base+Opt 
-##                                    0                                50432 
-##                 Korean Office W912UM   Base + Growth < Unmodified Ceiling 
-##                                    1                                 1449 
-##                    >=$250M, Insepect Other Unexplained 10x Options Growth 
-##                                    0                                   20 
-##                                 NA's 
-##                                 1058
-```
-
-```r
-p_outlier_summary<-opt_preclean %>% filter(p_OptGrowth-1>10) %>% group_by(Why_Outlier) %>%
-  dplyr::summarise(nContract=length(ExercisedOptions),
-    SumOfExercisedOptions=sum(ExercisedOptions),
-                   MaxOfExercisedOptions=max(ExercisedOptions),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
-
-
-n_outlier_summary<-opt_preclean %>% filter(ExercisedOptions>2.5e8) %>% group_by(Why_Outlier) %>%
-  dplyr::summarise(nContract=length(ExercisedOptions),
-    SumOfExercisedOptions=sum(ExercisedOptions),
-                   MaxOfExercisedOptions=max(ExercisedOptions),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
-
-
 summary(Hmisc::cut2(opt_preclean$ExercisedOptions,c(1e3,
                                           1e6,
                                           1e7,
@@ -439,12 +138,73 @@ summary(opt_preclean$Ceil[opt_preclean$ExercisedOptions>=1e6])
 ```
 
 ```r
-summary(opt_preclean$Ceil[opt_preclean$ExercisedOptions>=1e9])
+opt_preclean$Why_Outlier<-NA
+opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBaseandExercisedOptionsValue<=0 |
+                           is.na(opt_preclean$UnmodifiedBaseandExercisedOptionsValue<=0 )]<-"No Unmodified Base"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                   opt_preclean$Action_Obligation.Then.Year*2>=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
+                   opt_preclean$ExercisedOptions]<-
+  "Obligations at least half Base+Opt"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                   opt_preclean$Office=="W912UM"]<-
+  "Korean Office W912UM"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&((opt_preclean$UnmodifiedBaseandExercisedOptionsValue + opt_preclean$ExercisedOptions) < opt_preclean$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)] <- "Base + Growth < Unmodified Ceiling"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                   opt_preclean$ExercisedOptions>=2.5e8]<-
+  ">=$250M, Inspect"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                   opt_preclean$p_OptGrowth-1>=10]<-
+  "Other Unexplained 10x Options Growth"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                   opt_preclean$p_OptGrowth-1<=5]<-
+  "<= 5x Options Growth"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                   opt_preclean$p_OptGrowth-1>=5 & opt_preclean$p_OptGrowth-1<10]<-
+  "5x < Options Growth <=10x"
+opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier, 
+                                 levels = c("No Unmodified Base", "Obligations at least half Base+Opt", "Korean Office W912UM",
+                                            "Base + Growth < Unmodified Ceiling", "<= 5x Options Growth",
+                                            "5x < Options Growth <=10x",">=$250M, Insepect",
+                                            "Other Unexplained 10x Options Growth"))
+
+summary(opt_preclean$Why_Outlier)
 ```
 
 ```
-##    [0,15k) [15k,100k)  [100k,1m)   [1m,10m)  [10m,75m)     [75m+] 
-##          0          0          0          0          0          0
+##                   No Unmodified Base   Obligations at least half Base+Opt 
+##                                  334                                50432 
+##                 Korean Office W912UM   Base + Growth < Unmodified Ceiling 
+##                                    0                                 1449 
+##                 <= 5x Options Growth            5x < Options Growth <=10x 
+##                                  691                                   33 
+##                    >=$250M, Insepect Other Unexplained 10x Options Growth 
+##                                    0                                   21
+```
+
+```r
+p_outlier_summary<-opt_preclean %>% filter(p_OptGrowth-1>10) %>% group_by(Why_Outlier) %>%
+  dplyr::summarise(nContract=length(ExercisedOptions),
+    SumOfExercisedOptions=sum(ExercisedOptions),
+                   MaxOfExercisedOptions=max(ExercisedOptions),
+                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
+
+
+n_outlier_summary<-opt_preclean %>% filter(ExercisedOptions>2.5e8) %>% group_by(Why_Outlier) %>%
+  dplyr::summarise(nContract=length(ExercisedOptions),
+    SumOfExercisedOptions=sum(ExercisedOptions),
+                   MaxOfExercisedOptions=max(ExercisedOptions),
+                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
+
+nrow(opt_preclean[is.na(opt_preclean$Why_Outlier),])
+```
+
+```
+## Warning: Factor `qHighCeiling` contains implicit NA, consider using
+## `forcats::fct_explicit_na`
+```
+
+```
+## [1] 0
 ```
 
 ```r
@@ -469,7 +229,7 @@ Other Unexplained 10x Options Growth           20                31106344       
 
 This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  0.
 
-Shifting the focus to all contracts with absolute growth of at least 250 million, there are far fewer contracts that account for far less money.
+Shifting the focus to all contracts with absolute growth of at least 250 million, there are far fewer contracts and they all have spent at least half their base+exercised growth value.
 
 
 Why_Outlier                           nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
@@ -478,150 +238,7 @@ Obligations at least half Base+Opt           11              3763783860         
 
 
 
-## Options Growth
 
-```r
-(
-ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue,y=p_OptGrowth-1)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25,shape=".")+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()+
-  #+
-  geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-  labs(title="Distribution of Exercised Options",
-       y="Percent of Options Growth from Base",
-       x="Unmodified Contract Base")#,
-       # fill="Termination Completion"
-)
-```
-
-```
-## Warning: Removed 334 rows containing missing values (geom_point).
-```
-
-![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-1.png)<!-- -->
-
-```r
-(
-ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue,y=ExercisedOptions)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25,shape=".")+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()+
-  #+
-  geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-  labs(title="Distribution of Exercised Options",
-       y="Absolute Options Growth from Base",
-       x="Unmodified Contract Base")#,
-       # fill="Termination Completion"
-)
-```
-
-```
-## Warning: Removed 334 rows containing missing values (geom_point).
-```
-
-![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-2.png)<!-- -->
-
-```r
-(
-ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions,y=Action_Obligation.Then.Year)) +#,color=q_OptGrowth
-  geom_point(alpha=0.25,shape=".")+
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+scale_y_log10()+
-  #+
-#   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# # facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-   labs(title="Distribution of Exercised Options",
-#        y="Percent of Options Growth from Base",
-        x="Unmodified Contract Base + Exercised Options")#,
-#        # fill="Termination Completion"
-)
-```
-
-```
-## Warning in self$trans$transform(x): NaNs produced
-```
-
-```
-## Warning: Transformation introduced infinite values in continuous y-axis
-```
-
-```
-## Warning: Removed 347 rows containing missing values (geom_point).
-```
-
-![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-3.png)<!-- -->
-
-```r
-summary(opt_preclean$ExercisedOptions)
-```
-
-```
-##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-##         2     21200     93814   1442378    535214 504504112
-```
-
-```r
-(
-ggplot(opt_preclean, aes(x=p_OptGrowth-1,fill=q_OptGrowth)) +
-  geom_histogram(bins=100)+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+
-  #+
-  geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-  labs(title="Distribution of Exercised Options",
-       y="Contract Count",
-       x="Percent of Options Growth from Base")#,
-       # fill="Termination Completion"
-)
-```
-
-```
-## Warning: Removed 334 rows containing non-finite values (stat_bin).
-```
-
-![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-4.png)<!-- -->
-
-```r
-(
-ggplot(opt_preclean, aes(x=ExercisedOptions,fill=q_OptGrowth)) +
-  geom_histogram(bins=100)+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+
-  #+
-  geom_vline(xintercept = 1)+#+geom_vline(xintercept = 0.1)+
-#facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
-   labs(title="Distribution of Contracts by Exercised Options Growth")#,
-  #      y="Contract Count",
-  #      x="Percent of Obligations After Day of Termination",
-  #      fill="Termination Completion"
-)
-```
-
-![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-5.png)<!-- -->
-
-```r
-(
-ggplot(opt_preclean, aes(x=ExercisedOptions,fill=q_OptGrowth)) +
-  geom_histogram(bins=100)+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_log10()+
-  #+
-  geom_vline(xintercept = 1)+
-facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
-#+geom_vline(xintercept = 0.1)+
-#facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
-   labs(title="Distribution of Contracts by Exercised Options Growth, Grouped by Ceiling")#,
-  #      y="Contract Count",
-  #      x="Percent of Obligations After Day of Termination",
-  #      fill="Termination Completion"
-)
-```
-
-![](Exercised_Option_Examination_files/figure-html/OptionsGrowthGraphs-6.png)<!-- -->
 
 ## >250 Inspect
 
