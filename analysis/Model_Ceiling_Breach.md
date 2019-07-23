@@ -12,232 +12,6 @@ Modeling Likelihood or size of Ceiling Breach
 
 #Setup
 
-```
-## Warning: replacing previous import 'Hmisc::summarize' by 'dplyr::summarize'
-## when loading 'csis360'
-```
-
-```
-## Warning: replacing previous import 'Hmisc::src' by 'dplyr::src' when
-## loading 'csis360'
-```
-
-```
-## Warning: replacing previous import 'dplyr::intersect' by
-## 'lubridate::intersect' when loading 'csis360'
-```
-
-```
-## Warning: replacing previous import 'dplyr::union' by 'lubridate::union'
-## when loading 'csis360'
-```
-
-```
-## Warning: replacing previous import 'dplyr::setdiff' by 'lubridate::setdiff'
-## when loading 'csis360'
-```
-
-```
-## Loading required package: MASS
-```
-
-```
-## Loading required package: Matrix
-```
-
-```
-## Loading required package: lme4
-```
-
-```
-## 
-## arm (Version 1.10-1, built: 2018-4-12)
-```
-
-```
-## Working directory is C:/Users/gsand/Repositories/Services/analysis
-```
-
-```
-## Loading required package: coda
-```
-
-```
-## 
-## Attaching package: 'coda'
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     traceplot
-```
-
-```
-## Loading required package: boot
-```
-
-```
-## 
-## Attaching package: 'boot'
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     logit
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following object is masked from 'package:MASS':
-## 
-##     select
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```
-## Loading required package: lattice
-```
-
-```
-## 
-## Attaching package: 'lattice'
-```
-
-```
-## The following object is masked from 'package:boot':
-## 
-##     melanoma
-```
-
-```
-## Loading required package: survival
-```
-
-```
-## 
-## Attaching package: 'survival'
-```
-
-```
-## The following object is masked from 'package:boot':
-## 
-##     aml
-```
-
-```
-## Loading required package: Formula
-```
-
-```
-## 
-## Attaching package: 'Hmisc'
-```
-
-```
-## The following objects are masked from 'package:dplyr':
-## 
-##     src, summarize
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     format.pval, units
-```
-
-```
-## 
-## Please cite as:
-```
-
-```
-##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
-```
-
-```
-##  R package version 5.2.2. https://CRAN.R-project.org/package=stargazer
-```
-
-```
-## dummies-1.5.6 provided by Decision Patterns
-```
-
-```
-## 
-## Attaching package: 'dummies'
-```
-
-```
-## The following object is masked from 'package:lme4':
-## 
-##     dummy
-```
-
-```
-## 
-## Attaching package: 'sjstats'
-```
-
-```
-## The following object is masked from 'package:Hmisc':
-## 
-##     deff
-```
-
-```
-## Loading required package: carData
-```
-
-```
-## 
-## Attaching package: 'car'
-```
-
-```
-## The following object is masked from 'package:dplyr':
-## 
-##     recode
-```
-
-```
-## The following object is masked from 'package:boot':
-## 
-##     logit
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     logit
-```
-
-```
-## 
-## Attaching package: 'scales'
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     rescale
-```
 
 
 
@@ -249,7 +23,6 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 load(file="..//data//clean//def_sample.Rdata")
 ```
 
-
 The sample is created by including the entirity of the ARRA and Disaster datasets, as well as 100,000 records each from the OCO datase and another 100,000 from all remaining records.
 
 #Study Variables
@@ -258,7 +31,7 @@ The sample is created by including the entirity of the ARRA and Disaster dataset
 Expectation: Higher service complexity would make work more demanding and thus raises the risks of negative contracting outcomes, namely the likelihood of cost ceiling breaches and terminations increases and the likelihood exercised options decraeses.
 
 ### 01A NAICS Salary
-Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS salary increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases) and exercised options decreases (increases).
+Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS salary increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases) and exercised options decreases (increases).  We also then expect that higher average NAICS salaries (lower) will be correlated with ceiling breaches larger (smaller) in absolute size.
 
 
 ```r
@@ -315,8 +88,22 @@ display(b_CBre01A)
 ```r
 n_CBre01A <- glm(data=serv_smp,
                         ln_CBre ~ cl_US6_avg_sal_lag1Const)
+display(n_CBre01A)
+```
 
+```
+## glm(formula = ln_CBre ~ cl_US6_avg_sal_lag1Const, data = serv_smp)
+##                          coef.est coef.se
+## (Intercept)              9.21     0.02   
+## cl_US6_avg_sal_lag1Const 0.78     0.06   
+## ---
+##   n = 15018, k = 2
+##   residual deviance = 113042.1, null deviance = 114568.9 (difference = 1526.7)
+##   overdispersion parameter = 7.5
+##   residual sd is sqrt(overdispersion) = 2.74
+```
 
+```r
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01A,n_CBre01A,type="text",
                        digits=2)
@@ -345,11 +132,10 @@ stargazer::stargazer(b_CBre01A,n_CBre01A,type="text",
 ## Note:                     *p<0.1; **p<0.05; ***p<0.01
 ```
 
-Individually, except for terminations (which is not significant), expectations are matched for ceiing breaches and exercised options, as higher average salaries estimate a higher risk of ceiling breaches and lower possibility of exercised options. 
-
+Individually, expectations are matched for ceiing breaches, as higher average salaries estimate a higher risk of ceiling breaches.  In our GLM, we find an analogous relationship to our logit model, with higher salaries correlated with ceiling breaches of larger magnitudes.
 
 ### 01B Invoice Rate
-Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employees who are supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases), and exercised options decrease (increase).
+Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employees who are supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases), and exercised options decrease (increase).  Likewise, we expect a higher invoice rate (lower) to be associated with ceiling breaches larger (smaller) in absolute magnitude.
 
 
 ```r
@@ -457,12 +243,11 @@ summary_residual_compare(b_CBre01A,b_CBre01B, skip_vif = TRUE)
 ## NULL
 ```
 
-When considered alone, expectations are matched for ceiling breaches and exercised options, as higher invoice rate estimates a higher risk of ceiling breaches and lower possibility of exercised options. No significant relationship between invoice rate and terminations.
-
+When considered alone, expectations are matched for ceiling breaches, as higher invoice rate estimates a higher risk of ceiling breaches and lower possibility of exercised options. Similarly, higher invoice rates are correlated with larger ceiling breaches, matching our expectations.
 
 
 ### 01C Service Complexity
-Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), the higher risk of ceiling breaches and terminations and the less exercised options there would be. Also we expect the result of combined model would be the same as individual models.
+Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), the higher risk of ceiling breaches and terminations and the less exercised options there would be. Also, we expect the result of combined model would be the same as individual models. Again, we expect higher levels of complexity to be correlated with larger ceiling breaches.
 
  
 
@@ -590,8 +375,7 @@ stargazer::stargazer(b_CBre01A,b_CBre01B,b_CBre01C,
 
 Both average salary and invoiced rate have a not inconsiderable VIF but one well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
 
-Both individually and pair-wise, higher average salary and invoiced rate estimate higher possibility of cost ceiling breaches and lower likelihood of exercised options as expected. But the termination expectation is not supported or not significant for two measures of service complexity resepctively.
-
+Both individually and pair-wise, higher average salary and invoiced rate estimate higher possibility of cost ceiling breaches.  Likewise, both individually and pair-wise, higher average salary and invoiced rate are correlated with larger ceiling breaches.
 
 
 ## Office Capacity
@@ -691,7 +475,7 @@ stargazer::stargazer(b_CBre01C,b_CBre02A,
 ## Note:                                    *p<0.1; **p<0.05; ***p<0.01
 ```
 
-When considering PBSC alone, none of the expected sign was found in ceiling breaches, terminations or exercised options.
+When considering PBSC alone, our logit model finds our expected relationship: higher levels of performance-based services contracting is associated with a lower likelihood of a ceiling breach occurring. However, our GLM demonstrates that higher levels of performance-based contracting are correlated with larger ceiling breaches (contrasting with our expectation), undermining this result (at least in part).  Given that the study team has more confidence in modelling ceiling breaches in dollar terms, it may be wise to disregard the logit result.
 
 
 ### 02B: No.Office PSC History
