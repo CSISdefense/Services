@@ -77,7 +77,7 @@ display(n_Opt_01A)
 
 p_Opt_01A <- glm(data=serv_opt,
                         lp_OptGrowth ~ cl_US6_avg_sal_lag1Const)
-
+display(p_Opt_01A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(n_Opt_01A,p_Opt_01A,type="text",
@@ -1685,7 +1685,7 @@ When considering past office volume alone, the relationship was as expected with
 
 
 
-#### 12B: Detailed Industry Diveristy
+#### 12B: Detailed Industry Diversity
 
 Expectation: More diverse industries of contracts contracting offices handle, the higher complexity they deal with, which would increase the likelihood of having cost ceiling breaches and terminations, and decreasing the likelihood of having options exercised.
 
