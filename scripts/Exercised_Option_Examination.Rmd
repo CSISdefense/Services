@@ -210,7 +210,7 @@ opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
 opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier, 
                                  levels = c("No Unmodified Base", "Obligations at least half Base+Opt", "Korean Office W912UM",
                                             "Base + Growth < Unmodified Ceiling", "<= 5x Options Growth",
-                                            "5x < Options Growth <=10x",">=$250M, Insepect",
+                                            "5x < Options Growth <=10x",">=$250M, Inspect",
                                             "Other Unexplained 10x Options Growth"))
 
 summary(opt_preclean$Why_Outlier)
@@ -231,8 +231,8 @@ n_outlier_summary<-opt_preclean %>% filter(ExercisedOptions>2.5e8) %>% group_by(
 
 nrow(opt_preclean[is.na(opt_preclean$Why_Outlier),])
 
-write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
-write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
 ```
 Examining cases of large options growth, `r nrow(opt_preclean %>% filter(p_OptGrowth-1>10))` contracts experienced greater than 10 fold growth. An increase of that size strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
 
@@ -242,7 +242,7 @@ The study team broke down the outliers into three categories:
 * Obligations at least half Base+Opt: For this category, total obligations of the contract were at least half the value of the initial base plus options growth under exercised options. These contracts have had spending that massively exceeded their original base, so the growth in absolute terrms seems plausible. This category accounts for the majority of outlier spending and an overwhelming majority of all exercised options growth amongst outliers (but less than 10% of total exercised options growth when compared to the full sample).
 * Finally a few score contrats have unexplained growth, but remain below the $10M threshold. The quantity and magnitude of these contracts is not sufficient to risk the overall model.
 
-This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  `r sum(opt_preclean$Action_Obligation.Then.Year[opt_preclean$Why_Outlier ==">=$250M, Insepect"& (opt_preclean$p_OptGrowth-1)>10] ,na.rm=TRUE)`.
+This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  `r sum(opt_preclean$Action_Obligation.Then.Year[opt_preclean$Why_Outlier ==">=$250M, Inspect"& (opt_preclean$p_OptGrowth-1)>10] ,na.rm=TRUE)`.
 
 Shifting the focus to all contracts with absolute growth of at least 250 million, there are far fewer contracts and they all have spent at least half their base+exercised growth value.
 `r knitr::kable(n_outlier_summary)`
@@ -252,7 +252,7 @@ Shifting the focus to all contracts with absolute growth of at least 250 million
 ## >250 Inspect
 ```{r gt250m, echo=FALSE}
 
-if(nrow(opt_preclean %>% filter(Why_Outlier==">=$250M, Insepect"))>0) stop("Contracts to inspect found")
+if(nrow(opt_preclean %>% filter(Why_Outlier==">=$250M, Inspect"))>0) stop("Contracts to inspect found")
 
 ```
 No contracts with unexplained >=\$250M absolute growth exist in the dataset.  4 such contracts demonstrate absolute growth >=\$250M, but are coded instead as 'Obligations at least half Base+Opt.'  Manual inspection of these makes clear that the growth identified is legitimate, and should be included in the dataset.
@@ -265,7 +265,7 @@ The contracts coded as 'other unexplained' above were inspected manually given t
 
 
 inspect10x<-opt_preclean %>% filter(Why_Outlier=="Other Unexplained 10x Options Growth")
-
+colnames(inspect10x)[colnames(inspect10x)=="UnmodifiedBaseandExercisedOptionsValue"]<-"Base"
 
 override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/CSIS_contract_inspection.csv", sep=",") 
 inspect10x<-left_join(inspect10x,override,by="CSIScontractID")
@@ -278,23 +278,46 @@ if(any(is.na(inspect10xtrans$CSIS_inspection))) stop("Transaction without CSIS_i
 
 
 
-pk_inspect_summary<-inspect10x %>% group_by(CSIS_inspection) %>%
-  dplyr::summarise(nContract=length(ExercisedOptions),
-    SumOfExercisedOptions=sum(ExercisedOptions),
-                   MaxOfExercisedOptions=max(ExercisedOptions),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
-
-knitr::kable(pk_inspect_summary,format.args = list(big.mark=","))
-pt_inspect_summary<-inspect10xtrans %>% group_by(CSIS_inspection) %>%
-  dplyr::summarise(nContract=length(unique(CSIScontractID)),
-                   nTransaction=length(CSIStransactionID),
+transk<-inspect10xtrans %>% group_by(CSIScontractID) %>%
+  dplyr::summarise(nTransaction=length(CSIStransactionID),
     SumOfBaseAndExercisedOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
     GrossBaseAndExercisedOptions=sum(ifelse(baseandexercisedoptionsvalue>0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-    NegativeBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue<0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-                   MaxOfBaseAndExercisedlOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
-    MinOfBaseAndExercisedOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
-                   ObligatedAmount=sum(obligatedamount,na.rm=TRUE))
+    RescindedOptions=sum(ifelse(baseandexercisedoptionsvalue<0 & reasonformodification %in% 
+                                      c('B','C','G','M'),baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    CloseOptionReduction=sum(ifelse(baseandexercisedoptionsvalue<0 & reasonformodification %in% c('K','E','F','X'),
+                                    baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    OtherOptionReduction=sum(ifelse(baseandexercisedoptionsvalue<0 & !reasonformodification %in% c('B','C','G','M','K','E','F','X'),
+                                    baseandexercisedoptionsvalue,0),na.rm=TRUE),
+                   Deobligations=sum(ifelse(obligatedamount<0,obligatedamount,0),na.rm=TRUE))
 
-knitr::kable(pt_inspect_summary,format.args = list(big.mark=","))
+
+inspect10x<-left_join(inspect10x,transk, by="CSIScontractID")
+rm(transk)
+
+p_inspect_summary<-inspect10x %>% group_by(CSIS_inspection) %>%
+  dplyr::summarise(nContract=length(CSIScontractID),
+                   # nTransaction=sum(nTransaction),
+                   Base=sum(Base),
+    ExercisedOptions=sum(ExercisedOptions),
+    RescindedOptions=sum(RescindedOptions),
+    CloseOptionReduction=sum(CloseOptionReduction),
+    OtherOptionReduction=sum(OtherOptionReduction),
+    Action_Obligation.Then.Year=sum(Action_Obligation.Then.Year,na.rm=TRUE),
+    Deobligations=sum(Deobligations,na.rm=TRUE)  )
+
+knitr::kable(p_inspect_summary,format.args = list(big.mark=","))
+
+knitr::kable(inspect10x%>% group_by(CSIScontractID) %>% dplyr::select(CSIScontractID,
+                                         Base,
+                                         ExercisedOptions,
+                                         RescindedOptions,
+                                         CloseOptionReduction,
+                                         OtherOptionReduction,
+                                         # Action_Obligation.Then.Year,
+                                         # Deobligations
+                                         CSIS_inspection
+                                         ),format.args = list(big.mark=","))
+
+
 
 ```

@@ -32,6 +32,7 @@ BEGIN
 		,AnyUnmodifiedUnexercisedOptionsWhy
 		,SumOfUnmodifiedbaseandexercisedoptionsvalue as UnmodifiedBaseandExercisedOptionsValue
 		,ExercisedOptions
+		,RescindedOptions
    --   ,cc.[TypeOfContractPricing]
    --   ,[UnmodifiedTypeOfContractPricing]
 	  --,IsLabeledPricing
@@ -78,6 +79,7 @@ where a.IsDefense=@IsDefense
 			,AnyUnmodifiedUnexercisedOptions
 		,AnyUnmodifiedUnexercisedOptionsWhy
 		,ExercisedOptions
+		,RescindedOptions
    --   ,cc.[TypeOfContractPricing]
    --   ,[UnmodifiedTypeOfContractPricing]
    --   ,[ObligatedAmountIsFixedPrice]

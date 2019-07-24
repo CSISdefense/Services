@@ -164,7 +164,7 @@ opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
 opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier, 
                                  levels = c("No Unmodified Base", "Obligations at least half Base+Opt", "Korean Office W912UM",
                                             "Base + Growth < Unmodified Ceiling", "<= 5x Options Growth",
-                                            "5x < Options Growth <=10x",">=$250M, Insepect",
+                                            "5x < Options Growth <=10x",">=$250M, Inspect",
                                             "Other Unexplained 10x Options Growth"))
 
 summary(opt_preclean$Why_Outlier)
@@ -177,7 +177,7 @@ summary(opt_preclean$Why_Outlier)
 ##                                    0                                 1449 
 ##                 <= 5x Options Growth            5x < Options Growth <=10x 
 ##                                  691                                   33 
-##                    >=$250M, Insepect Other Unexplained 10x Options Growth 
+##                     >=$250M, Inspect Other Unexplained 10x Options Growth 
 ##                                    0                                   21
 ```
 
@@ -208,8 +208,8 @@ nrow(opt_preclean[is.na(opt_preclean$Why_Outlier),])
 ```
 
 ```r
-write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
-write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8 & Why_Outlier != "Base + Growth < Unmodified Ceiling"),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
 ```
 Examining cases of large options growth, 1177 contracts experienced greater than 10 fold growth. An increase of that size strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
 
@@ -251,7 +251,7 @@ The contracts coded as 'other unexplained' above were inspected manually given t
 
 ```r
 inspect10x<-opt_preclean %>% filter(Why_Outlier=="Other Unexplained 10x Options Growth")
-
+colnames(inspect10x)[colnames(inspect10x)=="UnmodifiedBaseandExercisedOptionsValue"]<-"Base"
 
 override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/CSIS_contract_inspection.csv", sep=",") 
 inspect10x<-left_join(inspect10x,override,by="CSIScontractID")
@@ -264,43 +264,80 @@ if(any(is.na(inspect10xtrans$CSIS_inspection))) stop("Transaction without CSIS_i
 
 
 
-pk_inspect_summary<-inspect10x %>% group_by(CSIS_inspection) %>%
-  dplyr::summarise(nContract=length(ExercisedOptions),
-    SumOfExercisedOptions=sum(ExercisedOptions),
-                   MaxOfExercisedOptions=max(ExercisedOptions),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
-
-knitr::kable(pk_inspect_summary,format.args = list(big.mark=","))
-```
-
-
-
-CSIS_inspection                      nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
-----------------------------------  ----------  ----------------------  ----------------------  ---------------------------------
-Apparent Error: Uncorrected                  1               1,569,174               1,569,174                          372,113.5
-Error: Corrected Administratively            1               1,015,140               1,015,140                          260,582.0
-Error: Corrected Other                       3               9,591,793               4,561,048                        2,492,986.8
-Passed Examination                          16              18,935,237               8,087,198                        7,818,253.3
-
-```r
-pt_inspect_summary<-inspect10xtrans %>% group_by(CSIS_inspection) %>%
-  dplyr::summarise(nContract=length(unique(CSIScontractID)),
-                   nTransaction=length(CSIStransactionID),
+transk<-inspect10xtrans %>% group_by(CSIScontractID) %>%
+  dplyr::summarise(nTransaction=length(CSIStransactionID),
     SumOfBaseAndExercisedOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
     GrossBaseAndExercisedOptions=sum(ifelse(baseandexercisedoptionsvalue>0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-    NegativeBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue<0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-                   MaxOfBaseAndExercisedlOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
-    MinOfBaseAndExercisedOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
-                   ObligatedAmount=sum(obligatedamount,na.rm=TRUE))
+    RescindedOptions=sum(ifelse(baseandexercisedoptionsvalue<0 & reasonformodification %in% 
+                                      c('B','C','G','M'),baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    CloseOptionReduction=sum(ifelse(baseandexercisedoptionsvalue<0 & reasonformodification %in% c('K','E','F','X'),
+                                    baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    OtherOptionReduction=sum(ifelse(baseandexercisedoptionsvalue<0 & !reasonformodification %in% c('B','C','G','M','K','E','F','X'),
+                                    baseandexercisedoptionsvalue,0),na.rm=TRUE),
+                   Deobligations=sum(ifelse(obligatedamount<0,obligatedamount,0),na.rm=TRUE))
 
-knitr::kable(pt_inspect_summary,format.args = list(big.mark=","))
+
+inspect10x<-left_join(inspect10x,transk, by="CSIScontractID")
+rm(transk)
+
+p_inspect_summary<-inspect10x %>% group_by(CSIS_inspection) %>%
+  dplyr::summarise(nContract=length(CSIScontractID),
+                   # nTransaction=sum(nTransaction),
+                   Base=sum(Base),
+    ExercisedOptions=sum(ExercisedOptions),
+    RescindedOptions=sum(RescindedOptions),
+    CloseOptionReduction=sum(CloseOptionReduction),
+    OtherOptionReduction=sum(OtherOptionReduction),
+    Action_Obligation.Then.Year=sum(Action_Obligation.Then.Year,na.rm=TRUE),
+    Deobligations=sum(Deobligations,na.rm=TRUE)  )
+
+knitr::kable(p_inspect_summary,format.args = list(big.mark=","))
 ```
 
 
 
-CSIS_inspection                      nContract   nTransaction   SumOfBaseAndExercisedOptions   GrossBaseAndExercisedOptions   NegativeBaseAndAllOptions   MaxOfBaseAndExercisedlOptions   MinOfBaseAndExercisedOptions   ObligatedAmount
-----------------------------------  ----------  -------------  -----------------------------  -----------------------------  --------------------------  ------------------------------  -----------------------------  ----------------
-Apparent Error: Uncorrected                  1             13                      372,113.5                      1,877,649                -1,505,535.0                       1,569,174                     -1,504,375         372,113.5
-Error: Corrected Administratively            1              5                      260,582.0                      1,186,249                  -925,667.1                       1,015,140                       -904,726         260,582.0
-Error: Corrected Other                       3             21                    2,492,986.9                     10,136,405                -7,643,418.1                       4,561,048                     -4,153,462       2,492,986.8
-Passed Examination                          16            195                   18,831,933.8                     22,517,758                -3,685,823.8                       2,342,716                     -1,032,130       7,818,253.3
+CSIS_inspection                      nContract        Base   ExercisedOptions   RescindedOptions   CloseOptionReduction   OtherOptionReduction   Action_Obligation.Then.Year   Deobligations
+----------------------------------  ----------  ----------  -----------------  -----------------  ---------------------  ---------------------  ----------------------------  --------------
+Apparent Error: Uncorrected                  1    40,389.0          1,569,174                0.0                      0          -1,505,535.00                     372,113.5   -1,505,535.00
+Error: Corrected Administratively            1    79,715.0          1,015,140         -925,667.1                      0                   0.00                     260,582.0      -20,941.14
+Error: Corrected Other                       3   369,612.0          9,591,793       -6,368,383.0             -1,275,035                   0.00                   2,492,986.8   -4,364,911.18
+Passed Examination                          16   983,975.3         18,935,237       -1,659,749.8             -1,953,254             -72,820.26                   7,818,253.3   -3,864,359.85
+
+```r
+knitr::kable(inspect10x%>% group_by(CSIScontractID) %>% dplyr::select(CSIScontractID,
+                                         Base,
+                                         ExercisedOptions,
+                                         RescindedOptions,
+                                         CloseOptionReduction,
+                                         OtherOptionReduction,
+                                         # Action_Obligation.Then.Year,
+                                         # Deobligations
+                                         CSIS_inspection
+                                         ),format.args = list(big.mark=","))
+```
+
+
+
+ CSIScontractID         Base   ExercisedOptions   RescindedOptions   CloseOptionReduction   OtherOptionReduction  CSIS_inspection                   
+---------------  -----------  -----------------  -----------------  ---------------------  ---------------------  ----------------------------------
+     10,060,591   200,000.00       3,990,652.50         -83,234.43             -23,680.00                   0.00  Passed Examination                
+      2,893,470    79,715.00       1,015,140.00        -925,667.14                   0.00                   0.00  Error: Corrected Administratively 
+     60,378,093    16,642.50         190,779.79          -1,200.00                   0.00                   0.00  Passed Examination                
+     18,192,191     1,701.18          22,768.68               0.00                   0.00             -19,903.77  Passed Examination                
+     18,504,240   164,093.00       4,561,048.00      -1,706,962.00          -1,275,035.12                   0.00  Error: Corrected Other            
+     24,685,121   155,119.00       4,292,441.00      -4,153,462.00                   0.00                   0.00  Error: Corrected Other            
+      8,665,643    53,451.00         855,216.00        -231,621.00            -260,347.40             -52,916.49  Passed Examination                
+     25,049,082     1,920.00         348,518.40               0.00                   0.00                   0.00  Passed Examination                
+      1,286,145     5,920.00          67,440.00               0.00                   0.00                   0.00  Passed Examination                
+      2,362,527     4,000.00          45,000.00               0.00             -40,745.56                   0.00  Passed Examination                
+     27,649,914    51,700.00         529,920.00        -320,604.62            -506,471.05                   0.00  Passed Examination                
+      8,666,052    16,575.00         298,350.00               0.00                   0.00                   0.00  Passed Examination                
+      8,114,536     6,866.00          81,842.00               0.00             -78,477.40                   0.00  Passed Examination                
+      3,229,787       500.00           5,000.00               0.00              -6,250.00                   0.00  Passed Examination                
+      8,413,869    50,400.00         738,304.00        -507,959.00                   0.00                   0.00  Error: Corrected Other            
+     24,799,263    56,945.00         906,043.00               0.00          -1,032,130.39                   0.00  Passed Examination                
+      9,991,108   414,424.59       8,087,198.12        -583,219.74                   0.00                   0.00  Passed Examination                
+     61,815,629     2,208.00          47,840.00         -23,920.00              -5,152.00                   0.00  Passed Examination                
+      2,970,558   104,342.00       2,728,149.00               0.00                   0.00                   0.00  Passed Examination                
+      8,413,827    46,780.00         730,520.00        -415,950.00                   0.00                   0.00  Passed Examination                
+     24,798,438    40,389.00       1,569,174.00               0.00                   0.00          -1,505,535.00  Apparent Error: Uncorrected       

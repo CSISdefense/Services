@@ -284,7 +284,7 @@ opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&amp;
 opt_preclean$Why_Outlier&lt;-factor(opt_preclean$Why_Outlier, 
                                  levels = c(&quot;No Unmodified Base&quot;, &quot;Obligations at least half Base+Opt&quot;, &quot;Korean Office W912UM&quot;,
                                             &quot;Base + Growth &lt; Unmodified Ceiling&quot;, &quot;&lt;= 5x Options Growth&quot;,
-                                            &quot;5x &lt; Options Growth &lt;=10x&quot;,&quot;&gt;=$250M, Insepect&quot;,
+                                            &quot;5x &lt; Options Growth &lt;=10x&quot;,&quot;&gt;=$250M, Inspect&quot;,
                                             &quot;Other Unexplained 10x Options Growth&quot;))
 
 summary(opt_preclean$Why_Outlier)</code></pre>
@@ -294,7 +294,7 @@ summary(opt_preclean$Why_Outlier)</code></pre>
 ##                                    0                                 1449 
 ##                 &lt;= 5x Options Growth            5x &lt; Options Growth &lt;=10x 
 ##                                  691                                   33 
-##                    &gt;=$250M, Insepect Other Unexplained 10x Options Growth 
+##                     &gt;=$250M, Inspect Other Unexplained 10x Options Growth 
 ##                                    0                                   21</code></pre>
 <pre class="r"><code>p_outlier_summary&lt;-opt_preclean %&gt;% filter(p_OptGrowth-1&gt;10) %&gt;% group_by(Why_Outlier) %&gt;%
   dplyr::summarise(nContract=length(ExercisedOptions),
@@ -313,8 +313,8 @@ nrow(opt_preclean[is.na(opt_preclean$Why_Outlier),])</code></pre>
 <pre><code>## Warning: Factor `qHighCeiling` contains implicit NA, consider using
 ## `forcats::fct_explicit_na`</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code>write.csv(file=&quot;..\\Data\\semi_clean\\p_opt_outliers.csv&quot;,opt_preclean %&gt;% filter((p_OptGrowth-1)&gt;10 &amp; Why_Outlier != &quot;Base + Growth &lt; Unmodified Ceiling&quot;),row.names = FALSE)
-write.csv(file=&quot;..\\Data\\semi_clean\\n_opt_outliers.csv&quot;,opt_preclean %&gt;% filter(ExercisedOptions&gt;=2.5e8 &amp; Why_Outlier != &quot;Base + Growth &lt; Unmodified Ceiling&quot;),row.names = FALSE)</code></pre>
+<pre class="r"><code>write.csv(file=&quot;..\\Data\\semi_clean\\p_opt_outliers.csv&quot;,opt_preclean %&gt;% filter((p_OptGrowth-1)&gt;10 &amp; Why_Outlier != &quot;Obligations at least half Base+Opt&quot;),row.names = FALSE)
+write.csv(file=&quot;..\\Data\\semi_clean\\n_opt_outliers.csv&quot;,opt_preclean %&gt;% filter(ExercisedOptions&gt;=2.5e8 &amp; Why_Outlier != &quot;Obligations at least half Base+Opt&quot;),row.names = FALSE)</code></pre>
 <p>Examining cases of large options growth, 1177 contracts experienced greater than 10 fold growth. An increase of that size strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.</p>
 <p>The study team broke down the outliers into three categories:</p>
 <table>
@@ -387,7 +387,7 @@ write.csv(file=&quot;..\\Data\\semi_clean\\n_opt_outliers.csv&quot;,opt_preclean
 <h2><span class="header-section-number">2.4</span> Other Unexplained x10 Inspect</h2>
 <p>The contracts coded as ‘other unexplained’ above were inspected manually given their relative scarcity. Several were found to contain suspect transactions that were later corrected, meaning the option growth value will be set as NA in the datasets and the contracts excluded from our sample, which will occur through use of the CSIS360 repository, and the lookup table “contract/override_lookup.csv” in contract folder of the CSISdefense/Lookup-Tables repository.</p>
 <pre class="r"><code>inspect10x&lt;-opt_preclean %&gt;% filter(Why_Outlier==&quot;Other Unexplained 10x Options Growth&quot;)
-
+colnames(inspect10x)[colnames(inspect10x)==&quot;UnmodifiedBaseandExercisedOptionsValue&quot;]&lt;-&quot;Base&quot;
 
 override&lt;-read.delim(file=&quot;https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/CSIS_contract_inspection.csv&quot;, sep=&quot;,&quot;) 
 inspect10x&lt;-left_join(inspect10x,override,by=&quot;CSIScontractID&quot;)
@@ -400,123 +400,306 @@ if(any(is.na(inspect10xtrans$CSIS_inspection))) stop(&quot;Transaction without C
 
 
 
-pk_inspect_summary&lt;-inspect10x %&gt;% group_by(CSIS_inspection) %&gt;%
-  dplyr::summarise(nContract=length(ExercisedOptions),
-    SumOfExercisedOptions=sum(ExercisedOptions),
-                   MaxOfExercisedOptions=max(ExercisedOptions),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
+transk&lt;-inspect10xtrans %&gt;% group_by(CSIScontractID) %&gt;%
+  dplyr::summarise(nTransaction=length(CSIStransactionID),
+    SumOfBaseAndExercisedOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
+    GrossBaseAndExercisedOptions=sum(ifelse(baseandexercisedoptionsvalue&gt;0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    RescindedOptions=sum(ifelse(baseandexercisedoptionsvalue&lt;0 &amp; reasonformodification %in% 
+                                      c('B','C','G','M'),baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    CloseOptionReduction=sum(ifelse(baseandexercisedoptionsvalue&lt;0 &amp; reasonformodification %in% c('K','E','F','X'),
+                                    baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    OtherOptionReduction=sum(ifelse(baseandexercisedoptionsvalue&lt;0 &amp; !reasonformodification %in% c('B','C','G','M','K','E','F','X'),
+                                    baseandexercisedoptionsvalue,0),na.rm=TRUE),
+                   Deobligations=sum(ifelse(obligatedamount&lt;0,obligatedamount,0),na.rm=TRUE))
 
-knitr::kable(pk_inspect_summary,format.args = list(big.mark=&quot;,&quot;))</code></pre>
+
+inspect10x&lt;-left_join(inspect10x,transk, by=&quot;CSIScontractID&quot;)
+rm(transk)
+
+p_inspect_summary&lt;-inspect10x %&gt;% group_by(CSIS_inspection) %&gt;%
+  dplyr::summarise(nContract=length(CSIScontractID),
+                   # nTransaction=sum(nTransaction),
+                   Base=sum(Base),
+    ExercisedOptions=sum(ExercisedOptions),
+    RescindedOptions=sum(RescindedOptions),
+    CloseOptionReduction=sum(CloseOptionReduction),
+    OtherOptionReduction=sum(OtherOptionReduction),
+    Action_Obligation.Then.Year=sum(Action_Obligation.Then.Year,na.rm=TRUE),
+    Deobligations=sum(Deobligations,na.rm=TRUE)  )
+
+knitr::kable(p_inspect_summary,format.args = list(big.mark=&quot;,&quot;))</code></pre>
 <table>
 <thead>
 <tr class="header">
 <th align="left">CSIS_inspection</th>
 <th align="right">nContract</th>
-<th align="right">SumOfExercisedOptions</th>
-<th align="right">MaxOfExercisedOptions</th>
-<th align="right">SumOfAction_Obligation.Then.Year</th>
+<th align="right">Base</th>
+<th align="right">ExercisedOptions</th>
+<th align="right">RescindedOptions</th>
+<th align="right">CloseOptionReduction</th>
+<th align="right">OtherOptionReduction</th>
+<th align="right">Action_Obligation.Then.Year</th>
+<th align="right">Deobligations</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">Apparent Error: Uncorrected</td>
 <td align="right">1</td>
+<td align="right">40,389.0</td>
 <td align="right">1,569,174</td>
-<td align="right">1,569,174</td>
+<td align="right">0.0</td>
+<td align="right">0</td>
+<td align="right">-1,505,535.00</td>
 <td align="right">372,113.5</td>
+<td align="right">-1,505,535.00</td>
 </tr>
 <tr class="even">
 <td align="left">Error: Corrected Administratively</td>
 <td align="right">1</td>
+<td align="right">79,715.0</td>
 <td align="right">1,015,140</td>
-<td align="right">1,015,140</td>
+<td align="right">-925,667.1</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
 <td align="right">260,582.0</td>
+<td align="right">-20,941.14</td>
 </tr>
 <tr class="odd">
 <td align="left">Error: Corrected Other</td>
 <td align="right">3</td>
+<td align="right">369,612.0</td>
 <td align="right">9,591,793</td>
-<td align="right">4,561,048</td>
+<td align="right">-6,368,383.0</td>
+<td align="right">-1,275,035</td>
+<td align="right">0.00</td>
 <td align="right">2,492,986.8</td>
+<td align="right">-4,364,911.18</td>
 </tr>
 <tr class="even">
 <td align="left">Passed Examination</td>
 <td align="right">16</td>
+<td align="right">983,975.3</td>
 <td align="right">18,935,237</td>
-<td align="right">8,087,198</td>
+<td align="right">-1,659,749.8</td>
+<td align="right">-1,953,254</td>
+<td align="right">-72,820.26</td>
 <td align="right">7,818,253.3</td>
+<td align="right">-3,864,359.85</td>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>pt_inspect_summary&lt;-inspect10xtrans %&gt;% group_by(CSIS_inspection) %&gt;%
-  dplyr::summarise(nContract=length(unique(CSIScontractID)),
-                   nTransaction=length(CSIStransactionID),
-    SumOfBaseAndExercisedOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
-    GrossBaseAndExercisedOptions=sum(ifelse(baseandexercisedoptionsvalue&gt;0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-    NegativeBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue&lt;0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-                   MaxOfBaseAndExercisedlOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
-    MinOfBaseAndExercisedOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
-                   ObligatedAmount=sum(obligatedamount,na.rm=TRUE))
-
-knitr::kable(pt_inspect_summary,format.args = list(big.mark=&quot;,&quot;))</code></pre>
+<pre class="r"><code>knitr::kable(inspect10x%&gt;% group_by(CSIScontractID) %&gt;% dplyr::select(CSIScontractID,
+                                         Base,
+                                         ExercisedOptions,
+                                         RescindedOptions,
+                                         CloseOptionReduction,
+                                         OtherOptionReduction,
+                                         # Action_Obligation.Then.Year,
+                                         # Deobligations
+                                         CSIS_inspection
+                                         ),format.args = list(big.mark=&quot;,&quot;))</code></pre>
 <table>
 <thead>
 <tr class="header">
+<th align="right">CSIScontractID</th>
+<th align="right">Base</th>
+<th align="right">ExercisedOptions</th>
+<th align="right">RescindedOptions</th>
+<th align="right">CloseOptionReduction</th>
+<th align="right">OtherOptionReduction</th>
 <th align="left">CSIS_inspection</th>
-<th align="right">nContract</th>
-<th align="right">nTransaction</th>
-<th align="right">SumOfBaseAndExercisedOptions</th>
-<th align="right">GrossBaseAndExercisedOptions</th>
-<th align="right">NegativeBaseAndAllOptions</th>
-<th align="right">MaxOfBaseAndExercisedlOptions</th>
-<th align="right">MinOfBaseAndExercisedOptions</th>
-<th align="right">ObligatedAmount</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Apparent Error: Uncorrected</td>
-<td align="right">1</td>
-<td align="right">13</td>
-<td align="right">372,113.5</td>
-<td align="right">1,877,649</td>
-<td align="right">-1,505,535.0</td>
-<td align="right">1,569,174</td>
-<td align="right">-1,504,375</td>
-<td align="right">372,113.5</td>
+<td align="right">10,060,591</td>
+<td align="right">200,000.00</td>
+<td align="right">3,990,652.50</td>
+<td align="right">-83,234.43</td>
+<td align="right">-23,680.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
 </tr>
 <tr class="even">
+<td align="right">2,893,470</td>
+<td align="right">79,715.00</td>
+<td align="right">1,015,140.00</td>
+<td align="right">-925,667.14</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
 <td align="left">Error: Corrected Administratively</td>
-<td align="right">1</td>
-<td align="right">5</td>
-<td align="right">260,582.0</td>
-<td align="right">1,186,249</td>
-<td align="right">-925,667.1</td>
-<td align="right">1,015,140</td>
-<td align="right">-904,726</td>
-<td align="right">260,582.0</td>
 </tr>
 <tr class="odd">
-<td align="left">Error: Corrected Other</td>
-<td align="right">3</td>
-<td align="right">21</td>
-<td align="right">2,492,986.9</td>
-<td align="right">10,136,405</td>
-<td align="right">-7,643,418.1</td>
-<td align="right">4,561,048</td>
-<td align="right">-4,153,462</td>
-<td align="right">2,492,986.8</td>
+<td align="right">60,378,093</td>
+<td align="right">16,642.50</td>
+<td align="right">190,779.79</td>
+<td align="right">-1,200.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
 </tr>
 <tr class="even">
+<td align="right">18,192,191</td>
+<td align="right">1,701.18</td>
+<td align="right">22,768.68</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">-19,903.77</td>
 <td align="left">Passed Examination</td>
-<td align="right">16</td>
-<td align="right">195</td>
-<td align="right">18,831,933.8</td>
-<td align="right">22,517,758</td>
-<td align="right">-3,685,823.8</td>
-<td align="right">2,342,716</td>
-<td align="right">-1,032,130</td>
-<td align="right">7,818,253.3</td>
+</tr>
+<tr class="odd">
+<td align="right">18,504,240</td>
+<td align="right">164,093.00</td>
+<td align="right">4,561,048.00</td>
+<td align="right">-1,706,962.00</td>
+<td align="right">-1,275,035.12</td>
+<td align="right">0.00</td>
+<td align="left">Error: Corrected Other</td>
+</tr>
+<tr class="even">
+<td align="right">24,685,121</td>
+<td align="right">155,119.00</td>
+<td align="right">4,292,441.00</td>
+<td align="right">-4,153,462.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">Error: Corrected Other</td>
+</tr>
+<tr class="odd">
+<td align="right">8,665,643</td>
+<td align="right">53,451.00</td>
+<td align="right">855,216.00</td>
+<td align="right">-231,621.00</td>
+<td align="right">-260,347.40</td>
+<td align="right">-52,916.49</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="even">
+<td align="right">25,049,082</td>
+<td align="right">1,920.00</td>
+<td align="right">348,518.40</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="odd">
+<td align="right">1,286,145</td>
+<td align="right">5,920.00</td>
+<td align="right">67,440.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="even">
+<td align="right">2,362,527</td>
+<td align="right">4,000.00</td>
+<td align="right">45,000.00</td>
+<td align="right">0.00</td>
+<td align="right">-40,745.56</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="odd">
+<td align="right">27,649,914</td>
+<td align="right">51,700.00</td>
+<td align="right">529,920.00</td>
+<td align="right">-320,604.62</td>
+<td align="right">-506,471.05</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="even">
+<td align="right">8,666,052</td>
+<td align="right">16,575.00</td>
+<td align="right">298,350.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="odd">
+<td align="right">8,114,536</td>
+<td align="right">6,866.00</td>
+<td align="right">81,842.00</td>
+<td align="right">0.00</td>
+<td align="right">-78,477.40</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="even">
+<td align="right">3,229,787</td>
+<td align="right">500.00</td>
+<td align="right">5,000.00</td>
+<td align="right">0.00</td>
+<td align="right">-6,250.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="odd">
+<td align="right">8,413,869</td>
+<td align="right">50,400.00</td>
+<td align="right">738,304.00</td>
+<td align="right">-507,959.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">Error: Corrected Other</td>
+</tr>
+<tr class="even">
+<td align="right">24,799,263</td>
+<td align="right">56,945.00</td>
+<td align="right">906,043.00</td>
+<td align="right">0.00</td>
+<td align="right">-1,032,130.39</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="odd">
+<td align="right">9,991,108</td>
+<td align="right">414,424.59</td>
+<td align="right">8,087,198.12</td>
+<td align="right">-583,219.74</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="even">
+<td align="right">61,815,629</td>
+<td align="right">2,208.00</td>
+<td align="right">47,840.00</td>
+<td align="right">-23,920.00</td>
+<td align="right">-5,152.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="odd">
+<td align="right">2,970,558</td>
+<td align="right">104,342.00</td>
+<td align="right">2,728,149.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="even">
+<td align="right">8,413,827</td>
+<td align="right">46,780.00</td>
+<td align="right">730,520.00</td>
+<td align="right">-415,950.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">Passed Examination</td>
+</tr>
+<tr class="odd">
+<td align="right">24,798,438</td>
+<td align="right">40,389.00</td>
+<td align="right">1,569,174.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">-1,505,535.00</td>
+<td align="left">Apparent Error: Uncorrected</td>
 </tr>
 </tbody>
 </table>
