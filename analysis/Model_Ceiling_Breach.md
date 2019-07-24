@@ -1,6 +1,6 @@
 ---
 title: "Defense Services Ceiling Breaches "
-author: "Greg Sanders"
+author: "Greg Sanders, Justin Graham"
 date: "Friday July 13, 2019"
 output:
   html_document:
@@ -479,7 +479,7 @@ When considering PBSC alone, our logit model finds our expected relationship: hi
 
 
 ### 02B: No.Office PSC History
-Expectation: The increasing share of contracting office obligations for a given service indicates high capcaity in that area, lower likelihood of cost ceiling breaches and termination and higher likelihood of exercised options are expected to be observed.
+Expectation: The increasing share of contracting office obligations for a given service indicates high capcaity in that area, lower likelihood of cost ceiling breaches and termination and higher likelihood of exercised options are expected to be observed. Similarly, we expect the overall magnitude of ceiling breaches to be decreasing as the share of contracting office oglibations for a given service increases.
 
 
 ```r
@@ -606,11 +606,11 @@ summary_residual_compare(b_CBre02A,b_CBre02B, skip_vif = TRUE)
 ## NULL
 ```
 
-When considering number of contracting office obligations for a given service alone, expectation was only fulfilled for options growth.
+When considering number of contracting office obligations for a given service alone, we find a positive relationship between size of share of contracting office obligations for a service and the likelihood of a ceiling breach, the opposite of what was expected.  However, a negative relationship is found, as expected, between the size of the share of contracting office obligations for a service and the overall magnitude of ceiling breaches,
 
 
 ### 02C: Office Capacity
-Expectation: Collaberactively, the larger share of PBSC and contracting office obligations for a given service, the less risk of ceiling breaches and terminations and the more exercised options there would be. Also we expect the results of combined model would be the same as two individual models above. 
+Expectation: Collectively, the larger share of PBSC and contracting office obligations for a given service, the less risk of ceiling breaches and terminations and the more exercised options there would be. Also we expect the results of combined model would be the same as two individual models above. 
 
 
 ```r
