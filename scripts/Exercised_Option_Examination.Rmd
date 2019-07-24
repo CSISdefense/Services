@@ -266,13 +266,15 @@ The contracts coded as 'other unexplained' above were inspected manually given t
 
 inspect10x<-opt_preclean %>% filter(Why_Outlier=="Other Unexplained 10x Options Growth")
 
-inspect10xtrans<-read.delim(file="..\\data\\semi_clean\\gt10t_p_other_unexplained_outliers.txt", sep="\t")
 
 override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/CSIS_contract_inspection.csv", sep=",") 
 inspect10x<-left_join(inspect10x,override,by="CSIScontractID")
-summary(inspect10x$category)
+if(any(is.na(inspect10x$CSIS_inspection))) stop("Contract without CSIS_inspection label")
+
+inspect10xtrans<-read.delim(file="..\\data\\semi_clean\\gt10t_p_other_unexplained_outliers.txt", sep="\t")
+inspect10xtrans<-inspect10xtrans %>% filter(CSIScontractID %in% inspect10x$CSIScontractID)
 inspect10xtrans<-left_join(inspect10xtrans,override,by="CSIScontractID")
-summary(inspect10xtrans$category)
+if(any(is.na(inspect10xtrans$CSIS_inspection))) stop("Transaction without CSIS_inspection label")
 
 
 
@@ -286,11 +288,11 @@ knitr::kable(pk_inspect_summary,format.args = list(big.mark=","))
 pt_inspect_summary<-inspect10xtrans %>% group_by(CSIS_inspection) %>%
   dplyr::summarise(nContract=length(unique(CSIScontractID)),
                    nTransaction=length(CSIStransactionID),
-    SumOfBaseAndAllOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
-    GrossBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue>0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    SumOfBaseAndExercisedOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
+    GrossBaseAndExercisedOptions=sum(ifelse(baseandexercisedoptionsvalue>0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
     NegativeBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue<0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-                   MaxOfBaseAndAllOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
-    MinOfBaseAndAllOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
+                   MaxOfBaseAndExercisedlOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
+    MinOfBaseAndExercisedOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
                    ObligatedAmount=sum(obligatedamount,na.rm=TRUE))
 
 knitr::kable(pt_inspect_summary,format.args = list(big.mark=","))

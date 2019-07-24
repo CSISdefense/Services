@@ -252,100 +252,55 @@ The contracts coded as 'other unexplained' above were inspected manually given t
 ```r
 inspect10x<-opt_preclean %>% filter(Why_Outlier=="Other Unexplained 10x Options Growth")
 
-inspect10xtrans<-read.delim(file="..\\data\\semi_clean\\gt10t_p_other_unexplained_outliers.txt", sep="\t")
 
-override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/override_lookup.csv", sep=",") 
+override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/CSIS_contract_inspection.csv", sep=",") 
 inspect10x<-left_join(inspect10x,override,by="CSIScontractID")
-summary(inspect10x$category)
-```
+if(any(is.na(inspect10x$CSIS_inspection))) stop("Contract without CSIS_inspection label")
 
-```
-##               Apparent Error: Uncorrected 
-##                                         1 
-##         Error: Corrected Administratively 
-##                                         1 
-##                    Error: Corrected Other 
-##                                         3 
-## Passed Examination: Administrative Change 
-##                                         0 
-##                                W912UM Won 
-##                                         0 
-##                                      NA's 
-##                                        16
-```
-
-```r
+inspect10xtrans<-read.delim(file="..\\data\\semi_clean\\gt10t_p_other_unexplained_outliers.txt", sep="\t")
+inspect10xtrans<-inspect10xtrans %>% filter(CSIScontractID %in% inspect10x$CSIScontractID)
 inspect10xtrans<-left_join(inspect10xtrans,override,by="CSIScontractID")
-summary(inspect10xtrans$category)
-```
+if(any(is.na(inspect10xtrans$CSIS_inspection))) stop("Transaction without CSIS_inspection label")
 
-```
-##               Apparent Error: Uncorrected 
-##                                        13 
-##         Error: Corrected Administratively 
-##                                         5 
-##                    Error: Corrected Other 
-##                                        21 
-## Passed Examination: Administrative Change 
-##                                         0 
-##                                W912UM Won 
-##                                         0 
-##                                      NA's 
-##                                       188
-```
 
-```r
-pk_inspect_summary<-inspect10x %>% group_by(category) %>%
+
+pk_inspect_summary<-inspect10x %>% group_by(CSIS_inspection) %>%
   dplyr::summarise(nContract=length(ExercisedOptions),
     SumOfExercisedOptions=sum(ExercisedOptions),
                    MaxOfExercisedOptions=max(ExercisedOptions),
                    SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
-```
 
-```
-## Warning: Factor `category` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
-```
-
-```r
-knitr::kable(pk_inspect_summary)
+knitr::kable(pk_inspect_summary,format.args = list(big.mark=","))
 ```
 
 
 
-category                             nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
+CSIS_inspection                      nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
 ----------------------------------  ----------  ----------------------  ----------------------  ---------------------------------
-Apparent Error: Uncorrected                  1                 1569174                 1569174                           372113.5
-Error: Corrected Administratively            1                 1015140                 1015140                           260582.0
-Error: Corrected Other                       3                 9591793                 4561048                          2492986.8
-NA                                          16                18935237                 8087198                          7818253.3
+Apparent Error: Uncorrected                  1               1,569,174               1,569,174                          372,113.5
+Error: Corrected Administratively            1               1,015,140               1,015,140                          260,582.0
+Error: Corrected Other                       3               9,591,793               4,561,048                        2,492,986.8
+Passed Examination                          16              18,935,237               8,087,198                        7,818,253.3
 
 ```r
-pt_inspect_summary<-inspect10xtrans %>% group_by(category) %>%
+pt_inspect_summary<-inspect10xtrans %>% group_by(CSIS_inspection) %>%
   dplyr::summarise(nContract=length(unique(CSIScontractID)),
                    nTransaction=length(CSIStransactionID),
-    SumOfBaseAndAllOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
-    GrossBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue>0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    SumOfBaseAndExercisedOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
+    GrossBaseAndExercisedOptions=sum(ifelse(baseandexercisedoptionsvalue>0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
     NegativeBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue<0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-                   MaxOfBaseAndAllOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
-    MinOfBaseAndAllOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
+                   MaxOfBaseAndExercisedlOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
+    MinOfBaseAndExercisedOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
                    ObligatedAmount=sum(obligatedamount,na.rm=TRUE))
-```
 
-```
-## Warning: Factor `category` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
-```
-
-```r
-knitr::kable(pt_inspect_summary)
+knitr::kable(pt_inspect_summary,format.args = list(big.mark=","))
 ```
 
 
 
-category                             nContract   nTransaction   SumOfBaseAndAllOptions   GrossBaseAndAllOptions   NegativeBaseAndAllOptions   MaxOfBaseAndAllOptions   MinOfBaseAndAllOptions   ObligatedAmount
-----------------------------------  ----------  -------------  -----------------------  -----------------------  --------------------------  -----------------------  -----------------------  ----------------
-Apparent Error: Uncorrected                  1             13                 372113.5                  1877649                  -1505535.0                  1569174                 -1504375          372113.5
-Error: Corrected Administratively            1              5                 260582.0                  1186249                   -925667.1                  1015140                  -904726          260582.0
-Error: Corrected Other                       3             21                2492986.9                 10136405                  -7643418.1                  4561048                 -4153462         2492986.8
-NA                                          16            188               18830183.8                 22509758                  -3679573.8                  2342716                 -1032130         7816503.3
+CSIS_inspection                      nContract   nTransaction   SumOfBaseAndExercisedOptions   GrossBaseAndExercisedOptions   NegativeBaseAndAllOptions   MaxOfBaseAndExercisedlOptions   MinOfBaseAndExercisedOptions   ObligatedAmount
+----------------------------------  ----------  -------------  -----------------------------  -----------------------------  --------------------------  ------------------------------  -----------------------------  ----------------
+Apparent Error: Uncorrected                  1             13                      372,113.5                      1,877,649                -1,505,535.0                       1,569,174                     -1,504,375         372,113.5
+Error: Corrected Administratively            1              5                      260,582.0                      1,186,249                  -925,667.1                       1,015,140                       -904,726         260,582.0
+Error: Corrected Other                       3             21                    2,492,986.9                     10,136,405                -7,643,418.1                       4,561,048                     -4,153,462       2,492,986.8
+Passed Examination                          16            195                   18,831,933.8                     22,517,758                -3,685,823.8                       2,342,716                     -1,032,130       7,818,253.3

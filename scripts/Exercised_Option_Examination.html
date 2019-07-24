@@ -388,49 +388,29 @@ write.csv(file=&quot;..\\Data\\semi_clean\\n_opt_outliers.csv&quot;,opt_preclean
 <p>The contracts coded as ‘other unexplained’ above were inspected manually given their relative scarcity. Several were found to contain suspect transactions that were later corrected, meaning the option growth value will be set as NA in the datasets and the contracts excluded from our sample, which will occur through use of the CSIS360 repository, and the lookup table “contract/override_lookup.csv” in contract folder of the CSISdefense/Lookup-Tables repository.</p>
 <pre class="r"><code>inspect10x&lt;-opt_preclean %&gt;% filter(Why_Outlier==&quot;Other Unexplained 10x Options Growth&quot;)
 
-inspect10xtrans&lt;-read.delim(file=&quot;..\\data\\semi_clean\\gt10t_p_other_unexplained_outliers.txt&quot;, sep=&quot;\t&quot;)
 
-override&lt;-read.delim(file=&quot;https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/override_lookup.csv&quot;, sep=&quot;,&quot;) 
+override&lt;-read.delim(file=&quot;https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/CSIS_contract_inspection.csv&quot;, sep=&quot;,&quot;) 
 inspect10x&lt;-left_join(inspect10x,override,by=&quot;CSIScontractID&quot;)
-summary(inspect10x$category)</code></pre>
-<pre><code>##               Apparent Error: Uncorrected 
-##                                         1 
-##         Error: Corrected Administratively 
-##                                         1 
-##                    Error: Corrected Other 
-##                                         3 
-## Passed Examination: Administrative Change 
-##                                         0 
-##                                W912UM Won 
-##                                         0 
-##                                      NA's 
-##                                        16</code></pre>
-<pre class="r"><code>inspect10xtrans&lt;-left_join(inspect10xtrans,override,by=&quot;CSIScontractID&quot;)
-summary(inspect10xtrans$category)</code></pre>
-<pre><code>##               Apparent Error: Uncorrected 
-##                                        13 
-##         Error: Corrected Administratively 
-##                                         5 
-##                    Error: Corrected Other 
-##                                        21 
-## Passed Examination: Administrative Change 
-##                                         0 
-##                                W912UM Won 
-##                                         0 
-##                                      NA's 
-##                                       188</code></pre>
-<pre class="r"><code>pk_inspect_summary&lt;-inspect10x %&gt;% group_by(category) %&gt;%
+if(any(is.na(inspect10x$CSIS_inspection))) stop(&quot;Contract without CSIS_inspection label&quot;)
+
+inspect10xtrans&lt;-read.delim(file=&quot;..\\data\\semi_clean\\gt10t_p_other_unexplained_outliers.txt&quot;, sep=&quot;\t&quot;)
+inspect10xtrans&lt;-inspect10xtrans %&gt;% filter(CSIScontractID %in% inspect10x$CSIScontractID)
+inspect10xtrans&lt;-left_join(inspect10xtrans,override,by=&quot;CSIScontractID&quot;)
+if(any(is.na(inspect10xtrans$CSIS_inspection))) stop(&quot;Transaction without CSIS_inspection label&quot;)
+
+
+
+pk_inspect_summary&lt;-inspect10x %&gt;% group_by(CSIS_inspection) %&gt;%
   dplyr::summarise(nContract=length(ExercisedOptions),
     SumOfExercisedOptions=sum(ExercisedOptions),
                    MaxOfExercisedOptions=max(ExercisedOptions),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))</code></pre>
-<pre><code>## Warning: Factor `category` contains implicit NA, consider using
-## `forcats::fct_explicit_na`</code></pre>
-<pre class="r"><code>knitr::kable(pk_inspect_summary)</code></pre>
+                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
+
+knitr::kable(pk_inspect_summary,format.args = list(big.mark=&quot;,&quot;))</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">category</th>
+<th align="left">CSIS_inspection</th>
 <th align="right">nContract</th>
 <th align="right">SumOfExercisedOptions</th>
 <th align="right">MaxOfExercisedOptions</th>
@@ -441,56 +421,55 @@ summary(inspect10xtrans$category)</code></pre>
 <tr class="odd">
 <td align="left">Apparent Error: Uncorrected</td>
 <td align="right">1</td>
-<td align="right">1569174</td>
-<td align="right">1569174</td>
-<td align="right">372113.5</td>
+<td align="right">1,569,174</td>
+<td align="right">1,569,174</td>
+<td align="right">372,113.5</td>
 </tr>
 <tr class="even">
 <td align="left">Error: Corrected Administratively</td>
 <td align="right">1</td>
-<td align="right">1015140</td>
-<td align="right">1015140</td>
-<td align="right">260582.0</td>
+<td align="right">1,015,140</td>
+<td align="right">1,015,140</td>
+<td align="right">260,582.0</td>
 </tr>
 <tr class="odd">
 <td align="left">Error: Corrected Other</td>
 <td align="right">3</td>
-<td align="right">9591793</td>
-<td align="right">4561048</td>
-<td align="right">2492986.8</td>
+<td align="right">9,591,793</td>
+<td align="right">4,561,048</td>
+<td align="right">2,492,986.8</td>
 </tr>
 <tr class="even">
-<td align="left">NA</td>
+<td align="left">Passed Examination</td>
 <td align="right">16</td>
-<td align="right">18935237</td>
-<td align="right">8087198</td>
-<td align="right">7818253.3</td>
+<td align="right">18,935,237</td>
+<td align="right">8,087,198</td>
+<td align="right">7,818,253.3</td>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>pt_inspect_summary&lt;-inspect10xtrans %&gt;% group_by(category) %&gt;%
+<pre class="r"><code>pt_inspect_summary&lt;-inspect10xtrans %&gt;% group_by(CSIS_inspection) %&gt;%
   dplyr::summarise(nContract=length(unique(CSIScontractID)),
                    nTransaction=length(CSIStransactionID),
-    SumOfBaseAndAllOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
-    GrossBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue&gt;0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    SumOfBaseAndExercisedOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
+    GrossBaseAndExercisedOptions=sum(ifelse(baseandexercisedoptionsvalue&gt;0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
     NegativeBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue&lt;0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-                   MaxOfBaseAndAllOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
-    MinOfBaseAndAllOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
-                   ObligatedAmount=sum(obligatedamount,na.rm=TRUE))</code></pre>
-<pre><code>## Warning: Factor `category` contains implicit NA, consider using
-## `forcats::fct_explicit_na`</code></pre>
-<pre class="r"><code>knitr::kable(pt_inspect_summary)</code></pre>
+                   MaxOfBaseAndExercisedlOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
+    MinOfBaseAndExercisedOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
+                   ObligatedAmount=sum(obligatedamount,na.rm=TRUE))
+
+knitr::kable(pt_inspect_summary,format.args = list(big.mark=&quot;,&quot;))</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">category</th>
+<th align="left">CSIS_inspection</th>
 <th align="right">nContract</th>
 <th align="right">nTransaction</th>
-<th align="right">SumOfBaseAndAllOptions</th>
-<th align="right">GrossBaseAndAllOptions</th>
+<th align="right">SumOfBaseAndExercisedOptions</th>
+<th align="right">GrossBaseAndExercisedOptions</th>
 <th align="right">NegativeBaseAndAllOptions</th>
-<th align="right">MaxOfBaseAndAllOptions</th>
-<th align="right">MinOfBaseAndAllOptions</th>
+<th align="right">MaxOfBaseAndExercisedlOptions</th>
+<th align="right">MinOfBaseAndExercisedOptions</th>
 <th align="right">ObligatedAmount</th>
 </tr>
 </thead>
@@ -499,45 +478,45 @@ summary(inspect10xtrans$category)</code></pre>
 <td align="left">Apparent Error: Uncorrected</td>
 <td align="right">1</td>
 <td align="right">13</td>
-<td align="right">372113.5</td>
-<td align="right">1877649</td>
-<td align="right">-1505535.0</td>
-<td align="right">1569174</td>
-<td align="right">-1504375</td>
-<td align="right">372113.5</td>
+<td align="right">372,113.5</td>
+<td align="right">1,877,649</td>
+<td align="right">-1,505,535.0</td>
+<td align="right">1,569,174</td>
+<td align="right">-1,504,375</td>
+<td align="right">372,113.5</td>
 </tr>
 <tr class="even">
 <td align="left">Error: Corrected Administratively</td>
 <td align="right">1</td>
 <td align="right">5</td>
-<td align="right">260582.0</td>
-<td align="right">1186249</td>
-<td align="right">-925667.1</td>
-<td align="right">1015140</td>
-<td align="right">-904726</td>
-<td align="right">260582.0</td>
+<td align="right">260,582.0</td>
+<td align="right">1,186,249</td>
+<td align="right">-925,667.1</td>
+<td align="right">1,015,140</td>
+<td align="right">-904,726</td>
+<td align="right">260,582.0</td>
 </tr>
 <tr class="odd">
 <td align="left">Error: Corrected Other</td>
 <td align="right">3</td>
 <td align="right">21</td>
-<td align="right">2492986.9</td>
-<td align="right">10136405</td>
-<td align="right">-7643418.1</td>
-<td align="right">4561048</td>
-<td align="right">-4153462</td>
-<td align="right">2492986.8</td>
+<td align="right">2,492,986.9</td>
+<td align="right">10,136,405</td>
+<td align="right">-7,643,418.1</td>
+<td align="right">4,561,048</td>
+<td align="right">-4,153,462</td>
+<td align="right">2,492,986.8</td>
 </tr>
 <tr class="even">
-<td align="left">NA</td>
+<td align="left">Passed Examination</td>
 <td align="right">16</td>
-<td align="right">188</td>
-<td align="right">18830183.8</td>
-<td align="right">22509758</td>
-<td align="right">-3679573.8</td>
-<td align="right">2342716</td>
-<td align="right">-1032130</td>
-<td align="right">7816503.3</td>
+<td align="right">195</td>
+<td align="right">18,831,933.8</td>
+<td align="right">22,517,758</td>
+<td align="right">-3,685,823.8</td>
+<td align="right">2,342,716</td>
+<td align="right">-1,032,130</td>
+<td align="right">7,818,253.3</td>
 </tr>
 </tbody>
 </table>
