@@ -14,7 +14,7 @@ output:
 #Setup
 
 ```
-## [1] 16250
+## [1] 32659
 ```
 
 
@@ -242,22 +242,110 @@ Obligations at least half Base+Opt           11              3763783860         
 
 ## >250 Inspect
 
-```r
-inspect250<-opt_preclean %>% filter(Why_Outlier==">=$250M, Insepect")
-inspect250$CSIScontractID
-```
-
-```
-## numeric(0)
-```
-
-```r
-inspect250trans<-read.delim(file="..\\data\\semi_clean\\gt250k_n_exercised_opt_outliers.txt", sep="\t")
-
-
-#gt250k_n_exercised_opt_outliers.txt
-```
 No contracts with unexplained >=\$250M absolute growth exist in the dataset.  4 such contracts demonstrate absolute growth >=\$250M, but are coded instead as 'Obligations at least half Base+Opt.'  Manual inspection of these makes clear that the growth identified is legitimate, and should be included in the dataset.
 
 ## Other Unexplained x10 Inspect
-The contracts coded as 'other unexplained' above were inspected manually given their relative scarcity.  Several were found to contain suspect transactions that were later corrected, meaning these contracts should be dropped from our sample, which will occur through use of the CSIS360 repository, and the lookup table "override_lookup.Rda".
+The contracts coded as 'other unexplained' above were inspected manually given their relative scarcity.  Several were found to contain suspect transactions that were later corrected, meaning the option growth value will be set as NA in the datasets and the contracts excluded from our sample, which will occur through use of the CSIS360 repository, and the lookup table "contract/override_lookup.csv" in contract folder of the CSISdefense/Lookup-Tables repository.
+
+
+
+```r
+inspect10x<-opt_preclean %>% filter(Why_Outlier=="Other Unexplained 10x Options Growth")
+
+inspect10xtrans<-read.delim(file="..\\data\\semi_clean\\gt10t_p_other_unexplained_outliers.txt", sep="\t")
+
+override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/override_lookup.csv", sep=",") 
+inspect10x<-left_join(inspect10x,override,by="CSIScontractID")
+summary(inspect10x$category)
+```
+
+```
+##               Apparent Error: Uncorrected 
+##                                         1 
+##         Error: Corrected Administratively 
+##                                         1 
+##                    Error: Corrected Other 
+##                                         3 
+## Passed Examination: Administrative Change 
+##                                         0 
+##                                W912UM Won 
+##                                         0 
+##                                      NA's 
+##                                        16
+```
+
+```r
+inspect10xtrans<-left_join(inspect10xtrans,override,by="CSIScontractID")
+summary(inspect10xtrans$category)
+```
+
+```
+##               Apparent Error: Uncorrected 
+##                                        13 
+##         Error: Corrected Administratively 
+##                                         5 
+##                    Error: Corrected Other 
+##                                        21 
+## Passed Examination: Administrative Change 
+##                                         0 
+##                                W912UM Won 
+##                                         0 
+##                                      NA's 
+##                                       188
+```
+
+```r
+pk_inspect_summary<-inspect10x %>% group_by(category) %>%
+  dplyr::summarise(nContract=length(ExercisedOptions),
+    SumOfExercisedOptions=sum(ExercisedOptions),
+                   MaxOfExercisedOptions=max(ExercisedOptions),
+                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
+```
+
+```
+## Warning: Factor `category` contains implicit NA, consider using
+## `forcats::fct_explicit_na`
+```
+
+```r
+knitr::kable(pk_inspect_summary)
+```
+
+
+
+category                             nContract   SumOfExercisedOptions   MaxOfExercisedOptions   SumOfAction_Obligation.Then.Year
+----------------------------------  ----------  ----------------------  ----------------------  ---------------------------------
+Apparent Error: Uncorrected                  1                 1569174                 1569174                           372113.5
+Error: Corrected Administratively            1                 1015140                 1015140                           260582.0
+Error: Corrected Other                       3                 9591793                 4561048                          2492986.8
+NA                                          16                18935237                 8087198                          7818253.3
+
+```r
+pt_inspect_summary<-inspect10xtrans %>% group_by(category) %>%
+  dplyr::summarise(nContract=length(unique(CSIScontractID)),
+                   nTransaction=length(CSIStransactionID),
+    SumOfBaseAndAllOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
+    GrossBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue>0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    NegativeBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue<0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
+                   MaxOfBaseAndAllOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
+    MinOfBaseAndAllOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
+                   ObligatedAmount=sum(obligatedamount,na.rm=TRUE))
+```
+
+```
+## Warning: Factor `category` contains implicit NA, consider using
+## `forcats::fct_explicit_na`
+```
+
+```r
+knitr::kable(pt_inspect_summary)
+```
+
+
+
+category                             nContract   nTransaction   SumOfBaseAndAllOptions   GrossBaseAndAllOptions   NegativeBaseAndAllOptions   MaxOfBaseAndAllOptions   MinOfBaseAndAllOptions   ObligatedAmount
+----------------------------------  ----------  -------------  -----------------------  -----------------------  --------------------------  -----------------------  -----------------------  ----------------
+Apparent Error: Uncorrected                  1             13                 372113.5                  1877649                  -1505535.0                  1569174                 -1504375          372113.5
+Error: Corrected Administratively            1              5                 260582.0                  1186249                   -925667.1                  1015140                  -904726          260582.0
+Error: Corrected Other                       3             21                2492986.9                 10136405                  -7643418.1                  4561048                 -4153462         2492986.8
+NA                                          16            188               18830183.8                 22509758                  -3679573.8                  2342716                 -1032130         7816503.3

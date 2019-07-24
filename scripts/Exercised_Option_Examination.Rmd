@@ -16,13 +16,8 @@ output:
 library(csis360)
 library(ggplot2)
 library(dplyr)
-library(arm)
-library(R2WinBUGS)
 library(knitr)
-library(foreign)
-library(stargazer)
-library(texreg)
-library(reshape2)
+
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
 
 axis.text.size<-10
@@ -255,18 +250,49 @@ Shifting the focus to all contracts with absolute growth of at least 250 million
 
 
 ## >250 Inspect
-```{r gt250m}
-inspect250<-opt_preclean %>% filter(Why_Outlier==">=$250M, Insepect")
-inspect250$CSIScontractID
-inspect250trans<-read.delim(file="..\\data\\semi_clean\\gt250k_n_exercised_opt_outliers.txt", sep="\t")
+```{r gt250m, echo=FALSE}
 
-override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/override_lookup.txt", sep="\t") 
-
-inspect250trans<-left_join(inspect250trans,override,by="CSIScontractID")
-#gt250k_n_exercised_opt_outliers.txt
+if(nrow(opt_preclean %>% filter(Why_Outlier==">=$250M, Insepect"))>0) stop("Contracts to inspect found")
 
 ```
 No contracts with unexplained >=\$250M absolute growth exist in the dataset.  4 such contracts demonstrate absolute growth >=\$250M, but are coded instead as 'Obligations at least half Base+Opt.'  Manual inspection of these makes clear that the growth identified is legitimate, and should be included in the dataset.
 
 ## Other Unexplained x10 Inspect
-The contracts coded as 'other unexplained' above were inspected manually given their relative scarcity.  Several were found to contain suspect transactions that were later corrected, meaning these contracts should be dropped from our sample, which will occur through use of the CSIS360 repository, and the lookup table "override_lookup.Rda".
+The contracts coded as 'other unexplained' above were inspected manually given their relative scarcity.  Several were found to contain suspect transactions that were later corrected, meaning the option growth value will be set as NA in the datasets and the contracts excluded from our sample, which will occur through use of the CSIS360 repository, and the lookup table "contract/override_lookup.csv" in contract folder of the CSISdefense/Lookup-Tables repository.
+
+
+```{r gt10x}
+
+
+inspect10x<-opt_preclean %>% filter(Why_Outlier=="Other Unexplained 10x Options Growth")
+
+inspect10xtrans<-read.delim(file="..\\data\\semi_clean\\gt10t_p_other_unexplained_outliers.txt", sep="\t")
+
+override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/override_lookup.csv", sep=",") 
+inspect10x<-left_join(inspect10x,override,by="CSIScontractID")
+summary(inspect10x$category)
+inspect10xtrans<-left_join(inspect10xtrans,override,by="CSIScontractID")
+summary(inspect10xtrans$category)
+
+
+
+pk_inspect_summary<-inspect10x %>% group_by(category) %>%
+  dplyr::summarise(nContract=length(ExercisedOptions),
+    SumOfExercisedOptions=sum(ExercisedOptions),
+                   MaxOfExercisedOptions=max(ExercisedOptions),
+                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
+
+knitr::kable(pk_inspect_summary)
+pt_inspect_summary<-inspect10xtrans %>% group_by(category) %>%
+  dplyr::summarise(nContract=length(unique(CSIScontractID)),
+                   nTransaction=length(CSIStransactionID),
+    SumOfBaseAndAllOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
+    GrossBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue>0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
+    NegativeBaseAndAllOptions=sum(ifelse(baseandexercisedoptionsvalue<0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
+                   MaxOfBaseAndAllOptions=max(baseandexercisedoptionsvalue,na.rm=TRUE),
+    MinOfBaseAndAllOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
+                   ObligatedAmount=sum(obligatedamount,na.rm=TRUE))
+
+knitr::kable(pt_inspect_summary)
+
+```
