@@ -268,7 +268,7 @@ inspect10x<-opt_preclean %>% filter(Why_Outlier=="Other Unexplained 10x Options 
 
 inspect10xtrans<-read.delim(file="..\\data\\semi_clean\\gt10t_p_other_unexplained_outliers.txt", sep="\t")
 
-override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/override_lookup.csv", sep=",") 
+override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/CSIS_contract_inspection.csv", sep=",") 
 inspect10x<-left_join(inspect10x,override,by="CSIScontractID")
 summary(inspect10x$category)
 inspect10xtrans<-left_join(inspect10xtrans,override,by="CSIScontractID")
@@ -276,14 +276,14 @@ summary(inspect10xtrans$category)
 
 
 
-pk_inspect_summary<-inspect10x %>% group_by(category) %>%
+pk_inspect_summary<-inspect10x %>% group_by(CSIS_inspection) %>%
   dplyr::summarise(nContract=length(ExercisedOptions),
     SumOfExercisedOptions=sum(ExercisedOptions),
                    MaxOfExercisedOptions=max(ExercisedOptions),
                    SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
 
-knitr::kable(pk_inspect_summary)
-pt_inspect_summary<-inspect10xtrans %>% group_by(category) %>%
+knitr::kable(pk_inspect_summary,format.args = list(big.mark=","))
+pt_inspect_summary<-inspect10xtrans %>% group_by(CSIS_inspection) %>%
   dplyr::summarise(nContract=length(unique(CSIScontractID)),
                    nTransaction=length(CSIStransactionID),
     SumOfBaseAndAllOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
@@ -293,6 +293,6 @@ pt_inspect_summary<-inspect10xtrans %>% group_by(category) %>%
     MinOfBaseAndAllOptions=min(baseandexercisedoptionsvalue,na.rm=TRUE),
                    ObligatedAmount=sum(obligatedamount,na.rm=TRUE))
 
-knitr::kable(pt_inspect_summary)
+knitr::kable(pt_inspect_summary,format.args = list(big.mark=","))
 
 ```
