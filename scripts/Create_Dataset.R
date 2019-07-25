@@ -47,10 +47,25 @@ note.text.size<-1.40
 
 load(file="data/clean/defense_contract_complete.RData")
 
+
+
 def_serv<-def %>% filter(PSR %in% c("Services"))
 def_serv<-def_serv[def_serv$MinOfSignedDate>=as.Date("2008-01-01") & def_serv$MinOfSignedDate<=as.Date("2015-12-31"),]
 rm(def)
 #   
+
+
+# summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue)
+# def_serv$UnmodifiedContractBaseAndAllOptionsValue[def_serv$override_unmodified_ceiling==TRUE]<-NA
+summary(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue)
+def_serv$UnmodifiedContractBaseAndExercisedOptionsValue[def_serv$override_unmodified_base==TRUE]<-NA
+summary(def_serv$ChangeOrderBaseAndAllOptionsValue)
+# summary(def_serv$ChangeOrderCeilingGrowth)
+# def_serv$ChangeOrderBaseAndAllOptionsValue[def_serv$override_change_order_growth==TRUE]<-NA
+# def_serv$ChangeOrderCeilingGrowth[def_serv$override_change_order_growth==TRUE]<-NA
+
+
+
 # #****This should be in dataset building, not transform.
     def_serv<-read_and_join_experiment( def_serv,
                                                    "Contract.sp_ContractEntityID.txt",
@@ -73,7 +88,7 @@ rm(fed)
 #About 25.4k inexplicably missing
 # summary(def_serv[is.na(def_serv$Crisis),])
 # 
-debug(transform_contract)
+# debug(transform_contract)
 # # head(def_serv)
 def_serv<-transform_contract(def_serv)
 #
@@ -245,45 +260,24 @@ def_serv$cl_office_naics_hhi_obl <- arm::rescale(na_non_positive_log(def_serv$of
 def_serv$cl_office_naics_hhi_k <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_k))
 def_serv<- def_serv %>% dplyr::select(-c(avg_office_naics_hhi_obl,avg_office_naics_hhi_k))
 
-#*********** Options Growth
-summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
-def_serv$UnmodifiedBaseandExercisedOptionsValue[def_serv$UnmodifiedBaseandExercisedOptionsValue<=0]<-NA
-
-def_serv$l_base<-log(def_serv$UnmodifiedBaseandExercisedOptionsValue+1)
-def_serv$p_OptGrowth<-def_serv$ExercisedOptions/def_serv$UnmodifiedBaseandExercisedOptionsValue+1
-def_serv$lp_OptGrowth<-log(def_serv$p_OptGrowth)
-def_serv$n_OptGrowth<-def_serv$ExercisedOptions+1
-def_serv$ln_OptGrowth<-log(def_serv$n_OptGrowth)
-
-
-
-def_serv$Opt<-NA
-def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==1& def_serv$ExercisedOptions>0]<-"Option Growth"
-def_serv$Opt[(def_serv$AnyUnmodifiedUnexercisedOptions==1)& def_serv$ExercisedOptions==0]<-"No Growth"
-def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-"Initial Base=Ceiling"
-def_serv$Opt<-factor(def_serv$Opt)
 
 
 #********** Performance Based Services Contracting
-def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
+# def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
 
 #********** Office experience in PSC
-def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
+# def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
 
 #********** Vendor Market Share
-summary(def_serv$pMarket)
-def_serv$l_pMarket<-log(def_serv$pMarket+1)
+# def_serv$l_pMarket<-log(def_serv$pMarket+1)
 
 
-#********* Office Entity Pair Count
-freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
 
 #********* Number of actions between vendor and office
-def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
+# def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
 
 #********8 Invoice rate  for PSC
-def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
-summary(def_serv$l_CFTE)
+# def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
 
 save(file="data/clean/transformed_def_serv.Rdata",def_serv)
 

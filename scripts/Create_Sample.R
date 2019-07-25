@@ -29,6 +29,11 @@ summary(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue)
 
 
 
+
+
+
+
+
 def_serv$Base2Ceil<-def_serv$UnmodifiedContractBaseAndAllOptionsValue.Then.Year/def_serv$UnmodifiedContractBaseAndExercisedOptionsValue
 def_serv$Base2Ceil[def_serv$Base2Ceil<1 | !is.finite(def_serv$Base2Ceil)]<-NA
 summary(def_serv$Base2Ceil)
