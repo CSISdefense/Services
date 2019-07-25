@@ -23,6 +23,22 @@ source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIG
 
 if(!exists("def_serv")) load("data/clean/transformed_def_serv.Rdata")
 ## Computational Sample Creation
+summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)
+summary(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue)
+
+
+
+
+def_serv$Base2Ceil<-def_serv$UnmodifiedContractBaseAndAllOptionsValue.Then.Year/def_serv$UnmodifiedContractBaseAndExercisedOptionsValue
+def_serv$Base2Ceil[def_serv$Base2Ceil<1 | !is.finite(def_serv$Base2Ceil)]<-NA
+summary(def_serv$Base2Ceil)
+def_serv$cl_Base2Ceil<-arm::rescale(log(def_serv$Base2Ceil))
+summary(def_serv$cl_Base2Ceil)
+ggplot(def_serv %>% filter(Base2Ceil>1 & Base2Ceil<10),aes(x=Base2Ceil))+geom_histogram(bins=30)
+ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=30)+scale_x_log10()
+ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=50)+scale_x_log10()
+# def_serv$cp_AvlOpt<-arm::rescale(def_serv$p_AvlOpt)
+# def_serv <-def_serv %>% dplyr::select(-AvlOpt,-p_AvlOpt,-cp_AvlOpt)
 
 
 
@@ -111,6 +127,8 @@ complete<-
   !is.na(def_serv$c_pMarket)&  #summary(def_serv$c_pMarket)
   !is.na(def_serv$Crisis)&  #summary(def_serv$c_pMarket)
   !is.na(def_serv$cl_office_naics_hhi_k)
+!is.na(def_serv$cl_Base2Ceil)
+
 
 summary(complete)
 summary(def_serv$Action_Obligation.OMB20_GDP18)
