@@ -63,7 +63,10 @@ rm(def)
     def_serv$EntityID[is.na(def_serv$EntityID)]<-
       def_serv$UnmodifiedEntityID[is.na(def_serv$EntityID)]
  
-
+    def_serv$AvlOpt<-def_serv$UnmodifiedContractBaseAndAllOptionsValue-def_serv$UnmodifiedContractBaseAndExercisedOptionsValue
+    def_serv$AvlOpt[def_serv$AvlOpt<0]<-NA
+    def_serv$p_AvlOpt<-def_serv$AvlOpt/def_serv$UnmodifiedContractBaseAndAllOptionsValue
+    summary(def_serv$p_AvlOpt)
 
 
 
