@@ -606,11 +606,11 @@ summary_residual_compare(b_CBre02A,b_CBre02B, skip_vif = TRUE)
 ## NULL
 ```
 
-When considering number of contracting office obligations for a given service alone, we find a positive relationship between size of share of contracting office obligations for a service and the likelihood of a ceiling breach, the opposite of what was expected.  However, a negative relationship is found, as expected, between the size of the share of contracting office obligations for a service and the overall magnitude of ceiling breaches,
+When considering number of contracting office obligations for a given service alone, we find a positive relationship between size of share of contracting office obligations for a service and the likelihood of a ceiling breach, the opposite of what was expected.  However, a negative relationship is found, as expected, between the size of the share of contracting office obligations for a service and the overall magnitude of ceiling breaches.
 
 
 ### 02C: Office Capacity
-Expectation: Collectively, the larger share of PBSC and contracting office obligations for a given service, the less risk of ceiling breaches and terminations and the more exercised options there would be. Also we expect the results of combined model would be the same as two individual models above. 
+Expectation: Collectively, the larger share of PBSC and contracting office obligations for a given service, the less risk of ceiling breaches and terminations and the more exercised options there would be. Also we expect the results of combined model would be the same as two individual models above. Similarly, we expect that, as the collective share of PBSC and contracting office obligations for a given service increase, the magnitude of associated ceiling breaches declines.
 
 
 ```r
@@ -737,11 +737,13 @@ summary_residual_compare(b_CBre02B,b_CBre02C)
 
 No high correlation is observed between PBSC and Contract Office Obligations for PSC based on the vif score.
 
-After combining PBSC and Contract office obligations for PSC, PBSC had a flipped relationship with ceiling breaches that matches with expectation (A look at summary statistics for Performance-Based experience did find that as the percent of performance-based service went from 0 percent to 75 percent, the ceiling breach rate declined. Above 75 percent, it rose dramatically, suggesting an additional variable may influence that relationship.) but lost significance with terminations. Contract office obligations for PSC is associate with more exercised options. The rest of results remained unmatching with expectations.
+After combining PBSC and Contract office obligations for PSC, PBSC had a flipped relationship with ceiling breaches that matches with expectation (A look at summary statistics for Performance-Based experience did find that as the percent of performance-based service went from 0 percent to 75 percent, the ceiling breach rate declined. Above 75 percent, it rose dramatically, suggesting an additional variable may influence that relationship.) but lost significance with terminations. The rest of results remained unmatching with expectations.
+
+That said, we find the expected relationship in the model estimating ceiling breach sizes (as c_pPBSC and c_pOffPSC rise, the size of a given ceiling breach falls).
 
 
 ### 02D: Cumulative  Model
-Expectation: When all the four variables are combined into one model, same expectations are applied as individual ones. Per service complexity indicator increases, higher risk of ceiling breaches and terminations and less exercised options expected. Per office capacity indicator increases, lower risk of ceiling breaches and terminations and more exercised options expected.
+Expectation: When all the four variables are combined into one model, same expectations are applied as individual ones. Per service complexity indicator increases, higher risk of ceiling breaches and terminations and less exercised options expected. Per office capacity indicator increases, lower risk of ceiling breaches and terminations and more exercised options expected.  Again, per service complexity indicator increases, larger ceiling breaches in size expected.
 
 
 ```r
@@ -874,20 +876,16 @@ summary_residual_compare(b_CBre01C,b_CBre02D)
 ##                 1.248722
 ```
 
-No high correlation is observed among all of the 4 predictors (average salary, invoiced rate, PBSC and Contract Office Obligations for PSC) so far based on the vif score. When all measures for sevice complexity and office capacity are combined, per dependent variable:
+No high correlation is observed among all of the 4 predictors (average salary, invoiced rate, PBSC and Contract Office Obligations for PSC) so far based on the vif score. When all measures for sevice complexity and office capacity are combined:
 
-1. Ceiling Breaches: All variables remain the same within each subgroup (Services Complexity and Office Capacity). Except for Contract office obligations for PSC, the results of other varibles matched with the expectation for ceiling breaches so far. 
-
-2. Terminations: Except for Contract office obligations for PSC, the rest of variables didn't show significant relationships with Termination. The only significant relationship between Contract office obligations for PSC and Temrination didn't match the expectation.
-
-3. Exercised Options: Except for PBSC, all other three variables are associated with exercised options as expected.
+Ceiling Breaches: All variables remain the same within each subgroup (Services Complexity and Office Capacity). Except for Contract office obligations for PSC, the results of other varibles matched with the expectation for ceiling breaches so far. For the model specified in terms of size of ceiling breach, again, all variables remain the same within each subgroup.  All variable results match with expectation for ceiling breaches so far.
 
 
 
 ## Office-Vendor Relationship
 
 ### 03A: Pair History
-Expactation: The number of past years of the relationship between the contracting office or the contractors with a single transaction in a given fiscal year enough to qualify, namely, pair history increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and the exercised options increase (decrease) for that partnership.
+Expactation: The number of past years of the relationship between the contracting office or the contractors with a single transaction in a given fiscal year enough to qualify, namely, pair history increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and the exercised options increase (decrease) for that partnership.  Similarly, as the length of the pair history increases (decreases). the size of cost ceiling breaches is expected to decrease (increase).
 
 
 ```r
@@ -1066,11 +1064,11 @@ summary_residual_compare(b_CBre02D,b_CBre03A, skip_vif = TRUE)
 ## NULL
 ```
 
-When considering pair history alone, expectations were met for ceiling breaches and terminations, but not for exercised options. 
+When considering pair history alone, expectations were met for ceiling breaches, both in probability of a breach and the size of the breach.
 
 
 ### 03B: Interaction
-Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and that of exercised options increases (decreases) for that partnership.
+Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and that of exercised options increases (decreases) for that partnership.  Similarly, as the number of cotnract actions a vendor has performed for an office in the past year increases (decreases), the size of cost ceiling breaches should decrease (increase).
 
 
 ```r
@@ -1224,7 +1222,7 @@ summary_residual_compare(b_CBre02D,b_CBre03B, skip_vif = TRUE)
 ## NULL
 ```
 
-When considering contract actions alone, no expectation were met. The patterns in the plots are complex, ceiling breaches has a sinusoidal or perhaps exponential relationship while terminations has an neative relationship, until the number of ations grows extreme at which point the risk jumps up.
+When considering contract actions alone, no expectations were met. The patterns in the plots are complex, ceiling breaches has a sinusoidal or perhaps exponential relationship while terminations has an neative relationship, until the number of ations grows extreme at which point the risk jumps up.
 
 ### 03C: Office-Vendor Relationship
 Expectation: 
@@ -1864,7 +1862,7 @@ str(serv_smp)
 ```
 
 ```
-## Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':	250000 obs. of  255 variables:
+## Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':	250000 obs. of  257 variables:
 ##  $ CSIScontractID                                      : num  19015001 19101209 24640201 26380332 27836378 ...
 ##  $ Action_Obligation.Then.Year                         : num  34772 32784 1172796 290276 51362 ...
 ##  $ IsClosed                                            : num  0 0 0 0 0 0 0 0 1 0 ...
