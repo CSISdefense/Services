@@ -1438,6 +1438,43 @@ summary_residual_compare(Term_10D,Term_12C)
 summary_residual_compare(Term_11B,Term_12C)
 ```
 
+####13A: Ratio Initial Base : Ceiling Ratio (Logged)
+```{r}
+summary_continuous_plot(serv_smp, "cl_Base2Ceil")
+
+#Scatter Plot
+ggplot(serv_smp, aes(x=cl_Base2Ceil, y=b_Term)) + geom_point(alpha = 0.1) + ggtitle("Terminations and Ratio Initial Base:Ceiling Ratio (Logged") + theme(plot.title = element_text(hjust = 0.5))
+
+#Model
+Term_13A <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil)
+display(Term_13A)
+
+#Plot Residuals vs. Fitted
+stargazer::stargazer(Term_12C, Term_13A, type="text", digits=2)
+```
+
+#### 13B: Cumulative Model
+```{r}
+
+#Model
+Term_13B <- glm(data=serv_smp,
+                 b_Term ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + cl_Base2Ceil)
+glmer_examine(Term_13B)
+
+#Plot residuals versus fitted
+stargazer::stargazer(Term_12C, Term_13A, Term_13B)
+```
 
 ## Pre-Multilevel Model Summary
 
