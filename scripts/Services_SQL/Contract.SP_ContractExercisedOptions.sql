@@ -33,7 +33,7 @@ BEGIN
 		,UnmodifiedBase
 		,SteadyScopeOptionGrowthAlone
 		,SteadyScopeOptionGrowthMixed
-		,SteadyScopeOptionRescinded
+		,SteadyScopeOptionRescision
 		,AdminOptionModification
 		,ChangeOrderOptionModification
 		,EndingOptionModification
@@ -86,7 +86,7 @@ where  a.IsDefense=@IsDefense
 		,UnmodifiedBase
 		,SteadyScopeOptionGrowthAlone
 		,SteadyScopeOptionGrowthMixed
-		,SteadyScopeOptionRescinded
+		,SteadyScopeOptionRescision
 		,AdminOptionModification
 		,ChangeOrderOptionModification
 		,EndingOptionModification
