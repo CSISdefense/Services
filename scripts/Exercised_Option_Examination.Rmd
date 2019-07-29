@@ -321,3 +321,35 @@ knitr::kable(inspect10x%>% group_by(CSIScontractID) %>% dplyr::select(CSIScontra
 
 
 ```
+
+# Validate Transformed_Dataset
+This is a quick inspection to make sure that the version of the transformed dataset to be used is current, focusing on ceiling and change orders.
+
+```{r validate_transformed_dataset}
+
+load(file="../data/clean/transformed_def_serv.Rdata")
+
+#Overrides
+def_serv<-read_and_join_experiment( def_serv,
+                               "CSIS_contract_inspection.csv",
+                               path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                               directory="contract/",
+                               by=c("CSIScontractID"),
+                               # add_var=c("EntityID","UnmodifiedEntityID"),
+                               new_var_checked=FALSE,
+                               create_lookup_rdata=FALSE
+)
+
+#Making sure the transformed dataset has been set to NA 
+if(any(!is.na(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue[
+  def_serv$override_unmodified_base==TRUE]))){
+  stop("Unmodified Base set to be overiden have not been set to NA. Rerun Create_Dataset.R")
+}
+
+if(any(!is.na(def_serv$ExercisedOptions[
+  def_serv$override_exercised_growth==TRUE]))){
+  stop("Exercised Options set to be overiden have not been set to NA. Rerun Create_Dataset.R")
+}
+
+
+```

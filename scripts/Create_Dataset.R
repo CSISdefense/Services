@@ -280,4 +280,3 @@ def_serv<- def_serv %>% dplyr::select(-c(avg_office_naics_hhi_obl,avg_office_nai
 # def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
 
 save(file="data/clean/transformed_def_serv.Rdata",def_serv)
-
