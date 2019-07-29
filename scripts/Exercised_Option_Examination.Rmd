@@ -33,7 +33,7 @@ memory.limit()
 
 ```
 
-```{r vargraphs: ExercisedOptions, echo = FALSE}
+```{r vargraphs: SteadyScopeOptionGrowthAlone, echo = FALSE}
 #load("../data/clean/transformed_def_serv.Rdata")
 load(file="..\\data\\semi_clean\\opt_pre_clean.rdata")
   
@@ -42,14 +42,14 @@ load(file="..\\data\\semi_clean\\opt_pre_clean.rdata")
 #W912UM <- def_serv %>% filter(Office=="W912UM")
 #W912UMtrans<-read.delim(file="..\\data\\semi_clean\\W912UM_trans.csv", sep=",")
 #W912UMtrans<-remove_bom(W912UMtrans)
-#opt_preclean<-def_serv %>% filter(ExercisedOptions>1)
+#opt_preclean<-def_serv %>% filter(SteadyScopeOptionGrowthAlone>1)
 #opt_preclean$q_OptGrowth<-Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(0,1e-10,1,10))
 summary(opt_preclean$q_OptGrowth)
 #save(W912UM,W912UMtrans,opt_preclean,file="..\\data\\semi_clean\\opt_pre_clean.rdata")
 
 
-summary(opt_preclean$ExercisedOptions)
-summary(opt_preclean$UnmodifiedBaseandExercisedOptionsValue)
+summary(opt_preclean$SteadyScopeOptionGrowthAlone)
+summary(opt_preclean$UnmodifiedBase)
 ```
 
 
@@ -59,7 +59,7 @@ summary(opt_preclean$UnmodifiedBaseandExercisedOptionsValue)
 ```{r OptionsGrowthGraphs,echo=FALSE}
 
 (
-ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue,y=p_OptGrowth-1)) +#,color=q_OptGrowth
+ggplot(opt_preclean, aes(x=UnmodifiedBase,y=p_OptGrowth-1)) +#,color=q_OptGrowth
   geom_point(alpha=0.25,shape=".")+
   # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+scale_y_log10()+
@@ -74,7 +74,7 @@ ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue,y=p_OptGrowth-
 
 
 (
-ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue,y=ExercisedOptions)) +#,color=q_OptGrowth
+ggplot(opt_preclean, aes(x=UnmodifiedBase,y=SteadyScopeOptionGrowthAlone)) +#,color=q_OptGrowth
   geom_point(alpha=0.25,shape=".")+
   # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+scale_y_log10()+
@@ -88,7 +88,7 @@ ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue,y=ExercisedOpt
 )
 
 (
-ggplot(opt_preclean, aes(x=UnmodifiedBaseandExercisedOptionsValue+ExercisedOptions,y=Action_Obligation.Then.Year)) +#,color=q_OptGrowth
+ggplot(opt_preclean, aes(x=UnmodifiedBase+SteadyScopeOptionGrowthAlone,y=Action_Obligation.Then.Year)) +#,color=q_OptGrowth
   geom_point(alpha=0.25,shape=".")+
   # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+scale_y_log10()+
@@ -124,7 +124,7 @@ facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
 
 
 (
-ggplot(opt_preclean, aes(x=ExercisedOptions,fill=q_OptGrowth)) +
+ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=q_OptGrowth)) +
   geom_histogram(bins=100)+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+
@@ -138,7 +138,7 @@ ggplot(opt_preclean, aes(x=ExercisedOptions,fill=q_OptGrowth)) +
 )
 
 (
-ggplot(opt_preclean, aes(x=ExercisedOptions,fill=q_OptGrowth)) +
+ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=q_OptGrowth)) +
   geom_histogram(bins=100)+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+
@@ -165,13 +165,13 @@ summary(Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(1,
                                           100
                                           )))
 
-summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>10 & opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0 &
-                            !is.na(opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0 )])
-summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>100 & opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0&
-                            !is.na(opt_preclean$UnmodifiedBaseandExercisedOptionsValue>0)])
+summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>10 & opt_preclean$UnmodifiedBase>0 &
+                            !is.na(opt_preclean$UnmodifiedBase>0 )])
+summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>100 & opt_preclean$UnmodifiedBase>0&
+                            !is.na(opt_preclean$UnmodifiedBase>0)])
 
 
-summary(Hmisc::cut2(opt_preclean$ExercisedOptions,c(1e3,
+summary(Hmisc::cut2(opt_preclean$SteadyScopeOptionGrowthAlone,c(1e3,
                                           1e6,
                                           1e7,
                                           1e8,
@@ -181,22 +181,22 @@ summary(Hmisc::cut2(opt_preclean$ExercisedOptions,c(1e3,
                                           2e10
                                           )))
 
-summary(opt_preclean$Ceil[opt_preclean$ExercisedOptions>=1e6])
+summary(opt_preclean$Ceil[opt_preclean$SteadyScopeOptionGrowthAlone>=1e6])
 
 
 opt_preclean$Why_Outlier<-NA
-opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBaseandExercisedOptionsValue<=0 |
-                           is.na(opt_preclean$UnmodifiedBaseandExercisedOptionsValue<=0 )]<-"No Unmodified Base"
+opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBase<=0 |
+                           is.na(opt_preclean$UnmodifiedBase<=0 )]<-"No Unmodified Base"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$Action_Obligation.Then.Year*2>=opt_preclean$UnmodifiedBaseandExercisedOptionsValue+
-                   opt_preclean$ExercisedOptions]<-
+                   opt_preclean$Action_Obligation.Then.Year*2>=opt_preclean$UnmodifiedBase+
+                   opt_preclean$SteadyScopeOptionGrowthAlone]<-
   "Obligations at least half Base+Opt"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$Office=="W912UM"]<-
   "Korean Office W912UM"
-opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&((opt_preclean$UnmodifiedBaseandExercisedOptionsValue + opt_preclean$ExercisedOptions) < opt_preclean$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)] <- "Base + Growth < Unmodified Ceiling"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&((opt_preclean$UnmodifiedBase + opt_preclean$SteadyScopeOptionGrowthAlone) < opt_preclean$UnmodifiedCeiling_Then_Year)] <- "Base + Growth < Unmodified Ceiling"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$ExercisedOptions>=2.5e8]<-
+                   opt_preclean$SteadyScopeOptionGrowthAlone>=2.5e8]<-
   ">=$250M, Inspect"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$p_OptGrowth-1>=10]<-
@@ -217,22 +217,22 @@ summary(opt_preclean$Why_Outlier)
 
 
 p_outlier_summary<-opt_preclean %>% filter(p_OptGrowth-1>10) %>% group_by(Why_Outlier) %>%
-  dplyr::summarise(nContract=length(ExercisedOptions),
-    SumOfExercisedOptions=sum(ExercisedOptions),
-                   MaxOfExercisedOptions=max(ExercisedOptions),
+  dplyr::summarise(nContract=length(SteadyScopeOptionGrowthAlone),
+    SumOfExercisedOptions=sum(SteadyScopeOptionGrowthAlone),
+                   MaxOfExercisedOptions=max(SteadyScopeOptionGrowthAlone),
                    SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
 
 
-n_outlier_summary<-opt_preclean %>% filter(ExercisedOptions>2.5e8) %>% group_by(Why_Outlier) %>%
-  dplyr::summarise(nContract=length(ExercisedOptions),
-    SumOfExercisedOptions=sum(ExercisedOptions),
-                   MaxOfExercisedOptions=max(ExercisedOptions),
+n_outlier_summary<-opt_preclean %>% filter(SteadyScopeOptionGrowthAlone>2.5e8) %>% group_by(Why_Outlier) %>%
+  dplyr::summarise(nContract=length(SteadyScopeOptionGrowthAlone),
+    SumOfExercisedOptions=sum(SteadyScopeOptionGrowthAlone),
+                   MaxOfExercisedOptions=max(SteadyScopeOptionGrowthAlone),
                    SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
 
 nrow(opt_preclean[is.na(opt_preclean$Why_Outlier),])
 
 write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
-write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(ExercisedOptions>=2.5e8 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(SteadyScopeOptionGrowthAlone>=2.5e8 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
 ```
 Examining cases of large options growth, `r nrow(opt_preclean %>% filter(p_OptGrowth-1>10))` contracts experienced greater than 10 fold growth. An increase of that size strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
 
@@ -265,7 +265,7 @@ The contracts coded as 'other unexplained' above were inspected manually given t
 
 
 inspect10x<-opt_preclean %>% filter(Why_Outlier=="Other Unexplained 10x Options Growth")
-colnames(inspect10x)[colnames(inspect10x)=="UnmodifiedBaseandExercisedOptionsValue"]<-"Base"
+colnames(inspect10x)[colnames(inspect10x)=="UnmodifiedBase"]<-"Base"
 
 override<-read.delim(file="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/contract/CSIS_contract_inspection.csv", sep=",") 
 inspect10x<-left_join(inspect10x,override,by="CSIScontractID")
@@ -282,7 +282,7 @@ transk<-inspect10xtrans %>% group_by(CSIScontractID) %>%
   dplyr::summarise(nTransaction=length(CSIStransactionID),
     SumOfBaseAndExercisedOptions=sum(baseandexercisedoptionsvalue,na.rm=TRUE),
     GrossBaseAndExercisedOptions=sum(ifelse(baseandexercisedoptionsvalue>0,baseandexercisedoptionsvalue,0),na.rm=TRUE),
-    RescindedOptions=sum(ifelse(baseandexercisedoptionsvalue<0 & reasonformodification %in% 
+    SteadyScopeOptionRescinded=sum(ifelse(baseandexercisedoptionsvalue<0 & reasonformodification %in% 
                                       c('B','C','G','M'),baseandexercisedoptionsvalue,0),na.rm=TRUE),
     CloseOptionReduction=sum(ifelse(baseandexercisedoptionsvalue<0 & reasonformodification %in% c('K','E','F','X'),
                                     baseandexercisedoptionsvalue,0),na.rm=TRUE),
@@ -298,8 +298,8 @@ p_inspect_summary<-inspect10x %>% group_by(CSIS_inspection) %>%
   dplyr::summarise(nContract=length(CSIScontractID),
                    # nTransaction=sum(nTransaction),
                    Base=sum(Base),
-    ExercisedOptions=sum(ExercisedOptions),
-    RescindedOptions=sum(RescindedOptions),
+    SteadyScopeOptionGrowthAlone=sum(SteadyScopeOptionGrowthAlone),
+    SteadyScopeOptionRescinded=sum(SteadyScopeOptionRescinded),
     CloseOptionReduction=sum(CloseOptionReduction),
     OtherOptionReduction=sum(OtherOptionReduction),
     Action_Obligation.Then.Year=sum(Action_Obligation.Then.Year,na.rm=TRUE),
@@ -309,8 +309,8 @@ knitr::kable(p_inspect_summary,format.args = list(big.mark=","))
 
 knitr::kable(inspect10x%>% group_by(CSIScontractID) %>% dplyr::select(CSIScontractID,
                                          Base,
-                                         ExercisedOptions,
-                                         RescindedOptions,
+                                         SteadyScopeOptionGrowthAlone,
+                                         SteadyScopeOptionRescinded,
                                          CloseOptionReduction,
                                          OtherOptionReduction,
                                          # Action_Obligation.Then.Year,
@@ -318,6 +318,38 @@ knitr::kable(inspect10x%>% group_by(CSIScontractID) %>% dplyr::select(CSIScontra
                                          CSIS_inspection
                                          ),format.args = list(big.mark=","))
 
+
+
+```
+
+# Validate Transformed_Dataset
+This is a quick inspection to make sure that the version of the transformed dataset to be used is current, focusing on ceiling and change orders.
+
+```{r validate_transformed_dataset}
+
+load(file="../data/clean/transformed_def_serv.Rdata")
+
+#Overrides
+def_serv<-read_and_join_experiment( def_serv,
+                               "CSIS_contract_inspection.csv",
+                               path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                               directory="contract/",
+                               by=c("CSIScontractID"),
+                               # add_var=c("EntityID","UnmodifiedEntityID"),
+                               new_var_checked=FALSE,
+                               create_lookup_rdata=FALSE
+)
+
+#Making sure the transformed dataset has been set to NA 
+if(any(!is.na(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue[
+  def_serv$override_unmodified_base==TRUE]))){
+  stop("Unmodified Base set to be overiden have not been set to NA. Rerun Create_Dataset.R")
+}
+
+if(any(!is.na(def_serv$SteadyScopeOptionGrowthAlone[
+  def_serv$override_exercised_growth==TRUE]))){
+  stop("Exercised Options set to be overiden have not been set to NA. Rerun Create_Dataset.R")
+}
 
 
 ```

@@ -30,9 +30,15 @@ BEGIN
 		select distinct cc.[CSIScontractID]
 		,AnyUnmodifiedUnexercisedOptions
 		,AnyUnmodifiedUnexercisedOptionsWhy
-		,SumOfUnmodifiedbaseandexercisedoptionsvalue as UnmodifiedBaseandExercisedOptionsValue
-		,ExercisedOptions
-		,RescindedOptions
+		,UnmodifiedBase
+		,SteadyScopeOptionGrowthAlone
+		,SteadyScopeOptionGrowthMixed
+		,SteadyScopeOptionRescision
+		,AdminOptionModification
+		,ChangeOrderOptionModification
+		,EndingOptionModification
+		,OtherOptionModification
+		,SumOfbaseandexercisedoptionsvalue
    --   ,cc.[TypeOfContractPricing]
    --   ,[UnmodifiedTypeOfContractPricing]
 	  --,IsLabeledPricing
@@ -69,17 +75,23 @@ inner join contract.ContractDiscretization cc
 on ct.CSIScontractID=cc.CSIScontractID
 inner join FPDSTypeTable.agencyid a
 on f.contractingofficeagencyid=a.AgencyID
-where a.IsDefense=@IsDefense
+where  a.IsDefense=@IsDefense 
 	END
 	ELSE --Begin sub path wall Customers will be returned
 		BEGIN
 		--Copy the start of your query here
 		select  cc.[CSIScontractID]
-			,SumOfUnmodifiedbaseandexercisedoptionsvalue as UnmodifiedBaseandExercisedOptionsValue
-			,AnyUnmodifiedUnexercisedOptions
+		,AnyUnmodifiedUnexercisedOptions
 		,AnyUnmodifiedUnexercisedOptionsWhy
-		,ExercisedOptions
-		,RescindedOptions
+		,UnmodifiedBase
+		,SteadyScopeOptionGrowthAlone
+		,SteadyScopeOptionGrowthMixed
+		,SteadyScopeOptionRescision
+		,AdminOptionModification
+		,ChangeOrderOptionModification
+		,EndingOptionModification
+		,OtherOptionModification
+		,SumOfbaseandexercisedoptionsvalue
    --   ,cc.[TypeOfContractPricing]
    --   ,[UnmodifiedTypeOfContractPricing]
    --   ,[ObligatedAmountIsFixedPrice]
