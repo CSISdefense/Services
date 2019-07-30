@@ -802,7 +802,7 @@ stargazer::stargazer(
                        type="text",
                        digits=2)
 
-#summary_residual_compare(Term_05D,Term_06A)
+ggplot(glm(b_Term~Veh, data=serv_smp)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Residual Plot') + theme(plot.title = element_text(hjust = 0.5))
 
 
 ```
