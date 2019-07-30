@@ -55,6 +55,28 @@ summary(opt_preclean$UnmodifiedBase)
 
 
 # Before Cleaning
+## Options Sumcheck
+
+## Ceiling Change Checksum
+```{r CeilingChangeChecksum}
+load(file="..\\data\\clean\\defense_contract_all_detail.Rdata")
+
+if(any(
+  def_all$UnmodifiedCeiling+
+  def_all$ChangeOrderCeilingGrowth+
+  def_all$ChangeOrderCeilingRescision+
+    def_all$AdminCeilingModification+
+    def_all$EndingCeilingModification+
+    def_all$OtherCeilingModification!=
+    def_all$SumOfbaseandalloptionsvalue
+)) stop("Ceiling Modification Checksum failure.")
+    
+
+```
+
+
+
+
 ## Options Growth
 ```{r OptionsGrowthGraphs,echo=FALSE}
 

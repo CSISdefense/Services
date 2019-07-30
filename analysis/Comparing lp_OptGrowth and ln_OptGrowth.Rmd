@@ -1,0 +1,871 @@
+---
+title: "Exercised Options Examination"
+output: html_document
+---
+
+```{r}
+load("~/Services/data/clean/def_sample.Rdata")
+
+library(csis360)
+library(ggplot2)
+library(arm)
+library(R2WinBUGS)
+library(dplyr)
+library(Hmisc)
+library(stargazer)
+library(dummies)
+library(optimx)
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+axis.text.size<-10
+strip.text.size<-10
+legend.text.size<-8
+# table.text.size<-5.75
+title.text.size<-12
+geom.text.size<-12
+main.text.size<-1
+note.text.size<-1.40
+```
+
+```{r StudyVariableAlone, echo=FALSE}
+ # !is.na(def_serv$cl_US6_avg_sal_lag1)&
+ #  !is.na(def_serv$cl_CFTE)&
+ #  !is.na(def_serv$c_pPBSC)&
+ #  !is.na(def_serv$c_pOffPSC)&
+ #  !is.na(def_serv$c_pairHist)&
+ #  !is.na(def_serv$cl_pairCA)&
+
+study_coef_list<-list("(Intercept)"="(Intercept)",
+                      "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
+                      "cl_CFTE"="Log(Service Invoice Rate)",
+                      "c_pPBSC"="Office Perf.-Based %",
+                      "c_pOffPSC"="Office Service Exp. %",
+                      "c_pairHist"="Paired Years",
+                      "cl_pairCA"="Log(Paired Actions)"
+)
+all_coef_list<-list("(Intercept)"="(Intercept)",
+                    "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
+                    "cl_CFTE"="Log(Service Invoice Rate)",
+                    "c_pPBSC"="Office Perf.-Based %",
+                    "c_pOffPSC"="Office Service Exp. %",
+                    "c_pairHist"="Paired Years",
+                    "cl_pairCA"="Log(Paired Actions)",
+                    
+                    #Contract Controls
+                    
+                    "Comp1or51 offer"="Comp=1 offer",
+                    "Comp1or52-4 offers"="Comp=2-4 offers",
+                    "Comp1or55+ offers"="Comp=5+ offers",
+                    
+                    "CompOffr1 offer"="Comp=1 offer",
+                    "CompOffr2 offers"="Comp=2 offers",
+                    "CompOffr3-4 offers"="Comp=3-4 offers",
+                    "CompOffr5+ offers"="Comp=5+ offers",
+                    
+                    "cl_Ceil"="Log(Init. Ceiling)",
+                    "capped_cl_Days"="Log(Init. Days)",
+                    "VehS-IDC"="Vehicle=S-IDC",
+                    "VehM-IDC"="Vehicle=M-IDC",
+                    "VehFSS/GWAC"="Vehicle=FSS/GWAC",
+                    "VehBPA/BOA"="Vehicle=BPA/BOA",
+                    "PricingUCAFFP"="Pricing=FFP",
+                    "PricingUCAOther FP"="Pricing=Other FP",
+                    "PricingUCAIncentive"="Pricing=Incentive Fee",
+                    "PricingUCACombination or Other"="Pricing=Combination or Other",
+                    "PricingUCAOther CB"="Pricing=Other CB",
+                    "PricingUCAT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
+                    "PricingUCAUCA"="Pricing=UCA",
+                    
+                    "PricingFeeOther FP"="Pricing=Other FP",
+                    "PricingFeeIncentive"="Pricing=Incentive Fee",
+                    "PricingFeeCombination or Other"="Pricing=Combination or Other",
+                    "PricingFeeOther CB"="Pricing=Other CB",
+                    "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
+                    "b_UCA"="UCA",
+                    "CrisisARRA"="Crisis=ARRA",
+                    "CrisisDis"="Crisis=Disaster",
+                    "CrisisOCO"="Crisis=OCO",
+                    "b_Intl"="Performed Abroad",
+                    #NAICS
+                    "cl_def3_HHI_lag1"="Log(Subsector HHI)",
+                    "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
+                    "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
+                    "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
+                    "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
+                    #Office
+                    "c_pMarket"="Percent Market",
+                    "cl_OffVol"="Office Volume",
+                    "cl_office_naics_hhi_k"="Office Concentration",
+                    
+                    
+                    #interations
+                    # # "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
+                    # "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
+                    # # "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
+                    "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
+                    # "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
+                    # "CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
+                    # "CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
+                    # "CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
+                    # "CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
+                    "VehS-IDC:b_Intl"="Vehicle=S-IDC:Performed Abroad",
+                    "VehM-IDC:b_Intl"="Vehicle=M-IDC:Performed Abroad",
+                    "VehFSS/GWAC:b_Intl"="Vehicle=FSS/GWAC:Performed Abroad",
+                    "VehBPA/BOA:b_Intl"="Vehicle=BPA/BOA:Performed Abroad",
+                    "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"="Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
+)
+```
+####Service Complexity
+
+####01A NAICS Salary
+```{r, NAICS Salary}
+
+##Scatterplots
+
+naicslnplot <- ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1Const, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + theme(plot.title = element_text(hjust = 0.5))
+naicslpplot <- ggplot(serv_opt, aes(x=cl_US6_avg_sal_lag1Const, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + theme(plot.title = element_text(hjust = 0.5))
+
+naicslnplot + labs(x = "NAICS Salary", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto') + ggtitle('Exercised Options Scatterplot')
+naicslpplot + labs(x = "NAICS Salary", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto') + ggtitle('Percent Exercised Options Scatterplot')
+
+##Summary Table
+
+naicsln <- glm (data=serv_opt, ln_OptGrowth ~ cl_US6_avg_sal_lag1Const)
+display(naicsln)
+naicslp <- glm(data=serv_opt, lp_OptGrowth ~ cl_US6_avg_sal_lag1Const)
+
+stargazer::stargazer(naicsln,naicslp,type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(naicsln, naicslp, skip_vif = TRUE)
+
+##Jitterplots
+naicslnplot + labs(x = "NAICS Salary", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5)) + ggtitle('Exercised Options Jitterplot')
+
+naicslpplot + labs(x = "NAICS Salary", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5)) + ggtitle('Percent Exercised Options Jitterplot')
+```
+
+####01B Invoice Rate
+```{r, Invoice Rate}
+##Scatterplots
+
+invoicelnplot <- ggplot(serv_opt, aes(x=cl_CFTE, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + theme(plot.title = element_text(hjust = 0.5))
+invoicelpplot <- ggplot(serv_opt, aes(x=cl_CFTE, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + theme(plot.title = element_text(hjust = 0.5))
+
+invoicelnplot + labs(x = "Invoice Rate", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto') + ggtitle('Exercised Options Scatterplot')
+invoicelpplot + labs(x = "Invoice Rate", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto') + ggtitle('Percent Exercised Options Scatterplot')
+
+##Summary Table
+
+invoiceln <- glm (data=serv_opt, ln_OptGrowth ~ cl_CFTE)
+invoicelp <- glm(data=serv_opt, lp_OptGrowth ~ cl_CFTE)
+
+stargazer::stargazer(invoiceln, invoicelp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(invoiceln, invoicelp, skip_vif = TRUE)
+
+##Jitterplots
+invoicelnplot + labs(x = "Invoice Rate", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5)) + ggtitle('Exercised Options Jitterplot')
+
+invoicelpplot + labs(x = "Invoice Rate", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5)) + ggtitle('Percent Exercised Options Jitterplot')
+
+```
+
+```{r}
+###Service Complexity Combined
+
+compln <- glm(data=serv_opt, ln_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE)
+glmer_examine(compln)
+complp <- glm(data=serv_opt, lp_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE)
+glmer_examine(complp)
+
+summary_residual_compare(compln, complp)
+
+stargazer::stargazer(compln, complp, type="text", digits=2)
+```
+
+####Office Capacity
+
+###Performance Based Services
+```{r, Performance Based Services}
+
+##Scatterplots
+pbslnplot <- ggplot(serv_opt, aes(x=c_pPBSC, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + theme(plot.title = element_text(hjust = 0.5))
+
+pbslpplot <- ggplot(serv_opt, aes(x=c_pPBSC, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + theme(plot.title = element_text(hjust = 0.5))
+
+pbslnplot + labs(x = "Performance Based Services", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto') + ggtitle('Exercised Options Scatterplot')
+
+pbslpplot + labs(x = "Performance Based Services", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto') + ggtitle('Percent Exercised Options Scatterplot')
+
+##Summary Table
+pbsln <- glm (data=serv_opt, ln_OptGrowth ~ c_pPBSC)
+display(pbsln)
+pbslp <- glm(data=serv_opt, lp_OptGrowth ~ c_pPBSC)
+stargazer::stargazer(pbsln, pbslp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(pbsln, pbslp, skip_vif = TRUE)
+
+##Jitterplots
+pbslnplot + labs(x = "Performance Based Services", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5)) + ggtitle(' Exercised Options Jitterplot')
+pbslpplot + labs(x = "Performance Based Services", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))+ ggtitle('Percent Exercised Options Jitterplot')
+```
+
+####Experience PSC
+```{r, Experience PSC}
+##Scatterplots
+expbslnplot <- ggplot(serv_opt, aes(x=c_pOffPSC, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+expbslpplot <- ggplot(serv_opt, aes(x=c_pOffPSC, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+expbslnplot + labs(x = "Experience PSC", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+expbslpplot + labs(x = "Experience PSC", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+expbsln <- glm (data=serv_opt, ln_OptGrowth ~ c_pOffPSC)
+expbslp <- glm(data=serv_opt, lp_OptGrowth ~ c_pOffPSC)
+stargazer::stargazer(expbsln, expbslp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(expbsln, expbslp, skip_vif = TRUE)
+
+##Jitterplots
+expbslnplot + labs(x = "Experience PSC", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+expbslpplot + labs(x = "Experience PSC", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+
+####Office Capacity Combined
+```{r, Office Capacity Combined}
+
+capln <- glm(data=serv_opt, ln_OptGrowth ~ c_pPBSC+c_pOffPSC)
+caplp <- glm(data=serv_opt, lp_OptGrowth ~ c_pPBSC+c_pOffPSC)
+
+stargazer::stargazer(capln, caplp, type="text", digits=2)
+
+summary_residual_compare(capln, caplp)
+```
+
+###Cumulative Model for Complexity and Capacity
+```{r}
+compcapln <- glm (data=serv_opt,ln_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC)
+compcaplp <- glm (data=serv_opt,lp_OptGrowth ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC)
+
+stargazer::stargazer(compcapln, compcaplp, type="text", digits=2)
+
+summary_residual_compare(compcapln, compcaplp)
+```
+
+####Office-Vendor Relationship
+
+####Pair History
+```{r, Pair History}
+##Scatterplots
+historylnplot <- ggplot(serv_opt, aes(x=c_pairHist, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+historylpplot <- ggplot(serv_opt, aes(x=c_pairHist, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+historylnplot + labs(x = "Pair History", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+historylpplot + labs(x = "Pair History", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+historyln <- glm (data=serv_opt, ln_OptGrowth ~ c_pairHist)
+historylp <- glm(data=serv_opt, lp_OptGrowth ~ c_pairHist)
+stargazer::stargazer(historyln, historylp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(historyln, historylp, skip_vif = TRUE)
+
+##Jitterplots
+historylnplot + labs(x = "Pair History", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+historylpplot + labs(x = "Pair History", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+```
+
+####Interaction
+```{r, Interaction}
+##Scatterplots
+interactionlnplot <- ggplot(serv_opt, aes(x=cl_pairCA, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+interactionlpplot <- ggplot(serv_opt, aes(x=cl_pairCA, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+interactionlnplot + labs(x = "Interaction", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+interactionlpplot + labs(x = "Interaction", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+interactionln <- glm (data=serv_opt, ln_OptGrowth ~ cl_pairCA)
+interactionlp <- glm(data=serv_opt, lp_OptGrowth ~ cl_pairCA)
+stargazer::stargazer(interactionln, interactionlp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(interactionln, interactionlp, skip_vif=TRUE)
+
+##Jitterplots
+interactionlnplot + labs(x = "Interaction", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+interactionlpplot + labs(x = "Interaction", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+
+###Office-Vendor Relationship Cumulative
+```{r, Office-Vendor Cumulative}
+histintln <- glm (data=serv_opt,ln_OptGrowth ~ c_pairHist+cl_pairCA)
+histintlp <- glm (data=serv_opt,lp_OptGrowth ~ c_pairHist+cl_pairCA)
+
+stargazer::stargazer(histintln, histintlp, type="text", digits=2)
+
+summary_residual_compare(histintln, histintlp)
+```
+
+####Cumulative Model for Complexity, Capacity, and Previous Relationship
+```{r}
+comcaphistln <- glm(data = serv_opt,  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC + c_pOffPSC + c_pairHist+cl_pairCA)
+comcaphistlp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC + c_pOffPSC + c_pairHist+cl_pairCA)
+
+stargazer::stargazer(comcaphistln, comcaphistlp, type="text", digits=2)
+
+summary_residual_compare(comcaphistln, comcaphistlp)
+```
+####Controls
+
+####Cost Ceiling
+```{r Cost Ceiling}
+##Scatterplots
+ceilinglnplot <- ggplot(serv_opt, aes(x=cl_Ceil, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ceilinglpplot <- ggplot(serv_opt, aes(x=cl_Ceil, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+ceilinglnplot + labs(x = "Cost Ceiling", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+ceilinglpplot + labs(x = "Cost Ceiling", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+ceilingln <- glm (data=serv_opt, ln_OptGrowth ~ cl_Ceil)
+ceilinglp <- glm(data=serv_opt, lp_OptGrowth ~ cl_Ceil)
+stargazer::stargazer(ceilingln, ceilinglp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(ceilingln, ceilinglp, skip_vif = TRUE)
+
+##Jitterplots
+ceilinglnplot + labs(x = "Cost Ceiling", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+ceilinglpplot + labs(x = "Cost Ceiling", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+
+####Maximum Duration
+```{r Maximum Duration}
+##Scatterplots
+durationlnplot <- ggplot(serv_opt, aes(x=capped_cl_Days, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+durationlpplot <- ggplot(serv_opt, aes(x=capped_cl_Days, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+durationlnplot + labs(x = "Max Duration", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+durationlpplot + labs(x = "Max Duration", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+durationln <- glm (data=serv_opt, ln_OptGrowth ~ capped_cl_Days)
+durationlp <- glm(data=serv_opt, lp_OptGrowth ~ capped_cl_Days)
+stargazer::stargazer(durationln, durationlp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(durationln, durationlp, skip_vif = TRUE)
+
+##Jitterplots
+durationlnplot + labs(x = "Max Duration", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+durationlpplot + labs(x = "Max Duration", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+```
+
+####Both Scope Variables
+```{r Both Scope Variables}
+
+scopeln <- glm(data = serv_opt,  ln_OptGrowth ~  cl_Ceil + capped_cl_Days)
+scopelp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_Ceil + capped_cl_Days)
+
+stargazer::stargazer(scopeln, scopelp, type="text", digits=2)
+
+summary_residual_compare(scopeln, scopelp)
+
+```
+
+####Cumulative Model
+```{r Cumulative}
+scopestudyln <- glm(data = serv_opt,  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + c_pairHist+cl_pairCA + cl_Ceil + capped_cl_Days)
+scopestudylp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+ c_pairHist+cl_pairCA + cl_Ceil + capped_cl_Days)
+
+stargazer::stargazer(scopestudyln, scopestudylp, type="text", digits=2)
+
+summary_residual_compare(scopestudyln, scopestudylp)
+
+```
+####Competition
+```{r Competition}
+##Scatterplots
+competitionlnplot <- ggplot(serv_opt, aes(x=Comp1or5, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+competitionlpplot <- ggplot(serv_opt, aes(x=Comp1or5, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+competitionlnplot + labs(x = "Competition", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+competitionlpplot + labs(x = "Competition", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+competitionln <- glm (data=serv_opt, ln_OptGrowth ~ Comp1or5)
+competitionlp <- glm(data=serv_opt, lp_OptGrowth ~ Comp1or5)
+stargazer::stargazer(durationln, durationlp, type="text", digits=2)
+
+##Residual Plots
+ggplot(glm(ln_OptGrowth~Comp1or5, data=serv_opt)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Exercised Options Residuals') + theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(glm(lp_OptGrowth~Comp1or5, data=serv_opt)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Percent Exercised Options Residuals') + theme(plot.title = element_text(hjust = 0.5))
+
+##Jitterplots
+competitionlnplot + labs(x = "Competition", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+competitionlpplot + labs(x = "Competition", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+```
+
+####Cumulative Model
+```{r Cumulative}
+competitionstudyln <- glm(data = serv_opt,  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+c_pairHist+cl_pairCA +cl_Ceil + capped_cl_Days+Comp1or5)
+
+competitionstudylp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+ c_pairHist+cl_pairCA + cl_Ceil + capped_cl_Days+Comp1or5)
+
+stargazer::stargazer(competitionstudyln, competitionstudylp, type="text", digits=2)
+
+summary_residual_compare(competitionstudyln, competitionstudylp)
+```
+
+####Contract Vehicle
+
+```{r Contract Vehicle}
+
+##Scatterplots
+vehiclelnplot <- ggplot(serv_opt, aes(x=Veh, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+vehiclelpplot <- ggplot(serv_opt, aes(x=Veh, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+vehiclelnplot + labs(x = "Contract Vehicle", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+vehiclelpplot + labs(x = "Contract Vehicle", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+vehicleln <- glm (data=serv_opt, ln_OptGrowth ~ Veh)
+vehiclelp <- glm(data=serv_opt, lp_OptGrowth ~ Veh)
+stargazer::stargazer(vehicleln, vehiclelp, type="text", digits=2)
+
+##Residual Plots
+ggplot(glm(ln_OptGrowth~Veh, data=serv_opt)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Exercised Options Residuals') + theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(glm(lp_OptGrowth~Veh, data=serv_opt)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Percent Exercised Options Residuals') + theme(plot.title = element_text(hjust = 0.5))
+
+##Jitterplots
+vehiclelnplot + labs(x = "Contract Vehicle", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+vehiclelpplot + labs(x = "Contract Vehicle", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+```
+
+####Cumulative Model
+```{r Cumulative Model}
+vehcumln <- glm(data = serv_opt,  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+c_pairHist+cl_pairCA +cl_Ceil + capped_cl_Days+Comp1or5+Veh)
+
+vehcumlp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+ c_pairHist+cl_pairCA + cl_Ceil + capped_cl_Days+Comp1or5+Veh)
+
+stargazer::stargazer(vehcumln, vehcumlp, type="text", digits=2)
+
+summary_residual_compare(vehcumln, vehcumlp)
+
+```
+
+####Type of Contract
+
+```{r}
+##Scatterplots
+contypelnplot <- ggplot(serv_opt, aes(x=PricingUCA, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+contypelpplot <- ggplot(serv_opt, aes(x=PricingUCA, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+contypelnplot + labs(x = "Type of Contract", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+contypelpplot + labs(x = "Type of Contract", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+contypeln <- glm (data=serv_opt, ln_OptGrowth ~ PricingUCA)
+contypelp <- glm(data=serv_opt, lp_OptGrowth ~ PricingUCA)
+stargazer::stargazer(contypeln, contypelp, type="text", digits=2)
+
+##Residual Plots
+ggplot(glm(ln_OptGrowth~PricingUCA, data=serv_opt)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Exercised Options Residuals') + theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(glm(lp_OptGrowth~PricingUCA, data=serv_opt)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Percent Exercised Options Residuals') + theme(plot.title = element_text(hjust = 0.5))
+
+##Jitterplots
+contypelnplot + labs(x = "Type of Contract", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+contypelpplot + labs(x = "Type of Contract", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+####Cumulative Model
+```{r Cumulative Model}
+typecumln <- glm(data = serv_opt,  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+c_pairHist+cl_pairCA +cl_Ceil + capped_cl_Days+Comp1or5+Veh+PricingUCA)
+
+typecumlp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+ c_pairHist+cl_pairCA + cl_Ceil + capped_cl_Days+Comp1or5+Veh+PricingUCA)
+
+stargazer::stargazer(typecumln, typecumlp, type="text", digits=2)
+
+summary_residual_compare(typecumln, typecumlp)
+
+```
+
+####Crisis Funding
+```{r}
+##Scatterplots
+crisislnplot <- ggplot(serv_opt, aes(x=Crisis, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+crisislpplot <- ggplot(serv_opt, aes(x=Crisis, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+crisislnplot + labs(x = "Crisis Funding", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+crisislpplot + labs(x = "Crisis Funding", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+crisisln <- glm (data=serv_opt, ln_OptGrowth ~ Crisis)
+crisislp <- glm(data=serv_opt, lp_OptGrowth ~ Crisis)
+stargazer::stargazer(crisisln, crisislp, type="text", digits=2)
+
+##Residual Plots
+ggplot(glm(ln_OptGrowth~Crisis, data=serv_opt)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Exercised Options Residuals') + theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(glm(lp_OptGrowth~Crisis, data=serv_opt)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Percent Exercised Options Residuals') + theme(plot.title = element_text(hjust = 0.5))
+
+##Jitterplots
+crisislnplot + labs(x = "Crisis Funding", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+crisislpplot + labs(x = "Crisis Funding", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+```
+
+####Cumulative Model
+```{r Cumulative Model}
+crisiscumln <- glm(data = serv_opt,  ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+c_pairHist+cl_pairCA +cl_Ceil + capped_cl_Days+Comp1or5+Veh+PricingUCA+Crisis)
+
+crisiscumlp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+ c_pairHist+cl_pairCA + cl_Ceil + capped_cl_Days+Comp1or5+Veh+PricingUCA+Crisis)
+
+stargazer::stargazer(crisiscumln, crisiscumlp, type="text", digits=2)
+
+summary_residual_compare(crisiscumln, crisiscumlp)
+```
+####Industrial Sector - Level 6
+```{r}
+
+##Scatterplots
+level6lnplot <- ggplot(serv_opt, aes(x=cl_def6_HHI_lag1, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+level6lpplot <- ggplot(serv_opt, aes(x=cl_def6_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+level6lnplot + labs(x = "Industrial Sector - Level 6", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+level6lpplot + labs(x = "Industrial Sector - Level 6", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+##Summary Table
+level6ln <- glm (data=serv_opt, ln_OptGrowth ~ cl_def6_HHI_lag1)
+level6lp <- glm(data=serv_opt, lp_OptGrowth ~ cl_def6_HHI_lag1)
+stargazer::stargazer(level6ln, level6lp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(level6ln, level6lp, skip_vif = TRUE)
+
+##Jitterplots
+level6lnplot + labs(x = "Industrial Sector - Level 6", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+level6lpplot + labs(x = "Industrial Sector - Level 6", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+###Defense to Overall Ratio
+
+```{r}
+##Scatterplots
+defoveralllnplot <- ggplot(serv_opt, aes(x=cl_def6_ratio_lag1, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+defoveralllpplot <- ggplot(serv_opt, aes(x=cl_def6_ratio_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+defoveralllnplot + labs(x = "Defense to Overall Ratio", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+defoveralllpplot + labs(x = "Defense to Overall Ratio", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+defoverallln <- glm (data=serv_opt, ln_OptGrowth ~ cl_def6_ratio_lag1)
+defoveralllp <- glm(data=serv_opt, lp_OptGrowth ~ cl_def6_ratio_lag1)
+stargazer::stargazer(defoverallln, defoveralllp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(defoverallln, defoveralllp, skip_vif = TRUE)
+
+##Jitterplots
+defoveralllnplot + labs(x = "Defense to Overall Ratio", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+defoveralllpplot + labs(x = "Defense to Overall Ratio", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+```
+
+####Defense Obligations
+```{r}
+##Scatterplots
+defobliglnplot <- ggplot(serv_opt, aes(x=cl_def6_obl_lag1Const, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+defobliglpplot <- ggplot(serv_opt, aes(x=cl_def6_obl_lag1Const, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+defobliglnplot + labs(x = "Defense Obligations", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+defobliglpplot + labs(x = "Defense Obligations", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+defobligln <- glm (data=serv_opt, ln_OptGrowth ~ def6_obl_lag1Const)
+defobliglp <- glm(data=serv_opt, lp_OptGrowth ~ def6_obl_lag1Const)
+stargazer::stargazer(defobligln, defobliglp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(defobligln, defobliglp, skip_vif=TRUE)
+
+##Jitterplots
+defobliglnplot + labs(x = "Defense Obligations", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+defobliglpplot + labs(x = "Defense Obligations", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+
+#### NAICS 6 Combined
+```{r NAICS Combined}
+naics6combln <- glm(data = serv_opt,  ln_OptGrowth ~  cl_def6_HHI_lag1+cl_def6_ratio_lag1+cl_def6_obl_lag1Const)
+
+naics6comblp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_def6_HHI_lag1+cl_def6_ratio_lag1+cl_def6_obl_lag1Const)
+
+stargazer::stargazer(naics6combln, naics6comblp, type="text", digits=2)
+
+summary_residual_compare(naics6combln, naics6comblp)
+```
+
+####Cumulative Model
+```{r NAICS Combined}
+naics6cumln <- glm(data = serv_opt, ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+ c_pairHist+cl_pairCA + cl_Ceil + capped_cl_Days+ Comp1or5+ Veh+ PricingUCA+ Crisis+ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
+
+naics6cumlp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+ c_pairHist+cl_pairCA + cl_Ceil + capped_cl_Days+ Comp1or5+ Veh+ PricingUCA+ Crisis+ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
+
+stargazer::stargazer(naics6cumln, naics6cumlp, type="text", digits=2)
+
+summary_residual_compare(naics6cumln, naics6cumlp)
+```
+
+####Industrial Sector - Level 3
+```{r}
+
+##Scatterplots
+level3lnplot <- ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+level3lpplot <- ggplot(serv_opt, aes(x=cl_def3_HHI_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+level3lnplot + labs(x = "Industrial Sector - Level 3", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+level3lpplot + labs(x = "Industrial Sector - Level 3", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+level3ln <- glm (data=serv_opt, ln_OptGrowth ~ cl_def3_HHI_lag1)
+level3lp <- glm(data=serv_opt, lp_OptGrowth ~ cl_def3_HHI_lag1)
+stargazer::stargazer(level3ln, level3lp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(level3ln, level3lp, skip_vif=TRUE)
+
+##Jitterplots
+level3lnplot + labs(x = "Industrial Sector - Level 3", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+level3lpplot + labs(x = "Industrial Sector - Level 3", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+
+####Defense to Overall Ratio (Level 3)
+```{r Defense to Overall Ratio (Level 3)}
+##Scatterplots
+defoverall3lnplot <- ggplot(serv_opt, aes(x=cl_def3_ratio_lag1, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+defoverall3lpplot <- ggplot(serv_opt, aes(x=cl_def3_ratio_lag1, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+defoverall3lnplot + labs(x = "Defense to Overall Ratio (Level 3)", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+defoverall3lpplot + labs(x = "Defense to Overall Ratio (Level 3)", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+defoverall3ln <- glm (data=serv_opt, ln_OptGrowth ~ cl_def3_ratio_lag1)
+defoverall3lp <- glm(data=serv_opt, lp_OptGrowth ~ cl_def3_ratio_lag1)
+stargazer::stargazer(defoverall3ln, defoverall3lp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(defoverall3ln, defoverall3lp, skip_vif = TRUE)
+
+##Jitterplots
+defoverall3lnplot + labs(x = "Defense to Overall Ratio (Level 3)", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+defoverall3lpplot + labs(x = "Defense to Overall Ratio (Level 3)", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+```
+
+####Level 3+6 Cumulative
+```{r Level 3+6 Cumulative}
+naics36ln <- glm(data = serv_opt, ln_OptGrowth ~  cl_def3_HHI_lag1+cl_def3_ratio_lag1)
+
+naics36lp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_def3_HHI_lag1+cl_def3_ratio_lag1)
+
+stargazer::stargazer(naics36ln, naics36lp, type="text", digits=2)
+
+summary_residual_compare(naics36ln, naics36lp)
+```
+
+####Cumulative
+```{r Cumulative}
+naicscumln <- glm(data = serv_opt, ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+c_pairHist+cl_pairCA +cl_Ceil + capped_cl_Days+ Comp1or5+Veh+PricingUCA+Crisis+cl_def6_HHI_lag1+cl_def6_ratio_lag1+ cl_def3_HHI_lag1+cl_def3_ratio_lag1)
+
+naicscumlp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+c_pairHist+cl_pairCA +cl_Ceil + capped_cl_Days+ Comp1or5+Veh+PricingUCA+Crisis+cl_def6_HHI_lag1+cl_def6_ratio_lag1+ cl_def3_HHI_lag1+cl_def3_ratio_lag1)
+
+stargazer::stargazer(naicscumln, naicscumlp, type="text", digits=2)
+
+summary_residual_compare(naicscumln, naicscumlp)
+
+```
+
+###Vendor Market Share
+```{r}
+
+##Scatterplots
+marketsharelnplot <- ggplot(serv_opt, aes(x=c_pMarket, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+marketsharelpplot <- ggplot(serv_opt, aes(x=c_pMarket, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+marketsharelnplot + labs(x = "Vendor Market Share", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+marketsharelpplot + labs(x = "Vendor Market Share", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+marketshareln <- glm (data=serv_opt, ln_OptGrowth ~ c_pMarket)
+marketsharelp <- glm(data=serv_opt, lp_OptGrowth ~ c_pMarket)
+stargazer::stargazer(marketshareln, marketsharelp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(marketshareln, marketsharelp, skip_vif = TRUE)
+
+##Jitterplots
+marketsharelnplot + labs(x = "Vendor Market Share", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+marketsharelpplot + labs(x = "Vendor Market Share", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+
+####Cumulative
+```{Cumulative}
+
+vendorcumln <- glm(data = serv_opt, ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+c_pairHist+cl_pairCA +cl_Ceil + capped_cl_Days+ Comp1or5+Veh+PricingUCA+Crisis+cl_def6_HHI_lag1+cl_def6_ratio_lag1+ cl_def3_HHI_lag1+cl_def3_ratio_lag1 + c_pMarket)
+
+vendorcumlp <- glm(data = serv_opt,  lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC+c_pairHist+cl_pairCA +cl_Ceil + capped_cl_Days+ Comp1or5+Veh+PricingUCA+Crisis+cl_def6_HHI_lag1+cl_def6_ratio_lag1+ cl_def3_HHI_lag1+cl_def3_ratio_lag1 + c_pMarket)
+
+stargazer::stargazer(vendorcumln, vendorcumlp, type="text", digits=2)
+
+summary_residual_compare(vendorcumln, vendorcumlp)
+
+```
+
+####Past Office Volume
+```{r}
+
+##Scatterplots
+pastvolumelnplot <- ggplot(serv_opt, aes(x=cl_OffVol, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+pastvolumelpplot <- ggplot(serv_opt, aes(x=cl_OffVol, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+pastvolumelnplot + labs(x = "Past Office Volume", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+pastvolumelpplot + labs(x = "Past Office Volume", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+pastvolumeln <- glm (data=serv_opt, ln_OptGrowth ~ cl_OffVol)
+pastvolumelp <- glm(data=serv_opt, lp_OptGrowth ~ cl_OffVol)
+stargazer::stargazer(pastvolumeln, pastvolumelp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(pastvolumeln, pastvolumelp, skip_vif = TRUE)
+
+##Jitterplots
+pastvolumelnplot + labs(x = "Past Office Volume", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+pastvolumelpplot + labs(x = "Past Office Volume", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+
+####Industry Diversity
+```{r}
+
+##Scatterplots
+diversitylnplot <- ggplot(serv_opt, aes(x=cl_office_naics_hhi_k, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+diversitylpplot <- ggplot(serv_opt, aes(x=cl_office_naics_hhi_k, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+diversitylnplot + labs(x = "Industry Diversity", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+diversitylpplot + labs(x = "Industry Diversity", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+diversityln <- glm (data=serv_opt, ln_OptGrowth ~ cl_office_naics_hhi_k)
+diversitylp <- glm(data=serv_opt, lp_OptGrowth ~ cl_office_naics_hhi_k)
+stargazer::stargazer(diversityln, diversitylp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(diversityln, diversitylp, skip_vif = TRUE)
+
+##Jitterplots
+diversitylnplot + labs(x = "Industry Diversity", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+diversitylpplot + labs(x = "Industry Diversity", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+
+```
+
+####Cumulative Model
+```{r CUmulative Model}
+
+n_Opt_12C <- glm (data=serv_opt,
+                 ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k )
+
+p_Opt_12C <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k)
+
+stargazer::stargazer(n_Opt_12C, p_Opt_12C, type="text", digits=2)
+
+summary_residual_compare(n_Opt_12C, p_Opt_12C)
+```
+
+####Ratio Initial Ceiling Base : Ceiling Ratio (Logged)
+```{r Ratio Initial Ceiling Base : Ceiling Ratio (Logged)}
+
+##Scatterplots
+ratiolnplot <- ggplot(serv_opt, aes(x=cl_Base2Ceil, y=ln_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+ratiolpplot <- ggplot(serv_opt, aes(x=cl_Base2Ceil, y=lp_OptGrowth)) + geom_point(alpha = 0.05) + ggtitle('Percent Exercised Options') + theme(plot.title = element_text(hjust = 0.5))
+
+ratiolnplot + labs(x = "Ratio Initial Ceiling Base : Ceiling Ratio (Logged)", y = "Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+ratiolpplot + labs(x = "Ratio Initial Ceiling Base : Ceiling Ratio (Logged)", y = "Percent Options Growth")+ geom_smooth(method = 'glm', colour = 'red') + geom_smooth(method = 'auto')
+
+##Summary Table
+ratioln <- glm (data=serv_opt, ln_OptGrowth ~ cl_Base2Ceil)
+ratiolp <- glm(data=serv_opt, lp_OptGrowth ~ cl_Base2Ceil)
+stargazer::stargazer(diversityln, diversitylp, type="text", digits=2)
+
+##Residual Plots
+summary_residual_compare(ratioln, ratiolp, skip_vif = TRUE)
+
+##Jitterplots
+ratiolnplot + labs(x = "Ratio Initial Ceiling Base : Ceiling Ratio (Logged)", y = "Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+ratiolpplot + labs(x = "Ratio Initial Ceiling Base : Ceiling Ratio (Logged)", y = "Percent Options Growth") + geom_jitter(position = position_jitter(width = 0, height = 0.5))
+```
+
+####Cumulative Model
+```{r Cumulative}
+#Model
+n_Opt_12C <- glm (data=serv_opt,
+                 ln_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k )
+
+p_Opt_12C <- glm(data=serv_opt,
+                        lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Ceil + capped_cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k)
+
+stargazer::stargazer(n_Opt_12C, p_Opt_12C, type="text", digits=2)
+
+summary_residual_compare(n_Opt_12C, p_Opt_12C)
+
+```
+

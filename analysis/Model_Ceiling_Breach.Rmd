@@ -953,8 +953,7 @@ stargazer::stargazer(b_CBre05B,b_CBre06A,
                        type="text",
                        digits=2)
 
-#summary_residual_compare(b_CBre05D,b_CBre06A)
-
+ggplot(glm(b_CBre~Veh, data=serv_smp)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Residual Plot') + theme(plot.title = element_text(hjust = 0.5))
 
 ```
 For ceiling breaches, IDCs, particularly multiaward IDCs, were more likely to have breaches contrary to expecatitions.
