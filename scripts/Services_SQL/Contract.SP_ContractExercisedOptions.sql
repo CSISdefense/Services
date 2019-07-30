@@ -23,64 +23,8 @@ BEGIN
 
 	-- Insert statements for procedure here
 
-	IF (@IsDefense is not null) --Begin sub path where only services only one Customer will be returned
-	BEGIN
 		--Copy the start of your query here
-	 
-		select distinct cc.[CSIScontractID]
-		,AnyUnmodifiedUnexercisedOptions
-		,AnyUnmodifiedUnexercisedOptionsWhy
-		,UnmodifiedBase
-		,SteadyScopeOptionGrowthAlone
-		,SteadyScopeOptionGrowthMixed
-		,SteadyScopeOptionRescision
-		,AdminOptionModification
-		,ChangeOrderOptionModification
-		,EndingOptionModification
-		,OtherOptionModification
-		,SumOfbaseandexercisedoptionsvalue
-   --   ,cc.[TypeOfContractPricing]
-   --   ,[UnmodifiedTypeOfContractPricing]
-	  --,IsLabeledPricing
-   --   ,[ObligatedAmountIsFixedPrice]
-   --   ,[IsFixedPrice]
-   --   ,[UnmodifiedIsFixedPrice]
-   --   ,[ObligatedAmountIsCostBased]
-   --   ,[IsCostBased]
-   --   ,[UnmodifiedIsCostBased]
-   --   ,[ObligatedAmountIsCombination]
-   --   ,[IsCombination]
-   --   ,[UnmodifiedIsCombination]
-   --   ,[ObligatedAmountIsIncentive]
-   --   ,[IsIncentive]
-   --   ,[UnmodifiedIsIncentive]
-   --   ,[ObligatedAmountIsAwardFee]
-   --   ,[IsAwardFee]
-   --   ,[UnmodifiedIsAwardFee]
-   --   ,[ObligatedAmountIsFFPorNoFee]
-   --   ,[IsFFPorNoFee]
-   --   ,[UnmodifiedIsFFPorNoFee]
-   --   ,[ObligatedAmountIsFixedFee]
-   --   ,[IsFixedFee]
-   --   ,[UnmodifiedIsFixedFee]
-   --   ,[ObligatedAmountIsOtherFee]
-   --   ,[IsOtherFee]
-   --   ,[UnmodifiedIsOtherFee]
-	  --,IsUCA
-	  --,UnmodifiedIsUCA
-from contract.fpds f
-inner join contract.CSIStransactionID ct
-on ct.CSIStransactionID=f.CSIStransactionID
-inner join contract.ContractDiscretization cc
-on ct.CSIScontractID=cc.CSIScontractID
-inner join FPDSTypeTable.agencyid a
-on f.contractingofficeagencyid=a.AgencyID
-where  a.IsDefense=@IsDefense 
-	END
-	ELSE --Begin sub path wall Customers will be returned
-		BEGIN
-		--Copy the start of your query here
-		select  cc.[CSIScontractID]
+	 		select  cc.[CSIScontractID]
 		,AnyUnmodifiedUnexercisedOptions
 		,AnyUnmodifiedUnexercisedOptionsWhy
 		,UnmodifiedBase
@@ -121,9 +65,16 @@ where  a.IsDefense=@IsDefense
 	  --  ,IsUCA
 	  --,UnmodifiedIsUCA
 from contract.ContractDiscretization cc
+where @IsDefense is null or cc.CSIScontractID in 
+	(select CSIScontractID
+	from contract.CSIStransactionID ctid
+	inner join FPDSTypeTable.agencyid a
+	on ctid.contractingofficeagencyid=a.AgencyID
+	where a.IsDefense=@IsDefense 
+	group by CSIScontractID)
 
 		--End of your query
-		END
+
 	END
 GO
 
