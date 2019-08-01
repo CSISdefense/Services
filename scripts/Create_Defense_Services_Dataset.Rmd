@@ -1,49 +1,58 @@
-# ---
-# title: "Create Dataset"
-# output:
-#   html_document:
-#     keep_md: yes
-#     toc: yes
-# date: "Wednesday, July 11, 2019"
-# ---
+---
+title: "Create Defense Services Dataset"
+author: "Greg Sanders"
+output:
+  html_document:
+    keep_md: yes
+    toc: yes
+date: "Wednesday, July 11, 2019"
+---
 
-#Setup
+
+
+```{r setup}
+#*************************************Required Libraries******************************************
+require(dplyr)
+require(grid)
+require(reshape2)
+require(stringr)
+require(ggplot2)
+library(Hmisc)
+library(readr)
 library(csis360)
-library(ggplot2)
-library(dplyr)
 library(arm)
-library(R2WinBUGS)
-library(knitr)
-library(foreign)
-library(stargazer)
-library(texreg)
 library(reshape2)
 library(tidyverse)
+
+
+#*************************************Options*****************************************************
+options(error=recover)
+options(warn=1)
+
+#*************************************Lookup Files*****************************************************
+
+Path<-"https://github.com/CSISdefense/R-scripts-and-data/blob/master/"
+# Path<-"K:\\2007-01 PROFESSIONAL SERVICES\\R scripts and data\\"
+# Path<-"~\\FPDS\\R scripts and data\\"
+# Path<-"C:\\Users\\Greg Sanders\\SkyDrive\\Documents\\R Scripts and Data SkyDrive\\"
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+source("https://raw.githubusercontent.com/CSISdefense/Crisis-Funding/master/Scripts/ContractCleanup.r")
+source("https://raw.githubusercontent.com/CSISdefense/R-scripts-and-data/master/lookups.r")
+source("https://raw.githubusercontent.com/CSISdefense/R-scripts-and-data/master/helper.r")
 
-axis.text.size<-10
-strip.text.size<-10
-legend.text.size<-8
-# table.text.size<-5.75
-title.text.size<-12
-geom.text.size<-12
+```
 
-main.text.size<-1
-note.text.size<-1.40
+
+Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start..
 
 
 
 
-# Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start..
+First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
 
 
-
-##Prepare Data
-# First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
-
-
-###Data Transformations and Summary
-
+## Data Transformations and Summary
+```{r Prune}
 
 load(file="data/clean/defense_contract_complete.RData")
 
@@ -57,13 +66,17 @@ rm(def)
 
 # summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue)
 # def_serv$UnmodifiedContractBaseAndAllOptionsValue[def_serv$override_unmodified_ceiling==TRUE]<-NA
-summary(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue)
-def_serv$UnmodifiedContractBaseAndExercisedOptionsValue[def_serv$override_unmodified_base==TRUE]<-NA
-summary(def_serv$ChangeOrderBaseAndAllOptionsValue)
+# summary(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue)
+# def_serv$UnmodifiedContractBaseAndExercisedOptionsValue[def_serv$override_unmodified_base==TRUE]<-NA
+# summary(def_serv$ChangeOrderBaseAndAllOptionsValue)
 # summary(def_serv$ChangeOrderCeilingGrowth)
 # def_serv$ChangeOrderBaseAndAllOptionsValue[def_serv$override_change_order_growth==TRUE]<-NA
 # def_serv$ChangeOrderCeilingGrowth[def_serv$override_change_order_growth==TRUE]<-NA
+```
 
+### Entity
+
+```{r Entity}
 
 
 # #****This should be in dataset building, not transform.
@@ -77,8 +90,11 @@ summary(def_serv$ChangeOrderBaseAndAllOptionsValue)
                                         create_lookup_rdata=TRUE)
     def_serv$EntityID[is.na(def_serv$EntityID)]<-
       def_serv$UnmodifiedEntityID[is.na(def_serv$EntityID)]
- 
-    
+```
+
+
+### Crisis
+```{r Crisis}    
 
 load("data\\clean\\fed_transformed.rdata")
 fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,Crisis)
@@ -90,6 +106,11 @@ rm(fed)
 # 
 # debug(transform_contract)
 # # head(def_serv)
+```
+
+
+### Transform
+```{r Transform}
 def_serv<-transform_contract(def_serv)
 #
 #
@@ -102,9 +123,13 @@ discrete_percent_plot(def_serv,"Term")
 # summary(def_serv$Unmodifieddef_servBaseAndAllOptionsValue)
 # summary(def_serv$Action.Obligation)
 # 
-# 
-#   
-# #This should be transferred into transform contract at some point
+```
+   
+## Should be transferred into transform contract at some point
+
+
+### Office Diversity NAICS 
+```{r UnnecessaryNAICS}
 cal_deflator<-remove_bom(read.csv("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/economic/Lookup_Calendar_Deflator.csv"))
 
 #Average salary
@@ -133,7 +158,7 @@ def_serv<-dplyr::left_join(def_serv, cal_deflator,
 summary(def_serv$BEA18)
 
 def_serv$def6_obl_lag1Const<-def_serv$def6_obl_lag1/def_serv$BEA18
-def_serv$l_def6_obl_lag1Const<-na_non_positive_log(def_serv$def6_obl_lag1Const)
+def_serv$l_def6_obl_lag1Const<-na_non_positive_log(def_serv$def6_obl_lag1Cdeonst)
       def_serv$cl_def6_obl_lag1Const<-arm::rescale(def_serv$l_def6_obl_lag1Const)
 
 colnames(def_serv[colnames(def_serv)=="def6_obl_lag1"])<-"def6_obl_lag1_then_year"
@@ -280,3 +305,4 @@ def_serv<- def_serv %>% dplyr::select(-c(avg_office_naics_hhi_obl,avg_office_nai
 # def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
 
 save(file="data/clean/transformed_def_serv.Rdata",def_serv)
+```
