@@ -54,7 +54,7 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 ## Data Transformations and Summary
 ```{r Prune}
 
-load(file="data/clean/defense_contract_complete.RData")
+load(file="../data/clean/defense_contract_complete.RData")
 
 
 
@@ -72,30 +72,94 @@ rm(def)
 # summary(def_serv$ChangeOrderCeilingGrowth)
 # def_serv$ChangeOrderBaseAndAllOptionsValue[def_serv$override_change_order_growth==TRUE]<-NA
 # def_serv$ChangeOrderCeilingGrowth[def_serv$override_change_order_growth==TRUE]<-NA
+save(def_serv,file="../data/clean/defense_services_complete.RData")
 ```
+
+### Base 
+```{r Base}
+load(file="../data/clean/defense_services_complete.RData")
+    def_serv  <-read_and_join_experiment( def_serv  ,
+                                        "Contract.sp_ContractExercisedOptions.txt",
+                                        path="",
+                                        directory="..\\data\\semi_clean\\",
+                                        by=c("CSIScontractID"),
+                                        # add_var=c("AnyUnmodifiedUnexercisedOptions",
+                                        #           "AnyUnmodifiedUnexercisedOptionsWhy",
+                                        #           "UnmodifiedBase",
+                                        #           "SteadyScopeOptionGrowthAlone",
+                                        #           "SteadyScopeOptionRescision",
+                                        #           "AdminOptionModification"),
+                                        new_var_checked=FALSE,
+                                        create_lookup_rdata=TRUE,
+                                        lookup_char_as_factor=TRUE)
+  
+
+colnames(def_serv)[colnames(def_serv)=="SteadyScopeOptionRescinded"]<-"SteadyScopeOptionRescision"
+
+  sumcheck<-abs(def_serv$UnmodifiedBase+
+  def_serv$ChangeOrderOptionModification+
+  def_serv$SteadyScopeOptionGrowthAlone+
+    def_serv$SteadyScopeOptionGrowthMixed+
+    def_serv$SteadyScopeOptionRescision+
+    def_serv$AdminOptionModification+
+    def_serv$EndingOptionModification+
+    def_serv$OtherOptionModification-
+    def_serv$SumOfbaseandexercisedoptionsvalue)>1
+
+if(any(sumcheck)){
+  write.csv(file="..\\output\\exercised_options_sumcheck_failures.csv",
+    def_serv[sumcheck,] %>% dplyr::select(CSIScontractID,
+                               UnmodifiedBase,
+                               ChangeOrderOptionModification,
+                               SteadyScopeOptionGrowthAlone,
+                               SteadyScopeOptionGrowthMixed,
+                               SteadyScopeOptionRescision,
+                               AdminOptionModification,
+                               EndingOptionModification,
+                               OtherOptionModification,
+                               SumOfbaseandexercisedoptionsvalue)
+  )
+  if(any(sumcheck&def_serv$UnmodifiedBase>0))
+    stop("Ceiling Modification Checksum failure.")
+  else warning("Checksum failure for entries with na unmodified")
+}
+rm(sumcheck)
+
+def_serv$n_OptGrowth <- def_serv$SteadyScopeOptionGrowthAlone +
+  ifelse(def_serv$SteadyScopeOptionRescision+def_serv$AdminOptionModification<0,
+         def_serv$SteadyScopeOptionRescision+def_serv$AdminOptionModification,0)+1
+def_serv$n_OptGrowth[def_serv$n_OptGrowth<=1 & def_serv$SteadyScopeOptionGrowthAlone>0]<-NA
+def_serv$n_OptGrowth[def_serv$SteadyScopeOptionGrowthAlone==0]<-1
+summary(def_serv$n_OptGrowth)
+save(def_serv,file="../data/clean/defense_services_complete.RData")
+
+```
+
 
 ### Entity
 
 ```{r Entity}
-
+load(file="../data/clean/defense_services_complete.RData")
 
 # #****This should be in dataset building, not transform.
     def_serv<-read_and_join_experiment( def_serv,
                                                    "Contract.sp_ContractEntityID.txt",
                                                    path="",
-                                                   directory="data\\semi_clean\\",
+                                                   directory="..\\data\\semi_clean\\",
                                                    by=c("CSIScontractID"),
                                                    add_var=c("EntityID","UnmodifiedEntityID"),
                                                    new_var_checked=FALSE,
                                         create_lookup_rdata=TRUE)
     def_serv$EntityID[is.na(def_serv$EntityID)]<-
       def_serv$UnmodifiedEntityID[is.na(def_serv$EntityID)]
+  save(def_serv,file="../data/clean/defense_services_complete.RData")
 ```
+
 
 
 ### Crisis
 ```{r Crisis}    
-
+load(file="../data/clean/defense_services_complete.RData")
 load("data\\clean\\fed_transformed.rdata")
 fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,Crisis)
 def_serv<-left_join(def_serv,fed,by="CSIScontractID")
@@ -106,11 +170,13 @@ rm(fed)
 # 
 # debug(transform_contract)
 # # head(def_serv)
+save(def_serv,file="../data/clean/defense_services_complete.RData")
 ```
 
 
 ### Transform
 ```{r Transform}
+load(file="../data/clean/defense_services_complete.RData")
 def_serv<-transform_contract(def_serv)
 #
 #
@@ -123,13 +189,15 @@ discrete_percent_plot(def_serv,"Term")
 # summary(def_serv$Unmodifieddef_servBaseAndAllOptionsValue)
 # summary(def_serv$Action.Obligation)
 # 
+save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
 ```
    
-## Should be transferred into transform contract at some point
+Should be transferred into transform contract at some point
 
 
 ### Office Diversity NAICS 
 ```{r UnnecessaryNAICS}
+load(file="../data/clean/transformed_def_serv.Rdata")
 cal_deflator<-remove_bom(read.csv("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/economic/Lookup_Calendar_Deflator.csv"))
 
 #Average salary
@@ -158,7 +226,7 @@ def_serv<-dplyr::left_join(def_serv, cal_deflator,
 summary(def_serv$BEA18)
 
 def_serv$def6_obl_lag1Const<-def_serv$def6_obl_lag1/def_serv$BEA18
-def_serv$l_def6_obl_lag1Const<-na_non_positive_log(def_serv$def6_obl_lag1Cdeonst)
+def_serv$l_def6_obl_lag1Const<-na_non_positive_log(def_serv$def6_obl_lag1Const)
       def_serv$cl_def6_obl_lag1Const<-arm::rescale(def_serv$l_def6_obl_lag1Const)
 
 colnames(def_serv[colnames(def_serv)=="def6_obl_lag1"])<-"def6_obl_lag1_then_year"
@@ -258,7 +326,7 @@ length(unique((def_serv$NAICS3)))
 
 
 #********** NAICS - Office hhi
-annual_office_naics_hhi <- read.csv("data//clean//annual_office_naics_hhi.csv", header = TRUE, row.names = "X") %>% 
+annual_office_naics_hhi <- read.csv("..//data//clean//annual_office_naics_hhi.csv", header = TRUE, row.names = "X") %>% 
   dplyr::select(-c("obligatedAmount","numberOfContracts"))
 
 #Pulling in join annual_office_naics_hhi
@@ -269,7 +337,7 @@ def_serv <- def_serv %>%
 rm(annual_office_naics_hhi)
 
 #Pulling in join avg_office_naics_hhi
-avg_office_naics_hhi <- read.csv("data//clean//average_office_naics_hhi.csv", header = TRUE, row.names = "X") %>% 
+avg_office_naics_hhi <- read.csv("..//data//clean//average_office_naics_hhi.csv", header = TRUE, row.names = "X") %>% 
   dplyr::select(-c("obligatedAmount","numberOfContracts"))
 def_serv <- def_serv %>%
   left_join(avg_office_naics_hhi, by = c("Office" = "ContractingOfficeCode"))
@@ -304,5 +372,5 @@ def_serv<- def_serv %>% dplyr::select(-c(avg_office_naics_hhi_obl,avg_office_nai
 #********8 Invoice rate  for PSC
 # def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
 
-save(file="data/clean/transformed_def_serv.Rdata",def_serv)
+save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
 ```
