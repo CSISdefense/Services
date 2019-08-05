@@ -23,8 +23,8 @@ source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIG
 
 if(!exists("def_serv")) load("data/clean/transformed_def_serv.Rdata")
 ## Computational Sample Creation
-summary(def_serv$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)
-summary(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue)
+summary(def_serv$UnmodifiedBase_Then_Year)
+summary(def_serv$UnmodifiedCeiling_Then_Year)
 
 
 
@@ -34,7 +34,7 @@ summary(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue)
 
 
 
-def_serv$Base2Ceil<-def_serv$UnmodifiedContractBaseAndAllOptionsValue.Then.Year/def_serv$UnmodifiedContractBaseAndExercisedOptionsValue
+def_serv$Base2Ceil<-def_serv$UnmodifiedBase_Then_Year/def_serv$UnmodifiedCeiling_Then_Year
 def_serv$Base2Ceil[def_serv$Base2Ceil<1 | !is.finite(def_serv$Base2Ceil)]<-NA
 summary(def_serv$Base2Ceil)
 def_serv$cl_Base2Ceil<-arm::rescale(log(def_serv$Base2Ceil))
@@ -48,7 +48,7 @@ ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=50
 
 
 def_serv$p_CBre<-(def_serv$ChangeOrderBaseAndAllOptionsValue/
-                    def_serv$UnmodifiedContractBaseAndAllOptionsValue.Then.Year)+1
+                    def_serv$UnmodifiedBase_Then_Year)+1
 def_serv$p_CBre[
   is.na(def_serv$p_CBre) & def_serv$b_CBre==0]<-1
 

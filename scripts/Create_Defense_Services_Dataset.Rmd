@@ -94,7 +94,8 @@ load(file="../data/clean/defense_services_complete.RData")
                                         lookup_char_as_factor=TRUE)
   
 
-colnames(def_serv)[colnames(def_serv)=="SteadyScopeOptionRescinded"]<-"SteadyScopeOptionRescision"
+colnames(def_serv)[gitcolnames(def_serv)=="SteadyScopeOptionRescinded"]<-"SteadyScopeOptionRescision"
+
 
   sumcheck<-abs(def_serv$UnmodifiedBase+
   def_serv$ChangeOrderOptionModification+
@@ -104,9 +105,10 @@ colnames(def_serv)[colnames(def_serv)=="SteadyScopeOptionRescinded"]<-"SteadySco
     def_serv$AdminOptionModification+
     def_serv$EndingOptionModification+
     def_serv$OtherOptionModification-
-    def_serv$SumOfbaseandexercisedoptionsvalue)>1
+    ifelse(is.na(def_serv$SumOfbaseandexercisedoptionsvalue),
+           0,def_serv$SumOfbaseandexercisedoptionsvalue))>1
 
-if(any(sumcheck)){
+if(any(sumcheck==TRUE)){
   write.csv(file="..\\output\\exercised_options_sumcheck_failures.csv",
     def_serv[sumcheck,] %>% dplyr::select(CSIScontractID,
                                UnmodifiedBase,
@@ -126,8 +128,8 @@ if(any(sumcheck)){
 rm(sumcheck)
 
 def_serv$n_OptGrowth <- def_serv$SteadyScopeOptionGrowthAlone +
-  ifelse(def_serv$SteadyScopeOptionRescision+SteadyScopeOptionGrowthMixed+def_serv$AdminOptionModification<0,
-         def_serv$SteadyScopeOptionRescision+SteadyScopeOptionGrowthMixed+def_serv$AdminOptionModification,0)+1
+  ifelse(def_serv$SteadyScopeOptionRescision+def_serv$SteadyScopeOptionGrowthMixed+def_serv$AdminOptionModification<0,
+         def_serv$SteadyScopeOptionRescision+def_serv$SteadyScopeOptionGrowthMixed+def_serv$AdminOptionModification,0)+1
 def_serv$n_OptGrowth[def_serv$n_OptGrowth<=1 & def_serv$SteadyScopeOptionGrowthAlone>0]<-NA
 def_serv$n_OptGrowth[def_serv$SteadyScopeOptionGrowthAlone==0]<-1
 summary(def_serv$n_OptGrowth)
@@ -160,7 +162,7 @@ load(file="../data/clean/defense_services_complete.RData")
 ### Crisis
 ```{r Crisis}    
 load(file="../data/clean/defense_services_complete.RData")
-load("data\\clean\\fed_transformed.rdata")
+load("..\\data\\clean\\fed_transformed.rdata")
 fed <- fed %>% group_by() %>% dplyr::select(CSIScontractID,Crisis)
 def_serv<-left_join(def_serv,fed,by="CSIScontractID")
 summary(factor(def_serv$Crisis))
@@ -210,7 +212,7 @@ cal_deflator<-cal_deflator %>% dplyr::select(Calendar_Year,BEA18)
 
 def_serv<-dplyr::left_join(def_serv, cal_deflator,
           by=c("CensusYear"="Calendar_Year"))
-
+colnames(def_serv)
 def_serv$US6_avg_sal_lag1Const<-def_serv$US6_avg_sal_lag1/def_serv$BEA18
 
 
@@ -226,6 +228,7 @@ def_serv<-dplyr::left_join(def_serv, cal_deflator,
 summary(def_serv$BEA18)
 
 def_serv$def6_obl_lag1Const<-def_serv$def6_obl_lag1/def_serv$BEA18
+def_serv <- def_serv  %>% dplyr::select(-BEA18)
 def_serv$l_def6_obl_lag1Const<-na_non_positive_log(def_serv$def6_obl_lag1Const)
       def_serv$cl_def6_obl_lag1Const<-arm::rescale(def_serv$l_def6_obl_lag1Const)
 
@@ -266,7 +269,7 @@ colnames(def_serv[colnames(def_serv)=="cl_def6_obl_lag1"])<-"cl_def6_obl_lag1_th
 # def_serv<-read_and_join_experiment( def_serv,
 #                                     "Office.sp_OfficeHistoryCapacityLaggedConst.txt",
 #                                     path="",
-#                                     directory="data\\semi_clean\\",
+#                                     directory="..\\data\\semi_clean\\",
 #                                     by=c("ContractingOfficeCode","fiscal_year"),
 #                                     add_var=c("office_obligatedamount_1year",
 #                                               "office_numberofactions_1year",
@@ -276,7 +279,7 @@ colnames(def_serv[colnames(def_serv)=="cl_def6_obl_lag1"])<-"cl_def6_obl_lag1_th
 # def_serv<-read_and_join_experiment( def_serv,
 #                                           "Office.sp_ProdServOfficeHistoryLaggedConst.txt",
 #                                           path="",
-#                                           directory="data\\semi_clean\\",
+#                                           directory="..\\data\\semi_clean\\",
 #                                           by=c("ContractingOfficeCode","fiscal_year","ProductOrServiceCode"),
 #                                           add_var=c("office_psc_obligatedamount_7year"),
 #                                           new_var_checked=FALSE,
@@ -284,7 +287,7 @@ colnames(def_serv[colnames(def_serv)=="cl_def6_obl_lag1"])<-"cl_def6_obl_lag1_th
 # def_serv<-read_and_join_experiment( def_serv,
 #                                           "Office.sp_EntityIDofficeHistoryLaggedConst.txt",
 #                                           path="",
-#                                           directory="data\\semi_clean\\",
+#                                           directory="..\\data\\semi_clean\\",
 #                                           by=c("EntityID","ContractingOfficeCode","fiscal_year"),
 #                                           add_var=c("office_entity_paircount_7year","office_entity_numberofactions_1year",
 #                                                     "office_entity_obligatedamount_7year"),
@@ -292,7 +295,7 @@ colnames(def_serv[colnames(def_serv)=="cl_def6_obl_lag1"])<-"cl_def6_obl_lag1_th
 # def_serv<-read_and_join( def_serv,
 #                            "ProductOrServiceCode.ProdServHistoryCFTEcoalesceLaggedConst.txt",
 #                            path="",
-#                            directory="data\\semi_clean\\",
+#                            directory="..\\data\\semi_clean\\",
 #                            by=c("fiscal_year","OCO_GF","ProductOrServiceCode"),
 #                            add_var=c("CFTE_Rate_1year"),
 #                            new_var_checked=FALSE)
