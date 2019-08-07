@@ -94,7 +94,7 @@ load(file="../data/clean/defense_services_complete.RData")
                                         lookup_char_as_factor=TRUE)
   
 
-colnames(def_serv)[gitcolnames(def_serv)=="SteadyScopeOptionRescinded"]<-"SteadyScopeOptionRescision"
+colnames(def_serv)[colnames(def_serv)=="SteadyScopeOptionRescinded"]<-"SteadyScopeOptionRescision"
 
 
   sumcheck<-abs(def_serv$UnmodifiedBase+
@@ -122,7 +122,7 @@ if(any(sumcheck==TRUE)){
                                SumOfbaseandexercisedoptionsvalue)
   )
   if(any(sumcheck&def_serv$UnmodifiedBase>0))
-    stop("Ceiling Modification Checksum failure.")
+    stop("Exercised Option Checksum failure.")
   else warning("Checksum failure for entries with na unmodified")
 }
 rm(sumcheck)
@@ -200,7 +200,12 @@ Should be transferred into transform contract at some point
 ### Office Diversity NAICS 
 ```{r UnnecessaryNAICS}
 load(file="../data/clean/transformed_def_serv.Rdata")
+
+
+
 cal_deflator<-remove_bom(read.csv("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/economic/Lookup_Calendar_Deflator.csv"))
+cal_deflator<-cal_deflator %>% dplyr::select(Calendar_Year,BEA18)
+
 
 #Average salary
 def_serv$CensusYear<-factor(def_serv$StartCY)
@@ -208,24 +213,24 @@ summary(def_serv$CensusYear)
 levels(def_serv$CensusYear)<-list("2007"=c("2008","2009","2010","2011","2012"),
                                  "2012"=c("2013","2014","2015","2016","2017"))
 def_serv$CensusYear<-as.numeric(as.character(def_serv$CensusYear))
-cal_deflator<-cal_deflator %>% dplyr::select(Calendar_Year,BEA18)
 
+if("BEA18" %in% colnames(def_serv)) def_serv <- def_serv  %>% dplyr::select(-BEA18)
 def_serv<-dplyr::left_join(def_serv, cal_deflator,
           by=c("CensusYear"="Calendar_Year"))
-colnames(def_serv)
 def_serv$US6_avg_sal_lag1Const<-def_serv$US6_avg_sal_lag1/def_serv$BEA18
 
 
 def_serv$l_US6_avg_sal_lag1Const<-na_non_positive_log(def_serv$US6_avg_sal_lag1Const)
       def_serv$cl_US6_avg_sal_lag1Const<-arm::rescale(def_serv$l_US6_avg_sal_lag1Const)
 
-def_serv <- def_serv  %>% dplyr::select(-BEA18)
+def_serv <- def_serv  %>% dplyr::select(-BEA18,CensusYear)
 colnames(def_serv[colnames(def_serv)=="US6_avg_sal_lag1"])<-"US6_avg_sal_lag1_then_year"
 colnames(def_serv[colnames(def_serv)=="cl_US6_avg_sal_lag1"])<-"cl_US6_avg_sal_lag1_then_year"
+
+
 #def6_obl_lag1Const
 def_serv<-dplyr::left_join(def_serv, cal_deflator,
           by=c("StartCY"="Calendar_Year"))
-summary(def_serv$BEA18)
 
 def_serv$def6_obl_lag1Const<-def_serv$def6_obl_lag1/def_serv$BEA18
 def_serv <- def_serv  %>% dplyr::select(-BEA18)
@@ -319,7 +324,7 @@ colnames(def_serv[colnames(def_serv)=="cl_def6_obl_lag1"])<-"cl_def6_obl_lag1_th
 
 
 
-length(unique((def_serv$ContractingOfficeCode)))
+length(unique((def_serv$Office)))
 length(unique((def_serv$Agency)))
 length(unique((def_serv$NAICS)))
 length(unique((def_serv$NAICS3)))
@@ -329,33 +334,35 @@ length(unique((def_serv$NAICS3)))
 
 
 #********** NAICS - Office hhi
-annual_office_naics_hhi <- read.csv("..//data//clean//annual_office_naics_hhi.csv", header = TRUE, row.names = "X") %>% 
-  dplyr::select(-c("obligatedAmount","numberOfContracts"))
-
-#Pulling in join annual_office_naics_hhi
-def_serv <- def_serv %>%
-  mutate("StartFY_lag1" = StartFY - 1) %>%
-  left_join(annual_office_naics_hhi, by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
-  dplyr::select(-c("StartFY_lag1"))
-rm(annual_office_naics_hhi)
-
-#Pulling in join avg_office_naics_hhi
-avg_office_naics_hhi <- read.csv("..//data//clean//average_office_naics_hhi.csv", header = TRUE, row.names = "X") %>% 
-  dplyr::select(-c("obligatedAmount","numberOfContracts"))
-def_serv <- def_serv %>%
-  left_join(avg_office_naics_hhi, by = c("Office" = "ContractingOfficeCode"))
-rm(avg_office_naics_hhi)
-
-#Imputing missing
-summary(def_serv$office_naics_hhi_obl)
-def_serv$office_naics_hhi_obl[is.na(def_serv$office_naics_hhi_obl)]<-def_serv$avg_office_naics_hhi_obl[is.na(def_serv$office_naics_hhi_obl)]
-summary(def_serv$office_naics_hhi_k)
-def_serv$office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]<-def_serv$avg_office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]
-
-def_serv$cl_office_naics_hhi_obl <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_obl))
-def_serv$cl_office_naics_hhi_k <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_k))
-def_serv<- def_serv %>% dplyr::select(-c(avg_office_naics_hhi_obl,avg_office_naics_hhi_k))
-
+if(!"office_naics_hhi_k" %in% colnames(def_serv)){
+  annual_office_naics_hhi <- read.csv("..//data//clean//annual_office_naics_hhi.csv",
+                                      header = TRUE, row.names = "X") %>% 
+    dplyr::select(-c("obligatedAmount","numberOfContracts"))
+  
+  #Pulling in join annual_office_naics_hhi
+  def_serv <- def_serv %>%
+    mutate("StartFY_lag1" = StartFY - 1) %>%
+    left_join(annual_office_naics_hhi, by = c("Office" = "ContractingOfficeCode", "StartFY_lag1" = "Fiscal_year")) %>%
+    dplyr::select(-c("StartFY_lag1"))
+  rm(annual_office_naics_hhi)
+  
+  #Pulling in join avg_office_naics_hhi
+  avg_office_naics_hhi <- read.csv("..//data//clean//average_office_naics_hhi.csv", header = TRUE, row.names = "X") %>% 
+    dplyr::select(-c("obligatedAmount","numberOfContracts"))
+  def_serv <- def_serv %>%
+    left_join(avg_office_naics_hhi, by = c("Office" = "ContractingOfficeCode"))
+  rm(avg_office_naics_hhi)
+  
+  #Imputing missing
+  summary(def_serv$office_naics_hhi_obl)
+  def_serv$office_naics_hhi_obl[is.na(def_serv$office_naics_hhi_obl)]<-def_serv$avg_office_naics_hhi_obl[is.na(def_serv$office_naics_hhi_obl)]
+  summary(def_serv$office_naics_hhi_k)
+  def_serv$office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]<-def_serv$avg_office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]
+  
+  def_serv$cl_office_naics_hhi_obl <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_obl))
+  def_serv$cl_office_naics_hhi_k <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_k))
+  def_serv<- def_serv %>% dplyr::select(-c(avg_office_naics_hhi_obl,avg_office_naics_hhi_k))
+}
 
 
 #********** Performance Based Services Contracting

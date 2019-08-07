@@ -1,5 +1,5 @@
 # ---
-# title: "Create Sample"
+# title: "Create Services Sample"
 # output:
 #   html_document:
 #     keep_md: yes
@@ -19,6 +19,7 @@ library(stargazer)
 library(texreg)
 library(reshape2)
 library(tidyverse)
+library(foreign)
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
 
 if(!exists("def_serv")) load("data/clean/transformed_def_serv.Rdata")
@@ -27,18 +28,7 @@ summary(def_serv$UnmodifiedBase_Then_Year)
 summary(def_serv$UnmodifiedCeiling_Then_Year)
 
 
-
-
-
-
-
-
-
-def_serv$Base2Ceil<-def_serv$UnmodifiedBase_Then_Year/def_serv$UnmodifiedCeiling_Then_Year
-def_serv$Base2Ceil[def_serv$Base2Ceil<1 | !is.finite(def_serv$Base2Ceil)]<-NA
-summary(def_serv$Base2Ceil)
-def_serv$cl_Base2Ceil<-arm::rescale(log(def_serv$Base2Ceil))
-summary(def_serv$cl_Base2Ceil)
+#Base2Ceil exploring
 ggplot(def_serv %>% filter(Base2Ceil>1 & Base2Ceil<10),aes(x=Base2Ceil))+geom_histogram(bins=30)
 ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=30)+scale_x_log10()
 ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=50)+scale_x_log10()
@@ -46,17 +36,10 @@ ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=50
 # def_serv <-def_serv %>% dplyr::select(-AvlOpt,-p_AvlOpt,-cp_AvlOpt)
 
 
-
-def_serv$p_CBre<-(def_serv$ChangeOrderBaseAndAllOptionsValue/
-                    def_serv$UnmodifiedBase_Then_Year)+1
-def_serv$p_CBre[
-  is.na(def_serv$p_CBre) & def_serv$b_CBre==0]<-1
-
-
 #Output variables
 summary(def_serv$b_Term)
-summary(def_serv$b_CBre)
-summary(def_serv$lp_OptGrowth) #Missing
+summary(def_serv$ln_CBre_OMB20_GDP18)
+summary(def_serv$ln_OptGrowth_OMB20_GDP18) 
 summary(def_serv$ExercisedOptions)
 summary(def_serv$AnyUnmodifiedUnexercisedOptions)
 #Study Variables
@@ -79,12 +62,12 @@ summary(def_serv$NAICS3)
 summary(def_serv$Office)
 summary(def_serv$Agency)
 summary(def_serv$StartCY)
-summary(def_serv$cl_def3_HHI_lag1)#Missing!
-summary(def_serv$cl_def3_ratio_lag1)#Missing!
-summary(def_serv$cl_def6_HHI_lag1)#Missing!
-summary(def_serv$cl_def6_obl_lag1)#Missing!
-summary(def_serv$cl_def6_ratio_lag1)#Missing!
-summary(def_serv$cl_US6_avg_sal_lag1)#Missing!
+summary(def_serv$cl_def3_HHI_lag1)
+summary(def_serv$cl_def3_ratio_lag1)
+summary(def_serv$cl_def6_HHI_lag1)
+summary(def_serv$cl_def6_obl_lag1)
+summary(def_serv$cl_def6_ratio_lag1)
+summary(def_serv$cl_US6_avg_sal_lag1)
 #New Controls
 summary(def_serv$cl_OffCA)
 summary(def_serv$cl_OffCA)
@@ -97,8 +80,8 @@ complete<-
   #Dependent Variables
   !is.na(def_serv$b_Term)& #summary(def_serv$b_Term)
   !is.na(def_serv$b_CBre)&
-  !is.na(def_serv$lp_OptGrowth)&
-  !is.na(def_serv$ExercisedOptions)&
+  !is.na(def_serv$ln_CBre_OMB20_GDP18)&
+  !is.na(def_serv$ln_OptGrowth)&
   !is.na(def_serv$AnyUnmodifiedUnexercisedOptions)&
   #Study Variables
   !is.na(def_serv$cl_US6_avg_sal_lag1Const)&
@@ -131,16 +114,15 @@ complete<-
   !is.na(def_serv$cl_OffVol)& #summary(def_serv$cl_OffVol)
   !is.na(def_serv$c_pMarket)&  #summary(def_serv$c_pMarket)
   !is.na(def_serv$Crisis)&  #summary(def_serv$c_pMarket)
-  !is.na(def_serv$cl_office_naics_hhi_k)
-!is.na(def_serv$cl_Base2Ceil)
+  !is.na(def_serv$cl_office_naics_hhi_k)&
+  !is.na(def_serv$cl_Base2Ceil)
 
 
 summary(complete)
-summary(def_serv$Action_Obligation.OMB20_GDP18)
-money<-def_serv$Action_Obligation.OMB20_GDP18
-any(def_serv$Action_Obligation.OMB20_GDP18<0)
-money[def_serv$Action_Obligation.OMB20_GDP18<0]<-0
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$Action_Obligation.OMB20_GDP18<0])
+money<-def_serv$Action_Obligation_OMB20_GDP18
+any(def_serv$Action_Obligation_OMB20_GDP18<0)
+money[def_serv$Action_Obligation_OMB20_GDP18<0]<-0
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$Action_Obligation_OMB20_GDP18<0])
 
 #Missing data, how many records and how much money
 length(money[!complete])/length(money)
@@ -165,20 +147,20 @@ serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
 
 #To instead replace entries in existing sample, use  this code.
 # load(file="data/clean/def_sample.Rdata")
-serv_smp<-update_sample_col_CSIScontractID(serv_smp,
-                                           def_serv[complete,],
-                                           col=NULL,
-                                           drop_and_replace=TRUE)
-
-serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
-                                           def_serv[complete,],
-                                           col=NULL,
-                                           drop_and_replace=TRUE)
-
-serv_opt<-update_sample_col_CSIScontractID(serv_opt,
-                                             def_serv[complete,],
-                                             col=NULL,
-                                             drop_and_replace=TRUE)
+# serv_smp<-update_sample_col_CSIScontractID(serv_smp,
+#                                            def_serv[complete,],
+#                                            col=NULL,
+#                                            drop_and_replace=TRUE)
+# 
+# serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
+#                                            def_serv[complete,],
+#                                            col=NULL,
+#                                            drop_and_replace=TRUE)
+# 
+# serv_opt<-update_sample_col_CSIScontractID(serv_opt,
+#                                              def_serv[complete,],
+#                                              col=NULL,
+#                                              drop_and_replace=TRUE)
 
 # serv_smp<-serv_smp %>% dplyr::select(-c(Ceil, qCRais))
 # serv_smp1m<-serv_smp1m %>% dplyr::select(-c(Ceil, qCRais))
