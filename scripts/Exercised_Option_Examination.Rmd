@@ -33,61 +33,312 @@ memory.limit()
 
 ```
 
+# Before Cleaning
 ```{r vargraphs: SteadyScopeOptionGrowthAlone, echo = FALSE}
 #load("../data/clean/transformed_def_serv.Rdata")
+
+load(file="../data/clean/defense_services_complete.Rdata")
+
 load(file="..\\data\\semi_clean\\opt_pre_clean.rdata")
   
-
-#File Pre-processed and Loaded
-#W912UM <- def_serv %>% filter(Office=="W912UM")
-#W912UMtrans<-read.delim(file="..\\data\\semi_clean\\W912UM_trans.csv", sep=",")
-#W912UMtrans<-remove_bom(W912UMtrans)
-#opt_preclean<-def_serv %>% filter(SteadyScopeOptionGrowthAlone>1)
-#opt_preclean$q_OptGrowth<-Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(0,1e-10,1,10))
-summary(opt_preclean$q_OptGrowth)
-#save(W912UM,W912UMtrans,opt_preclean,file="..\\data\\semi_clean\\opt_pre_clean.rdata")
+opt_preclean<-def_serv %>% filter(SteadyScopeOptionGrowthAlone>0 &
+                                       MinOfSignedDate>=as.Date("2008-01-01") &
+                                       MinOfSignedDate<=as.Date("2015-12-31"))
 
 
 summary(opt_preclean$SteadyScopeOptionGrowthAlone)
-summary(opt_preclean$UnmodifiedBase)
-```
+
+opt_preclean$p_SteadyScopeOptionGrowthAlone<-((opt_preclean$SteadyScopeOptionGrowthAlone-1)/
+                          opt_preclean$UnmodifiedBase)+1
+# opt_preclean$qGrowth<-Hmisc::cut2(opt_preclean$p_SteadyScopeOptionGrowthAlone-1,c(1,10))
+# summary(opt_preclean$qGrowth)
+opt_preclean$qp_OptGrowth<-Hmisc::cut2(opt_preclean$p_SteadyScopeOptionGrowthAlone-1,c(1,10))
 
 
-
-# Before Cleaning
-## Options Sumcheck
-
-## Ceiling Change Checksum
-```{r CeilingChangeChecksum}
-load(file="..\\data\\clean\\defense_contract_all_detail.Rdata")
-
-if(any(
-  def_all$UnmodifiedCeiling+
-  def_all$ChangeOrderCeilingGrowth+
-  def_all$ChangeOrderCeilingRescision+
-    def_all$AdminCeilingModification+
-    def_all$EndingCeilingModification+
-    def_all$OtherCeilingModification!=
-    def_all$SumOfbaseandalloptionsvalue
-)) stop("Ceiling Modification Checksum failure.")
+highroundedcutoffs<-c(15000,100000,1000000,10000000,75000000)
     
+opt_preclean$qHighBase <- Hmisc::cut2(opt_preclean$UnmodifiedBase,cuts=highroundedcutoffs)
+rm(highroundedcutoffs)#lowroundedcutoffs,
 
+
+if (all(levels(opt_preclean$qHighBase)[1:5]==c("[0.00e+00,1.50e+04)",
+                                               "[1.50e+04,1.00e+05)",
+                                               "[1.00e+05,1.00e+06)",
+                                               "[1.00e+06,1.00e+07)",
+                                               "[1.00e+07,7.50e+07)"))|
+    all(levels(opt_preclean$qHighBase)[1:5]==c("[0.0e+00,1.5e+04)",
+                                               "[1.5e+04,1.0e+05)",
+                                               "[1.0e+05,1.0e+06)",
+                                               "[1.0e+06,1.0e+07)",
+                                               "[1.0e+07,7.5e+07)"))
+){
+  opt_preclean$qHighBase<-factor(opt_preclean$qHighBase,
+                                 
+                                 levels=levels(opt_preclean$qHighBase),
+                                 labels=c("[0,15k)",
+                                          "[15k,100k)",
+                                          "[100k,1m)",
+                                          "[1m,10m)",
+                                          "[10m,75m)",
+                                          "[75m+]"),
+                                 ordered=TRUE
+  )
+}
+
+summary(opt_preclean$qHighBase)
 ```
 
 
 
+## Examining Base and Exercised Modifications
 
-## Options Growth
+### Outlier Labeling
+
+```{r OptionsOutlier_pre}
+nrow(opt_preclean %>% filter((p_SteadyScopeOptionGrowthAlone-1)>1))
+nrow(opt_preclean %>% filter((p_SteadyScopeOptionGrowthAlone-1)>10))
+nrow(opt_preclean %>% filter((p_SteadyScopeOptionGrowthAlone-1)>100))
+nrow(opt_preclean %>% filter((p_SteadyScopeOptionGrowthAlone-1)>100 & UnmodifiedBase<=0))
+summary(opt_preclean$qHighBase[(opt_preclean$p_SteadyScopeOptionGrowthAlone-1)>10 & opt_preclean$UnmodifiedBase>0])
+summary(opt_preclean$qHighBase[(opt_preclean$p_SteadyScopeOptionGrowthAlone-1)>100 & opt_preclean$UnmodifiedBase>0])
+opt_preclean$Why_Outlier<-NA
+opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBase<=0]<-"No Unmodified Base"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                            opt_preclean$Action_Obligation*2>=opt_preclean$UnmodifiedBase+
+                            opt_preclean$SteadyScopeOptionGrowthAlone]<-
+  "Obligations at least half Orig+CRai"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                            opt_preclean$Action_Obligation*2>=
+                            (opt_preclean$SteadyScopeOptionGrowthAlone+opt_preclean$AdminOptionModification)]<-
+  "At Least 1/2 After Admin Rescision"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                            opt_preclean$Action_Obligation*2>=
+                            (opt_preclean$SteadyScopeOptionGrowthAlone+opt_preclean$EndingOptionModification)]<-
+  "At Least 1/2 After Ending Rescision"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                            opt_preclean$Action_Obligation*2>=
+                            (opt_preclean$SteadyScopeOptionGrowthAlone+opt_preclean$ChangeOrderOptionModification)]<-
+  "At Least 1/2 After Steady Scope Rescision"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                            opt_preclean$Action_Obligation*2>=
+                            (opt_preclean$SteadyScopeOptionGrowthAlone+opt_preclean$SteadyScopeOptionRescision)]<-
+  "At Least 1/2 After Change Order Rescision"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                            opt_preclean$Action_Obligation*2>=
+                            (opt_preclean$SteadyScopeOptionGrowthAlone+opt_preclean$OtherCeilingModification)]<-
+  "At Least 1/2 After Other Rescision"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                            opt_preclean$topContractingOfficeID=="W912UM"]<-
+  "Korean Office W912UM"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                            opt_preclean$SteadyScopeOptionGrowthAlone>=2.5e8]<-
+  ">=$250M, Inspect"
+opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
+                            opt_preclean$p_SteadyScopeOptionGrowthAlone-1>10]<-
+  "Other Unexplained 10x Options Growth"
+opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier,
+                                  levels=c(
+                                    "No Unmodified Base",
+                                    "Obligations at least half Orig+CRai",
+                                    "At Least 1/2 After Admin Rescision",
+                                    "At Least 1/2 After Ending Rescision",
+                                    "At Least 1/2 After Steady Scope Rescision",
+                                    "At Least 1/2 After Change Order Rescision",
+                                    "At Least 1/2 After Other Rescision",
+                                    "Korean Office W912UM",
+                                    ">=$250M, Inspect",
+                                    "Other Unexplained 10x Options Growth"
+                                  ))
+
+summary(opt_preclean$Why_Outlier)
+
+p_outlier_summary<-opt_preclean %>% filter(p_SteadyScopeOptionGrowthAlone-1>10) %>% group_by(Why_Outlier) %>%
+  dplyr::summarise(nContract=length(SteadyScopeOptionGrowthAlone),
+                   SumOfSteadyScopeOptionGrowthAlone=sum(SteadyScopeOptionGrowthAlone),
+                   MaxOfSteadyScopeOptionGrowthAlone=max(SteadyScopeOptionGrowthAlone),
+                   SumOfAction_Obligation_Then_Year=sum(Action_Obligation))
+
+
+n_outlier_summary<-opt_preclean %>% filter(SteadyScopeOptionGrowthAlone>2.5e8) %>% group_by(Why_Outlier) %>%
+  dplyr::summarise(nContract=length(SteadyScopeOptionGrowthAlone),
+                   SumOfSteadyScopeOptionGrowthAlone=sum(SteadyScopeOptionGrowthAlone),
+                   MaxOfSteadyScopeOptionGrowthAlone=max(SteadyScopeOptionGrowthAlone),
+                   SumOfAction_Obligation_Then_Year=sum(Action_Obligation))
+
+
+summary(Hmisc::cut2(opt_preclean$SteadyScopeOptionGrowthAlone,c(1e3,
+                                           1e6,
+                                           1e7,
+                                           1e8,
+                                           2.5e8,
+                                           1e9,
+                                           1e10,
+                                           2e10
+)))
+summary(opt_preclean$qHighBase[opt_preclean$SteadyScopeOptionGrowthAlone>=1e6])
+summary(opt_preclean$qHighBase[opt_preclean$SteadyScopeOptionGrowthAlone>=1e9])
+
+
+write.csv(file="..\\Data\\semi_clean\\p_OptGrowth_outliers.csv",opt_preclean %>% filter((p_SteadyScopeOptionGrowthAlone-1)>10),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\n_OptGrowth_outliers.csv",opt_preclean %>% filter(SteadyScopeOptionGrowthAlone>=2.5e8),row.names = FALSE)
+```
+Examining cases of large options growth, `r nrow(opt_preclean %>% filter(p_SteadyScopeOptionGrowthAlone-1>10))` contracts experienced greater than 10 fold growth. An increase of that side strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded initial base.
+
+The study team broke down the outliers into 6 categories:
+`r knitr::kable(p_outlier_summary)`
+* No Unmodified Base: Contracts with an initial base <=0. These are eliminated from the sample as missing data.
+* Obligations at least half Orig+CRai: For this category, total obligations of the contract were at least half the value of the initial base plus options growth under change orders. These contrats have had spending that massively exceeded their original base, so the growth in absolute terrms seems plausible. This category accounts for the overwhelming majority of outlier spending but only a tiny fraction of change order growth.
+* Later Deobligated: The change order growth metrics only counts increases. These may simply have been mistaken increases, as when including deobligation the growth no longer exceeded 10x the original base. The number, obligations, and change order growth of these contracts are comparatively small, and thus should not distort the overall data.
+* Korean Office W912UM refers to a contracting office that sometimes records base and all options values in Korean Won, approximate exchange rate 1,000 Won : 1 USD. 
+* There are `r nrow(opt_preclean %>% dplyr::filter(Why_Outlier ==">=$250M, Inspect" & (p_SteadyScopeOptionGrowthAlone-1)>10))` contracts with options growth of over $250 million that account for hundreds of billions in change order growth. These merit manual inspection.
+* Finally a few score contrats have unexplained growth, but remain below the $10M threshold. The quantity and magnitude of these contrats is not sufficient to risk the overall model.
+
+This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  `r sum(opt_preclean$Action_Obligation[opt_preclean$Why_Outlier ==">=$250M, Inspect"& (opt_preclean$p_SteadyScopeOptionGrowthAlone-1)>10] ,na.rm=TRUE)`.
+
+Shifting the focus to all contracts with growth of at least 250 million, there are far fewer contracts that account for far more money.
+`r knitr::kable(n_outlier_summary)`
+
+Inspecting W912UM, either to remove or fix its oversized growth, is an imperative as it accounts for the majority of these contracts or task orders. Even so, there are still `r nrow(opt_preclean %>% filter(Why_Outlier ==">=$250M, Inspect"))` that merit special inspection for given that there growth far outpaces their spending.
+
+
+### Options Growth
+```{r OptionsGrowthGraphs}
+
+(
+  ggplot(opt_preclean, aes(x=UnmodifiedBase,y=p_SteadyScopeOptionGrowthAlone-1)) +#,color=qp_OptGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()+
+    #+
+    geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+    # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+    labs(title="Distribution of Exercised Options",
+         y="Percent of Growth in Exercised Options",
+         x="Unmodified Contract Base")#,
+  # fill="Termination Completion"
+)
+
+
+(
+  ggplot(opt_preclean, aes(x=UnmodifiedBase,y=SteadyScopeOptionGrowthAlone)) +#,color=qp_OptGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()+
+    #+
+    geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+    # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+    labs(title="Distribution of Exercised Options",
+         y="Absolute Options Growth",
+         x="Unmodified Contract Base")#,
+  # fill="Termination Completion"
+)
+
+(
+  ggplot(opt_preclean, aes(x=UnmodifiedBase+SteadyScopeOptionGrowthAlone,y=Action_Obligation)) +#,color=qp_OptGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()#+
+  #+
+  #   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+  # # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+  #   labs(title="Distribution of Exercised Options",
+  #        y="Percent of Growth in Exercised Options",
+  #        x="Unmodified Contract Base")#,
+  #        # fill="Termination Completion"
+)
+
+(
+  ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,y=Action_Obligation-UnmodifiedBase)) +#,color=qp_OptGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()#+
+  #+
+  #   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+  # # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+  #   labs(title="Distribution of Exercised Options",
+  #        y="Percent of Growth in Exercised Options",
+  #        x="Unmodified Contract Base")#,
+  #        # fill="Termination Completion"
+)
+
+(
+  ggplot(opt_preclean, aes(x=p_SteadyScopeOptionGrowthAlone,y=Action_Obligation/UnmodifiedBase)) +#,color=qp_OptGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()#+
+  #+
+  #   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+  # # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+  #   labs(title="Distribution of Exercised Options",
+  #        y="Percent of Growth in Exercised Options",
+  #        x="Unmodified Contract Base")#,
+  #        # fill="Termination Completion"
+)
+
+
+(
+  ggplot(opt_preclean, aes(x=p_SteadyScopeOptionGrowthAlone-1,fill=qp_OptGrowth)) +
+    geom_histogram(bins=100)+
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+
+    #+
+    geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+    facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+    labs(title="Distribution of Exercised Options",
+         y="Contract Count",
+         x="Percent of Growth in Exercised Options")#,
+  # fill="Termination Completion"
+)
+
+
+
+
+
+
+(
+  ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=qp_OptGrowth)) +
+    geom_histogram(bins=100)+
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+
+    #+
+    geom_vline(xintercept = 1)#+geom_vline(xintercept = 0.1)+
+  #facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
+  # labs(title="Distribution of Contracts with Obligations After Last termination",
+  #      y="Contract Count",
+  #      x="Percent of Obligations After Day of Termination",
+  #      fill="Termination Completion"
+)
+
+(
+  ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=qp_OptGrowth)) +
+    geom_histogram(bins=100)+
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+
+    #+
+    geom_vline(xintercept = 1)+
+    facet_wrap(~qHighBase,scales="free_y")#+, space="free_y"
+  #+geom_vline(xintercept = 0.1)+
+  #facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
+  # labs(title="Distribution of Contracts with Obligations After Last termination",
+  #      y="Contract Count",
+  #      x="Percent of Obligations After Day of Termination",
+  #      fill="Termination Completion"
+)
+
+
+```
+
+## Original !!  Options Growth
 ```{r OptionsGrowthGraphs,echo=FALSE}
 
 (
-ggplot(opt_preclean, aes(x=UnmodifiedBase,y=p_OptGrowth-1)) +#,color=q_OptGrowth
+ggplot(opt_preclean, aes(x=UnmodifiedBase,y=p_SteadyScopeOptionGrowthAlone-1)) +#,color=qp_OptGrowth
   geom_point(alpha=0.25,shape=".")+
   # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+scale_y_log10()+
   #+
   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
+
   labs(title="Distribution of Exercised Options",
        y="Percent of Options Growth from Base",
        x="Unmodified Contract Base")#,
@@ -96,13 +347,13 @@ ggplot(opt_preclean, aes(x=UnmodifiedBase,y=p_OptGrowth-1)) +#,color=q_OptGrowth
 
 
 (
-ggplot(opt_preclean, aes(x=UnmodifiedBase,y=SteadyScopeOptionGrowthAlone)) +#,color=q_OptGrowth
+ggplot(opt_preclean, aes(x=UnmodifiedBase,y=SteadyScopeOptionGrowthAlone)) +#,color=qp_OptGrowth
   geom_point(alpha=0.25,shape=".")+
   # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+scale_y_log10()+
   #+
   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
+
   labs(title="Distribution of Exercised Options",
        y="Absolute Options Growth from Base",
        x="Unmodified Contract Base")#,
@@ -110,13 +361,13 @@ ggplot(opt_preclean, aes(x=UnmodifiedBase,y=SteadyScopeOptionGrowthAlone)) +#,co
 )
 
 (
-ggplot(opt_preclean, aes(x=UnmodifiedBase+SteadyScopeOptionGrowthAlone,y=Action_Obligation.Then.Year)) +#,color=q_OptGrowth
+ggplot(opt_preclean, aes(x=UnmodifiedBase+SteadyScopeOptionGrowthAlone,y=Action_Obligation_Then_Year)) +#,color=qp_OptGrowth
   geom_point(alpha=0.25,shape=".")+
   # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+scale_y_log10()+
   #+
 #   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
-# # facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
+# 
    labs(title="Distribution of Exercised Options",
 #        y="Percent of Options Growth from Base",
         x="Unmodified Contract Base + Exercised Options")#,
@@ -127,7 +378,7 @@ ggplot(opt_preclean, aes(x=UnmodifiedBase+SteadyScopeOptionGrowthAlone,y=Action_
 
 
 (
-ggplot(opt_preclean, aes(x=p_OptGrowth-1,fill=q_OptGrowth)) +
+ggplot(opt_preclean, aes(x=p_SteadyScopeOptionGrowthAlone-1,fill=qp_OptGrowth)) +
   geom_histogram(bins=100)+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+
@@ -146,7 +397,7 @@ facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
 
 
 (
-ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=q_OptGrowth)) +
+ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=qp_OptGrowth)) +
   geom_histogram(bins=100)+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+
@@ -160,7 +411,7 @@ ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=q_OptGrowth)) +
 )
 
 (
-ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=q_OptGrowth)) +
+ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=qp_OptGrowth)) +
   geom_histogram(bins=100)+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   scale_x_log10()+
@@ -169,7 +420,7 @@ ggplot(opt_preclean, aes(x=SteadyScopeOptionGrowthAlone,fill=q_OptGrowth)) +
 facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
 #+geom_vline(xintercept = 0.1)+
 #facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
-   labs(title="Distribution of Contracts by Exercised Options Growth, Grouped by Ceiling")#,
+   labs(title="Distribution of Contracts by Exercised Options Growth, Grouped by Base")#,
   #      y="Contract Count",
   #      x="Percent of Obligations After Day of Termination",
   #      fill="Termination Completion"
@@ -178,18 +429,18 @@ facet_wrap(~Ceil,scales="free_y")+#+, space="free_y"
 
 ```
 
-## Why Outlier
+## Original!! Why Outlier
 ```{r OptionsOutlier_pre}
 
-summary(Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(1,
+summary(Hmisc::cut2(opt_preclean$p_SteadyScopeOptionGrowthAlone-1,c(1,
                                                  5,
                                           10,
                                           100
                                           )))
 
-summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>10 & opt_preclean$UnmodifiedBase>0 &
+summary(opt_preclean$Ceil[(opt_preclean$p_SteadyScopeOptionGrowthAlone-1)>10 & opt_preclean$UnmodifiedBase>0 &
                             !is.na(opt_preclean$UnmodifiedBase>0 )])
-summary(opt_preclean$Ceil[(opt_preclean$p_OptGrowth-1)>100 & opt_preclean$UnmodifiedBase>0&
+summary(opt_preclean$Ceil[(opt_preclean$p_SteadyScopeOptionGrowthAlone-1)>100 & opt_preclean$UnmodifiedBase>0&
                             !is.na(opt_preclean$UnmodifiedBase>0)])
 
 
@@ -210,7 +461,7 @@ opt_preclean$Why_Outlier<-NA
 opt_preclean$Why_Outlier[opt_preclean$UnmodifiedBase<=0 |
                            is.na(opt_preclean$UnmodifiedBase<=0 )]<-"No Unmodified Base"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$Action_Obligation.Then.Year*2>=opt_preclean$UnmodifiedBase+
+                   opt_preclean$Action_Obligation_Then_Year*2>=opt_preclean$UnmodifiedBase+
                    opt_preclean$SteadyScopeOptionGrowthAlone]<-
   "Obligations at least half Base+Opt"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
@@ -221,13 +472,13 @@ opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
                    opt_preclean$SteadyScopeOptionGrowthAlone>=2.5e8]<-
   ">=$250M, Inspect"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$p_OptGrowth-1>=10]<-
+                   opt_preclean$p_SteadyScopeOptionGrowthAlone-1>=10]<-
   "Other Unexplained 10x Options Growth"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$p_OptGrowth-1<=5]<-
+                   opt_preclean$p_SteadyScopeOptionGrowthAlone-1<=5]<-
   "<= 5x Options Growth"
 opt_preclean$Why_Outlier[is.na(opt_preclean$Why_Outlier)&
-                   opt_preclean$p_OptGrowth-1>=5 & opt_preclean$p_OptGrowth-1<10]<-
+                   opt_preclean$p_SteadyScopeOptionGrowthAlone-1>=5 & opt_preclean$p_SteadyScopeOptionGrowthAlone-1<10]<-
   "5x < Options Growth <=10x"
 opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier, 
                                  levels = c("No Unmodified Base", "Obligations at least half Base+Opt", "Korean Office W912UM",
@@ -238,25 +489,25 @@ opt_preclean$Why_Outlier<-factor(opt_preclean$Why_Outlier,
 summary(opt_preclean$Why_Outlier)
 
 
-p_outlier_summary<-opt_preclean %>% filter(p_OptGrowth-1>10) %>% group_by(Why_Outlier) %>%
+p_outlier_summary<-opt_preclean %>% filter(p_SteadyScopeOptionGrowthAlone-1>10) %>% group_by(Why_Outlier) %>%
   dplyr::summarise(nContract=length(SteadyScopeOptionGrowthAlone),
     SumOfExercisedOptions=sum(SteadyScopeOptionGrowthAlone),
                    MaxOfExercisedOptions=max(SteadyScopeOptionGrowthAlone),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
+                   SumOfAction_Obligation_Then_Year=sum(Action_Obligation_Then_Year))
 
 
 n_outlier_summary<-opt_preclean %>% filter(SteadyScopeOptionGrowthAlone>2.5e8) %>% group_by(Why_Outlier) %>%
   dplyr::summarise(nContract=length(SteadyScopeOptionGrowthAlone),
     SumOfExercisedOptions=sum(SteadyScopeOptionGrowthAlone),
                    MaxOfExercisedOptions=max(SteadyScopeOptionGrowthAlone),
-                   SumOfAction_Obligation.Then.Year=sum(Action_Obligation.Then.Year))
+                   SumOfAction_Obligation_Then_Year=sum(Action_Obligation_Then_Year))
 
 nrow(opt_preclean[is.na(opt_preclean$Why_Outlier),])
 
-write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_OptGrowth-1)>10 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\p_opt_outliers.csv",opt_preclean %>% filter((p_SteadyScopeOptionGrowthAlone-1)>10 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
 write.csv(file="..\\Data\\semi_clean\\n_opt_outliers.csv",opt_preclean %>% filter(SteadyScopeOptionGrowthAlone>=2.5e8 & Why_Outlier != "Obligations at least half Base+Opt"),row.names = FALSE)
 ```
-Examining cases of large options growth, `r nrow(opt_preclean %>% filter(p_OptGrowth-1>10))` contracts experienced greater than 10 fold growth. An increase of that size strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
+Examining cases of large options growth, `r nrow(opt_preclean %>% filter(p_SteadyScopeOptionGrowthAlone-1>10))` contracts experienced greater than 10 fold growth. An increase of that size strains credulity, even in high risk defense contracting. While by no means impossible, the more likely explaination is a misrecorded base.
 
 The study team broke down the outliers into three categories:
 `r knitr::kable(p_outlier_summary)`
@@ -264,28 +515,60 @@ The study team broke down the outliers into three categories:
 * Obligations at least half Base+Opt: For this category, total obligations of the contract were at least half the value of the initial base plus options growth under exercised options. These contracts have had spending that massively exceeded their original base, so the growth in absolute terrms seems plausible. This category accounts for the majority of outlier spending and an overwhelming majority of all exercised options growth amongst outliers (but less than 10% of total exercised options growth when compared to the full sample).
 * Finally a few score contrats have unexplained growth, but remain below the $10M threshold. The quantity and magnitude of these contracts is not sufficient to risk the overall model.
 
-This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  `r sum(opt_preclean$Action_Obligation.Then.Year[opt_preclean$Why_Outlier ==">=$250M, Inspect"& (opt_preclean$p_OptGrowth-1)>10] ,na.rm=TRUE)`.
+This examination left the study team less confident in percentage growth as a metric, especially in extreme cases, while increasing the study team's confidence in measures of growth in absoute term. In the worst case, simply removing all of the unexplained over  10 million contracts from the sample would reduce the number of contracts by a tiny amount and reduce the spending accounted for by  `r sum(opt_preclean$Action_Obligation_Then_Year[opt_preclean$Why_Outlier ==">=$250M, Inspect"& (opt_preclean$p_SteadyScopeOptionGrowthAlone-1)>10] ,na.rm=TRUE)`.
 
 Shifting the focus to all contracts with absolute growth of at least 250 million, there are far fewer contracts and they all have spent at least half their base+exercised growth value.
 `r knitr::kable(n_outlier_summary)`
 
 
 
-## >250 Inspect
-```{r gt250m, echo=FALSE}
 
+
+
+## Adjusting options growth
+### Inspections 
+#### >250 Inspect
+```{r gt250m, echo=FALSE}
 if(nrow(opt_preclean %>% filter(Why_Outlier==">=$250M, Inspect"))>0) stop("Contracts to inspect found")
+
+inspect250<-opt_preclean %>% filter(!Why_Outlier %in% 
+                                       c("Obligations at least half Orig+CRai","Korean Office W912UM") &
+                                       SteadyScopeOptionGrowthAlone >= 2.5e8)
+
+summary(inspect250$Why_Outlier)
+
+inspect250trans<-read.delim(file="..\\data\\semi_clean\\gt250k_n_exercised_opt_outliers.txt", sep="\t")
+
+inspect250trans %>% group_by(CSIScontractID)
+
+inspect250trans<-left_join(inspect250  %>% 
+                             dplyr::select(CSIScontractID,
+                                           Why_Outlier),
+                           inspect250trans, 
+                           by="CSIScontractID")
+if(any(is.na(inspect250trans$piid))) stop(paste("Missing CSIScontractIDs in gt250k_n_exercised_opt_outliers.txt:",
+                                                paste((unique(inspect250trans$CSIScontractID[is.na(inspect250trans$piid)])),
+                                                      collapse=", ")))
+
+write.csv(file="..\\data\\semi_clean\\gt250m_exercised_opt_outliers_why_origin.csv", 
+          inspect250trans,
+          row.names = FALSE)
 
 ```
 No contracts with unexplained >=\$250M absolute growth exist in the dataset.  4 such contracts demonstrate absolute growth >=\$250M, but are coded instead as 'Obligations at least half Base+Opt.'  Manual inspection of these makes clear that the growth identified is legitimate, and should be included in the dataset.
 
-## Other Unexplained x10 Inspect
+
+**Contract (CSIScontractID):** 
+**PIID:** 
+**Product/Service Code (ProdServ):** 
+**NAICS Code (NAICS):** 
+
+#### Other Unexplained x10 Inspect
 The contracts coded as 'other unexplained' above were inspected manually given their relative scarcity.  Several were found to contain suspect transactions that were later corrected, meaning the option growth value will be set as NA in the datasets and the contracts excluded from our sample, which will occur through use of the CSIS360 repository, and the lookup table "contract/override_lookup.csv" in contract folder of the CSISdefense/Lookup-Tables repository.
 
 
 ```{r gt10x}
-
-
+summary(opt_preclean$Why_Outlier)
 inspect10x<-opt_preclean %>% filter(Why_Outlier=="Other Unexplained 10x Options Growth")
 colnames(inspect10x)[colnames(inspect10x)=="UnmodifiedBase"]<-"Base"
 
@@ -324,7 +607,7 @@ p_inspect_summary<-inspect10x %>% group_by(CSIS_inspection) %>%
     SteadyScopeOptionRescinded=sum(SteadyScopeOptionRescinded),
     CloseOptionReduction=sum(CloseOptionReduction),
     OtherOptionReduction=sum(OtherOptionReduction),
-    Action_Obligation.Then.Year=sum(Action_Obligation.Then.Year,na.rm=TRUE),
+    Action_Obligation=sum(Action_Obligation,na.rm=TRUE),
     Deobligations=sum(Deobligations,na.rm=TRUE)  )
 
 knitr::kable(p_inspect_summary,format.args = list(big.mark=","))
@@ -335,7 +618,7 @@ knitr::kable(inspect10x%>% group_by(CSIScontractID) %>% dplyr::select(CSIScontra
                                          SteadyScopeOptionRescinded,
                                          CloseOptionReduction,
                                          OtherOptionReduction,
-                                         # Action_Obligation.Then.Year,
+                                         # Action_Obligation,
                                          # Deobligations
                                          CSIS_inspection
                                          ),format.args = list(big.mark=","))
@@ -344,13 +627,154 @@ knitr::kable(inspect10x%>% group_by(CSIScontractID) %>% dplyr::select(CSIScontra
 
 ```
 
-# Validate Transformed_Dataset
-This is a quick inspection to make sure that the version of the transformed dataset to be used is current, focusing on ceiling and change orders.
+
+### Considering Alternate Labeling Systems
+
+```{r Alternate_Label}
+
+summary(opt_preclean$Why_Outlier)
+# Step 1, Steady Scope Option Growth
+opt_preclean$n_OptGrowth_test <- opt_preclean$SteadyScopeOptionGrowthAlone
+opt_preclean$p_OptGrowth_test <- opt_preclean$n_OptGrowth_test/opt_preclean$UnmodifiedBase
+
+
+#File Pre-processed and Loaded
+opt_preclean$qp_OptGrowth<-Hmisc::cut2(opt_preclean$p_SteadyScopeOptionGrowthAlone-1,c(0,1e-10,1,10))
+summary(opt_preclean$qp_OptGrowth)
+#save(W912UM,W912UMtrans,opt_preclean,file="..\\data\\semi_clean\\opt_pre_clean.rdata")
+
+
+# Step 2, No non-whole number base
+opt_preclean$p_OptGrowth_test <- opt_preclean$n_OptGrowth_test/ifelse(opt_preclean$UnmodifiedBase>0,
+                                                    opt_preclean$UnmodifiedBase,NA)
+opt_preclean$qp_OptGrowth <-Hmisc::cut2(opt_preclean$p_OptGrowth_test,c(0,1,5,10))
+opt_preclean$qp_OptGrowth<-factor(opt_preclean$qp_OptGrowth,levels=c(levels(opt_preclean$qp_OptGrowth),"W912UM"))
+opt_preclean$qp_OptGrowth[opt_preclean$topContractingOfficeID=="W912UM"]<-"W912UM"
+summary(opt_preclean$qp_OptGrowth)
+
+opt_preclean %>% group_by(qp_OptGrowth) %>% dplyr::summarise(
+  nContract=length(CSIScontractID),
+  OblOverBase=sum(ifelse(Action_Obligation>UnmodifiedBase,1,0)/length(CSIScontractID)),
+  AvgOblToBase=mean(Action_Obligation/UnmodifiedBase,na.rm=TRUE),
+  # MaxOfSteadyScopeOptionGrowthAlone=max(SteadyScopeOptionGrowthAlone),
+  OblM=sum(Action_Obligation)/1000000,
+  SumOfn_OptGrowthM=sum(n_OptGrowth_test)/1000000,
+  SumOfCOCGM=sum(SteadyScopeOptionGrowthAlone)/1000000,
+  AvgOfp_OptGrowth=mean(p_OptGrowth_test,na.rm=TRUE),
+  AvgOfp_COCG=mean(p_SteadyScopeOptionGrowthAlone,na.rm=TRUE))
+  
+
+#Step 3 Rescinding Net-Negative Admin Adjustments
+
+opt_preclean$n_OptGrowth_test <- opt_preclean$SteadyScopeOptionGrowthAlone + ifelse(opt_preclean$AdminOptionModification<0,
+                                                      opt_preclean$AdminOptionModification,0)
+
+opt_preclean$p_OptGrowth_test <- opt_preclean$n_OptGrowth_test/ifelse(opt_preclean$UnmodifiedBase>0,
+                                                    opt_preclean$UnmodifiedBase,NA)
+opt_preclean$qp_OptGrowth <-Hmisc::cut2(opt_preclean$p_OptGrowth_test,c(0,1,5,10))
+opt_preclean$qp_OptGrowth<-factor(opt_preclean$qp_OptGrowth,levels=c(levels(opt_preclean$qp_OptGrowth),"W912UM"))
+opt_preclean$qp_OptGrowth[opt_preclean$topContractingOfficeID=="W912UM"]<-"W912UM"
+
+opt_preclean %>% group_by(qp_OptGrowth) %>% dplyr::summarise(
+  nContract=length(CSIScontractID),
+  OblOverBase=sum(ifelse(Action_Obligation>UnmodifiedBase,1,0)/length(CSIScontractID)),
+  AvgOblToBase=mean(Action_Obligation/UnmodifiedBase,na.rm=TRUE),
+  # MaxOfSteadyScopeOptionGrowthAlone=max(SteadyScopeOptionGrowthAlone),
+  OblM=sum(Action_Obligation)/1000000,
+  SumOfn_OptGrowthM=sum(n_OptGrowth_test)/1000000,
+  SumOfCOCGM=sum(SteadyScopeOptionGrowthAlone)/1000000,
+  AvgOfp_OptGrowth=mean(p_OptGrowth_test,na.rm=TRUE),
+  AvgOfp_COCG=mean(p_SteadyScopeOptionGrowthAlone,na.rm=TRUE))
+
+
+
+
+#Step 4 Rescinding Net-Negative Steady Scope Adjustments
+opt_preclean$n_OptGrowth_test <- opt_preclean$SteadyScopeOptionGrowthAlone +
+  ifelse(opt_preclean$SteadyScopeOptionRescision+opt_preclean$AdminOptionModification<0,
+         opt_preclean$SteadyScopeOptionRescision+opt_preclean$AdminOptionModification,0)
+
+opt_preclean$p_OptGrowth_test <- opt_preclean$n_OptGrowth_test/ifelse(opt_preclean$UnmodifiedBase>0,
+                                                    opt_preclean$UnmodifiedBase,NA)
+
+opt_preclean$qp_OptGrowth <-Hmisc::cut2(opt_preclean$p_OptGrowth_test,c(0,1,5,10))
+opt_preclean$qp_OptGrowth<-factor(opt_preclean$qp_OptGrowth,levels=c(levels(opt_preclean$qp_OptGrowth),"W912UM"))
+opt_preclean$qp_OptGrowth[opt_preclean$topContractingOfficeID=="W912UM"]<-"W912UM"
+
+opt_preclean %>% group_by(qp_OptGrowth) %>% dplyr::summarise(
+  nContract=length(CSIScontractID),
+  OblOverBase=sum(ifelse(Action_Obligation>UnmodifiedBase,1,0)/length(CSIScontractID)),
+  AvgOblToBase=mean(Action_Obligation/UnmodifiedBase,na.rm=TRUE),
+  # MaxOfSteadyScopeOptionGrowthAlone=max(SteadyScopeOptionGrowthAlone),
+  OblM=sum(Action_Obligation)/1000000,
+  SumOfn_OptGrowthM=sum(n_OptGrowth_test)/1000000,
+  SumOfCOCGM=sum(SteadyScopeOptionGrowthAlone)/1000000,
+  AvgOfp_OptGrowth=mean(p_OptGrowth_test,na.rm=TRUE),
+  AvgOfp_COCG=mean(p_SteadyScopeOptionGrowthAlone,na.rm=TRUE))
+
+
+#Step 4 Change Order Rescisions  
+opt_preclean$n_OptGrowth_test <- opt_preclean$SteadyScopeOptionGrowthAlone +
+  ifelse(opt_preclean$SteadyScopeOptionRescision+opt_preclean$AdminOptionModification+
+           opt_preclean$SteadyScopeOptionGrowthMixed<0,
+         opt_preclean$SteadyScopeOptionRescision+opt_preclean$AdminOptionModification+
+           opt_preclean$SteadyScopeOptionGrowthMixed,0)
+
+opt_preclean$p_OptGrowth_test <- opt_preclean$n_OptGrowth_test/ifelse(opt_preclean$UnmodifiedBase>0,
+                                                    opt_preclean$UnmodifiedBase,NA)
+
+opt_preclean$qp_OptGrowth <-Hmisc::cut2(opt_preclean$p_OptGrowth_test,c(0,1,5,10))
+opt_preclean$qp_OptGrowth<-factor(opt_preclean$qp_OptGrowth,levels=c(levels(opt_preclean$qp_OptGrowth),"W912UM"))
+opt_preclean$qp_OptGrowth[opt_preclean$topContractingOfficeID=="W912UM"]<-"W912UM"
+
+opt_preclean %>% group_by(qp_OptGrowth) %>% dplyr::summarise(
+  nContract=length(CSIScontractID),
+  OblOverBase=sum(ifelse(Action_Obligation>UnmodifiedBase,1,0)/length(CSIScontractID)),
+  AvgOblToBase=mean(Action_Obligation/UnmodifiedBase,na.rm=TRUE),
+  # MaxOfSteadyScopeOptionGrowthAlone=max(SteadyScopeOptionGrowthAlone),
+  OblM=sum(Action_Obligation)/1000000,
+  SumOfn_OptGrowthM=sum(n_OptGrowth_test)/1000000,
+  SumOfCOCGM=sum(SteadyScopeOptionGrowthAlone)/1000000,
+  AvgOfp_OptGrowth=mean(p_OptGrowth_test,na.rm=TRUE),
+  AvgOfp_COCG=mean(p_SteadyScopeOptionGrowthAlone,na.rm=TRUE))
+
+write.csv(file="..\\Data\\semi_clean\\p_OptGrowth_outliers_post_cleaning.csv",opt_preclean %>% filter((p_SteadyScopeOptionGrowthAlone-1)>10),row.names = FALSE)
+write.csv(file="..\\Data\\semi_clean\\n_OptGrowth_outliers_post_cleaning.csv",opt_preclean %>% filter(SteadyScopeOptionGrowthAlone>=2.5e8),row.names = FALSE)
+```
+
+### Implementing the change
+```{r ImplementingChange}
+opt_preclean$n_OptGrowth <- opt_preclean$SteadyScopeOptionGrowthAlone +
+  ifelse(opt_preclean$SteadyScopeOptionRescision+opt_preclean$AdminOptionModification<0,
+         opt_preclean$SteadyScopeOptionRescision+opt_preclean$AdminOptionModification,0)+1
+opt_preclean$n_OptGrowth[opt_preclean$n_OptGrowth<=1 & opt_preclean$SteadyScopeOptionGrowthAlone>0]<-NA
+summary(opt_preclean$n_OptGrowth)
+
+opt_preclean$p_SteadyScopeOptionGrowthAlone <- opt_preclean$n_OptGrowth/ifelse(opt_preclean$UnmodifiedBase>0,
+                                                    opt_preclean$UnmodifiedBase,NA)+1
+summary(opt_preclean$p_SteadyScopeOptionGrowthAlone)
+
+inspect250<-opt_preclean %>% filter(!Why_Outlier %in% 
+                                       c("Obligations at least half Orig+CRai","Korean Office W912UM") &
+                                       n_OptGrowth >= 2.5e8)
+
+
+```
+
+
+
+
+# Cleaning
+
+
+After examination, checking the net steady scope and administrative modifications and, when negative, reducing exercised options by that amount seams to do a reasonable job of seperating those contracts that have genuinely expxerienced real cost overruns from those that may have had an administrative error that wildly overinflated the size of the exercised options This adjustment isn't ideal as it does result in $16 billion of options growth contracts that no longer have a net increase and thus will need to be excluded from the sample, but it also addresses the majority of the 250M plus exercised options algorithmically, which is important as it is  outside the capabilities  of  the studyteam to manually inspect the hordes of smaller contracts.
+
+## Validate Transformed_Dataset
+This is a quick inspection to make sure that the version of the transformed dataset to be used is current, focusing on base and steady state options growth.
 
 ```{r validate_transformed_dataset}
 
-load(file="../data/clean/transformed_def_serv.Rdata")
-
+load(file="../Data/Clean/transformed_def_serv.Rdata")
 #Overrides
 def_serv<-read_and_join_experiment( def_serv,
                                "CSIS_contract_inspection.csv",
@@ -368,10 +792,246 @@ if(any(!is.na(def_serv$UnmodifiedContractBaseAndExercisedOptionsValue[
   stop("Unmodified Base set to be overiden have not been set to NA. Rerun Create_Dataset.R")
 }
 
-if(any(!is.na(def_serv$SteadyScopeOptionGrowthAlone[
+if(any(!is.na(def_serv$n_OptGrowth_OMB20_GDP18[
   def_serv$override_exercised_growth==TRUE]))){
   stop("Exercised Options set to be overiden have not been set to NA. Rerun Create_Dataset.R")
 }
 
 
 ```
+
+# Examining Outliers
+
+```{r OptionsOutlier_post}
+
+#The original variables for b_Term and b_CBre are Term and CBre
+grouped_barplot("CBre", def,value_col="Action_Obligation_Then_Year")
+statsummary_discrete(c("CBre"), def,value_col="Action_Obligation_Then_Year")
+cbre<-def %>% filter(b_CBre==1)
+cbre$qp_OptGrowth<-Hmisc::cut2(cbre$p_OptGrowth-1,c(1,10))
+
+opt_preclean$qp_OptGrowth<-Hmisc::cut2(opt_preclean$p_SteadyScopeOptionGrowthAlone-1,c(1,10))
+
+summary(cbre$qGrowth)
+
+cbre$Why_Outlier<-NA
+cbre$Why_Outlier[is.na(cbre$UnmodifiedBase_Then_Year)]<-"No Unmodified Base"
+cbre$Why_Outlier[is.na(cbre$Why_Outlier)&
+                   cbre$Action_Obligation_Then_Year*2>=cbre$UnmodifiedBase_Then_Year+
+                   cbre$n_OptGrowth]<-
+  "Obligations at least half Orig+CRai"
+cbre$Why_Outlier[is.na(cbre$Why_Outlier)&
+                   cbre$Office=="W912UM"]<-
+  "Korean Office W912UM"
+cbre$Why_Outlier[is.na(cbre$Why_Outlier)&
+                   cbre$n_OptGrowth>=2.5e8]<-
+  ">=$250M, Inspect"
+cbre$Why_Outlier[is.na(cbre$Why_Outlier)&
+                   cbre$p_OptGrowth-1>10]<-
+  "Other Unexplained 10x Options Growth"
+cbre$Why_Outlier<-factor(cbre$Why_Outlier,
+                         levels=c(
+                           "No Unmodified Base",
+                           "Obligations at least half Orig+CRai",
+                           "Later Deobligated",
+                           "Korean Office W912UM",
+                           ">=$250M, Inspect",
+                           "Other Unexplained 10x Options Growth"
+                         ))
+
+#Percent Growth
+summary(Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(1,
+                                             10,
+                                             100
+)))
+summary(Hmisc::cut2(cbre$p_OptGrowth-1,c(1,
+                                    10,
+                                    100
+)))
+
+summary(cbre$qHighBase[(cbre$p_OptGrowth-1)>10])
+summary(cbre$qHighBase[(cbre$p_OptGrowth-1)>100])
+
+
+p_outlier_summary<-cbre %>% filter(p_OptGrowth-1>10) %>% group_by(Why_Outlier) %>%
+  dplyr::summarise(nContract=length(n_OptGrowth),
+                   SumOfn_OptGrowth=sum(n_OptGrowth),
+                   MaxOfn_OptGrowth=max(n_OptGrowth),
+                   SumOfAction_Obligation_Then_Year=sum(Action_Obligation_Then_Year))
+
+#Absolute Growth
+summary(Hmisc::cut2(cbre$n_OptGrowth,c(1e3,
+                                           1e6,
+                                           1e7,
+                                           1e8,
+                                           2.5e8,
+                                           1e9,
+                                           1e10,
+                                           2e10
+))
+)
+summary(Hmisc::cut2(cbre$n_OptGrowth,c(1e3,
+                                  1e6,
+                                  1e7,
+                                  1e8,
+                                  2.5e8,
+                                  1e9,
+                                  1e10,
+                                  2e10
+))
+)
+
+summary(cbre$qHighBase[cbre$n_OptGrowth>=1e6])
+summary(cbre$qHighBase[cbre$n_OptGrowth>=1e9])
+
+
+
+n_outlier_summary<-cbre %>% filter(n_OptGrowth>2.5e8) %>% group_by(Why_Outlier) %>%
+  dplyr::summarise(nContract=length(n_OptGrowth),
+                   SumOfn_OptGrowth=sum(n_OptGrowth),
+                   MaxOfn_OptGrowth=max(n_OptGrowth),
+                   SumOfAction_Obligation_Then_Year=sum(Action_Obligation_Then_Year))
+
+```
+
+The cleaning has cut in half the outliers with growth >=100,000,000, although the influence has been much smaller on the percentage growth outliers, reinforcing the choice to switch to absolute growth. The study team chose to set a threshold of Shifting the focus to all contracts with growth of at least 250 million, there are far fewer contracts that account for far more money.
+`r knitr::kable(n_outlier_summary)`
+
+After the cleaning, 2 categories remain relevant.
+
+`r knitr::kable(p_outlier_summary)`
+* Obligations at least half Orig+CRai: For this category, total obligations of the contract were at least half the value of the initial base plus options growth under alone steady scope. As before, this category accounts for the overwhelming majority of outlier spending but only a tiny fraction of change order growth.
+* There are `r nrow(cbre %>% dplyr::filter(Why_Outlier ==">=$250M, Inspect" ))` contracts with options growth of over $250 million that account for hundreds of billions in change order growth. These merit manual inspection.
+
+## Graphs after Cleaning
+
+```{r OptionsGrowthAfterCleaning}
+
+(
+  ggplot(cbre, aes(x=UnmodifiedBase_Then_Year,y=p_OptGrowth-1)) +#,color=qGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()+
+    #+
+    geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+    # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+    labs(title="Distribution of Exercised Options",
+         y="Percent of Growth in Exercised Options",
+         x="Unmodified Contract Base")#,
+  # fill="Termination Completion"
+)
+
+
+(
+  ggplot(cbre, aes(x=UnmodifiedBase_Then_Year,y=n_OptGrowth)) +#,color=qGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()+
+    #+
+    geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+    # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+    labs(title="Distribution of Exercised Options",
+         y="Absolute Options Growth",
+         x="Unmodified Contract Base")#,
+  # fill="Termination Completion"
+)
+
+(
+  ggplot(cbre, aes(x=UnmodifiedBase_Then_Year+n_OptGrowth,
+                   y=Action_Obligation_Then_Year)) +#,color=qGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()#+
+  #+
+  #   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+  # # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+  #   labs(title="Distribution of Exercised Options",
+  #        y="Percent of Growth in Exercised Options",
+  #        x="Unmodified Contract Base")#,
+  #        # fill="Termination Completion"
+)
+
+(
+  ggplot(cbre, aes(x=n_OptGrowth,
+                   y=Action_Obligation_Then_Year-UnmodifiedBase_Then_Year)) +#,color=qGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()#+
+  #+
+  #   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+  # # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+  #   labs(title="Distribution of Exercised Options",
+  #        y="Percent of Growth in Exercised Options",
+  #        x="Unmodified Contract Base")#,
+  #        # fill="Termination Completion"
+)
+
+# 
+(
+  ggplot(cbre, aes(x=p_OptGrowth-1,
+                   y=Action_Obligation_Then_Year/UnmodifiedBase_Then_Year)) +#,color=qGrowth
+    geom_point(alpha=0.25,shape=".")+
+    # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+scale_y_log10()#+
+  #+
+  #   geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+  # # facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+  #   labs(title="Distribution of Exercised Options",
+  #        y="Percent of Growth in Exercised Options",
+  #        x="Unmodified Contract Base")#,
+  #        # fill="Termination Completion"
+)
+
+(
+  ggplot(cbre, aes(x=p_OptGrowth-1,fill=qGrowth)) +
+    geom_histogram(bins=100)+
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+
+    #+
+    geom_vline(xintercept = c(1,10,100))+#+geom_vline(xintercept = 0.1)+
+    facet_wrap(~qHighBase,scales="free_y")+#+, space="free_y"
+    labs(title="Distribution of Exercised Options",
+         y="Contract Count",
+         x="Percent of Growth in Exercised Options")#,
+  # fill="Termination Completion"
+)
+
+(
+  ggplot(cbre, aes(x=n_OptGrowth,fill=qGrowth)) +
+    geom_histogram(bins=100)+
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+
+    #+
+    geom_vline(xintercept = 1)#+geom_vline(xintercept = 0.1)+
+  #facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
+  # labs(title="Distribution of Contracts with Obligations After Last termination",
+  #      y="Contract Count",
+  #      x="Percent of Obligations After Day of Termination",
+  #      fill="Termination Completion"
+)
+
+(
+  ggplot(cbre, aes(x=n_OptGrowth,fill=qGrowth)) +
+    geom_histogram(bins=100)+
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    scale_x_log10()+
+    #+
+    geom_vline(xintercept = 1)+
+    facet_wrap(~qHighBase,scales="free_y")#+, space="free_y"
+  #+geom_vline(xintercept = 0.1)+
+  #facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
+  # labs(title="Distribution of Contracts with Obligations After Last termination",
+  #      y="Contract Count",
+  #      x="Percent of Obligations After Day of Termination",
+  #      fill="Termination Completion"
+)
+
+
+```
+
+
+
+
+
+
+
