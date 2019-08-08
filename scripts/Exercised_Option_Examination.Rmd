@@ -51,8 +51,8 @@ summary(opt_preclean$SteadyScopeOptionGrowthAlone)
 
 opt_preclean$p_SteadyScopeOptionGrowthAlone<-((opt_preclean$SteadyScopeOptionGrowthAlone-1)/
                           opt_preclean$UnmodifiedBase)+1
-# opt_preclean$qGrowth<-Hmisc::cut2(opt_preclean$p_SteadyScopeOptionGrowthAlone-1,c(1,10))
-# summary(opt_preclean$qGrowth)
+# opt_preclean$qp_OptGrowth<-Hmisc::cut2(opt_preclean$p_SteadyScopeOptionGrowthAlone-1,c(1,10))
+# summary(opt_preclean$qp_OptGrowth)
 opt_preclean$qp_OptGrowth<-Hmisc::cut2(opt_preclean$p_SteadyScopeOptionGrowthAlone-1,c(1,10))
 
 
@@ -463,7 +463,6 @@ if(any(is.na(inspect10xtrans$piid))) stop(paste("Missing CSIScontractIDs in exer
                                                 paste((unique(inspect10xtrans$CSIScontractID[is.na(inspect10xtrans$piid)])),
                                                       collapse=", ")))
 
-inspect10xtrans$baseandexercisedoptionsvalue<-text_to_number(inspect10xtrans$baseandexercisedoptionsvalue)
 write.csv(file="..\\data\\semi_clean\\gt10x_exercised_opt_outliers_why_origin.csv", 
           inspect10xtrans,
           row.names = FALSE)
@@ -687,32 +686,59 @@ if(any(!is.na(def_serv$n_OptGrowth_OMB20_GDP18[
 
 ```{r OptionsOutlier_post}
 
-#The original variables for b_Term and b_CBre are Term and CBre
-grouped_barplot("CBre", def,value_col="Action_Obligation_Then_Year")
-statsummary_discrete(c("CBre"), def,value_col="Action_Obligation_Then_Year")
-cbre<-def %>% filter(b_CBre==1)
-cbre$qp_OptGrowth<-Hmisc::cut2(cbre$p_OptGrowth-1,c(1,10))
 
-opt_preclean$qp_OptGrowth<-Hmisc::cut2(opt_preclean$p_SteadyScopeOptionGrowthAlone-1,c(1,10))
+grouped_barplot("Opt", def_serv,value_col="Action_Obligation_Then_Year")
+statsummary_discrete(c("Opt"), def_serv,value_col="Action_Obligation_Then_Year")
+opt<-def_serv %>% filter(b_CBre==1)
+opt$qp_OptGrowth<-Hmisc::cut2(opt$p_OptGrowth-1,c(1,10))
 
-summary(cbre$qGrowth)
+highroundedcutoffs<-c(15000,100000,1000000,10000000,75000000)
+opt$qHighBase <- Hmisc::cut2(opt$UnmodifiedBase_Then_Year,cuts=highroundedcutoffs)
+rm(highroundedcutoffs)#lowroundedcutoffs,
 
-cbre$Why_Outlier<-NA
-cbre$Why_Outlier[is.na(cbre$UnmodifiedBase_Then_Year)]<-"No Unmodified Base"
-cbre$Why_Outlier[is.na(cbre$Why_Outlier)&
-                   cbre$Action_Obligation_Then_Year*2>=cbre$UnmodifiedBase_Then_Year+
-                   cbre$n_OptGrowth]<-
+
+if (all(levels(opt$qHighBase)[1:5]==c("[0.00e+00,1.50e+04)",
+                                               "[1.50e+04,1.00e+05)",
+                                               "[1.00e+05,1.00e+06)",
+                                               "[1.00e+06,1.00e+07)",
+                                               "[1.00e+07,7.50e+07)"))|
+    all(levels(opt$qHighBase)[1:5]==c("[0.0e+00,1.5e+04)",
+                                               "[1.5e+04,1.0e+05)",
+                                               "[1.0e+05,1.0e+06)",
+                                               "[1.0e+06,1.0e+07)",
+                                               "[1.0e+07,7.5e+07)"))
+){
+  opt$qHighBase<-factor(opt$qHighBase,
+                                 
+                                 levels=levels(opt$qHighBase),
+                                 labels=c("[0,15k)",
+                                          "[15k,100k)",
+                                          "[100k,1m)",
+                                          "[1m,10m)",
+                                          "[10m,75m)",
+                                          "[75m+]"),
+                                 ordered=TRUE
+  )
+}
+
+
+
+opt$Why_Outlier<-NA
+opt$Why_Outlier[is.na(opt$UnmodifiedBase_Then_Year)]<-"No Unmodified Base"
+opt$Why_Outlier[is.na(opt$Why_Outlier)&
+                   opt$Action_Obligation_Then_Year*2>=opt$UnmodifiedBase_Then_Year+
+                   opt$n_OptGrowth_Then_Year]<-
   "Obligations at least half Base+Opt"
-cbre$Why_Outlier[is.na(cbre$Why_Outlier)&
-                   cbre$Office=="W912UM"]<-
+opt$Why_Outlier[is.na(opt$Why_Outlier)&
+                   opt$Office=="W912UM"]<-
   "Korean Office W912UM"
-cbre$Why_Outlier[is.na(cbre$Why_Outlier)&
-                   cbre$n_OptGrowth>=2.5e8]<-
+opt$Why_Outlier[is.na(opt$Why_Outlier)&
+                   opt$n_OptGrowth_Then_Year>=2.5e8]<-
   ">=$250M, Inspect"
-cbre$Why_Outlier[is.na(cbre$Why_Outlier)&
-                   cbre$p_OptGrowth-1>10]<-
+opt$Why_Outlier[is.na(opt$Why_Outlier)&
+                   opt$p_OptGrowth-1>10]<-
   "Other Unexplained 10x Options Growth"
-cbre$Why_Outlier<-factor(cbre$Why_Outlier,
+opt$Why_Outlier<-factor(opt$Why_Outlier,
                          levels=c(
                            "No Unmodified Base",
                            "Obligations at least half Base+Opt",
@@ -723,27 +749,27 @@ cbre$Why_Outlier<-factor(cbre$Why_Outlier,
                          ))
 
 #Percent Growth
-summary(Hmisc::cut2(opt_preclean$p_OptGrowth-1,c(1,
+summary(Hmisc::cut2(opt$p_OptGrowth-1,c(1,
                                              10,
                                              100
 )))
-summary(Hmisc::cut2(cbre$p_OptGrowth-1,c(1,
+summary(Hmisc::cut2(opt$p_OptGrowth-1,c(1,
                                     10,
                                     100
 )))
 
-summary(cbre$qHighBase[(cbre$p_OptGrowth-1)>10])
-summary(cbre$qHighBase[(cbre$p_OptGrowth-1)>100])
+summary(opt$qHighBase[(opt$p_OptGrowth-1)>10])
+summary(opt$qHighBase[(opt$p_OptGrowth-1)>100])
 
 
-p_outlier_summary<-cbre %>% filter(p_OptGrowth-1>10) %>% group_by(Why_Outlier) %>%
-  dplyr::summarise(nContract=length(n_OptGrowth),
-                   SumOfn_OptGrowth=sum(n_OptGrowth),
-                   MaxOfn_OptGrowth=max(n_OptGrowth),
+p_outlier_summary<-opt %>% filter(p_OptGrowth-1>10) %>% group_by(Why_Outlier) %>%
+  dplyr::summarise(nContract=length(n_OptGrowth_Then_Year),
+                   SumOfn_OptGrowth=sum(n_OptGrowth_Then_Year),
+                   MaxOfn_OptGrowth=max(n_OptGrowth_Then_Year),
                    SumOfAction_Obligation_Then_Year=sum(Action_Obligation_Then_Year))
 
 #Absolute Growth
-summary(Hmisc::cut2(cbre$n_OptGrowth,c(1e3,
+summary(Hmisc::cut2(opt$n_OptGrowth_Then_Year,c(1e3,
                                            1e6,
                                            1e7,
                                            1e8,
@@ -753,7 +779,7 @@ summary(Hmisc::cut2(cbre$n_OptGrowth,c(1e3,
                                            2e10
 ))
 )
-summary(Hmisc::cut2(cbre$n_OptGrowth,c(1e3,
+summary(Hmisc::cut2(opt$n_OptGrowth_Then_Year,c(1e3,
                                   1e6,
                                   1e7,
                                   1e8,
@@ -764,15 +790,15 @@ summary(Hmisc::cut2(cbre$n_OptGrowth,c(1e3,
 ))
 )
 
-summary(cbre$qHighBase[cbre$n_OptGrowth>=1e6])
-summary(cbre$qHighBase[cbre$n_OptGrowth>=1e9])
+summary(opt$qHighBase[opt$n_OptGrowth_Then_Year>=1e6])
+summary(opt$qHighBase[opt$n_OptGrowth_Then_Year>=1e9])
 
 
 
-n_outlier_summary<-cbre %>% filter(n_OptGrowth>2.5e8) %>% group_by(Why_Outlier) %>%
-  dplyr::summarise(nContract=length(n_OptGrowth),
-                   SumOfn_OptGrowth=sum(n_OptGrowth),
-                   MaxOfn_OptGrowth=max(n_OptGrowth),
+n_outlier_summary<-opt %>% filter(n_OptGrowth_Then_Year>2.5e8) %>% group_by(Why_Outlier) %>%
+  dplyr::summarise(nContract=length(n_OptGrowth_Then_Year),
+                   SumOfn_OptGrowth=sum(n_OptGrowth_Then_Year),
+                   MaxOfn_OptGrowth=max(n_OptGrowth_Then_Year),
                    SumOfAction_Obligation_Then_Year=sum(Action_Obligation_Then_Year))
 
 ```
@@ -784,14 +810,14 @@ After the cleaning, 2 categories remain relevant.
 
 `r knitr::kable(p_outlier_summary)`
 * Obligations at least half Orig+CRai: For this category, total obligations of the contract were at least half the value of the base plus options growth under alone steady scope. As before, this category accounts for the overwhelming majority of outlier spending but only a tiny fraction of change order growth.
-* There are `r nrow(cbre %>% dplyr::filter(Why_Outlier ==">=$250M, Inspect" ))` contracts with options growth of over $250 million that account for hundreds of billions in change order growth. These merit manual inspection.
+* There are `r nrow(opt %>% dplyr::filter(Why_Outlier ==">=$250M, Inspect" ))` contracts with options growth of over $250 million that account for hundreds of billions in change order growth. These merit manual inspection.
 
 ## Graphs after Cleaning
 
 ```{r OptionsGrowthAfterCleaning}
 
 (
-  ggplot(cbre, aes(x=UnmodifiedBase_Then_Year,y=p_OptGrowth-1)) +#,color=qGrowth
+  ggplot(opt, aes(x=UnmodifiedBase_Then_Year,y=p_OptGrowth-1)) +#,color=qp_OptGrowth
     geom_point(alpha=0.25,shape=".")+
     # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
     scale_x_log10()+scale_y_log10()+
@@ -806,7 +832,7 @@ After the cleaning, 2 categories remain relevant.
 
 
 (
-  ggplot(cbre, aes(x=UnmodifiedBase_Then_Year,y=n_OptGrowth)) +#,color=qGrowth
+  ggplot(opt, aes(x=UnmodifiedBase_Then_Year,y=n_OptGrowth_Then_Year)) +#,color=qp_OptGrowth
     geom_point(alpha=0.25,shape=".")+
     # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
     scale_x_log10()+scale_y_log10()+
@@ -820,8 +846,8 @@ After the cleaning, 2 categories remain relevant.
 )
 
 (
-  ggplot(cbre, aes(x=UnmodifiedBase_Then_Year+n_OptGrowth,
-                   y=Action_Obligation_Then_Year)) +#,color=qGrowth
+  ggplot(opt, aes(x=UnmodifiedBase_Then_Year+n_OptGrowth_Then_Year,
+                   y=Action_Obligation_Then_Year)) +#,color=qp_OptGrowth
     geom_point(alpha=0.25,shape=".")+
     # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
     scale_x_log10()+scale_y_log10()#+
@@ -835,8 +861,8 @@ After the cleaning, 2 categories remain relevant.
 )
 
 (
-  ggplot(cbre, aes(x=n_OptGrowth,
-                   y=Action_Obligation_Then_Year-UnmodifiedBase_Then_Year)) +#,color=qGrowth
+  ggplot(opt, aes(x=n_OptGrowth_Then_Year,
+                   y=Action_Obligation_Then_Year-UnmodifiedBase_Then_Year)) +#,color=qp_OptGrowth
     geom_point(alpha=0.25,shape=".")+
     # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
     scale_x_log10()+scale_y_log10()#+
@@ -851,8 +877,8 @@ After the cleaning, 2 categories remain relevant.
 
 # 
 (
-  ggplot(cbre, aes(x=p_OptGrowth-1,
-                   y=Action_Obligation_Then_Year/UnmodifiedBase_Then_Year)) +#,color=qGrowth
+  ggplot(opt, aes(x=p_OptGrowth-1,
+                   y=Action_Obligation_Then_Year/UnmodifiedBase_Then_Year)) +#,color=qp_OptGrowth
     geom_point(alpha=0.25,shape=".")+
     # theme(axis.text.x = element_text(angle = 90, hjust = 1))+
     scale_x_log10()+scale_y_log10()#+
@@ -866,7 +892,7 @@ After the cleaning, 2 categories remain relevant.
 )
 
 (
-  ggplot(cbre, aes(x=p_OptGrowth-1,fill=qGrowth)) +
+  ggplot(opt, aes(x=p_OptGrowth-1,fill=qp_OptGrowth)) +
     geom_histogram(bins=100)+
     theme(axis.text.x = element_text(angle = 90, hjust = 1))+
     scale_x_log10()+
@@ -880,7 +906,7 @@ After the cleaning, 2 categories remain relevant.
 )
 
 (
-  ggplot(cbre, aes(x=n_OptGrowth,fill=qGrowth)) +
+  ggplot(opt, aes(x=n_OptGrowth_Then_Year,fill=qp_OptGrowth)) +
     geom_histogram(bins=100)+
     theme(axis.text.x = element_text(angle = 90, hjust = 1))+
     scale_x_log10()+
@@ -894,7 +920,7 @@ After the cleaning, 2 categories remain relevant.
 )
 
 (
-  ggplot(cbre, aes(x=n_OptGrowth,fill=qGrowth)) +
+  ggplot(opt, aes(x=n_OptGrowth_Then_Year,fill=qp_OptGrowth)) +
     geom_histogram(bins=100)+
     theme(axis.text.x = element_text(angle = 90, hjust = 1))+
     scale_x_log10()+
