@@ -424,7 +424,7 @@ all_coef_list<-
        "CompOffr5+ offers"="Comp=5+ offers",
        
        "cl_Ceil"="Log(Init. Ceiling)",
-       "capped_cl_Days"="Log(Init. Days)",
+       "cl_Days"="Log(Init. Days)",
        "VehS-IDC"="Vehicle=S-IDC",
        "VehM-IDC"="Vehicle=M-IDC",
        "VehFSS/GWAC"="Vehicle=FSS/GWAC",
@@ -461,7 +461,7 @@ all_coef_list<-
        
        
        #interations
-       # # "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
+       # # "cl_def6_HHI_lag1:cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
        # "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
        # # "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
        "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
@@ -567,11 +567,11 @@ Expectation: Greater maximum duration will positively estimate the probability c
 freq_continuous_term_plot(serv_smp,"UnmodifiedDays",
                bins=1000)
 
-summary_continuous_plot(serv_smp1m,"capped_cl_Days")
+summary_continuous_plot(serv_smp1m,"cl_Days")
 
 #Model
 Term_04B <- glm (data=serv_smp,
-                 b_Term ~ capped_cl_Days, family=binomial(link="logit"))
+                 b_Term ~ cl_Days, family=binomial(link="logit"))
 
 display(Term_04B)
 
@@ -591,32 +591,7 @@ summary_residual_compare(Term_04A,Term_04B, skip_vif = TRUE)
 
 All expections were upheld.
 
-#### 04C: Both Scope variables
-
-```{r Model04C}
-
-#Model
-Term_04C <- glm (data=serv_smp,
-                 b_Term ~ cl_Ceil +capped_cl_Days, family=binomial(link="logit"))
-display(Term_04C)
-
-#Plot residuals versus fitted
-stargazer::stargazer(
-                       Term_03D,Term_04A,Term_04B,Term_04C,
-                       
-                       type="text",
-                       digits=2)
-
-
-
-#summary_residual_compare(Term_03D,Term_04C)
-#summary_residual_compare(Term_04A,Term_04C)
-#summary_residual_compare(Term_04B,Term_04C)
-
-```
-Days loses significance for ceiling breaches. Ceiling has a smaller coefficient for terminations. Otherwise largely unchanged.
-
-####04D: Ratio Initial Base : Ceiling Ratio (Logged)
+####04C: Ratio Initial Base : Ceiling Ratio (Logged)
 ```{r}
 summary_continuous_plot(serv_smp1m, "cl_Base2Ceil")
 
@@ -624,12 +599,39 @@ summary_continuous_plot(serv_smp1m, "cl_Base2Ceil")
 ggplot(serv_smp, aes(x=cl_Base2Ceil, y=b_Term)) + geom_point(alpha = 0.1) + ggtitle("Terminations and Ratio Initial Base:Ceiling Ratio (Logged") + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-Term_04D <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil)
-display(Term_04D)
+Term_04C <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil)
+display(Term_04C)
 
 #Plot Residuals vs. Fitted
-stargazer::stargazer(Term_12C, Term_04D, type="text", digits=2)
+stargazer::stargazer(Term_12C, Term_04C, type="text", digits=2)
 ```
+
+
+
+#### 04D: Both Scope variables
+
+```{r Model04D}
+
+#Model
+Term_04D <- glm (data=serv_smp,
+                 b_Term ~ cl_Ceil +cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
+display(Term_04D)
+
+#Plot residuals versus fitted
+stargazer::stargazer(
+                       Term_03D,Term_04A,Term_04B,Term_04D,
+                       
+                       type="text",
+                       digits=2)
+
+
+
+#summary_residual_compare(Term_03D,Term_04D)
+#summary_residual_compare(Term_04A,Term_04D)
+#summary_residual_compare(Term_04B,Term_04D)
+
+```
+Days loses significance for ceiling breaches. Ceiling has a smaller coefficient for terminations. Otherwise largely unchanged.
 
 
 #### 04E: Cumulative  Model
@@ -641,20 +643,20 @@ Term_04E <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days, family=binomial(link="logit"))
+                   cl_Ceil + cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
 glmer_examine(Term_04E)
 
 #Plot residuals versus fitted   
 
 stargazer::stargazer(
-                       Term_03D,Term_04C,Term_04E,
+                       Term_03D,Term_04D,Term_04E,
                        
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(Term_03D,Term_04E)
-#summary_residual_compare(Term_04C,Term_04E)
+summary_residual_compare(Term_04A,Term_04D,Term_04B,Term_04D)
+summary_residual_compare(Term_04A,Term_04C)
 
 
 ```
@@ -701,7 +703,7 @@ Term_05B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5, family=binomial(link="logit"))
 
 glmer_examine(Term_05B)
@@ -770,7 +772,7 @@ Term_06B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh, family=binomial(link="logit"))
 
@@ -845,7 +847,7 @@ Term_07B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA, family=binomial(link="logit"))
@@ -906,7 +908,7 @@ Term_08B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1080,7 +1082,7 @@ Term_09E <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1199,7 +1201,7 @@ Term_10D <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1260,7 +1262,7 @@ Term_11B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1363,7 +1365,7 @@ Term_12C <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
