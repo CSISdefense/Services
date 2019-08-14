@@ -68,7 +68,7 @@ Term_01A <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const, family=binomial(link="logit"))
 
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(Term_01A,type="text",
                        digits=2)
 
@@ -93,7 +93,7 @@ Term_01B <- glm (data=serv_smp,
 display(Term_01B)
 
 
-#Plot residuals versus fitted
+
   stargazer::stargazer(
                        Term_01A,Term_01B,
                        
@@ -122,7 +122,7 @@ Term_01C <- glm (data=serv_smp,
 
 glmer_examine(Term_01C)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_01A,Term_01B,Term_01C,
                        
@@ -158,7 +158,7 @@ Term_02A <- glm (data=serv_smp,
 
 display(Term_02A)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_02A,
                        
@@ -186,7 +186,7 @@ Term_02B <- glm (data=serv_smp,
 
 display(Term_02B)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_02A,Term_02B,
                        
@@ -214,7 +214,7 @@ Term_02C <- glm (data=serv_smp,
 
 glmer_examine(Term_02C)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_01C,Term_02A,Term_02B,Term_02C,
                        
@@ -245,7 +245,7 @@ Term_02D <- glm (data=serv_smp,
 
 glmer_examine(Term_02D)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_01C,Term_02C,Term_02D,
                        
@@ -280,7 +280,7 @@ Term_03A <- glm (data=serv_smp,
 
 display(Term_03A)
 
-#Plot residuals versus fitted
+
   stargazer::stargazer(
                        Term_03A,
                        
@@ -308,7 +308,7 @@ Term_03B <- glm (data=serv_smp,
 
 display(Term_03B)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(                       Term_03A,Term_03B,
                        type="text",
                        digits=2)
@@ -330,7 +330,7 @@ Term_03C <- glm (data=serv_smp,
 
 glmer_examine(Term_03C)
 
-#Plot residuals versus fitted
+
   stargazer::stargazer(
                        Term_03A,Term_03B,Term_03C,
                        
@@ -363,7 +363,7 @@ Term_03D <- glm (data=serv_smp,
 
 glmer_examine(Term_03D)
 
-#Plot residuals versus fitted   
+   
 
 stargazer::stargazer(
                        Term_02D,Term_03C,Term_03D,
@@ -550,7 +550,7 @@ stargazer::stargazer(
 
 
 
-#summary_residual_compare(Term_03D,Term_04A, skip_vif = TRUE)
+summary_residual_compare(Term_04A, skip_vif = TRUE)
 
 
 ```
@@ -678,7 +678,6 @@ summary_discrete_plot(serv_smp,"Comp1or5")
 Term_05A <- glm (data=serv_smp,
                  b_Term ~ Comp1or5, family=binomial(link="logit"))
 
-display(Term_05A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -688,7 +687,7 @@ stargazer::stargazer(
                        digits=2)
 
 
-
+summary_residual_compare(Term_05A)
 
 
 ```
@@ -708,7 +707,6 @@ Term_05B <- glm (data=serv_smp,
 
 glmer_examine(Term_05B)
 
-#Plot residuals versus fitted   
 
 stargazer::stargazer(
                        Term_04E,Term_05A,Term_05B,
@@ -716,8 +714,8 @@ stargazer::stargazer(
                        type="text",
                        digits=2)
 
-
-#summary_residual_compare(Term_04E,Term_05B)
+#Plot residuals versus fitted   
+summary_residual_compare(Term_04E,Term_05B)
 
 ```
 Minimal effect on study variables. 2-4 offers for terminations is not  longer significant, it's really 5+ that boosts the risks. But for exercised options, 5+ leads to more options while fewer having negative relationship with 2-4 offers, but only significant with p-value < 0.1 
@@ -743,17 +741,14 @@ summary_discrete_plot(serv_smp,"Veh")
 Term_06A <- glm (data=serv_smp,
                  b_Term ~ Veh, family=binomial(link="logit"))
 
-display(Term_06A)
 
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_05B,Term_06A,
-                       
                        type="text",
                        digits=2)
 
-ggplot(glm(b_Term~Veh, data=serv_smp)) + geom_point(aes(x=.fitted, y=.resid)) + ggtitle('Residual Plot') + theme(plot.title = element_text(hjust = 0.5))
-
+#Plot residuals versus fitted
+summary_residual_compare(Term_04E,Term_05B)
 
 ```
 For ceiling breaches, IDCs, particularly multiaward IDCs, were more likely to have breaches contrary to expecatitions.
@@ -778,7 +773,7 @@ Term_06B <- glm (data=serv_smp,
 
 glmer_examine(Term_06B)
 
-#Plot residuals versus fitted   
+
 
 stargazer::stargazer(
                        Term_05B,Term_06A,Term_06B,
@@ -787,7 +782,8 @@ stargazer::stargazer(
                        digits=2)
 
 
-#summary_residual_compare(Term_05B,Term_06B)
+#Plot residuals versus fitted   
+summary_residual_compare(Term_05B,Term_06B)
 
 ```
 Expectations for vehicle are now upheld for both ceiling breaches and terminations. For other variables the addition of vehicle proved less pivotal, though coefficients were often decreased.
@@ -814,13 +810,12 @@ serv_smp$PricingUCA<-factor(serv_smp$PricingUCA,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
 serv_opt$PricingUCA<-factor(serv_opt$PricingUCA,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-  summary_discrete_plot(serv_smp,"PricingUCA")
+summary_discrete_plot(serv_smp,"PricingUCA")
 
 #Model
 Term_07A <- glm (data=serv_smp,
                  b_Term ~ PricingUCA, family=binomial(link="logit"))
 
-display(Term_07A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -830,7 +825,7 @@ stargazer::stargazer(
                        digits=2)
 
 
-#summary_residual_compare(Term_06B,Term_07A,30)
+summary_residual_compare(Term_07A,bins=30)
 
 ```
 
@@ -854,7 +849,7 @@ Term_07B <- glm (data=serv_smp,
 
 glmer_examine(Term_07B)
 
-#Plot residuals versus fitted   
+
 
 stargazer::stargazer(
                        Term_06B,Term_07A,Term_07B,
@@ -862,9 +857,8 @@ stargazer::stargazer(
                        type="text",
                        digits=2)
 
-
-#summary_residual_compare(Term_06B,Term_07B)
-#summary_residual_compare(Term_07A,Term_07B,bins=3)
+#Plot residuals versus fitted   
+summary_residual_compare(Term_06B,Term_07B)
 
 ```
 
@@ -883,15 +877,15 @@ Term_08A <- glm (data=serv_smp,
                  b_Term ~ Crisis, family=binomial(link="logit"))
 display(Term_08A)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_07B,Term_08A,
                        
                        type="text",
                        digits=2)
 
-
-# summary_residual_compare(Term_07B,Term_08A,30)
+#Plot residuals versus fitted
+summary_residual_compare(Term_08A,bins=30)
 
 ```
 
@@ -916,7 +910,7 @@ Term_08B <- glm (data=serv_smp,
 
 glmer_examine(Term_08B)
 
-#Plot residuals versus fitted   
+
 stargazer::stargazer(
                        Term_07B,Term_08A,Term_08B,
                        
@@ -924,7 +918,8 @@ stargazer::stargazer(
                        digits=2)
 
 
-#summary_residual_compare(Term_07B,Term_08B)
+#Plot residuals versus fitted   
+summary_residual_compare(Term_07B,Term_08B)
 
 ```
 
@@ -940,16 +935,15 @@ HHI (logged, + means more consolidation)	cl_def6_HHI_lag1+		+	-	-
 
 Expectations are  unchanged.
 ```{r Model09A}
-#Frequency Plot for unlogged ceiling
+
 summary_continuous_plot(serv_smp1m,"def6_HHI_lag1")
-summary_continuous_plot(serv_smp1m,"cl_def6_HHI_lag1")
-summary_continuous_plot(serv_smp1m,"cl_def3_HHI_lag1")
+summary_continuous_plot(serv_smp1m,"def6_HHI_lag1",log=TRUE)
+
 
 #Model
 Term_09A <- glm (data=serv_smp,
                  b_Term ~ cl_def6_HHI_lag1, family=binomial(link="logit"))
 
-display(Term_09A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -959,7 +953,7 @@ stargazer::stargazer(
                        digits=2)
 
 
-summary_residual_compare(Term_08B,Term_09A, skip_vif = TRUE)
+summary_residual_compare(Term_09A, skip_vif = TRUE)
 
 ```
 
@@ -971,11 +965,11 @@ The higher the ratio of defense obligations to reciepts in the overall economy, 
 Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 
 ```{r Model09B}
-#Frequency Plot for unlogged ceiling
-      summary_continuous_plot(serv_smp1m,"def6_ratio_lag1")
 
-      summary_continuous_plot(serv_smp1m,"cl_def6_ratio_lag1")
-      
+summary_continuous_plot(serv_smp1m,"def6_ratio_lag1")
+
+summary_continuous_plot(serv_smp1m,"def6_ratio_lag1",log=TRUE)
+
 #Model
 Term_09B <- glm (data=serv_smp,
                  b_Term ~ cl_def6_ratio_lag1, family=binomial(link="logit"))
@@ -990,8 +984,8 @@ stargazer::stargazer(
                        digits=2)
 
 
-#summary_residual_compare(Term_08A,Term_09A)
-#summary_residual_compare(Term_09A,Term_09B)
+
+summary_residual_compare(Term_09A,Term_09B)
 
 
 
@@ -1002,11 +996,11 @@ stargazer::stargazer(
 Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 
 ```{r Model09C}
-#Frequency Plot for unlogged ceiling
-      summary_continuous_plot(serv_smp1m,"def6_obl_lag1Const")
 
-      summary_continuous_plot(serv_smp1m,"cl_def6_obl_lag1Const")
-      
+summary_continuous_plot(serv_smp1m,"def6_obl_lag1Const")
+
+summary_continuous_plot(serv_smp1m,"def6_obl_lag1Const",log=TRUE)
+
 
 #Model
 Term_09C <- glm (data=serv_smp,
@@ -1014,17 +1008,14 @@ Term_09C <- glm (data=serv_smp,
 
 display(Term_09C)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(Term_09A,Term_09B,Term_09C,
                        
                        type="text",
                        digits=2)
 
 
-#summary_residual_compare(Term_08A,Term_09C)
-#summary_residual_compare(Term_09A,Term_09C)
-#summary_residual_compare(Term_09B,Term_09C)
-
+summary_residual_compare(Term_09C)
 
 
 ```
@@ -1036,7 +1027,7 @@ Consolidation at lessa nd more granular levels may have different effects. Effic
 
 We'll start by adding in everything from both models and seeing what violates VIF.
 ```{r Model09D}
-#Frequency Plot for unlogged ceiling
+
 
 
 
@@ -1053,7 +1044,7 @@ Term_09D2 <- glm (data=serv_smp,
 
 glmer_examine(Term_09D2)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(Term_09D,Term_09D2,
                      
                        type="text",
@@ -1075,7 +1066,7 @@ Consolidation at lessa nd more granular levels may have different effects. Effic
 
 We'll start by adding in everything from both models and seeing what violates VIF.
 ```{r Model09E}
-#Frequency Plot for unlogged ceiling
+
 
 #Model
 Term_09E <- glm (data=serv_smp,
@@ -1090,7 +1081,7 @@ Term_09E <- glm (data=serv_smp,
                    cl_def6_HHI_lag1+cl_def6_ratio_lag1, family=binomial(link="logit"))
 glmer_examine(Term_09E)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(Term_08B,Term_09D2,Term_09E,type="text",
                        digits=2)
 
@@ -1105,22 +1096,22 @@ Expectations are not upheld.
 HHI (logged, + means more consolidation)	cl_def3_HHI_lag1+		+	++	-
 
 ```{r Model10A}
-#Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp1m,"cl_def3_HHI_lag1")
+
+summary_continuous_plot(serv_smp1m,"def3_HHI_lag1")
+summary_continuous_plot(serv_smp1m,"def3_HHI_lag1",log=TRUE)
 
 #Model
 Term_10A <- glm (data=serv_smp,
                  b_Term ~ cl_def3_HHI_lag1, family=binomial(link="logit"))
-display(Term_10A)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_09A,Term_10A,
                        
                        type="text",
                        digits=2)
 
-summary_residual_compare(Term_09A,Term_10A, skip_vif =  TRUE)
+summary_residual_compare(Term_10A, skip_vif =  TRUE)
 
 
 
@@ -1135,23 +1126,22 @@ Level 3 HHI seems to slightly out perform level 6.
 Ratio Def. obligatons : US revenue	cl_def3_ratio_lag1+		+	+	-
 
 ```{r Model10B}
-#Frequency Plot for unlogged ceiling
+
 summary_continuous_plot(serv_smp1m,"capped_def3_ratio_lag1")
-summary_continuous_plot(serv_smp1m,"cl_def3_ratio_lag1")
+summary_continuous_plot(serv_smp1m,"capped_def3_ratio_lag1",log=TRUE)
 
 #Model
 Term_10B <- glm (data=serv_smp,
                  b_Term ~ cl_def3_ratio_lag1, family=binomial(link="logit"))
-display(Term_10B)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_09B,Term_10A,Term_10B,
                        
                        type="text",
                        digits=2)
 
-summary_residual_compare(Term_09B,Term_10B, skip_vif = TRUE)
+summary_residual_compare(Term_10B, skip_vif = TRUE)
 ```
 
 Expectations were in lined with ceiling breaches and options, not with termination, and 
@@ -1162,24 +1152,18 @@ Consolidation at lessa nd more granular levels may have different effects. Effic
 
 We'll start by adding in everything from both models and seeing what violates VIF.
 ```{r Model10C}
-#Frequency Plot for unlogged ceiling
-
-
-
 #Model
 Term_10C <- glm (data=serv_smp,
                  b_Term ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
 glmer_examine(Term_10C)
 
-
-#Plot residuals versus fitted
 stargazer::stargazer(
-                     Term_09E,Term_10A,Term_10B,Term_10C,
+                     Term_08B,Term_09E,Term_10A,Term_10B,Term_10C,
                      
                        type="text",
                        digits=2)
 
-summary_residual_compare(Term_08B,Term_10C)
+summary_residual_compare(Term_08B,Term_10C,Term_09E,Term_10C)
 ```
 
 NAICS Subsector (Level 3)					
@@ -1193,7 +1177,7 @@ ratio expectations for ceiling breach and options but not terminations.
 #### Model 10D: Cumulative Model
 .
 ```{r Model10D}
-#Frequency Plot for unlogged ceiling
+
 
 
 #Model
@@ -1211,14 +1195,13 @@ Term_10D <- glm (data=serv_smp,
 
 glmer_examine(Term_10D)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(Term_09E,Term_10C,Term_10D,
                      
                        type="text",
                        digits=2)
 
-summary_residual_compare(Term_09D2,Term_10D)
-summary_residual_compare(Term_08B,Term_10D)
+summary_residual_compare(Term_09E,Term_10D)
 ```
 HHI6 for ceiling breach now matches expectations but HHI6 for term went in the opposite direction. s
 
@@ -1231,21 +1214,20 @@ Market Share Vendor for that Office	c_pMarket		++	-	+
 
 ```{r Model11A}
 
-summary_continuous_plot(serv_smp1m,"c_pMarket")
+summary_continuous_plot(serv_smp1m,"pMarket")
 
 #Model
 Term_11A <- glm (data=serv_smp,
                  b_Term ~ c_pMarket, family=binomial(link="logit"))
 
-display(Term_11A)
 
-#Plot residuals versus fitted
 stargazer::stargazer(
                       Term_11A,
                        
                        type="text",
                        digits=2)
 
+summary_residual_compare(Term_09E,Term_10D)
 ```
 
 Aligns with expectations on terminatio, but not for ceiling  breach or for options.
@@ -1254,7 +1236,7 @@ Aligns with expectations on terminatio, but not for ceiling  breach or for optio
 #### Model 11B: Cumulative Model
 
 ```{r Model11B}
-#Frequency Plot for unlogged ceiling
+
 
 
 #Model
@@ -1273,15 +1255,15 @@ Term_11B <- glm (data=serv_smp,
 
 glmer_examine(Term_11B)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                      Term_10D,Term_11A,Term_11B,
                      
                        type="text",
                        digits=2)
 
-#summary_residual_compare(Term_10D,Term_11B)
-#summary_residual_compare(Term_11S,Term_11B)
+summary_residual_compare(Term_10D,Term_11B)
+
 ```
 Note that the VIF is getting high on pair_CA.
 
@@ -1303,7 +1285,7 @@ Term_12A <- glm (data=serv_smp,
 
 display(Term_12A)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_12A,
                        
@@ -1338,7 +1320,7 @@ Term_12B <- glm (data=serv_smp,
 
 display(Term_12B)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_12B,
                        
@@ -1357,7 +1339,7 @@ When using hhi calculated based on contracting office number of contarcts: consi
 #### 12C: Cumulative Model
 
 ```{r Model12C}
-#Frequency Plot for unlogged ceiling
+
 
 
 #Model
@@ -1377,7 +1359,7 @@ Term_12C <- glm (data=serv_smp,
 
 glmer_examine(Term_12C)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                      Term_11B,Term_12A,Term_12C,
                      
