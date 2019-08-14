@@ -262,14 +262,7 @@ Expectation: Given the fact that one source for higher salaries is the difficult
 
 
 ```r
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
-
-summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1Const")
+summary_continuous_plot(serv_smp1m,"US6_avg_sal_lag1Const")
 ```
 
 ```
@@ -284,12 +277,18 @@ summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1Const")
 ![](Model_Termination_files/figure-html/Model01A-1.png)<!-- -->
 
 ```r
+summary_continuous_plot(serv_smp1m,"US6_avg_sal_lag1Const",log=TRUE)
+```
+
+![](Model_Termination_files/figure-html/Model01A-2.png)<!-- -->
+
+```r
 #Model
 Term_01A <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const, family=binomial(link="logit"))
 
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(Term_01A,type="text",
                        digits=2)
 ```
@@ -301,62 +300,61 @@ stargazer::stargazer(Term_01A,type="text",
 ##                          ---------------------------
 ##                                    b_Term           
 ## ----------------------------------------------------
-## cl_US6_avg_sal_lag1Const           0.10***          
+## cl_US6_avg_sal_lag1Const           0.08**           
 ##                                    (0.03)           
 ##                                                     
-## Constant                          -3.95***          
+## Constant                          -3.96***          
 ##                                    (0.01)           
 ##                                                     
 ## ----------------------------------------------------
 ## Observations                       250,000          
-## Log Likelihood                   -23,414.38         
-## Akaike Inf. Crit.                 46,832.76         
+## Log Likelihood                   -23,191.15         
+## Akaike Inf. Crit.                 46,386.29         
 ## ====================================================
 ## Note:                    *p<0.1; **p<0.05; ***p<0.01
 ```
 
-Expectations are matched  for terminations but the results are not significant.
+```r
+summary_residual_compare(Term_01A,bins=2,skip_vif = TRUE)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model01A-3.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46382.29      46388.62   6.323854
+```
+
+Expectations are matched  for terminations and the results are significant at the 0.05 level.
 
 ### 01B Invoice Rate
 Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employees who are supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood terminations increases (decreases).
 
 
 ```r
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
-
-summary_continuous_plot(serv_smp,"cl_CFTE")
+summary_continuous_plot(serv_smp1m,"CFTE_Rate_1year",log=TRUE)
 ```
 
 ![](Model_Termination_files/figure-html/Model01B-1.png)<!-- -->
 
 ```r
 #Model
-
-#Model
 Term_01B <- glm (data=serv_smp,
                  b_Term ~ cl_CFTE, family=binomial(link="logit"))
 
-display(Term_01B)
-```
 
-```
-## glm(formula = b_Term ~ cl_CFTE, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -3.95     0.01  
-## cl_CFTE      0.04     0.03  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46838.1, null deviance = 46839.6 (difference = 1.5)
-```
-
-```r
-#Plot residuals versus fitted
   stargazer::stargazer(
                        Term_01A,Term_01B,
                        
@@ -372,61 +370,56 @@ display(Term_01B)
 ##                                     b_Term           
 ##                               (1)            (2)     
 ## -----------------------------------------------------
-## cl_US6_avg_sal_lag1Const    0.10***                  
+## cl_US6_avg_sal_lag1Const     0.08**                  
 ##                              (0.03)                  
 ##                                                      
-## cl_CFTE                                     0.04     
+## cl_CFTE                                    0.07**    
 ##                                            (0.03)    
 ##                                                      
-## Constant                    -3.95***      -3.95***   
+## Constant                    -3.96***      -3.96***   
 ##                              (0.01)        (0.01)    
 ##                                                      
 ## -----------------------------------------------------
 ## Observations                250,000        250,000   
-## Log Likelihood             -23,414.38    -23,419.06  
-## Akaike Inf. Crit.          46,832.76      46,842.12  
+## Log Likelihood             -23,191.15    -23,191.65  
+## Akaike Inf. Crit.          46,386.29      46,387.29  
 ## =====================================================
 ## Note:                     *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_01A,Term_01B, skip_vif = TRUE)
+summary_residual_compare(Term_01B, skip_vif = TRUE)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
 ```
 
 ![](Model_Termination_files/figure-html/Model01B-2.png)<!-- -->
 
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46383.29      46388.62   5.320864
 ```
 
-```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
-## be used
-```
-
-![](Model_Termination_files/figure-html/Model01B-3.png)<!-- -->
-
-```
-## NULL
-```
-
-When considered alone, expectations are matched for ceiling breaches and exercised options, as higher invoice rate estimates a higher risk of ceiling breaches and lower possibility of exercised options. No significant relationship between invoice rate and terminations.
+When considered alone, expectations are matched for ceiling breaches and exercised options, as higher invoice rate estimates a higher risk of ceiling breaches and lower possibility of exercised options.
 
 
 
-### 01C Service Complexity
+### 01C Services Complexity
 Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), the higher risk of ceiling breaches and terminations and the less exercised options there would be. Also we expect the result of combined model would be the same as individual models.
 
  
 
 ```r
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
-
 #Model
 Term_01C <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + cl_CFTE, family=binomial(link="logit"))
@@ -436,11 +429,10 @@ glmer_examine(Term_01C)
 
 ```
 ## cl_US6_avg_sal_lag1Const                  cl_CFTE 
-##                 1.155086                 1.155086
+##                 1.156917                 1.156917
 ```
 
 ```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_01A,Term_01B,Term_01C,
                        
@@ -456,38 +448,39 @@ stargazer::stargazer(
 ##                                       b_Term             
 ##                             (1)        (2)        (3)    
 ## ---------------------------------------------------------
-## cl_US6_avg_sal_lag1Const  0.10***               0.10***  
+## cl_US6_avg_sal_lag1Const   0.08**                0.06*   
 ##                            (0.03)                (0.03)  
 ##                                                          
-## cl_CFTE                                0.04      0.0002  
+## cl_CFTE                               0.07**      0.05   
 ##                                       (0.03)     (0.03)  
 ##                                                          
-## Constant                  -3.95***   -3.95***   -3.95*** 
+## Constant                  -3.96***   -3.96***   -3.96*** 
 ##                            (0.01)     (0.01)     (0.01)  
 ##                                                          
 ## ---------------------------------------------------------
 ## Observations              250,000    250,000    250,000  
-## Log Likelihood           -23,414.38 -23,419.06 -23,414.38
-## Akaike Inf. Crit.        46,832.76  46,842.12  46,834.76 
+## Log Likelihood           -23,191.15 -23,191.65 -23,190.06
+## Akaike Inf. Crit.        46,386.29  46,387.29  46,386.11 
 ## =========================================================
 ## Note:                         *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-  summary_residual_compare(Term_01A,Term_01C)
+  summary_residual_compare(Term_01A,Term_01C,Term_01B,Term_01C)
 ```
 
 ![](Model_Termination_files/figure-html/Model01C-1.png)<!-- -->
 
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
+## Warning in if (class(model1_new) == "glmerMod" & class(model2_new) ==
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
 ```
 
 ```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
-## be used
+## Warning in if ((class(model1_new) != "glmerMod" & class(model2_new) !
+## = "glmerMod") & : the condition has length > 1 and only the first element
+## will be used
 ```
 
 ![](Model_Termination_files/figure-html/Model01C-2.png)<!-- -->
@@ -495,44 +488,23 @@ stargazer::stargazer(
 ```
 ## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 46828.76      46839.64   10.88078
-## 2 model1_new 46828.76      46839.64   10.88081
+## 1 model1_old 46382.29      46388.62   6.323854
+## 2 model1_new 46380.11      46388.62   8.503541
+## 3 model2_old 46383.29      46388.62   5.320864
+## 4 model2_new 46380.11      46388.62   8.503541
 ## 
 ## [[2]]
 ## cl_US6_avg_sal_lag1Const                  cl_CFTE 
-##                 1.155086                 1.155086
-```
-
-```r
-  summary_residual_compare(Term_01B,Term_01C)
-```
-
-![](Model_Termination_files/figure-html/Model01C-3.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model01C-4.png)<!-- -->
-
-```
-## [[1]]
-##        model deviance null.deviance difference
-## 1 model1_old 46838.12      46839.64   1.520306
-## 2 model1_new 46828.76      46839.64  10.880812
+##                 1.156917                 1.156917 
 ## 
-## [[2]]
+## [[3]]
 ## cl_US6_avg_sal_lag1Const                  cl_CFTE 
-##                 1.155086                 1.155086
+##                 1.156917                 1.156917
 ```
 
-Both average salary and invoiced rate have a not inconsiderable VIF but one well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
+Both average salary and invoiced rate have a VI well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
 
-Both individually and pair-wise, higher average salary and invoiced rate estimate higher possibility of cost ceiling breaches and lower likelihood of exercised options as expected. But the termination expectation is not supported or not significant for two measures of service complexity resepctively.
+Both individually and pair-wise, higher average salary and invoiced rate estimate higher possibility of cost ceiling breaches and lower likelihood of exercised options as expected. But the termination expectation is not not significant at the 0.05 level for either for two measures of service complexity resepctively when considered together.
 
 
 
@@ -543,34 +515,29 @@ Expectation: Performance-based services contracting ties a portion of a contract
 
 
 ```r
-summary_continuous_plot(serv_smp,"pPBSC")
+summary_continuous_plot(serv_smp1m,"pPBSC")
 ```
 
 ![](Model_Termination_files/figure-html/Model02A-1.png)<!-- -->
+
+```r
+summary_continuous_plot(serv_smp1m,"pPBSC",log=TRUE)
+```
+
+```
+## Warning: Removed 63536 rows containing non-finite values (stat_bin).
+```
+
+![](Model_Termination_files/figure-html/Model02A-2.png)<!-- -->
 
 ```r
 #Model
 Term_02A <- glm (data=serv_smp,
                  b_Term ~ c_pPBSC, family=binomial(link="logit"))
 
-display(Term_02A)
-```
 
-```
-## glm(formula = b_Term ~ c_pPBSC, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -3.96     0.01  
-## c_pPBSC      0.27     0.03  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46751.3, null deviance = 46839.6 (difference = 88.3)
-```
-
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
-                       Term_01C,Term_02A,
+                       Term_02A,
                        
                        type="text",
                        digits=2)
@@ -578,33 +545,49 @@ stargazer::stargazer(
 
 ```
 ## 
-## =====================================================
-##                              Dependent variable:     
-##                          ----------------------------
-##                                     b_Term           
-##                               (1)            (2)     
-## -----------------------------------------------------
-## cl_US6_avg_sal_lag1Const    0.10***                  
-##                              (0.03)                  
-##                                                      
-## cl_CFTE                      0.0002                  
-##                              (0.03)                  
-##                                                      
-## c_pPBSC                                    0.27***   
-##                                            (0.03)    
-##                                                      
-## Constant                    -3.95***      -3.96***   
-##                              (0.01)        (0.01)    
-##                                                      
-## -----------------------------------------------------
-## Observations                250,000        250,000   
-## Log Likelihood             -23,414.38    -23,375.66  
-## Akaike Inf. Crit.          46,834.76      46,755.33  
-## =====================================================
-## Note:                     *p<0.1; **p<0.05; ***p<0.01
+## =============================================
+##                       Dependent variable:    
+##                   ---------------------------
+##                             b_Term           
+## ---------------------------------------------
+## c_pPBSC                     0.20***          
+##                             (0.03)           
+##                                              
+## Constant                   -3.97***          
+##                             (0.01)           
+##                                              
+## ---------------------------------------------
+## Observations                250,000          
+## Log Likelihood            -23,171.58         
+## Akaike Inf. Crit.          46,347.17         
+## =============================================
+## Note:             *p<0.1; **p<0.05; ***p<0.01
 ```
 
-When considering PBSC alone, none of the expected sign was found in ceiling breaches, terminations or exercised options.
+```r
+  summary_residual_compare(Term_02A)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model02A-3.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46343.17      46388.62   45.44842
+```
+
+When considering PBSC alone, the expected sign was not found in terminations.
 
 
 ### 02B: No.Office PSC History
@@ -612,41 +595,28 @@ Expectation: The increasing share of contracting office obligations for a given 
 
 
 ```r
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
-
-summary_continuous_plot(serv_smp,"c_pOffPSC")
+summary_continuous_plot(serv_smp1m,"pOffPSC")
 ```
 
 ![](Model_Termination_files/figure-html/Model02B-1.png)<!-- -->
+
+```r
+summary_continuous_plot(serv_smp1m,"pOffPSC",log=TRUE)
+```
+
+```
+## Warning: Removed 99679 rows containing non-finite values (stat_bin).
+```
+
+![](Model_Termination_files/figure-html/Model02B-2.png)<!-- -->
 
 ```r
 #Model
 Term_02B <- glm (data=serv_smp,
                  b_Term ~ c_pOffPSC, family=binomial(link="logit"))
 
-display(Term_02B)
-```
-
-```
-## glm(formula = b_Term ~ c_pOffPSC, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -3.98     0.02  
-## c_pOffPSC    0.50     0.02  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46459.6, null deviance = 46839.6 (difference = 380.0)
-```
-
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
-                       Term_01C,Term_02A,Term_02B,
+                       Term_02A,Term_02B,
                        
                        type="text",
                        digits=2)
@@ -654,59 +624,53 @@ stargazer::stargazer(
 
 ```
 ## 
-## =========================================================
-##                                Dependent variable:       
-##                          --------------------------------
-##                                       b_Term             
-##                             (1)        (2)        (3)    
-## ---------------------------------------------------------
-## cl_US6_avg_sal_lag1Const  0.10***                        
-##                            (0.03)                        
-##                                                          
-## cl_CFTE                    0.0002                        
-##                            (0.03)                        
-##                                                          
-## c_pPBSC                              0.27***             
-##                                       (0.03)             
-##                                                          
-## c_pOffPSC                                       0.50***  
-##                                                  (0.02)  
-##                                                          
-## Constant                  -3.95***   -3.96***   -3.98*** 
-##                            (0.01)     (0.01)     (0.02)  
-##                                                          
-## ---------------------------------------------------------
-## Observations              250,000    250,000    250,000  
-## Log Likelihood           -23,414.38 -23,375.66 -23,229.80
-## Akaike Inf. Crit.        46,834.76  46,755.33  46,463.61 
-## =========================================================
-## Note:                         *p<0.1; **p<0.05; ***p<0.01
+## ==============================================
+##                       Dependent variable:     
+##                   ----------------------------
+##                              b_Term           
+##                        (1)            (2)     
+## ----------------------------------------------
+## c_pPBSC              0.20***                  
+##                       (0.03)                  
+##                                               
+## c_pOffPSC                           0.45***   
+##                                     (0.02)    
+##                                               
+## Constant             -3.97***      -3.98***   
+##                       (0.01)        (0.02)    
+##                                               
+## ----------------------------------------------
+## Observations         250,000        250,000   
+## Log Likelihood      -23,171.58    -23,048.00  
+## Akaike Inf. Crit.   46,347.17      46,100.00  
+## ==============================================
+## Note:              *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_02A,Term_02B, skip_vif = TRUE)
+summary_residual_compare(Term_02B, skip_vif = TRUE)
 ```
 
-![](Model_Termination_files/figure-html/Model02B-2.png)<!-- -->
-
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
 ## > 1 and only the first element will be used
 ```
 
 ```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
 ![](Model_Termination_files/figure-html/Model02B-3.png)<!-- -->
 
 ```
-## NULL
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old    46096      46388.62   292.6137
 ```
 
-When considering number of contracting office obligations for a given service alone, expectation was only fulfilled for options growth.
+Expections were not upheldfor terminations When considering number of contracting office obligations for a given service alone.
 
 
 ### 02C: Office Capacity
@@ -723,11 +687,10 @@ glmer_examine(Term_02C)
 
 ```
 ##   c_pPBSC c_pOffPSC 
-##  1.249797  1.249797
+##  1.230466  1.230466
 ```
 
 ```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_01C,Term_02A,Term_02B,Term_02C,
                        
@@ -743,44 +706,45 @@ stargazer::stargazer(
 ##                                            b_Term                   
 ##                             (1)        (2)        (3)        (4)    
 ## --------------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const  0.10***                                   
+## cl_US6_avg_sal_lag1Const   0.06*                                    
 ##                            (0.03)                                   
 ##                                                                     
-## cl_CFTE                    0.0002                                   
+## cl_CFTE                     0.05                                    
 ##                            (0.03)                                   
 ##                                                                     
-## c_pPBSC                              0.27***                 0.05   
+## c_pPBSC                              0.20***                -0.002  
 ##                                       (0.03)                (0.03)  
 ##                                                                     
-## c_pOffPSC                                       0.50***    0.48***  
+## c_pOffPSC                                       0.45***    0.45***  
 ##                                                  (0.02)     (0.03)  
 ##                                                                     
-## Constant                  -3.95***   -3.96***   -3.98***   -3.98*** 
+## Constant                  -3.96***   -3.97***   -3.98***   -3.98*** 
 ##                            (0.01)     (0.01)     (0.02)     (0.02)  
 ##                                                                     
 ## --------------------------------------------------------------------
 ## Observations              250,000    250,000    250,000    250,000  
-## Log Likelihood           -23,414.38 -23,375.66 -23,229.80 -23,228.52
-## Akaike Inf. Crit.        46,834.76  46,755.33  46,463.61  46,463.04 
+## Log Likelihood           -23,190.06 -23,171.58 -23,048.00 -23,048.00
+## Akaike Inf. Crit.        46,386.11  46,347.17  46,100.00  46,102.00 
 ## ====================================================================
 ## Note:                                    *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_02A,Term_02C)
+summary_residual_compare(Term_02A,Term_02C,Term_02B,Term_02C)
 ```
 
 ![](Model_Termination_files/figure-html/Model02C-1.png)<!-- -->
 
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
+## Warning in if (class(model1_new) == "glmerMod" & class(model2_new) ==
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
 ```
 
 ```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
-## be used
+## Warning in if ((class(model1_new) != "glmerMod" & class(model2_new) !
+## = "glmerMod") & : the condition has length > 1 and only the first element
+## will be used
 ```
 
 ![](Model_Termination_files/figure-html/Model02C-2.png)<!-- -->
@@ -788,44 +752,23 @@ summary_residual_compare(Term_02A,Term_02C)
 ```
 ## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 46751.33      46839.64   88.31184
-## 2 model1_new 46457.04      46839.64  382.59617
+## 1 model1_old 46343.17      46388.62   45.44842
+## 2 model1_new 46096.00      46388.62  292.61777
+## 3 model2_old 46096.00      46388.62  292.61371
+## 4 model2_new 46096.00      46388.62  292.61777
 ## 
 ## [[2]]
 ##   c_pPBSC c_pOffPSC 
-##  1.249797  1.249797
-```
-
-```r
-summary_residual_compare(Term_02B,Term_02C)
-```
-
-![](Model_Termination_files/figure-html/Model02C-3.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model02C-4.png)<!-- -->
-
-```
-## [[1]]
-##        model deviance null.deviance difference
-## 1 model1_old 46459.61      46839.64   380.0307
-## 2 model1_new 46457.04      46839.64   382.5962
+##  1.230466  1.230466 
 ## 
-## [[2]]
+## [[3]]
 ##   c_pPBSC c_pOffPSC 
-##  1.249797  1.249797
+##  1.230466  1.230466
 ```
 
 No high correlation is observed between PBSC and Contract Office Obligations for PSC based on the vif score.
 
-After combining PBSC and Contract office obligations for PSC, PBSC had a flipped relationship with ceiling breaches that matches with expectation (A look at summary statistics for Performance-Based experience did find that as the percent of performance-based service went from 0 percent to 75 percent, the ceiling breach rate declined. Above 75 percent, it rose dramatically, suggesting an additional variable may influence that relationship.) but lost significance with terminations. Contract office obligations for PSC is associate with more exercised options. The rest of results remained unmatching with expectations.
+After combining PBSC and Contract office obligations for PSC, PBSC lost significance for terminations. Contract office obligations for PSC is associate with more exercised options. PBSC is now has the expected sign but pOffPSC does not.
 
 
 ### 02D: Cumulative  Model
@@ -842,13 +785,12 @@ glmer_examine(Term_02D)
 
 ```
 ## cl_US6_avg_sal_lag1Const                  cl_CFTE                  c_pPBSC 
-##                 1.206850                 1.165515                 1.263851 
+##                 1.204996                 1.166322                 1.242300 
 ##                c_pOffPSC 
-##                 1.266682
+##                 1.244321
 ```
 
 ```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_01C,Term_02C,Term_02D,
                        
@@ -864,31 +806,31 @@ stargazer::stargazer(
 ##                                       b_Term             
 ##                             (1)        (2)        (3)    
 ## ---------------------------------------------------------
-## cl_US6_avg_sal_lag1Const  0.10***                -0.002  
+## cl_US6_avg_sal_lag1Const   0.06*                 -0.03   
 ##                            (0.03)                (0.03)  
 ##                                                          
-## cl_CFTE                    0.0002                 0.02   
+## cl_CFTE                     0.05                 0.06*   
 ##                            (0.03)                (0.03)  
 ##                                                          
-## c_pPBSC                                0.05       0.05   
+## c_pPBSC                               -0.002     -0.004  
 ##                                       (0.03)     (0.03)  
 ##                                                          
-## c_pOffPSC                            0.48***    0.48***  
+## c_pOffPSC                            0.45***    0.45***  
 ##                                       (0.03)     (0.03)  
 ##                                                          
-## Constant                  -3.95***   -3.98***   -3.98*** 
+## Constant                  -3.96***   -3.98***   -3.98*** 
 ##                            (0.01)     (0.02)     (0.02)  
 ##                                                          
 ## ---------------------------------------------------------
 ## Observations              250,000    250,000    250,000  
-## Log Likelihood           -23,414.38 -23,228.52 -23,228.39
-## Akaike Inf. Crit.        46,834.76  46,463.04  46,466.79 
+## Log Likelihood           -23,190.06 -23,048.00 -23,046.13
+## Akaike Inf. Crit.        46,386.11  46,102.00  46,102.26 
 ## =========================================================
 ## Note:                         *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_02C,Term_02D)
+summary_residual_compare(Term_01C,Term_02D)
 ```
 
 ![](Model_Termination_files/figure-html/Model02D-1.png)<!-- -->
@@ -900,7 +842,7 @@ summary_residual_compare(Term_02C,Term_02D)
 
 ```
 ## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
@@ -909,53 +851,19 @@ summary_residual_compare(Term_02C,Term_02D)
 ```
 ## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 46457.04      46839.64   382.5962
-## 2 model1_new 46456.79      46839.64   382.8504
+## 1 model1_old 46380.11      46388.62   8.503541
+## 2 model1_new 46092.26      46388.62 296.356786
 ## 
 ## [[2]]
 ## cl_US6_avg_sal_lag1Const                  cl_CFTE                  c_pPBSC 
-##                 1.206850                 1.165515                 1.263851 
+##                 1.204996                 1.166322                 1.242300 
 ##                c_pOffPSC 
-##                 1.266682
-```
-
-```r
-summary_residual_compare(Term_01C,Term_02D)
-```
-
-![](Model_Termination_files/figure-html/Model02D-3.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model02D-4.png)<!-- -->
-
-```
-## [[1]]
-##        model deviance null.deviance difference
-## 1 model1_old 46828.76      46839.64   10.88081
-## 2 model1_new 46456.79      46839.64  382.85036
-## 
-## [[2]]
-## cl_US6_avg_sal_lag1Const                  cl_CFTE                  c_pPBSC 
-##                 1.206850                 1.165515                 1.263851 
-##                c_pOffPSC 
-##                 1.266682
+##                 1.244321
 ```
 
 No high correlation is observed among all of the 4 predictors (average salary, invoiced rate, PBSC and Contract Office Obligations for PSC) so far based on the vif score. When all measures for sevice complexity and office capacity are combined, per dependent variable:
 
-1. Ceiling Breaches: All variables remain the same within each subgroup (Services Complexity and Office Capacity). Except for Contract office obligations for PSC, the results of other varibles matched with the expectation for ceiling breaches so far. 
-
-2. Terminations: Except for Contract office obligations for PSC, the rest of variables didn't show significant relationships with Termination. The only significant relationship between Contract office obligations for PSC and Temrination didn't match the expectation.
-
-3. Exercised Options: Except for PBSC, all other three variables are associated with exercised options as expected.
-
+Terminations: Average Salary swaps signs, counter to expectations, and becomes less significant. CFTE becomes signifianct at the .10 level.  pPBSC and pOFfPSC are largely unchanged from the prior model.
 
 
 ## Office-Vendor Relationship
@@ -965,14 +873,7 @@ Expactation: The number of past years of the relationship between the contractin
 
 
 ```r
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
-
-summary_discrete_plot(serv_smp,"c_pairHist")
+summary_discrete_plot(serv_smp,"office_entity_paircount_7year")
 ```
 
 ```
@@ -993,36 +894,32 @@ summary_discrete_plot(serv_smp,"c_pairHist")
 ```
 ## [[1]]
 ## 
-## -0.727331277356926 -0.519773791968938  -0.31221630658095 
-##              38833              30773              28265 
-## -0.104658821192962  0.102898664195026  0.310456149583014 
-##              29388              33017              27617 
-##  0.518013634971002   0.72557112035899 
-##              21668              40439 
+##     0     1     2     3     4     5     6     7 
+## 39242 30467 28241 29493 32797 27439 21560 40761 
 ## 
 ## [[2]]
-##                     
-##                       None Ceiling Breach
-##   -0.727331277356926 36517           2316
-##   -0.519773791968938 29088           1685
-##   -0.31221630658095  26645           1620
-##   -0.104658821192962 27663           1725
-##   0.102898664195026  30978           2039
-##   0.310456149583014  25988           1629
-##   0.518013634971002  20479           1189
-##   0.72557112035899   38545           1894
+##    
+##      None Ceiling Breach
+##   0 36849           2393
+##   1 28665           1802
+##   2 26607           1634
+##   3 27643           1850
+##   4 30754           2043
+##   5 25732           1707
+##   6 20305           1255
+##   7 38730           2031
 ## 
 ## [[3]]
-##                     
-##                          0     1
-##   -0.727331277356926 37825  1008
-##   -0.519773791968938 30288   485
-##   -0.31221630658095  27898   367
-##   -0.104658821192962 29044   344
-##   0.102898664195026  32439   578
-##   0.310456149583014  26913   704
-##   0.518013634971002  21158   510
-##   0.72557112035899   39713   726
+##    
+##         0     1
+##   0 38153  1089
+##   1 30053   414
+##   2 27890   351
+##   3 29134   359
+##   4 32221   576
+##   5 26736   703
+##   6 21109   451
+##   7 40039   722
 ```
 
 ```r
@@ -1030,24 +927,9 @@ summary_discrete_plot(serv_smp,"c_pairHist")
 Term_03A <- glm (data=serv_smp,
                  b_Term ~ c_pairHist, family=binomial(link="logit"))
 
-display(Term_03A)
-```
 
-```
-## glm(formula = b_Term ~ c_pairHist, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -3.95     0.01  
-## c_pairHist   0.00     0.03  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46839.6, null deviance = 46839.6 (difference = 0.0)
-```
-
-```r
-#Plot residuals versus fitted
-  stargazer::stargazer(
-                       Term_02D,Term_03A,
+  stargazer::stargazer(Term_02D,
+                       Term_03A,
                        
                        type="text",
                        digits=2)
@@ -1061,184 +943,136 @@ display(Term_03A)
 ##                                     b_Term           
 ##                               (1)            (2)     
 ## -----------------------------------------------------
-## cl_US6_avg_sal_lag1Const     -0.002                  
+## cl_US6_avg_sal_lag1Const     -0.03                   
 ##                              (0.03)                  
 ##                                                      
-## cl_CFTE                       0.02                   
+## cl_CFTE                      0.06*                   
 ##                              (0.03)                  
 ##                                                      
-## c_pPBSC                       0.05                   
+## c_pPBSC                      -0.004                  
 ##                              (0.03)                  
 ##                                                      
-## c_pOffPSC                   0.48***                  
+## c_pOffPSC                   0.45***                  
 ##                              (0.03)                  
 ##                                                      
-## c_pairHist                                  0.001    
+## c_pairHist                                  -0.05    
 ##                                            (0.03)    
 ##                                                      
-## Constant                    -3.98***      -3.95***   
+## Constant                    -3.98***      -3.96***   
 ##                              (0.02)        (0.01)    
 ##                                                      
 ## -----------------------------------------------------
 ## Observations                250,000        250,000   
-## Log Likelihood             -23,228.39    -23,419.82  
-## Akaike Inf. Crit.          46,466.79      46,843.64  
+## Log Likelihood             -23,046.13    -23,193.15  
+## Akaike Inf. Crit.          46,102.26      46,390.30  
 ## =====================================================
 ## Note:                     *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_02D,Term_03A, skip_vif = TRUE)
+summary_residual_compare(Term_03A, skip_vif = TRUE)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
 ```
 
 ![](Model_Termination_files/figure-html/Model03A-2.png)<!-- -->
 
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old  46386.3      46388.62   2.317546
 ```
 
-```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
-## be used
-```
-
-![](Model_Termination_files/figure-html/Model03A-3.png)<!-- -->
-
-```
-## NULL
-```
-
-When considering pair history alone, expectations were met for ceiling breaches and terminations, but not for exercised options. 
-
+When considering pair history alone, expectations were met for terminations., though the results were not significant.
 
 ### 03B: Interaction
 Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and that of exercised options increases (decreases) for that partnership.
 
 
 ```r
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
-
-summary_continuous_plot(serv_smp,"cl_pairCA")
+summary_continuous_plot(serv_smp1m,"office_entity_numberofactions_1year")
 ```
 
 ![](Model_Termination_files/figure-html/Model03B-1.png)<!-- -->
+
+```r
+summary_continuous_plot(serv_smp1m,"office_entity_numberofactions_1year", log=TRUE)
+```
+
+```
+## Warning: Removed 1559 rows containing non-finite values (stat_bin).
+```
+
+![](Model_Termination_files/figure-html/Model03B-2.png)<!-- -->
 
 ```r
 #Model
 Term_03B <- glm (data=serv_smp,
                  b_Term ~ cl_pairCA, family=binomial(link="logit"))
 
-display(Term_03B)
-```
-
-```
-## glm(formula = b_Term ~ cl_pairCA, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -3.97     0.02  
-## cl_pairCA    0.47     0.03  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46552.9, null deviance = 46839.6 (difference = 286.8)
-```
-
-```r
-#Plot residuals versus fitted
-stargazer::stargazer(
-                       Term_02D,Term_03A,Term_03B,
-                       
+stargazer::stargazer(                       Term_03A,Term_03B,
                        type="text",
                        digits=2)
 ```
 
 ```
 ## 
-## =========================================================
-##                                Dependent variable:       
-##                          --------------------------------
-##                                       b_Term             
-##                             (1)        (2)        (3)    
-## ---------------------------------------------------------
-## cl_US6_avg_sal_lag1Const   -0.002                        
-##                            (0.03)                        
-##                                                          
-## cl_CFTE                     0.02                         
-##                            (0.03)                        
-##                                                          
-## c_pPBSC                     0.05                         
-##                            (0.03)                        
-##                                                          
-## c_pOffPSC                 0.48***                        
-##                            (0.03)                        
-##                                                          
-## c_pairHist                            0.001              
-##                                       (0.03)             
-##                                                          
-## cl_pairCA                                       0.47***  
-##                                                  (0.03)  
-##                                                          
-## Constant                  -3.98***   -3.95***   -3.97*** 
-##                            (0.02)     (0.01)     (0.02)  
-##                                                          
-## ---------------------------------------------------------
-## Observations              250,000    250,000    250,000  
-## Log Likelihood           -23,228.39 -23,419.82 -23,276.44
-## Akaike Inf. Crit.        46,466.79  46,843.64  46,556.88 
-## =========================================================
-## Note:                         *p<0.1; **p<0.05; ***p<0.01
+## ==============================================
+##                       Dependent variable:     
+##                   ----------------------------
+##                              b_Term           
+##                        (1)            (2)     
+## ----------------------------------------------
+## c_pairHist            -0.05                   
+##                       (0.03)                  
+##                                               
+## cl_pairCA                           0.36***   
+##                                     (0.03)    
+##                                               
+## Constant             -3.96***      -3.97***   
+##                       (0.01)        (0.01)    
+##                                               
+## ----------------------------------------------
+## Observations         250,000        250,000   
+## Log Likelihood      -23,193.15    -23,112.98  
+## Akaike Inf. Crit.   46,390.30      46,229.96  
+## ==============================================
+## Note:              *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_03A,Term_03B, skip_vif = TRUE)
+summary_residual_compare(Term_03B, skip_vif = TRUE)
 ```
 
-![](Model_Termination_files/figure-html/Model03B-2.png)<!-- -->
-
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
 ## > 1 and only the first element will be used
 ```
 
 ```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
 ![](Model_Termination_files/figure-html/Model03B-3.png)<!-- -->
 
 ```
-## NULL
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46225.96      46388.62   162.6512
 ```
 
-```r
-summary_residual_compare(Term_02D,Term_03B, skip_vif = TRUE)
-```
-
-![](Model_Termination_files/figure-html/Model03B-4.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model03B-5.png)<!-- -->
-
-```
-## NULL
-```
-
-When considering contract actions alone, no expectation were met. The patterns in the plots are complex, ceiling breaches has a sinusoidal or perhaps exponential relationship while terminations has an neative relationship, until the number of ations grows extreme at which point the risk jumps up.
+Expectation were not met, The patterns in the plots are complex, terminations has an negative relationship, until the number of ations grows extreme at which point the risk jumps up.
 
 ### 03C: Office-Vendor Relationship
 Expectation: 
@@ -1246,13 +1080,6 @@ The importance of partnership, trust, and handling difficult problems and uncert
 
 
 ```r
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
-
 #Model
 Term_03C <- glm (data=serv_smp,
                  b_Term ~ c_pairHist+cl_pairCA, family=binomial(link="logit"))
@@ -1262,13 +1089,12 @@ glmer_examine(Term_03C)
 
 ```
 ## c_pairHist  cl_pairCA 
-##   1.191974   1.191974
+##   1.196618   1.196618
 ```
 
 ```r
-#Plot residuals versus fitted
   stargazer::stargazer(
-                       Term_02D,Term_03A,Term_03B,Term_03C,
+                       Term_03A,Term_03B,Term_03C,
                        
                        type="text",
                        digits=2)
@@ -1276,126 +1102,67 @@ glmer_examine(Term_03C)
 
 ```
 ## 
-## ====================================================================
-##                                      Dependent variable:            
-##                          -------------------------------------------
-##                                            b_Term                   
-##                             (1)        (2)        (3)        (4)    
-## --------------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const   -0.002                                   
-##                            (0.03)                                   
-##                                                                     
-## cl_CFTE                     0.02                                    
-##                            (0.03)                                   
-##                                                                     
-## c_pPBSC                     0.05                                    
-##                            (0.03)                                   
-##                                                                     
-## c_pOffPSC                 0.48***                                   
-##                            (0.03)                                   
-##                                                                     
-## c_pairHist                            0.001                -0.24*** 
-##                                       (0.03)                (0.03)  
-##                                                                     
-## cl_pairCA                                       0.47***    0.55***  
-##                                                  (0.03)     (0.03)  
-##                                                                     
-## Constant                  -3.98***   -3.95***   -3.97***   -3.98*** 
-##                            (0.02)     (0.01)     (0.02)     (0.02)  
-##                                                                     
-## --------------------------------------------------------------------
-## Observations              250,000    250,000    250,000    250,000  
-## Log Likelihood           -23,228.39 -23,419.82 -23,276.44 -23,250.18
-## Akaike Inf. Crit.        46,466.79  46,843.64  46,556.88  46,506.37 
-## ====================================================================
-## Note:                                    *p<0.1; **p<0.05; ***p<0.01
+## ==================================================
+##                         Dependent variable:       
+##                   --------------------------------
+##                                b_Term             
+##                      (1)        (2)        (3)    
+## --------------------------------------------------
+## c_pairHist          -0.05                -0.24*** 
+##                     (0.03)                (0.03)  
+##                                                   
+## cl_pairCA                     0.36***    0.45***  
+##                                (0.03)     (0.03)  
+##                                                   
+## Constant           -3.96***   -3.97***   -3.98*** 
+##                     (0.01)     (0.01)     (0.02)  
+##                                                   
+## --------------------------------------------------
+## Observations       250,000    250,000    250,000  
+## Log Likelihood    -23,193.15 -23,112.98 -23,086.75
+## Akaike Inf. Crit. 46,390.30  46,229.96  46,179.51 
+## ==================================================
+## Note:                  *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_03A,Term_03C)
+summary_residual_compare(Term_03A,Term_03C,Term_03B,Term_03C)
 ```
 
 ![](Model_Termination_files/figure-html/Model03C-1.png)<!-- -->
 
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
+## Warning in if (class(model1_new) == "glmerMod" & class(model2_new) ==
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
 ```
 
 ```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
-## be used
+## Warning in if ((class(model1_new) != "glmerMod" & class(model2_new) !
+## = "glmerMod") & : the condition has length > 1 and only the first element
+## will be used
 ```
 
 ![](Model_Termination_files/figure-html/Model03C-2.png)<!-- -->
 
 ```
 ## [[1]]
-##        model deviance null.deviance   difference
-## 1 model1_old 46839.64      46839.64 1.285661e-03
-## 2 model1_new 46500.37      46839.64 3.392697e+02
-## 
-## [[2]]
-## c_pairHist  cl_pairCA 
-##   1.191974   1.191974
-```
-
-```r
-summary_residual_compare(Term_03B,Term_03C)
-```
-
-![](Model_Termination_files/figure-html/Model03C-3.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model03C-4.png)<!-- -->
-
-```
-## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 46552.88      46839.64   286.7590
-## 2 model1_new 46500.37      46839.64   339.2697
+## 1 model1_old 46386.30      46388.62   2.317546
+## 2 model1_new 46173.51      46388.62 215.106595
+## 3 model2_old 46225.96      46388.62 162.651178
+## 4 model2_new 46173.51      46388.62 215.106595
 ## 
 ## [[2]]
 ## c_pairHist  cl_pairCA 
-##   1.191974   1.191974
-```
-
-```r
-summary_residual_compare(Term_02D,Term_03C)
-```
-
-![](Model_Termination_files/figure-html/Model03C-5.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model03C-6.png)<!-- -->
-
-```
-## [[1]]
-##        model deviance null.deviance difference
-## 1 model1_old 46456.79      46839.64   382.8504
-## 2 model1_new 46500.37      46839.64   339.2697
+##   1.196618   1.196618 
 ## 
-## [[2]]
+## [[3]]
 ## c_pairHist  cl_pairCA 
-##   1.191974   1.191974
+##   1.196618   1.196618
 ```
 
-When combining pair history and contract actions, magnitude of relationships with dependent variables incraesed, but the agreement with expectations splited in the same way as individually.  
+When combining pair history and contract actions, magnitude of relationships with dependent variables incraesed and pairhistory is now significant in the expected direction while pair contract actions remains contrary to expectations.
 
 
 ### 03D: Cumulative  Model
@@ -1418,14 +1185,12 @@ glmer_examine(Term_03D)
 
 ```
 ## cl_US6_avg_sal_lag1Const                  cl_CFTE                  c_pPBSC 
-##                 1.255453                 1.185440                 1.315968 
+##                 1.249462                 1.182577                 1.285489 
 ##                c_pOffPSC               c_pairHist                cl_pairCA 
-##                 1.422282                 1.221264                 1.486627
+##                 1.413705                 1.227524                 1.487997
 ```
 
 ```r
-#Plot residuals versus fitted   
-
 stargazer::stargazer(
                        Term_02D,Term_03C,Term_03D,
                        
@@ -1441,22 +1206,22 @@ stargazer::stargazer(
 ##                                       b_Term             
 ##                             (1)        (2)        (3)    
 ## ---------------------------------------------------------
-## cl_US6_avg_sal_lag1Const   -0.002                -0.06*  
+## cl_US6_avg_sal_lag1Const   -0.03                 -0.06*  
 ##                            (0.03)                (0.03)  
 ##                                                          
-## cl_CFTE                     0.02                 0.07**  
+## cl_CFTE                    0.06*                0.10***  
 ##                            (0.03)                (0.03)  
 ##                                                          
-## c_pPBSC                     0.05                  0.03   
+## c_pPBSC                    -0.004                -0.003  
 ##                            (0.03)                (0.03)  
 ##                                                          
-## c_pOffPSC                 0.48***               0.37***  
+## c_pOffPSC                 0.45***               0.37***  
 ##                            (0.03)                (0.03)  
 ##                                                          
 ## c_pairHist                           -0.24***   -0.23*** 
 ##                                       (0.03)     (0.03)  
 ##                                                          
-## cl_pairCA                            0.55***    0.41***  
+## cl_pairCA                            0.45***    0.31***  
 ##                                       (0.03)     (0.03)  
 ##                                                          
 ## Constant                  -3.98***   -3.98***   -3.99*** 
@@ -1464,14 +1229,14 @@ stargazer::stargazer(
 ##                                                          
 ## ---------------------------------------------------------
 ## Observations              250,000    250,000    250,000  
-## Log Likelihood           -23,228.39 -23,250.18 -23,149.37
-## Akaike Inf. Crit.        46,466.79  46,506.37  46,312.75 
+## Log Likelihood           -23,046.13 -23,086.75 -22,997.20
+## Akaike Inf. Crit.        46,102.26  46,179.51  46,008.41 
 ## =========================================================
 ## Note:                         *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_03C,Term_03D)
+summary_residual_compare(Term_02D,Term_03D)
 ```
 
 ![](Model_Termination_files/figure-html/Model03D-1.png)<!-- -->
@@ -1483,7 +1248,7 @@ summary_residual_compare(Term_03C,Term_03D)
 
 ```
 ## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
@@ -1492,43 +1257,14 @@ summary_residual_compare(Term_03C,Term_03D)
 ```
 ## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 46500.37      46839.64   339.2697
-## 2 model1_new 46298.75      46839.64   540.8894
+## 1 model1_old 46092.26      46388.62   296.3568
+## 2 model1_new 45994.41      46388.62   394.2094
 ## 
 ## [[2]]
 ## cl_US6_avg_sal_lag1Const                  cl_CFTE                  c_pPBSC 
-##                 1.255453                 1.185440                 1.315968 
+##                 1.249462                 1.182577                 1.285489 
 ##                c_pOffPSC               c_pairHist                cl_pairCA 
-##                 1.422282                 1.221264                 1.486627
-```
-
-```r
-summary_residual_compare(Term_02D,Term_03D)
-```
-
-![](Model_Termination_files/figure-html/Model03D-3.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model03D-4.png)<!-- -->
-
-```
-## [[1]]
-##        model deviance null.deviance difference
-## 1 model1_old 46456.79      46839.64   382.8504
-## 2 model1_new 46298.75      46839.64   540.8894
-## 
-## [[2]]
-## cl_US6_avg_sal_lag1Const                  cl_CFTE                  c_pPBSC 
-##                 1.255453                 1.185440                 1.315968 
-##                c_pOffPSC               c_pairHist                cl_pairCA 
-##                 1.422282                 1.221264                 1.486627
+##                 1.413705                 1.227524                 1.487997
 ```
 
 None of the predictors has high level of correlation (vif over 1.7) with each other. 
@@ -1536,121 +1272,113 @@ In the cumulative model, per dependent variable and independent variable:
 
 2. Terminations:
    A. Service Complexity:
-      The reult for average salary did not match with expectation.
-      The result for invoice rate did matach with expectation, only significant (for p-value <0.5), which is still sufficient.
+      Average salary did not match with expectation, but gained signifiance at the 0.10 level
+      The result for invoice rate did matach with expectation and is now significant at 0.01 level
+      Otherwise magnitudes reduced but no changes of note.
       
-   B. Office Capacity: 
-      The relationship with PBSC was not significant.
-      The result for office obligations did not match with expectation.
-     
-   C. Office-Vendor Relationship:
-      The result for pair history matched with expectation once all variables included.
-      The result for contract actions did not match with expectation.
-
+      
 
 ## Study Variables Alone
 
 
 ```r
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
-
-study_coef_list<-list("(Intercept)"="(Intercept)",
-                      "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
-                      "cl_CFTE"="Log(Service Invoice Rate)",
-                      "c_pPBSC"="Office Perf.-Based %",
-                      "c_pOffPSC"="Office Service Exp. %",
-                      "c_pairHist"="Paired Years",
-                      "cl_pairCA"="Log(Paired Actions)"
-)
+study_coef_list<-
+  list("(Intercept)"="(Intercept)",
+       "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
+       "cl_CFTE"="Log(Service Invoice Rate)",
+       "c_pPBSC"="Office Perf.-Based %",
+       "c_pOffPSC"="Office Service Exp. %",
+       "c_pairHist"="Paired Years",
+       "cl_pairCA"="Log(Paired Actions)"
+  )
 
 
-all_coef_list<-list("(Intercept)"="(Intercept)",
-                    "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
-                    "cl_CFTE"="Log(Service Invoice Rate)",
-                    "c_pPBSC"="Office Perf.-Based %",
-                    "c_pOffPSC"="Office Service Exp. %",
-                    "c_pairHist"="Paired Years",
-                    "cl_pairCA"="Log(Paired Actions)",
-                    
-                    #Contract Controls
-                    
-                    "Comp1or51 offer"="Comp=1 offer",
-                    "Comp1or52-4 offers"="Comp=2-4 offers",
-                    "Comp1or55+ offers"="Comp=5+ offers",
-                    
-                    "CompOffr1 offer"="Comp=1 offer",
-                    "CompOffr2 offers"="Comp=2 offers",
-                    "CompOffr3-4 offers"="Comp=3-4 offers",
-                    "CompOffr5+ offers"="Comp=5+ offers",
-                    
-                    "cl_Ceil"="Log(Init. Ceiling)",
-                    "capped_cl_Days"="Log(Init. Days)",
-                    "VehS-IDC"="Vehicle=S-IDC",
-                    "VehM-IDC"="Vehicle=M-IDC",
-                    "VehFSS/GWAC"="Vehicle=FSS/GWAC",
-                    "VehBPA/BOA"="Vehicle=BPA/BOA",
-                    "PricingUCAFFP"="Pricing=FFP",
-                    "PricingUCAOther FP"="Pricing=Other FP",
-                    "PricingUCAIncentive"="Pricing=Incentive Fee",
-                    "PricingUCACombination or Other"="Pricing=Combination or Other",
-                    "PricingUCAOther CB"="Pricing=Other CB",
-                    "PricingUCAT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
-                    "PricingUCAUCA"="Pricing=UCA",
-                    
-                    "PricingFeeOther FP"="Pricing=Other FP",
-                    "PricingFeeIncentive"="Pricing=Incentive Fee",
-                    "PricingFeeCombination or Other"="Pricing=Combination or Other",
-                    "PricingFeeOther CB"="Pricing=Other CB",
-                    "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
-                    "b_UCA"="UCA",
-                    "CrisisARRA"="Crisis=ARRA",
-                    "CrisisDis"="Crisis=Disaster",
-                    "CrisisOCO"="Crisis=OCO",
-                    "b_Intl"="Performed Abroad",
-
-                    #NAICS
-                    "cl_def3_HHI_lag1"="Log(Subsector HHI)",
-                    "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
-                    "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
-                    "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
-                    "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
-                    #Office
-                    "c_pMarket"="Percent Market",
-                    "cl_OffVol"="Office Volume",
-                    "cl_office_naics_hhi_k"="Office Concentration",
-                    
-                    
-                    #interations
-                    # # "cl_def6_HHI_lag1:capped_cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
-                    # "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
-                    # # "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
-                    "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
-                    # "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
-                    # "CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
-                    # "CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
-                    # "CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
-                    # "CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
-                    "VehS-IDC:b_Intl"="Vehicle=S-IDC:Performed Abroad",
-                    "VehM-IDC:b_Intl"="Vehicle=M-IDC:Performed Abroad",
-                    "VehFSS/GWAC:b_Intl"="Vehicle=FSS/GWAC:Performed Abroad",
-                    "VehBPA/BOA:b_Intl"="Vehicle=BPA/BOA:Performed Abroad",
-                    "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
-                    "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
-                    "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"="Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
-                    "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
-                    "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
-)
+all_coef_list<-
+  list("(Intercept)"="(Intercept)",
+       "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
+       "cl_CFTE"="Log(Service Invoice Rate)",
+       "c_pPBSC"="Office Perf.-Based %",
+       "c_pOffPSC"="Office Service Exp. %",
+       "c_pairHist"="Paired Years",
+       "cl_pairCA"="Log(Paired Actions)",
+       
+       #Contract Controls
+       
+       "Comp1or51 offer"="Comp=1 offer",
+       "Comp1or52-4 offers"="Comp=2-4 offers",
+       "Comp1or55+ offers"="Comp=5+ offers",
+       
+       "CompOffr1 offer"="Comp=1 offer",
+       "CompOffr2 offers"="Comp=2 offers",
+       "CompOffr3-4 offers"="Comp=3-4 offers",
+       "CompOffr5+ offers"="Comp=5+ offers",
+       
+       "cl_Ceil"="Log(Init. Ceiling)",
+       "cl_Days"="Log(Init. Days)",
+       "VehS-IDC"="Vehicle=S-IDC",
+       "VehM-IDC"="Vehicle=M-IDC",
+       "VehFSS/GWAC"="Vehicle=FSS/GWAC",
+       "VehBPA/BOA"="Vehicle=BPA/BOA",
+       "PricingUCAFFP"="Pricing=FFP",
+       "PricingUCAOther FP"="Pricing=Other FP",
+       "PricingUCAIncentive"="Pricing=Incentive Fee",
+       "PricingUCACombination or Other"="Pricing=Combination or Other",
+       "PricingUCAOther CB"="Pricing=Other CB",
+       "PricingUCAT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
+       "PricingUCAUCA"="Pricing=UCA",
+       
+       "PricingFeeOther FP"="Pricing=Other FP",
+       "PricingFeeIncentive"="Pricing=Incentive Fee",
+       "PricingFeeCombination or Other"="Pricing=Combination or Other",
+       "PricingFeeOther CB"="Pricing=Other CB",
+       "PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE",
+       "b_UCA"="UCA",
+       "CrisisARRA"="Crisis=ARRA",
+       "CrisisDis"="Crisis=Disaster",
+       "CrisisOCO"="Crisis=OCO",
+       "b_Intl"="Performed Abroad",
+       
+       #NAICS
+       "cl_def3_HHI_lag1"="Log(Subsector HHI)",
+       "cl_def6_HHI_lag1"="Log(Det. Ind. HHI)",
+       "cl_def3_ratio_lag1"="Log(Subsector Ratio)",
+       "cl_def6_obl_lag1"="Log(Det. Ind. DoD Obl.)",
+       "cl_def6_ratio_lag1"="Log(Det. Ind. Ratio)",
+       #Office
+       "c_pMarket"="Percent Market",
+       "cl_OffVol"="Office Volume",
+       "cl_office_naics_hhi_k"="Office Concentration",
+       
+       
+       #interations
+       # # "cl_def6_HHI_lag1:cl_Days"="Log(Det. Ind. HHI):Log(Init. Days)",
+       # "cl_def6_HHI_lag1:cl_def6_obl_lag1"="Log(Det. Ind. HHI):Log(Det. Ind. DoD Obl.)",
+       # # "cl_def3_HHI_lag1:cl_def3_ratio_lag1"="Log(Subsector HHI):Log(Subsector Ratio)"),
+       "cl_def6_HHI_lag1:b_UCA"="Log(Det. Ind. HHI):UCA",
+       # "cl_Ceil:b_UCA"="Log(Init. Ceiling):UCA",
+       # "CompOffr1 offer:b_UCA"="Comp=1 offer:UCA",
+       # "CompOffr2 offers:b_UCA"="Comp=2 offers:UCA",
+       # "CompOffr3-4 offers:b_UCA"="Comp=3-4 offers:UCA",
+       # "CompOffr5+ offers:b_UCA"="Comp=5+ offers:UCA"
+       "VehS-IDC:b_Intl"="Vehicle=S-IDC:Performed Abroad",
+       "VehM-IDC:b_Intl"="Vehicle=M-IDC:Performed Abroad",
+       "VehFSS/GWAC:b_Intl"="Vehicle=FSS/GWAC:Performed Abroad",
+       "VehBPA/BOA:b_Intl"="Vehicle=BPA/BOA:Performed Abroad",
+       "cl_US6_avg_sal_lag1:PricingFeeOther FP"=
+         "Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
+       "cl_US6_avg_sal_lag1:PricingFeeIncentive"=
+         "Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
+       "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"=
+         "Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
+       "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
+       "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
+  )
 
 
 #Terminations
 stargazer::stargazer(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D,
-                       type="text",
-                       digits=2)
+                     type="text",
+                     digits=2)
 ```
 
 ```
@@ -1661,45 +1389,46 @@ stargazer::stargazer(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 ##                                                             b_Term                                   
 ##                             (1)        (2)        (3)        (4)        (5)        (6)        (7)    
 ## -----------------------------------------------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const  0.10***                                                            -0.06*  
+## cl_US6_avg_sal_lag1Const   0.08**                                                            -0.06*  
 ##                            (0.03)                                                            (0.03)  
 ##                                                                                                      
-## cl_CFTE                                0.04                                                  0.07**  
+## cl_CFTE                               0.07**                                                0.10***  
 ##                                       (0.03)                                                 (0.03)  
 ##                                                                                                      
-## c_pPBSC                                         0.27***                                       0.03   
+## c_pPBSC                                         0.20***                                      -0.003  
 ##                                                  (0.03)                                      (0.03)  
 ##                                                                                                      
-## c_pOffPSC                                                  0.50***                          0.37***  
+## c_pOffPSC                                                  0.45***                          0.37***  
 ##                                                             (0.02)                           (0.03)  
 ##                                                                                                      
-## c_pairHist                                                             0.001                -0.23*** 
+## c_pairHist                                                             -0.05                -0.23*** 
 ##                                                                        (0.03)                (0.03)  
 ##                                                                                                      
-## cl_pairCA                                                                        0.47***    0.41***  
+## cl_pairCA                                                                        0.36***    0.31***  
 ##                                                                                   (0.03)     (0.03)  
 ##                                                                                                      
-## Constant                  -3.95***   -3.95***   -3.96***   -3.98***   -3.95***   -3.97***   -3.99*** 
-##                            (0.01)     (0.01)     (0.01)     (0.02)     (0.01)     (0.02)     (0.02)  
+## Constant                  -3.96***   -3.96***   -3.97***   -3.98***   -3.96***   -3.97***   -3.99*** 
+##                            (0.01)     (0.01)     (0.01)     (0.02)     (0.01)     (0.01)     (0.02)  
 ##                                                                                                      
 ## -----------------------------------------------------------------------------------------------------
 ## Observations              250,000    250,000    250,000    250,000    250,000    250,000    250,000  
-## Log Likelihood           -23,414.38 -23,419.06 -23,375.66 -23,229.80 -23,419.82 -23,276.44 -23,149.37
-## Akaike Inf. Crit.        46,832.76  46,842.12  46,755.33  46,463.61  46,843.64  46,556.88  46,312.75 
+## Log Likelihood           -23,191.15 -23,191.65 -23,171.58 -23,048.00 -23,193.15 -23,112.98 -22,997.20
+## Akaike Inf. Crit.        46,386.29  46,387.29  46,347.17  46,100.00  46,390.30  46,229.96  46,008.41 
 ## =====================================================================================================
 ## Note:                                                                     *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D),file="..//Output//Term_Model.html",
+texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_03D),
+                file="..//Output//Term_Model.html",
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
                 groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7
-                              ),
+                  "Services Complexity" = 2:3,
+                  "Office Capacity" =4:5,
+                  "Past Relationship"=6:7
+                ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
@@ -1723,173 +1452,22 @@ Expectation: Initial Ceiling size positively estimates increasing probability of
 
 ```r
 #Frequency Plot for unlogged ceiling
-freq_continuous_term_plot(serv_smp,"UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
+summary_continuous_plot(serv_smp1m,"UnmodifiedCeiling_OMB20_GDP18",bins=1000)
 ```
 
 ![](Model_Termination_files/figure-html/Model04A-1.png)<!-- -->
 
 ```r
-freq_continuous_term_plot(subset(serv_smp,UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18<100000000),
-               "UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
+summary_continuous_plot(serv_smp1m,"UnmodifiedCeiling_OMB20_GDP18",bins=50,log=TRUE)
 ```
 
 ![](Model_Termination_files/figure-html/Model04A-2.png)<!-- -->
 
 ```r
-summary_continuous_plot(serv_smp,"cl_Ceil",bins=50)
-```
-
-![](Model_Termination_files/figure-html/Model04A-3.png)<!-- -->
-
-```r
-summary(serv_smp$cl_Ceil)
-```
-
-```
-##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -3.39507 -0.33607 -0.01080  0.01125  0.31925  3.24200
-```
-
-```r
-str(serv_smp)
-```
-
-```
-## Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':	250000 obs. of  249 variables:
-##  $ CSIScontractID                                      : num  19015001 19101209 24640201 26380332 27836378 ...
-##  $ Action_Obligation.Then.Year                         : num  34772 32784 1172796 290276 51362 ...
-##  $ IsClosed                                            : num  0 0 0 0 0 0 0 0 1 0 ...
-##  $ Term                                                : num  0 0 0 0 0 0 0 0 1 0 ...
-##  $ LastCurrentCompletionDate                           : Date, format: "2012-11-02" "2008-08-22" ...
-##  $ MinOfSignedDate                                     : Date, format: "2012-05-24" "2008-05-23" ...
-##  $ MaxBoostDate                                        : Date, format: "2012-05-24" "2008-05-23" ...
-##  $ StartFY                                             : num  2012 2008 2010 2013 2014 ...
-##  $ Agency                                              : Factor w/ 38 levels "*ODD","1450",..: 3 3 4 4 3 4 25 3 4 4 ...
-##  $ Office                                              : chr  "N40080" "N69450" "W911S2" "W912BU" ...
-##  $ ProdServ                                            : Factor w/ 3088 levels "","1000","1005",..: 3066 2913 2769 2414 2513 2872 1429 1979 3088 2549 ...
-##  $ NAICS                                               : num  237310 237310 236220 541620 488310 ...
-##  $ UnmodifiedDays                                      : num  163 92 366 431 4 ...
-##  $ qDuration                                           : Ord.factor w/ 5 levels "[0 months,~2 months)"<..: 2 2 4 4 1 1 2 1 4 1 ...
-##  $ Ceil                                                : Ord.factor w/ 6 levels "[0,15k)"<"[15k,100k)"<..: 2 2 4 3 2 4 1 2 3 3 ...
-##  $ UnmodifiedContractBaseAndAllOptionsValue.Then.Year  : num  34772 32784 1174805 290276 27900 ...
-##  $ UnmodifiedCurrentCompletionDate                     : Date, format: "2012-11-02" "2008-08-22" ...
-##  $ SumOfisChangeOrder                                  : int  0 0 1 0 0 0 0 0 0 0 ...
-##  $ ChangeOrderBaseAndAllOptionsValue                   : num  0 0 -2009 0 0 ...
-##  $ qNChg                                               : Factor w/ 4 levels "   0","   1",..: 1 1 2 1 1 1 1 1 1 1 ...
-##  $ CBre                                                : Ord.factor w/ 2 levels "None"<"Ceiling Breach": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ qCRais                                              : Factor w/ 4 levels "[  -Inf,-0.001)",..: 2 2 1 2 2 2 2 2 2 2 ...
-##  $ Where                                               : Factor w/ 204 levels "AFG","AGO","ALB",..: 192 192 192 78 192 192 192 19 121 1 ...
-##  $ Intl                                                : Factor w/ 2 levels "Just U.S.","Any Intl.": 1 1 1 2 1 1 1 2 2 2 ...
-##  $ PSR                                                 : Factor w/ 3 levels "Products","R&D",..: 3 3 3 3 3 3 3 3 3 3 ...
-##  $ UnmodifiedNumberOfOffersReceived                    : num  7 3 2 1 9 15 8 1 4 1 ...
-##  $ Offr                                                : Ord.factor w/ 4 levels "1"<"2"<"3-4"<..: 4 3 2 1 4 4 4 1 3 1 ...
-##  $ Comp                                                : Factor w/ 2 levels "No Comp.","Comp.": 2 2 1 1 2 2 2 1 2 2 ...
-##  $ EffComp                                             : Factor w/ 3 levels "No Comp.","1 Offer",..: 3 3 1 1 3 3 3 1 3 2 ...
-##  $ Urg                                                 : Factor w/ 2 levels "Not Urgency",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ Veh                                                 : Factor w/ 5 levels "Def/Pur","S-IDC",..: 2 2 2 4 2 2 5 2 1 1 ...
-##  $ FxCb                                                : Factor w/ 3 levels "Fixed","Combo/Other",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ Fee                                                 : Ord.factor w/ 6 levels "Incentive"<"Fixed Fee"<..: 4 4 4 4 4 4 4 4 4 4 ...
-##  $ UCA                                                 : Factor w/ 2 levels "Not UCA","UCA": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ EntityID                                            : num  31937 427894 60938 683522 316618 ...
-##  $ UnmodifiedEntityID                                  : num  31937 427894 60938 683522 316618 ...
-##  $ PlaceCountryISO3                                    : Factor w/ 225 levels "*MF","*MU","AFG",..: 211 211 211 88 211 211 211 22 134 3 ...
-##  $ Crisis                                              : Factor w/ 4 levels "Other","ARRA",..: 1 1 1 1 1 1 1 4 1 4 ...
-##  $ b_Term                                              : num  0 0 0 0 0 0 0 0 1 0 ...
-##  $ j_Term                                              : num  0.0436 0.02902 0.01707 0.01272 0.00879 ...
-##  $ b_CBre                                              : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ j_CBre                                              : num  0.0136 0.0198 0.0348 0.026 0.0233 ...
-##  $ pChangeOrderBaseAndAllOptionsValue                  : num  0 0 -0.00171 0 0 ...
-##  $ pChange3Sig                                         : num  0 0 -0.002 0 0 0 0 0 0 0 ...
-##  $ qCrai                                               : Factor w/ 4 levels "[  -Inf,-0.001)",..: 2 2 1 2 2 2 2 2 2 2 ...
-##  $ Action_Obligation.OMB20_GDP18                       : num  34772 34762 1218869 285031 49477 ...
-##  $ UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18: num  34772 34762 1220957 285031 26876 ...
-##  $ qHighCeiling                                        : Factor w/ 6 levels "[0.00e+00,1.50e+04)",..: 2 2 4 3 2 4 1 2 3 3 ...
-##  $ ceil.median.wt                                      : num  38655 38655 2120594 246578 38655 ...
-##  $ capped_UnmodifiedDays                               : num  163 92 366 431 4 ...
-##  $ cl_Days                                             : num  0.2192 0.0475 0.4621 0.5112 -0.8939 ...
-##  $ capped_cl_Days                                      : num  0.2193 0.0476 0.4622 0.5114 -0.8941 ...
-##  $ UnmodifiedYearsFloat                                : num  0.446 0.252 1.002 1.18 0.011 ...
-##  $ UnmodifiedYearsCat                                  : num  0 0 1 1 0 0 0 0 1 0 ...
-##  $ Dur.Simple                                          : Ord.factor w/ 3 levels "<~1 year"<"(~1 year,~2 years]"<..: 1 1 2 2 1 1 1 1 2 1 ...
-##  $ n_Fixed                                             : num  1 1 1 1 1 1 1 1 1 1 ...
-##  $ n_Incent                                            : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ n_NoFee                                             : num  1 1 1 1 1 1 1 1 1 1 ...
-##  $ Pricing                                             : Factor w/ 5 levels "FFP","Other FP",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ PricingFee                                          : Factor w/ 6 levels "FFP","Other FP",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ PricingUCA                                          : Factor w/ 7 levels "Combination or Other",..: 2 2 2 2 2 2 2 2 2 2 ...
-##  $ b_Comp                                              : int  1 1 0 0 1 1 1 0 1 1 ...
-##  $ n_Comp                                              : Factor w/ 3 levels "0","0.5","1": 3 3 1 1 3 3 3 1 3 2 ...
-##  $ q_Offr                                              : Factor w/ 4 levels "1","2","3-4",..: 4 3 2 1 4 4 4 1 3 1 ...
-##  $ nq_Offr                                             : num  4 3 0 0 4 4 4 0 3 1 ...
-##  $ CompOffr                                            : Factor w/ 5 levels "No Competition",..: 5 4 1 1 5 5 5 1 4 2 ...
-##  $ cb_Comp                                             : num  0.271 0.271 -0.729 -0.729 0.271 ...
-##  $ cn_Comp                                             : num  0.416 0.416 -0.739 -0.739 0.416 ...
-##  $ cn_Offr                                             : num  0.678 0.351 -0.628 -0.628 0.678 ...
-##  $ cl_Offr                                             : num  0.5955 0.142 -0.0751 -0.4461 0.73 ...
-##  $ b_Urg                                               : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ NoComp                                              : Factor w/ 3 levels "Any Comp.","Other No",..: 1 1 2 2 1 1 1 2 1 1 ...
-##  $ NoCompOffr                                          : Factor w/ 5 levels "Other No","Urgency",..: 5 4 1 1 5 5 5 1 4 3 ...
-##  $ Comp1or5                                            : Factor w/ 4 levels "No Competition",..: 4 3 1 1 4 4 4 1 3 2 ...
-##  $ b_Intl                                              : int  0 0 0 1 0 0 0 1 1 1 ...
-##  $ b_UCA                                               : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ SIDV                                                : int  1 1 1 0 1 1 0 1 0 0 ...
-##  $ MIDV                                                : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ FSSGWAC                                             : int  0 0 0 1 0 0 0 0 0 0 ...
-##  $ BPABOA                                              : int  0 0 0 0 0 0 1 0 0 0 ...
-##  $ StartCY                                             : num  2012 2008 2010 2013 2014 ...
-##  $ NAICS5                                              : int  23731 23731 23622 54162 48831 23622 51741 33661 23899 53211 ...
-##  $ NAICS4                                              : int  2373 2373 2362 5416 4883 2362 5174 3366 2389 5321 ...
-##  $ NAICS3                                              : int  237 237 236 541 488 236 517 336 238 532 ...
-##  $ NAICS2                                              : chr  "23" "23" "23" "54" ...
-##  $ def6_HHI_lag1                                       : num  188.3 528.9 87.5 209.7 2372.4 ...
-##  $ def6_obl_lag1                                       : num  1.24e+09 1.53e+09 9.07e+09 3.67e+08 4.00e+07 ...
-##  $ def6_ratio_lag1                                     : num  0.0144 0.0144 0.0329 0.0273 0.0175 ...
-##  $ US6_avg_sal_lag1                                    : num  50785 50785 56201 61043 53326 ...
-##  $ def5_HHI_lag1                                       : num  188.3 528.9 87.5 209.7 2372.4 ...
-##  $ def5_obl_lag1                                       : num  1.24e+09 1.53e+09 9.07e+09 3.67e+08 4.00e+07 ...
-##  $ def5_ratio_lag1                                     : num  0.0144 0.0144 0.0329 0.0273 0.0175 ...
-##  $ US5_avg_sal_lag1                                    : num  50785 50785 56201 61043 53326 ...
-##  $ def4_HHI_lag1                                       : num  188.3 528.9 76.4 435.9 544 ...
-##  $ def4_obl_lag1                                       : num  1.24e+09 1.53e+09 1.08e+10 8.98e+09 2.69e+08 ...
-##  $ def4_ratio_lag1                                     : num  0.0144 0.0144 0.0361 0.0433 0.0147 ...
-##  $ US4_avg_sal_lag1                                    : num  50785 50785 56024 76717 59582 ...
-##  $ def3_HHI_lag1                                       : num  149.9 90.3 73.2 74.5 979.6 ...
-##  $ def3_obl_lag1                                       : num  6.94e+09 5.99e+09 1.19e+10 8.77e+10 4.80e+09 ...
-##   [list output truncated]
-##  - attr(*, "groups")=Classes 'tbl_df', 'tbl' and 'data.frame':	6 obs. of  2 variables:
-##   ..$ qHighCeiling: Factor w/ 6 levels "[0.00e+00,1.50e+04)",..: 1 2 3 4 5 6
-##   ..$ .rows       :List of 6
-##   .. ..$ : int  7 14 16 18 21 26 28 32 35 36 ...
-##   .. ..$ : int  1 2 5 8 12 23 24 27 29 30 ...
-##   .. ..$ : int  4 9 10 11 15 17 19 22 25 41 ...
-##   .. ..$ : int  3 6 13 20 40 51 86 94 98 109 ...
-##   .. ..$ : int  74 114 119 133 1234 1307 1448 1518 1539 1551 ...
-##   .. ..$ : int  353 934 1884 2005 2022 2661 3036 5840 7103 7109 ...
-##   ..- attr(*, ".drop")= logi TRUE
-```
-
-```r
 #Model
 Term_04A <- glm (data=serv_smp,
                  b_Term ~ cl_Ceil, family=binomial(link="logit"))
-display(Term_04A)
-```
 
-```
-## glm(formula = b_Term ~ cl_Ceil, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -4.03     0.02  
-## cl_Ceil      0.76     0.03  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46173.0, null deviance = 46839.6 (difference = 666.6)
-```
-
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_03D,Term_04A,
                        
@@ -1908,10 +1486,10 @@ stargazer::stargazer(
 ## cl_US6_avg_sal_lag1Const     -0.06*                  
 ##                              (0.03)                  
 ##                                                      
-## cl_CFTE                      0.07**                  
+## cl_CFTE                     0.10***                  
 ##                              (0.03)                  
 ##                                                      
-## c_pPBSC                       0.03                   
+## c_pPBSC                      -0.003                  
 ##                              (0.03)                  
 ##                                                      
 ## c_pOffPSC                   0.37***                  
@@ -1920,25 +1498,44 @@ stargazer::stargazer(
 ## c_pairHist                  -0.23***                 
 ##                              (0.03)                  
 ##                                                      
-## cl_pairCA                   0.41***                  
+## cl_pairCA                   0.31***                  
 ##                              (0.03)                  
 ##                                                      
-## cl_Ceil                                    0.76***   
+## cl_Ceil                                    0.79***   
 ##                                            (0.03)    
 ##                                                      
-## Constant                    -3.99***      -4.03***   
+## Constant                    -3.99***      -4.05***   
 ##                              (0.02)        (0.02)    
 ##                                                      
 ## -----------------------------------------------------
 ## Observations                250,000        250,000   
-## Log Likelihood             -23,149.37    -23,086.52  
-## Akaike Inf. Crit.          46,312.75      46,177.04  
+## Log Likelihood             -22,997.20    -22,839.67  
+## Akaike Inf. Crit.          46,008.41      45,683.33  
 ## =====================================================
 ## Note:                     *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_03D,Term_04A, skip_vif = TRUE)
+summary_residual_compare(Term_04A, skip_vif = TRUE)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model04A-3.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 45679.33      46388.62   709.2819
 ```
 
 Contract ceiling has a significant relationship, though the residuals show a possible non-linear patterns. This is most remarkable in the positive centered values between 0 and 1. This may be driven  by a missing value and is worth watching.
@@ -1951,14 +1548,13 @@ Expectation: Greater maximum duration will positively estimate the probability c
 
 ```r
 #Frequency Plot for max duration
-freq_continuous_term_plot(serv_smp,"UnmodifiedDays",
-               bins=1000)
+summary_continuous_plot(serv_smp1m,"UnmodifiedDays")
 ```
 
 ![](Model_Termination_files/figure-html/Model04B-1.png)<!-- -->
 
 ```r
-summary_continuous_plot(serv_smp,"capped_cl_Days")
+summary_continuous_plot(serv_smp1m,"UnmodifiedDays",log=TRUE)
 ```
 
 ![](Model_Termination_files/figure-html/Model04B-2.png)<!-- -->
@@ -1966,24 +1562,8 @@ summary_continuous_plot(serv_smp,"capped_cl_Days")
 ```r
 #Model
 Term_04B <- glm (data=serv_smp,
-                 b_Term ~ capped_cl_Days, family=binomial(link="logit"))
+                 b_Term ~ cl_Days, family=binomial(link="logit"))
 
-display(Term_04B)
-```
-
-```
-## glm(formula = b_Term ~ capped_cl_Days, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                coef.est coef.se
-## (Intercept)    -4.14     0.02  
-## capped_cl_Days  1.40     0.04  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 45342.4, null deviance = 46839.6 (difference = 1497.2)
-```
-
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_03D,Term_04A,Term_04B,
                        
@@ -2002,10 +1582,10 @@ stargazer::stargazer(
 ## cl_US6_avg_sal_lag1Const   -0.06*                        
 ##                            (0.03)                        
 ##                                                          
-## cl_CFTE                    0.07**                        
+## cl_CFTE                   0.10***                        
 ##                            (0.03)                        
 ##                                                          
-## c_pPBSC                     0.03                         
+## c_pPBSC                    -0.003                        
 ##                            (0.03)                        
 ##                                                          
 ## c_pOffPSC                 0.37***                        
@@ -2014,31 +1594,165 @@ stargazer::stargazer(
 ## c_pairHist                -0.23***                       
 ##                            (0.03)                        
 ##                                                          
-## cl_pairCA                 0.41***                        
+## cl_pairCA                 0.31***                        
 ##                            (0.03)                        
 ##                                                          
-## cl_Ceil                              0.76***             
+## cl_Ceil                              0.79***             
 ##                                       (0.03)             
 ##                                                          
-## capped_cl_Days                                  1.40***  
+## cl_Days                                         1.35***  
 ##                                                  (0.04)  
 ##                                                          
-## Constant                  -3.99***   -4.03***   -4.14*** 
+## Constant                  -3.99***   -4.05***   -4.14*** 
 ##                            (0.02)     (0.02)     (0.02)  
 ##                                                          
 ## ---------------------------------------------------------
 ## Observations              250,000    250,000    250,000  
-## Log Likelihood           -23,149.37 -23,086.52 -22,671.21
-## Akaike Inf. Crit.        46,312.75  46,177.04  45,346.41 
+## Log Likelihood           -22,997.20 -22,839.67 -22,492.50
+## Akaike Inf. Crit.        46,008.41  45,683.33  44,988.99 
 ## =========================================================
 ## Note:                         *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_03D,Term_04B, skip_vif = TRUE)
+summary_residual_compare(Term_04B, skip_vif = TRUE)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
 ```
 
 ![](Model_Termination_files/figure-html/Model04B-3.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 44984.99      46388.62   1403.621
+```
+
+All expections were upheld.
+
+####04C: Ratio Initial Base : Ceiling Ratio (Logged)
+
+```r
+summary_continuous_plot(serv_smp1m, "Base2Ceil",bins=100)
+```
+
+![](Model_Termination_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
+
+```r
+summary_continuous_plot(serv_smp1m, "Base2Ceil",log=TRUE)
+```
+
+![](Model_Termination_files/figure-html/unnamed-chunk-1-2.png)<!-- -->
+
+```r
+#Model
+Term_04C <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil)
+
+
+#Plot Residuals vs. Fitted
+stargazer::stargazer(Term_04C, type="text", digits=2)
+```
+
+```
+## 
+## =============================================
+##                       Dependent variable:    
+##                   ---------------------------
+##                             b_Term           
+## ---------------------------------------------
+## cl_Base2Ceil                0.06***          
+##                             (0.001)          
+##                                              
+## Constant                    0.02***          
+##                            (0.0003)          
+##                                              
+## ---------------------------------------------
+## Observations                250,000          
+## Log Likelihood            151,197.50         
+## Akaike Inf. Crit.         -302,391.00        
+## =============================================
+## Note:             *p<0.1; **p<0.05; ***p<0.01
+```
+
+
+
+#### 04D: Both Scope variables
+
+
+```r
+#Model
+Term_04D <- glm (data=serv_smp,
+                 b_Term ~ cl_Ceil +cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
+
+
+stargazer::stargazer(
+                       Term_03D,Term_04A,Term_04B,Term_04C,Term_04D,
+                       
+                       type="text",
+                       digits=2)
+```
+
+```
+## 
+## ================================================================================
+##                                            Dependent variable:                  
+##                          -------------------------------------------------------
+##                                                  b_Term                         
+##                                      logistic               normal    logistic 
+##                             (1)        (2)        (3)         (4)        (5)    
+## --------------------------------------------------------------------------------
+## cl_US6_avg_sal_lag1Const   -0.06*                                               
+##                            (0.03)                                               
+##                                                                                 
+## cl_CFTE                   0.10***                                               
+##                            (0.03)                                               
+##                                                                                 
+## c_pPBSC                    -0.003                                               
+##                            (0.03)                                               
+##                                                                                 
+## c_pOffPSC                 0.37***                                               
+##                            (0.03)                                               
+##                                                                                 
+## c_pairHist                -0.23***                                              
+##                            (0.03)                                               
+##                                                                                 
+## cl_pairCA                 0.31***                                               
+##                            (0.03)                                               
+##                                                                                 
+## cl_Ceil                              0.79***                             0.05   
+##                                       (0.03)                            (0.03)  
+##                                                                                 
+## cl_Days                                         1.35***                1.03***  
+##                                                  (0.04)                 (0.04)  
+##                                                                                 
+## cl_Base2Ceil                                                0.06***    0.99***  
+##                                                             (0.001)     (0.02)  
+##                                                                                 
+## Constant                  -3.99***   -4.05***   -4.14***    0.02***    -4.31*** 
+##                            (0.02)     (0.02)     (0.02)    (0.0003)     (0.02)  
+##                                                                                 
+## --------------------------------------------------------------------------------
+## Observations              250,000    250,000    250,000     250,000    250,000  
+## Log Likelihood           -22,997.20 -22,839.67 -22,492.50 151,197.50  -20,667.29
+## Akaike Inf. Crit.        46,008.41  45,683.33  44,988.99  -302,391.00 41,342.58 
+## ================================================================================
+## Note:                                                *p<0.1; **p<0.05; ***p<0.01
+```
+
+```r
+summary_residual_compare(Term_03D,Term_04D)
+```
+
+![](Model_Termination_files/figure-html/Model04D-1.png)<!-- -->
 
 ```
 ## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
@@ -2047,146 +1761,50 @@ summary_residual_compare(Term_03D,Term_04B, skip_vif = TRUE)
 
 ```
 ## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
-![](Model_Termination_files/figure-html/Model04B-4.png)<!-- -->
+![](Model_Termination_files/figure-html/Model04D-2.png)<!-- -->
 
 ```
-## NULL
-```
-
-```r
-summary_residual_compare(Term_04A,Term_04B, skip_vif = TRUE)
-```
-
-![](Model_Termination_files/figure-html/Model04B-5.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model04B-6.png)<!-- -->
-
-```
-## NULL
-```
-
-All expections were upheld.
-
-#### 04C: Both Scope variables
-
-
-```r
-#Model
-Term_04C <- glm (data=serv_smp,
-                 b_Term ~ cl_Ceil +capped_cl_Days, family=binomial(link="logit"))
-display(Term_04C)
-```
-
-```
-## glm(formula = b_Term ~ cl_Ceil + capped_cl_Days, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                coef.est coef.se
-## (Intercept)    -4.15     0.02  
-## cl_Ceil         0.33     0.03  
-## capped_cl_Days  1.24     0.04  
-## ---
-##   n = 250000, k = 3
-##   residual deviance = 45241.5, null deviance = 46839.6 (difference = 1598.1)
-```
-
-```r
-#Plot residuals versus fitted
-stargazer::stargazer(
-                       Term_03D,Term_04A,Term_04B,Term_04C,
-                       
-                       type="text",
-                       digits=2)
-```
-
-```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 45994.41      46388.62   394.2094
+## 2 model1_new 41334.58      46388.62  5054.0321
 ## 
-## ====================================================================
-##                                      Dependent variable:            
-##                          -------------------------------------------
-##                                            b_Term                   
-##                             (1)        (2)        (3)        (4)    
-## --------------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const   -0.06*                                   
-##                            (0.03)                                   
-##                                                                     
-## cl_CFTE                    0.07**                                   
-##                            (0.03)                                   
-##                                                                     
-## c_pPBSC                     0.03                                    
-##                            (0.03)                                   
-##                                                                     
-## c_pOffPSC                 0.37***                                   
-##                            (0.03)                                   
-##                                                                     
-## c_pairHist                -0.23***                                  
-##                            (0.03)                                   
-##                                                                     
-## cl_pairCA                 0.41***                                   
-##                            (0.03)                                   
-##                                                                     
-## cl_Ceil                              0.76***               0.33***  
-##                                       (0.03)                (0.03)  
-##                                                                     
-## capped_cl_Days                                  1.40***    1.24***  
-##                                                  (0.04)     (0.04)  
-##                                                                     
-## Constant                  -3.99***   -4.03***   -4.14***   -4.15*** 
-##                            (0.02)     (0.02)     (0.02)     (0.02)  
-##                                                                     
-## --------------------------------------------------------------------
-## Observations              250,000    250,000    250,000    250,000  
-## Log Likelihood           -23,149.37 -23,086.52 -22,671.21 -22,620.77
-## Akaike Inf. Crit.        46,312.75  46,177.04  45,346.41  45,247.54 
-## ====================================================================
-## Note:                                    *p<0.1; **p<0.05; ***p<0.01
-```
-
-```r
-#summary_residual_compare(Term_03D,Term_04C)
-#summary_residual_compare(Term_04A,Term_04C)
-#summary_residual_compare(Term_04B,Term_04C)
+## [[2]]
+##      cl_Ceil      cl_Days cl_Base2Ceil 
+##     1.204619     1.164193     1.062942
 ```
 Days loses significance for ceiling breaches. Ceiling has a smaller coefficient for terminations. Otherwise largely unchanged.
 
-#### 04D: Cumulative  Model
+
+#### 04E: Cumulative  Model
 
 
 ```r
 #Model
-Term_04D <- glm (data=serv_smp,
+Term_04E <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days, family=binomial(link="logit"))
-glmer_examine(Term_04D)
+                   cl_Ceil + cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
+glmer_examine(Term_04E)
 ```
 
 ```
 ## cl_US6_avg_sal_lag1Const                  cl_CFTE                  c_pPBSC 
-##                 1.377677                 1.248554                 1.281831 
+##                 1.434391                 1.283411                 1.240918 
 ##                c_pOffPSC               c_pairHist                cl_pairCA 
-##                 1.416182                 1.217292                 1.492250 
-##                  cl_Ceil           capped_cl_Days 
-##                 1.213180                 1.197587
+##                 1.521724                 1.317852                 1.706935 
+##                  cl_Ceil                  cl_Days             cl_Base2Ceil 
+##                 1.248697                 1.189201                 1.098192
 ```
 
 ```r
-#Plot residuals versus fitted   
-
 stargazer::stargazer(
-                       Term_03D,Term_04C,Term_04D,
+                       Term_03D,Term_04D,Term_04E,
                        
                        type="text",
                        digits=2)
@@ -2200,44 +1818,83 @@ stargazer::stargazer(
 ##                                       b_Term             
 ##                             (1)        (2)        (3)    
 ## ---------------------------------------------------------
-## cl_US6_avg_sal_lag1Const   -0.06*               -0.41*** 
+## cl_US6_avg_sal_lag1Const   -0.06*               -0.32*** 
 ##                            (0.03)                (0.04)  
 ##                                                          
-## cl_CFTE                    0.07**                0.001   
+## cl_CFTE                   0.10***                 0.04   
+##                            (0.03)                (0.04)  
+##                                                          
+## c_pPBSC                    -0.003                -0.01   
 ##                            (0.03)                (0.03)  
 ##                                                          
-## c_pPBSC                     0.03                0.08***  
+## c_pOffPSC                 0.37***               0.40***  
 ##                            (0.03)                (0.03)  
 ##                                                          
-## c_pOffPSC                 0.37***               0.56***  
+## c_pairHist                -0.23***              -0.25*** 
 ##                            (0.03)                (0.03)  
 ##                                                          
-## c_pairHist                -0.23***              -0.28*** 
-##                            (0.03)                (0.03)  
+## cl_pairCA                 0.31***               0.26***  
+##                            (0.03)                (0.04)  
 ##                                                          
-## cl_pairCA                 0.41***               0.41***  
-##                            (0.03)                (0.03)  
-##                                                          
-## cl_Ceil                              0.33***    0.38***  
+## cl_Ceil                                0.05     0.12***  
 ##                                       (0.03)     (0.03)  
 ##                                                          
-## capped_cl_Days                       1.24***    1.39***  
+## cl_Days                              1.03***    1.14***  
 ##                                       (0.04)     (0.04)  
 ##                                                          
-## Constant                  -3.99***   -4.15***   -4.23*** 
+## cl_Base2Ceil                         0.99***    0.94***  
+##                                       (0.02)     (0.02)  
+##                                                          
+## Constant                  -3.99***   -4.31***   -4.34*** 
 ##                            (0.02)     (0.02)     (0.02)  
 ##                                                          
 ## ---------------------------------------------------------
 ## Observations              250,000    250,000    250,000  
-## Log Likelihood           -23,149.37 -22,620.77 -22,192.22
-## Akaike Inf. Crit.        46,312.75  45,247.54  44,402.44 
+## Log Likelihood           -22,997.20 -20,667.29 -20,486.67
+## Akaike Inf. Crit.        46,008.41  41,342.58  40,993.35 
 ## =========================================================
 ## Note:                         *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_03D,Term_04D)
-#summary_residual_compare(Term_04C,Term_04D)
+summary_residual_compare(Term_03D,Term_04D,Term_04D,Term_04E)
+```
+
+![](Model_Termination_files/figure-html/Model04E-1.png)<!-- -->![](Model_Termination_files/figure-html/Model04E-2.png)<!-- -->![](Model_Termination_files/figure-html/Model04E-3.png)<!-- -->
+
+```
+## Warning in if (class(model1_new) == "glmerMod" & class(model2_new) ==
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+```
+## Warning in if ((class(model1_new) != "glmerMod" & class(model2_new) !
+## = "glmerMod") & : the condition has length > 1 and only the first element
+## will be used
+```
+
+![](Model_Termination_files/figure-html/Model04E-4.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 45994.41      46388.62   394.2094
+## 2 model1_new 41334.58      46388.62  5054.0321
+## 3 model2_old 41334.58      46388.62  5054.0321
+## 4 model2_new 40973.35      46388.62  5415.2669
+## 
+## [[2]]
+##      cl_Ceil      cl_Days cl_Base2Ceil 
+##     1.204619     1.164193     1.062942 
+## 
+## [[3]]
+## cl_US6_avg_sal_lag1Const                  cl_CFTE                  c_pPBSC 
+##                 1.434391                 1.283411                 1.240918 
+##                c_pOffPSC               c_pairHist                cl_pairCA 
+##                 1.521724                 1.317852                 1.706935 
+##                  cl_Ceil                  cl_Days             cl_Base2Ceil 
+##                 1.248697                 1.189201                 1.098192
 ```
 Salary no longer matches expectations for ceiling breaches. Invoice rate is no longer significant for terminations. 
 
@@ -2265,23 +1922,23 @@ summary_discrete_plot(serv_smp,"Comp1or5")
 ## [[1]]
 ## 
 ## No Competition        1 offer     2-4 offers      5+ offers 
-##          69119          42631          83977          54273 
+##          69373          42572          84137          53918 
 ## 
 ## [[2]]
 ##                 
 ##                   None Ceiling Breach
-##   No Competition 66020           3099
-##   1 offer        41141           1490
-##   2-4 offers     78621           5356
-##   5+ offers      50121           4152
+##   No Competition 66060           3313
+##   1 offer        41002           1570
+##   2-4 offers     78652           5485
+##   5+ offers      49571           4347
 ## 
 ## [[3]]
 ##                 
 ##                      0     1
-##   No Competition 68283   836
-##   1 offer        41970   661
-##   2-4 offers     82682  1295
-##   5+ offers      52343  1930
+##   No Competition 68505   868
+##   1 offer        41956   616
+##   2-4 offers     82865  1272
+##   5+ offers      52009  1909
 ```
 
 ```r
@@ -2289,26 +1946,10 @@ summary_discrete_plot(serv_smp,"Comp1or5")
 Term_05A <- glm (data=serv_smp,
                  b_Term ~ Comp1or5, family=binomial(link="logit"))
 
-display(Term_05A)
-```
 
-```
-## glm(formula = b_Term ~ Comp1or5, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                    coef.est coef.se
-## (Intercept)        -4.40     0.03  
-## Comp1or51 offer     0.25     0.05  
-## Comp1or52-4 offers  0.25     0.04  
-## Comp1or55+ offers   1.10     0.04  
-## ---
-##   n = 250000, k = 4
-##   residual deviance = 45908.5, null deviance = 46839.6 (difference = 931.1)
-```
 
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
-                       Term_04D,Term_05A,
+                       Term_04E,Term_05A,
                        
                        type="text",
                        digits=2)
@@ -2322,48 +1963,74 @@ stargazer::stargazer(
 ##                                     b_Term           
 ##                               (1)            (2)     
 ## -----------------------------------------------------
-## cl_US6_avg_sal_lag1Const    -0.41***                 
+## cl_US6_avg_sal_lag1Const    -0.32***                 
 ##                              (0.04)                  
 ##                                                      
-## cl_CFTE                      0.001                   
-##                              (0.03)                  
-##                                                      
-## c_pPBSC                     0.08***                  
-##                              (0.03)                  
-##                                                      
-## c_pOffPSC                   0.56***                  
-##                              (0.03)                  
-##                                                      
-## c_pairHist                  -0.28***                 
-##                              (0.03)                  
-##                                                      
-## cl_pairCA                   0.41***                  
-##                              (0.03)                  
-##                                                      
-## cl_Ceil                     0.38***                  
-##                              (0.03)                  
-##                                                      
-## capped_cl_Days              1.39***                  
+## cl_CFTE                       0.04                   
 ##                              (0.04)                  
 ##                                                      
-## Comp1or51 offer                            0.25***   
+## c_pPBSC                      -0.01                   
+##                              (0.03)                  
+##                                                      
+## c_pOffPSC                   0.40***                  
+##                              (0.03)                  
+##                                                      
+## c_pairHist                  -0.25***                 
+##                              (0.03)                  
+##                                                      
+## cl_pairCA                   0.26***                  
+##                              (0.04)                  
+##                                                      
+## cl_Ceil                     0.12***                  
+##                              (0.03)                  
+##                                                      
+## cl_Days                     1.14***                  
+##                              (0.04)                  
+##                                                      
+## cl_Base2Ceil                0.94***                  
+##                              (0.02)                  
+##                                                      
+## Comp1or51 offer                            0.15***   
 ##                                            (0.05)    
 ##                                                      
-## Comp1or52-4 offers                         0.25***   
+## Comp1or52-4 offers                         0.19***   
 ##                                            (0.04)    
 ##                                                      
-## Comp1or55+ offers                          1.10***   
+## Comp1or55+ offers                          1.06***   
 ##                                            (0.04)    
 ##                                                      
-## Constant                    -4.23***      -4.40***   
+## Constant                    -4.34***      -4.37***   
 ##                              (0.02)        (0.03)    
 ##                                                      
 ## -----------------------------------------------------
 ## Observations                250,000        250,000   
-## Log Likelihood             -22,192.22    -22,954.26  
-## Akaike Inf. Crit.          44,402.44      45,916.52  
+## Log Likelihood             -20,486.67    -22,732.95  
+## Akaike Inf. Crit.          40,993.35      45,473.90  
 ## =====================================================
 ## Note:                     *p<0.1; **p<0.05; ***p<0.01
+```
+
+```r
+summary_residual_compare(Term_05A,bins=2)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model05A-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old  45465.9      46388.62   922.7166
 ```
 Expectations were completely unmet for ceiling breaches. For terminations, expectations were met for 2-4 offers and 5+ offers, but not for 1 offer. For ceiling breaches expectations were met for 1 offer, but not for 2-4 or 5+.
 
@@ -2376,7 +2043,7 @@ Term_05B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5, family=binomial(link="logit"))
 
 glmer_examine(Term_05B)
@@ -2384,22 +2051,21 @@ glmer_examine(Term_05B)
 
 ```
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.404354  1        1.185054
-## cl_CFTE                  1.269042  1        1.126518
-## c_pPBSC                  1.326296  1        1.151649
-## c_pOffPSC                1.474135  1        1.214139
-## c_pairHist               1.229930  1        1.109022
-## cl_pairCA                1.541963  1        1.241758
-## cl_Ceil                  1.229339  1        1.108755
-## capped_cl_Days           1.201378  1        1.096074
-## Comp1or5                 1.069184  3        1.011212
+## cl_US6_avg_sal_lag1Const 1.463687  1        1.209829
+## cl_CFTE                  1.308511  1        1.143902
+## c_pPBSC                  1.261118  1        1.122995
+## c_pOffPSC                1.571061  1        1.253420
+## c_pairHist               1.329317  1        1.152960
+## cl_pairCA                1.811510  1        1.345923
+## cl_Ceil                  1.248973  1        1.117575
+## cl_Days                  1.195102  1        1.093207
+## cl_Base2Ceil             1.133166  1        1.064503
+## Comp1or5                 1.131369  3        1.020784
 ```
 
 ```r
-#Plot residuals versus fitted   
-
 stargazer::stargazer(
-                       Term_04D,Term_05A,Term_05B,
+                       Term_04E,Term_05A,Term_05B,
                        
                        type="text",
                        digits=2)
@@ -2413,52 +2079,91 @@ stargazer::stargazer(
 ##                                       b_Term             
 ##                             (1)        (2)        (3)    
 ## ---------------------------------------------------------
-## cl_US6_avg_sal_lag1Const  -0.41***              -0.38*** 
+## cl_US6_avg_sal_lag1Const  -0.32***              -0.30*** 
 ##                            (0.04)                (0.04)  
 ##                                                          
-## cl_CFTE                    0.001                 -0.05   
-##                            (0.03)                (0.03)  
-##                                                          
-## c_pPBSC                   0.08***                0.06*   
-##                            (0.03)                (0.03)  
-##                                                          
-## c_pOffPSC                 0.56***               0.56***  
-##                            (0.03)                (0.03)  
-##                                                          
-## c_pairHist                -0.28***              -0.23*** 
-##                            (0.03)                (0.03)  
-##                                                          
-## cl_pairCA                 0.41***               0.31***  
-##                            (0.03)                (0.03)  
-##                                                          
-## cl_Ceil                   0.38***               0.32***  
-##                            (0.03)                (0.03)  
-##                                                          
-## capped_cl_Days            1.39***               1.40***  
+## cl_CFTE                     0.04                 0.002   
 ##                            (0.04)                (0.04)  
 ##                                                          
-## Comp1or51 offer                      0.25***    0.31***  
+## c_pPBSC                    -0.01                 -0.03   
+##                            (0.03)                (0.03)  
+##                                                          
+## c_pOffPSC                 0.40***               0.39***  
+##                            (0.03)                (0.04)  
+##                                                          
+## c_pairHist                -0.25***              -0.20*** 
+##                            (0.03)                (0.04)  
+##                                                          
+## cl_pairCA                 0.26***               0.15***  
+##                            (0.04)                (0.04)  
+##                                                          
+## cl_Ceil                   0.12***               0.11***  
+##                            (0.03)                (0.03)  
+##                                                          
+## cl_Days                   1.14***               1.12***  
+##                            (0.04)                (0.04)  
+##                                                          
+## cl_Base2Ceil              0.94***               0.89***  
+##                            (0.02)                (0.02)  
+##                                                          
+## Comp1or51 offer                      0.15***    0.15***  
 ##                                       (0.05)     (0.05)  
 ##                                                          
-## Comp1or52-4 offers                   0.25***    0.15***  
+## Comp1or52-4 offers                   0.19***    0.12***  
 ##                                       (0.04)     (0.05)  
 ##                                                          
-## Comp1or55+ offers                    1.10***    0.90***  
+## Comp1or55+ offers                    1.06***    0.67***  
 ##                                       (0.04)     (0.04)  
 ##                                                          
-## Constant                  -4.23***   -4.40***   -4.59*** 
+## Constant                  -4.34***   -4.37***   -4.58*** 
 ##                            (0.02)     (0.03)     (0.04)  
 ##                                                          
 ## ---------------------------------------------------------
 ## Observations              250,000    250,000    250,000  
-## Log Likelihood           -22,192.22 -22,954.26 -21,882.87
-## Akaike Inf. Crit.        44,402.44  45,916.52  43,789.73 
+## Log Likelihood           -20,486.67 -22,732.95 -20,334.23
+## Akaike Inf. Crit.        40,993.35  45,473.90  40,694.46 
 ## =========================================================
 ## Note:                         *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_04D,Term_05B)
+#Plot residuals versus fitted   
+summary_residual_compare(Term_04E,Term_05B)
+```
+
+![](Model_Termination_files/figure-html/Model05B-1.png)<!-- -->
+
+```
+## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model05B-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 40973.35      46388.62   5415.267
+## 2 model1_new 40668.46      46388.62   5720.157
+## 
+## [[2]]
+##                              GVIF Df GVIF^(1/(2*Df))
+## cl_US6_avg_sal_lag1Const 1.463687  1        1.209829
+## cl_CFTE                  1.308511  1        1.143902
+## c_pPBSC                  1.261118  1        1.122995
+## c_pOffPSC                1.571061  1        1.253420
+## c_pairHist               1.329317  1        1.152960
+## cl_pairCA                1.811510  1        1.345923
+## cl_Ceil                  1.248973  1        1.117575
+## cl_Days                  1.195102  1        1.093207
+## cl_Base2Ceil             1.133166  1        1.064503
+## Comp1or5                 1.131369  3        1.020784
 ```
 Minimal effect on study variables. 2-4 offers for terminations is not  longer significant, it's really 5+ that boosts the risks. But for exercised options, 5+ leads to more options while fewer having negative relationship with 2-4 offers, but only significant with p-value < 0.1 
 
@@ -2490,25 +2195,25 @@ summary_discrete_plot(serv_smp,"Veh")
 ## [[1]]
 ## 
 ##  Def/Pur    S-IDC    M-IDC FSS/GWAC  BPA/BOA 
-##    75929   122437    29968    11005    10661 
+##    76624   121710    29874    11262    10530 
 ## 
 ## [[2]]
 ##           
 ##              None Ceiling Breach
-##   Def/Pur   71858           4071
-##   S-IDC    115315           7122
-##   M-IDC     27841           2127
-##   FSS/GWAC  10587            418
-##   BPA/BOA   10302            359
+##   Def/Pur   72393           4231
+##   S-IDC    114242           7468
+##   M-IDC     27665           2209
+##   FSS/GWAC  10823            439
+##   BPA/BOA   10162            368
 ## 
 ## [[3]]
 ##           
 ##                 0      1
-##   Def/Pur   74076   1853
-##   S-IDC    120648   1789
-##   M-IDC     29225    743
-##   FSS/GWAC  10772    233
-##   BPA/BOA   10557    104
+##   Def/Pur   74799   1825
+##   S-IDC    119920   1790
+##   M-IDC     29150    724
+##   FSS/GWAC  11029    233
+##   BPA/BOA   10437     93
 ```
 
 ```r
@@ -2516,28 +2221,9 @@ summary_discrete_plot(serv_smp,"Veh")
 Term_06A <- glm (data=serv_smp,
                  b_Term ~ Veh, family=binomial(link="logit"))
 
-display(Term_06A)
-```
 
-```
-## glm(formula = b_Term ~ Veh, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -3.69     0.02  
-## VehS-IDC    -0.52     0.03  
-## VehM-IDC     0.02     0.04  
-## VehFSS/GWAC -0.15     0.07  
-## VehBPA/BOA  -0.93     0.10  
-## ---
-##   n = 250000, k = 5
-##   residual deviance = 46481.9, null deviance = 46839.6 (difference = 357.8)
-```
-
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_05B,Term_06A,
-                       
                        type="text",
                        digits=2)
 ```
@@ -2550,64 +2236,103 @@ stargazer::stargazer(
 ##                                     b_Term           
 ##                               (1)            (2)     
 ## -----------------------------------------------------
-## cl_US6_avg_sal_lag1Const    -0.38***                 
+## cl_US6_avg_sal_lag1Const    -0.30***                 
 ##                              (0.04)                  
 ##                                                      
-## cl_CFTE                      -0.05                   
-##                              (0.03)                  
-##                                                      
-## c_pPBSC                      0.06*                   
-##                              (0.03)                  
-##                                                      
-## c_pOffPSC                   0.56***                  
-##                              (0.03)                  
-##                                                      
-## c_pairHist                  -0.23***                 
-##                              (0.03)                  
-##                                                      
-## cl_pairCA                   0.31***                  
-##                              (0.03)                  
-##                                                      
-## cl_Ceil                     0.32***                  
-##                              (0.03)                  
-##                                                      
-## capped_cl_Days              1.40***                  
+## cl_CFTE                      0.002                   
 ##                              (0.04)                  
 ##                                                      
-## Comp1or51 offer             0.31***                  
+## c_pPBSC                      -0.03                   
+##                              (0.03)                  
+##                                                      
+## c_pOffPSC                   0.39***                  
+##                              (0.04)                  
+##                                                      
+## c_pairHist                  -0.20***                 
+##                              (0.04)                  
+##                                                      
+## cl_pairCA                   0.15***                  
+##                              (0.04)                  
+##                                                      
+## cl_Ceil                     0.11***                  
+##                              (0.03)                  
+##                                                      
+## cl_Days                     1.12***                  
+##                              (0.04)                  
+##                                                      
+## cl_Base2Ceil                0.89***                  
+##                              (0.02)                  
+##                                                      
+## Comp1or51 offer             0.15***                  
 ##                              (0.05)                  
 ##                                                      
-## Comp1or52-4 offers          0.15***                  
+## Comp1or52-4 offers          0.12***                  
 ##                              (0.05)                  
 ##                                                      
-## Comp1or55+ offers           0.90***                  
+## Comp1or55+ offers           0.67***                  
 ##                              (0.04)                  
 ##                                                      
-## VehS-IDC                                  -0.52***   
+## VehS-IDC                                  -0.49***   
 ##                                            (0.03)    
 ##                                                      
 ## VehM-IDC                                    0.02     
 ##                                            (0.04)    
 ##                                                      
-## VehFSS/GWAC                                -0.15**   
+## VehFSS/GWAC                                -0.14**   
 ##                                            (0.07)    
 ##                                                      
-## VehBPA/BOA                                -0.93***   
-##                                            (0.10)    
+## VehBPA/BOA                                -1.01***   
+##                                            (0.11)    
 ##                                                      
-## Constant                    -4.59***      -3.69***   
+## Constant                    -4.58***      -3.71***   
 ##                              (0.04)        (0.02)    
 ##                                                      
 ## -----------------------------------------------------
 ## Observations                250,000        250,000   
-## Log Likelihood             -21,882.87    -23,240.93  
-## Akaike Inf. Crit.          43,789.73      46,491.86  
+## Log Likelihood             -20,334.23    -23,028.27  
+## Akaike Inf. Crit.          40,694.46      46,066.53  
 ## =====================================================
 ## Note:                     *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_05D,Term_06A)
+#Plot residuals versus fitted
+summary_residual_compare(Term_04E,Term_05B)
+```
+
+![](Model_Termination_files/figure-html/Model06A-2.png)<!-- -->
+
+```
+## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model06A-3.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 40973.35      46388.62   5415.267
+## 2 model1_new 40668.46      46388.62   5720.157
+## 
+## [[2]]
+##                              GVIF Df GVIF^(1/(2*Df))
+## cl_US6_avg_sal_lag1Const 1.463687  1        1.209829
+## cl_CFTE                  1.308511  1        1.143902
+## c_pPBSC                  1.261118  1        1.122995
+## c_pOffPSC                1.571061  1        1.253420
+## c_pairHist               1.329317  1        1.152960
+## cl_pairCA                1.811510  1        1.345923
+## cl_Ceil                  1.248973  1        1.117575
+## cl_Days                  1.195102  1        1.093207
+## cl_Base2Ceil             1.133166  1        1.064503
+## Comp1or5                 1.131369  3        1.020784
 ```
 For ceiling breaches, IDCs, particularly multiaward IDCs, were more likely to have breaches contrary to expecatitions.
 
@@ -2625,7 +2350,7 @@ Term_06B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh, family=binomial(link="logit"))
 
@@ -2634,21 +2359,20 @@ glmer_examine(Term_06B)
 
 ```
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.413849  1        1.189054
-## cl_CFTE                  1.230828  1        1.109427
-## c_pPBSC                  1.367288  1        1.169311
-## c_pOffPSC                1.503765  1        1.226281
-## c_pairHist               1.303575  1        1.141742
-## cl_pairCA                1.782565  1        1.335127
-## cl_Ceil                  1.284827  1        1.133502
-## capped_cl_Days           1.184822  1        1.088495
-## Comp1or5                 1.201495  3        1.031067
-## Veh                      1.627168  4        1.062745
+## cl_US6_avg_sal_lag1Const 1.481260  1        1.217070
+## cl_CFTE                  1.268246  1        1.126164
+## c_pPBSC                  1.299530  1        1.139969
+## c_pOffPSC                1.645100  1        1.282615
+## c_pairHist               1.367169  1        1.169260
+## cl_pairCA                2.011704  1        1.418346
+## cl_Ceil                  1.360018  1        1.166198
+## cl_Days                  1.190214  1        1.090969
+## cl_Base2Ceil             1.201597  1        1.096174
+## Comp1or5                 1.266498  3        1.040161
+## Veh                      1.919112  4        1.084895
 ```
 
 ```r
-#Plot residuals versus fitted   
-
 stargazer::stargazer(
                        Term_05B,Term_06A,Term_06B,
                        
@@ -2664,64 +2388,104 @@ stargazer::stargazer(
 ##                                       b_Term             
 ##                             (1)        (2)        (3)    
 ## ---------------------------------------------------------
-## cl_US6_avg_sal_lag1Const  -0.38***              -0.28*** 
+## cl_US6_avg_sal_lag1Const  -0.30***              -0.20*** 
 ##                            (0.04)                (0.04)  
 ##                                                          
-## cl_CFTE                    -0.05                 -0.02   
+## cl_CFTE                    0.002                  0.04   
+##                            (0.04)                (0.03)  
+##                                                          
+## c_pPBSC                    -0.03                 -0.07*  
 ##                            (0.03)                (0.03)  
 ##                                                          
-## c_pPBSC                    0.06*                 -0.03   
-##                            (0.03)                (0.03)  
-##                                                          
-## c_pOffPSC                 0.56***               0.69***  
-##                            (0.03)                (0.03)  
-##                                                          
-## c_pairHist                -0.23***              -0.09*** 
-##                            (0.03)                (0.03)  
-##                                                          
-## cl_pairCA                 0.31***               0.58***  
-##                            (0.03)                (0.03)  
-##                                                          
-## cl_Ceil                   0.32***               0.28***  
-##                            (0.03)                (0.03)  
-##                                                          
-## capped_cl_Days            1.40***               1.39***  
+## c_pOffPSC                 0.39***               0.48***  
 ##                            (0.04)                (0.04)  
 ##                                                          
-## Comp1or51 offer           0.31***               0.30***  
+## c_pairHist                -0.20***              -0.12*** 
+##                            (0.04)                (0.04)  
+##                                                          
+## cl_pairCA                 0.15***               0.39***  
+##                            (0.04)                (0.04)  
+##                                                          
+## cl_Ceil                   0.11***                 0.04   
+##                            (0.03)                (0.04)  
+##                                                          
+## cl_Days                   1.12***               1.10***  
+##                            (0.04)                (0.04)  
+##                                                          
+## cl_Base2Ceil              0.89***               0.84***  
+##                            (0.02)                (0.02)  
+##                                                          
+## Comp1or51 offer           0.15***                0.14**  
 ##                            (0.05)                (0.05)  
 ##                                                          
-## Comp1or52-4 offers        0.15***               0.29***  
+## Comp1or52-4 offers        0.12***               0.21***  
 ##                            (0.05)                (0.05)  
 ##                                                          
-## Comp1or55+ offers         0.90***               1.19***  
-##                            (0.04)                (0.04)  
+## Comp1or55+ offers         0.67***               0.89***  
+##                            (0.04)                (0.05)  
 ##                                                          
-## VehS-IDC                             -0.52***   -1.29*** 
+## VehS-IDC                             -0.49***   -0.96*** 
 ##                                       (0.03)     (0.04)  
 ##                                                          
-## VehM-IDC                               0.02     -0.94*** 
+## VehM-IDC                               0.02     -0.50*** 
 ##                                       (0.04)     (0.05)  
 ##                                                          
-## VehFSS/GWAC                          -0.15**    -0.32*** 
+## VehFSS/GWAC                          -0.14**    -0.39*** 
 ##                                       (0.07)     (0.07)  
 ##                                                          
-## VehBPA/BOA                           -0.93***   -1.22*** 
-##                                       (0.10)     (0.10)  
+## VehBPA/BOA                           -1.01***   -1.49*** 
+##                                       (0.11)     (0.12)  
 ##                                                          
-## Constant                  -4.59***   -3.69***   -3.97*** 
+## Constant                  -4.58***   -3.71***   -4.12*** 
 ##                            (0.04)     (0.02)     (0.04)  
 ##                                                          
 ## ---------------------------------------------------------
 ## Observations              250,000    250,000    250,000  
-## Log Likelihood           -21,882.87 -23,240.93 -21,324.25
-## Akaike Inf. Crit.        43,789.73  46,491.86  42,680.49 
+## Log Likelihood           -20,334.23 -23,028.27 -20,044.32
+## Akaike Inf. Crit.        40,694.46  46,066.53  40,122.64 
 ## =========================================================
 ## Note:                         *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_05B,Term_06B)
+#Plot residuals versus fitted   
+summary_residual_compare(Term_05B,Term_06B)
+```
+
+![](Model_Termination_files/figure-html/Model06B-1.png)<!-- -->
+
+```
+## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model06B-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 40668.46      46388.62   5720.157
+## 2 model1_new 40088.64      46388.62   6299.977
+## 
+## [[2]]
+##                              GVIF Df GVIF^(1/(2*Df))
+## cl_US6_avg_sal_lag1Const 1.481260  1        1.217070
+## cl_CFTE                  1.268246  1        1.126164
+## c_pPBSC                  1.299530  1        1.139969
+## c_pOffPSC                1.645100  1        1.282615
+## c_pairHist               1.367169  1        1.169260
+## cl_pairCA                2.011704  1        1.418346
+## cl_Ceil                  1.360018  1        1.166198
+## cl_Days                  1.190214  1        1.090969
+## cl_Base2Ceil             1.201597  1        1.096174
+## Comp1or5                 1.266498  3        1.040161
+## Veh                      1.919112  4        1.084895
 ```
 Expectations for vehicle are now upheld for both ceiling breaches and terminations. For other variables the addition of vehicle proved less pivotal, though coefficients were often decreased.
 
@@ -2748,7 +2512,7 @@ serv_smp$PricingUCA<-factor(serv_smp$PricingUCA,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
 serv_opt$PricingUCA<-factor(serv_opt$PricingUCA,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-  summary_discrete_plot(serv_smp,"PricingUCA")
+summary_discrete_plot(serv_smp,"PricingUCA")
 ```
 
 ```
@@ -2761,33 +2525,33 @@ serv_opt$PricingUCA<-factor(serv_opt$PricingUCA,
 ## [[1]]
 ## 
 ##                  FFP             Other FP         T&M/LH/FPLOE 
-##               222793                 1580                 4704 
+##               222749                 1623                 4812 
 ##            Incentive             Other CB                  UCA 
-##                 1000                14531                 2867 
+##                 1006                14582                 2816 
 ## Combination or Other 
-##                 2525 
+##                 2412 
 ## 
 ## [[2]]
 ##                       
 ##                          None Ceiling Breach
-##   FFP                  209856          12937
-##   Other FP               1537             43
-##   T&M/LH/FPLOE           4491            213
-##   Incentive               885            115
-##   Other CB              14106            425
-##   UCA                    2662            205
-##   Combination or Other   2366            159
+##   FFP                  209275          13474
+##   Other FP               1560             63
+##   T&M/LH/FPLOE           4601            211
+##   Incentive               890            116
+##   Other CB              14100            482
+##   UCA                    2629            187
+##   Combination or Other   2230            182
 ## 
 ## [[3]]
 ##                       
 ##                             0      1
-##   FFP                  218279   4514
-##   Other FP               1531     49
-##   T&M/LH/FPLOE           4657     47
-##   Incentive               999      1
-##   Other CB              14461     70
-##   UCA                    2848     19
-##   Combination or Other   2503     22
+##   FFP                  218286   4463
+##   Other FP               1567     56
+##   T&M/LH/FPLOE           4771     41
+##   Incentive              1004      2
+##   Other CB              14515     67
+##   UCA                    2803     13
+##   Combination or Other   2389     23
 ```
 
 ```r
@@ -2795,26 +2559,7 @@ serv_opt$PricingUCA<-factor(serv_opt$PricingUCA,
 Term_07A <- glm (data=serv_smp,
                  b_Term ~ PricingUCA, family=binomial(link="logit"))
 
-display(Term_07A)
-```
 
-```
-## glm(formula = b_Term ~ PricingUCA, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                                coef.est coef.se
-## (Intercept)                    -3.88     0.02  
-## PricingUCAOther FP              0.44     0.15  
-## PricingUCAT&M/LH/FPLOE         -0.72     0.15  
-## PricingUCAIncentive            -3.03     0.99  
-## PricingUCAOther CB             -1.45     0.12  
-## PricingUCAUCA                  -1.13     0.23  
-## PricingUCACombination or Other -0.86     0.21  
-## ---
-##   n = 250000, k = 7
-##   residual deviance = 46483.4, null deviance = 46839.6 (difference = 356.2)
-```
-
-```r
 #Plot residuals versus fitted
 stargazer::stargazer(
                        Term_06B,Term_07A,
@@ -2831,82 +2576,104 @@ stargazer::stargazer(
 ##                                           b_Term           
 ##                                     (1)            (2)     
 ## -----------------------------------------------------------
-## cl_US6_avg_sal_lag1Const          -0.28***                 
+## cl_US6_avg_sal_lag1Const          -0.20***                 
 ##                                    (0.04)                  
 ##                                                            
-## cl_CFTE                            -0.02                   
+## cl_CFTE                             0.04                   
 ##                                    (0.03)                  
 ##                                                            
-## c_pPBSC                            -0.03                   
+## c_pPBSC                            -0.07*                  
 ##                                    (0.03)                  
 ##                                                            
-## c_pOffPSC                         0.69***                  
-##                                    (0.03)                  
-##                                                            
-## c_pairHist                        -0.09***                 
-##                                    (0.03)                  
-##                                                            
-## cl_pairCA                         0.58***                  
-##                                    (0.03)                  
-##                                                            
-## cl_Ceil                           0.28***                  
-##                                    (0.03)                  
-##                                                            
-## capped_cl_Days                    1.39***                  
+## c_pOffPSC                         0.48***                  
 ##                                    (0.04)                  
 ##                                                            
-## Comp1or51 offer                   0.30***                  
+## c_pairHist                        -0.12***                 
+##                                    (0.04)                  
+##                                                            
+## cl_pairCA                         0.39***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Ceil                             0.04                   
+##                                    (0.04)                  
+##                                                            
+## cl_Days                           1.10***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Base2Ceil                      0.84***                  
+##                                    (0.02)                  
+##                                                            
+## Comp1or51 offer                    0.14**                  
 ##                                    (0.05)                  
 ##                                                            
-## Comp1or52-4 offers                0.29***                  
+## Comp1or52-4 offers                0.21***                  
 ##                                    (0.05)                  
 ##                                                            
-## Comp1or55+ offers                 1.19***                  
-##                                    (0.04)                  
-##                                                            
-## VehS-IDC                          -1.29***                 
-##                                    (0.04)                  
-##                                                            
-## VehM-IDC                          -0.94***                 
+## Comp1or55+ offers                 0.89***                  
 ##                                    (0.05)                  
 ##                                                            
-## VehFSS/GWAC                       -0.32***                 
+## VehS-IDC                          -0.96***                 
+##                                    (0.04)                  
+##                                                            
+## VehM-IDC                          -0.50***                 
+##                                    (0.05)                  
+##                                                            
+## VehFSS/GWAC                       -0.39***                 
 ##                                    (0.07)                  
 ##                                                            
-## VehBPA/BOA                        -1.22***                 
-##                                    (0.10)                  
+## VehBPA/BOA                        -1.49***                 
+##                                    (0.12)                  
 ##                                                            
-## PricingUCAOther FP                               0.44***   
-##                                                  (0.15)    
+## PricingUCAOther FP                               0.56***   
+##                                                  (0.14)    
 ##                                                            
-## PricingUCAT&M/LH/FPLOE                          -0.72***   
-##                                                  (0.15)    
+## PricingUCAT&M/LH/FPLOE                          -0.87***   
+##                                                  (0.16)    
 ##                                                            
-## PricingUCAIncentive                             -3.03***   
-##                                                  (0.99)    
+## PricingUCAIncentive                             -2.33***   
+##                                                  (0.71)    
 ##                                                            
-## PricingUCAOther CB                              -1.45***   
+## PricingUCAOther CB                              -1.49***   
 ##                                                  (0.12)    
 ##                                                            
-## PricingUCAUCA                                   -1.13***   
-##                                                  (0.23)    
+## PricingUCAUCA                                   -1.48***   
+##                                                  (0.28)    
 ##                                                            
-## PricingUCACombination or Other                  -0.86***   
+## PricingUCACombination or Other                  -0.75***   
 ##                                                  (0.21)    
 ##                                                            
-## Constant                          -3.97***      -3.88***   
+## Constant                          -4.12***      -3.89***   
 ##                                    (0.04)        (0.02)    
 ##                                                            
 ## -----------------------------------------------------------
 ## Observations                      250,000        250,000   
-## Log Likelihood                   -21,324.25    -23,241.71  
-## Akaike Inf. Crit.                42,680.49      46,497.43  
+## Log Likelihood                   -20,044.32    -23,003.80  
+## Akaike Inf. Crit.                40,122.64      46,021.60  
 ## ===========================================================
 ## Note:                           *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_06B,Term_07A,30)
+summary_residual_compare(Term_07A,bins=2)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model07A-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old  46007.6      46388.62   381.0111
 ```
 
 Other fixed price and other cost based aligned with expecations for ceiling breaches.
@@ -2922,7 +2689,7 @@ Term_07B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA, family=binomial(link="logit"))
@@ -2932,22 +2699,21 @@ glmer_examine(Term_07B)
 
 ```
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.368167  1        1.169687
-## cl_CFTE                  1.223535  1        1.106135
-## c_pPBSC                  1.392201  1        1.179916
-## c_pOffPSC                1.518989  1        1.232473
-## c_pairHist               1.281360  1        1.131972
-## cl_pairCA                1.797937  1        1.340872
-## cl_Ceil                  1.303672  1        1.141785
-## capped_cl_Days           1.195502  1        1.093390
-## Comp1or5                 1.258646  3        1.039084
-## Veh                      1.685768  4        1.067455
-## PricingUCA               1.111130  6        1.008820
+## cl_US6_avg_sal_lag1Const 1.439553  1        1.199814
+## cl_CFTE                  1.251918  1        1.118891
+## c_pPBSC                  1.310979  1        1.144980
+## c_pOffPSC                1.647994  1        1.283742
+## c_pairHist               1.343196  1        1.158964
+## cl_pairCA                1.993159  1        1.411793
+## cl_Ceil                  1.361585  1        1.166870
+## cl_Days                  1.199754  1        1.095333
+## cl_Base2Ceil             1.210157  1        1.100071
+## Comp1or5                 1.318429  3        1.047151
+## Veh                      1.913750  4        1.084515
+## PricingUCA               1.117580  6        1.009307
 ```
 
 ```r
-#Plot residuals versus fitted   
-
 stargazer::stargazer(
                        Term_06B,Term_07A,Term_07B,
                        
@@ -2963,83 +2729,123 @@ stargazer::stargazer(
 ##                                             b_Term             
 ##                                   (1)        (2)        (3)    
 ## ---------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const        -0.28***              -0.23*** 
+## cl_US6_avg_sal_lag1Const        -0.20***              -0.16*** 
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_CFTE                          -0.02                  0.03   
+## cl_CFTE                           0.04                 0.06*   
 ##                                  (0.03)                (0.03)  
 ##                                                                
-## c_pPBSC                          -0.03                 -0.01   
+## c_pPBSC                          -0.07*                -0.05   
 ##                                  (0.03)                (0.03)  
 ##                                                                
-## c_pOffPSC                       0.69***               0.71***  
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pairHist                      -0.09***               -0.06*  
-##                                  (0.03)                (0.03)  
-##                                                                
-## cl_pairCA                       0.58***               0.58***  
-##                                  (0.03)                (0.03)  
-##                                                                
-## cl_Ceil                         0.28***               0.40***  
-##                                  (0.03)                (0.03)  
-##                                                                
-## capped_cl_Days                  1.39***               1.45***  
+## c_pOffPSC                       0.48***               0.48***  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## Comp1or51 offer                 0.30***               0.34***  
+## c_pairHist                      -0.12***              -0.10*** 
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_pairCA                       0.39***               0.39***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Ceil                           0.04                0.17***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Days                         1.10***               1.13***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Base2Ceil                    0.84***               0.82***  
+##                                  (0.02)                (0.02)  
+##                                                                
+## Comp1or51 offer                  0.14**               0.18***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## Comp1or52-4 offers              0.29***               0.27***  
+## Comp1or52-4 offers              0.21***               0.21***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## Comp1or55+ offers               1.19***               1.08***  
-##                                  (0.04)                (0.04)  
-##                                                                
-## VehS-IDC                        -1.29***              -1.15*** 
-##                                  (0.04)                (0.04)  
-##                                                                
-## VehM-IDC                        -0.94***              -0.90*** 
+## Comp1or55+ offers               0.89***               0.81***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## VehFSS/GWAC                     -0.32***              -0.36*** 
+## VehS-IDC                        -0.96***              -0.83*** 
+##                                  (0.04)                (0.04)  
+##                                                                
+## VehM-IDC                        -0.50***              -0.42*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehFSS/GWAC                     -0.39***              -0.41*** 
 ##                                  (0.07)                (0.07)  
 ##                                                                
-## VehBPA/BOA                      -1.22***              -1.20*** 
-##                                  (0.10)                (0.10)  
+## VehBPA/BOA                      -1.49***              -1.42*** 
+##                                  (0.12)                (0.12)  
 ##                                                                
-## PricingUCAOther FP                         0.44***    -0.42*** 
-##                                             (0.15)     (0.15)  
+## PricingUCAOther FP                         0.56***      0.15   
+##                                             (0.14)     (0.14)  
 ##                                                                
-## PricingUCAT&M/LH/FPLOE                     -0.72***   -0.82*** 
-##                                             (0.15)     (0.15)  
+## PricingUCAT&M/LH/FPLOE                     -0.87***   -1.03*** 
+##                                             (0.16)     (0.16)  
 ##                                                                
-## PricingUCAIncentive                        -3.03***   -3.64*** 
-##                                             (0.99)     (1.00)  
+## PricingUCAIncentive                        -2.33***   -2.54*** 
+##                                             (0.71)     (0.71)  
 ##                                                                
-## PricingUCAOther CB                         -1.45***   -1.77*** 
-##                                             (0.12)     (0.12)  
+## PricingUCAOther CB                         -1.49***   -1.68*** 
+##                                             (0.12)     (0.13)  
 ##                                                                
-## PricingUCAUCA                              -1.13***   -1.14*** 
-##                                             (0.23)     (0.23)  
+## PricingUCAUCA                              -1.48***   -1.27*** 
+##                                             (0.28)     (0.28)  
 ##                                                                
-## PricingUCACombination or Other             -0.86***   -1.16*** 
+## PricingUCACombination or Other             -0.75***   -1.29*** 
 ##                                             (0.21)     (0.22)  
 ##                                                                
-## Constant                        -3.97***   -3.88***   -3.93*** 
+## Constant                        -4.12***   -3.89***   -4.09*** 
 ##                                  (0.04)     (0.02)     (0.04)  
 ##                                                                
 ## ---------------------------------------------------------------
 ## Observations                    250,000    250,000    250,000  
-## Log Likelihood                 -21,324.25 -23,241.71 -21,077.26
-## Akaike Inf. Crit.              42,680.49  46,497.43  42,198.52 
+## Log Likelihood                 -20,044.32 -23,003.80 -19,840.15
+## Akaike Inf. Crit.              40,122.64  46,021.60  39,726.30 
 ## ===============================================================
 ## Note:                               *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_06B,Term_07B)
-#summary_residual_compare(Term_07A,Term_07B,bins=3)
+#Plot residuals versus fitted   
+summary_residual_compare(Term_06B,Term_07B)
+```
+
+![](Model_Termination_files/figure-html/Model07B-1.png)<!-- -->
+
+```
+## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model07B-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 40088.64      46388.62   6299.977
+## 2 model1_new 39680.30      46388.62   6708.314
+## 
+## [[2]]
+##                              GVIF Df GVIF^(1/(2*Df))
+## cl_US6_avg_sal_lag1Const 1.439553  1        1.199814
+## cl_CFTE                  1.251918  1        1.118891
+## c_pPBSC                  1.310979  1        1.144980
+## c_pOffPSC                1.647994  1        1.283742
+## c_pairHist               1.343196  1        1.158964
+## cl_pairCA                1.993159  1        1.411793
+## cl_Ceil                  1.361585  1        1.166870
+## cl_Days                  1.199754  1        1.095333
+## cl_Base2Ceil             1.210157  1        1.100071
+## Comp1or5                 1.318429  3        1.047151
+## Veh                      1.913750  4        1.084515
+## PricingUCA               1.117580  6        1.009307
 ```
 
 Incentive contracts are no longer significantly associated with a greater risk of ceiling breaches, though they have also lost significance in options. Suprirsingly, UCA and Combination or Other have both become significant in for lower risk of ceiling breaches.
@@ -3064,47 +2870,31 @@ summary_discrete_plot(serv_smp,"Crisis")
 ## [[1]]
 ## 
 ##  Other   ARRA    Dis    OCO 
-## 233079   1503    405  15013 
+## 233696   1455    408  14441 
 ## 
 ## [[2]]
 ##        
 ##           None Ceiling Breach
-##   Other 219921          13158
-##   ARRA    1272            231
-##   Dis      367             38
-##   OCO    14343            670
+##   Other 219908          13788
+##   ARRA    1191            264
+##   Dis      361             47
+##   OCO    13825            616
 ## 
 ## [[3]]
 ##        
 ##              0      1
-##   Other 228695   4384
-##   ARRA    1480     23
-##   Dis      398      7
-##   OCO    14705    308
+##   Other 229272   4424
+##   ARRA    1440     15
+##   Dis      399      9
+##   OCO    14224    217
 ```
 
 ```r
 #Model
 Term_08A <- glm (data=serv_smp,
                  b_Term ~ Crisis, family=binomial(link="logit"))
-display(Term_08A)
-```
 
-```
-## glm(formula = b_Term ~ Crisis, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -3.95     0.02  
-## CrisisARRA  -0.21     0.21  
-## CrisisDis   -0.09     0.38  
-## CrisisOCO    0.09     0.06  
-## ---
-##   n = 250000, k = 4
-##   residual deviance = 46836.3, null deviance = 46839.6 (difference = 3.3)
-```
 
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_07B,Term_08A,
                        
@@ -3120,91 +2910,114 @@ stargazer::stargazer(
 ##                                           b_Term           
 ##                                     (1)            (2)     
 ## -----------------------------------------------------------
-## cl_US6_avg_sal_lag1Const          -0.23***                 
+## cl_US6_avg_sal_lag1Const          -0.16***                 
 ##                                    (0.04)                  
 ##                                                            
-## cl_CFTE                             0.03                   
+## cl_CFTE                            0.06*                   
 ##                                    (0.03)                  
 ##                                                            
-## c_pPBSC                            -0.01                   
+## c_pPBSC                            -0.05                   
 ##                                    (0.03)                  
 ##                                                            
-## c_pOffPSC                         0.71***                  
-##                                    (0.03)                  
-##                                                            
-## c_pairHist                         -0.06*                  
-##                                    (0.03)                  
-##                                                            
-## cl_pairCA                         0.58***                  
-##                                    (0.03)                  
-##                                                            
-## cl_Ceil                           0.40***                  
-##                                    (0.03)                  
-##                                                            
-## capped_cl_Days                    1.45***                  
+## c_pOffPSC                         0.48***                  
 ##                                    (0.04)                  
 ##                                                            
-## Comp1or51 offer                   0.34***                  
+## c_pairHist                        -0.10***                 
+##                                    (0.04)                  
+##                                                            
+## cl_pairCA                         0.39***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Ceil                           0.17***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Days                           1.13***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Base2Ceil                      0.82***                  
+##                                    (0.02)                  
+##                                                            
+## Comp1or51 offer                   0.18***                  
 ##                                    (0.05)                  
 ##                                                            
-## Comp1or52-4 offers                0.27***                  
+## Comp1or52-4 offers                0.21***                  
 ##                                    (0.05)                  
 ##                                                            
-## Comp1or55+ offers                 1.08***                  
-##                                    (0.04)                  
-##                                                            
-## VehS-IDC                          -1.15***                 
-##                                    (0.04)                  
-##                                                            
-## VehM-IDC                          -0.90***                 
+## Comp1or55+ offers                 0.81***                  
 ##                                    (0.05)                  
 ##                                                            
-## VehFSS/GWAC                       -0.36***                 
+## VehS-IDC                          -0.83***                 
+##                                    (0.04)                  
+##                                                            
+## VehM-IDC                          -0.42***                 
+##                                    (0.05)                  
+##                                                            
+## VehFSS/GWAC                       -0.41***                 
 ##                                    (0.07)                  
 ##                                                            
-## VehBPA/BOA                        -1.20***                 
-##                                    (0.10)                  
-##                                                            
-## PricingUCAOther FP                -0.42***                 
-##                                    (0.15)                  
-##                                                            
-## PricingUCAT&M/LH/FPLOE            -0.82***                 
-##                                    (0.15)                  
-##                                                            
-## PricingUCAIncentive               -3.64***                 
-##                                    (1.00)                  
-##                                                            
-## PricingUCAOther CB                -1.77***                 
+## VehBPA/BOA                        -1.42***                 
 ##                                    (0.12)                  
 ##                                                            
-## PricingUCAUCA                     -1.14***                 
-##                                    (0.23)                  
+## PricingUCAOther FP                  0.15                   
+##                                    (0.14)                  
 ##                                                            
-## PricingUCACombination or Other    -1.16***                 
+## PricingUCAT&M/LH/FPLOE            -1.03***                 
+##                                    (0.16)                  
+##                                                            
+## PricingUCAIncentive               -2.54***                 
+##                                    (0.71)                  
+##                                                            
+## PricingUCAOther CB                -1.68***                 
+##                                    (0.13)                  
+##                                                            
+## PricingUCAUCA                     -1.27***                 
+##                                    (0.28)                  
+##                                                            
+## PricingUCACombination or Other    -1.29***                 
 ##                                    (0.22)                  
 ##                                                            
-## CrisisARRA                                        -0.21    
-##                                                  (0.21)    
+## CrisisARRA                                       -0.62**   
+##                                                  (0.26)    
 ##                                                            
-## CrisisDis                                         -0.09    
-##                                                  (0.38)    
+## CrisisDis                                         0.16     
+##                                                  (0.34)    
 ##                                                            
-## CrisisOCO                                         0.09     
-##                                                  (0.06)    
+## CrisisOCO                                       -0.23***   
+##                                                  (0.07)    
 ##                                                            
-## Constant                          -3.93***      -3.95***   
+## Constant                          -4.09***      -3.95***   
 ##                                    (0.04)        (0.02)    
 ##                                                            
 ## -----------------------------------------------------------
 ## Observations                      250,000        250,000   
-## Log Likelihood                   -21,077.26    -23,418.15  
-## Akaike Inf. Crit.                42,198.52      46,844.30  
+## Log Likelihood                   -19,840.15    -23,184.85  
+## Akaike Inf. Crit.                39,726.30      46,377.69  
 ## ===========================================================
 ## Note:                           *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-# summary_residual_compare(Term_07B,Term_08A,30)
+#Plot residuals versus fitted
+summary_residual_compare(Term_08A,bins=2)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model08A-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46369.69      46388.62   18.92355
 ```
 
 For ceiling breaches ARRA and Disaster results were in keeping with expcetations but OCO results were not. There were no significant results for terminations. For options, contrary to exepectation, all forms of crisis funding have a lower rate of usage.
@@ -3220,7 +3033,7 @@ Term_08B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -3231,22 +3044,22 @@ glmer_examine(Term_08B)
 
 ```
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.407621  1        1.186432
-## cl_CFTE                  1.377619  1        1.173720
-## c_pPBSC                  1.389438  1        1.178744
-## c_pOffPSC                1.555327  1        1.247128
-## c_pairHist               1.289037  1        1.135358
-## cl_pairCA                2.261331  1        1.503772
-## cl_Ceil                  1.344482  1        1.159518
-## capped_cl_Days           1.236352  1        1.111914
-## Comp1or5                 1.274763  3        1.041290
-## Veh                      1.856948  4        1.080438
-## PricingUCA               1.119717  6        1.009468
-## Crisis                   1.625038  3        1.084286
+## cl_US6_avg_sal_lag1Const 1.463480  1        1.209744
+## cl_CFTE                  1.359972  1        1.166179
+## c_pPBSC                  1.311392  1        1.145160
+## c_pOffPSC                1.679329  1        1.295889
+## c_pairHist               1.350433  1        1.162081
+## cl_pairCA                2.437302  1        1.561186
+## cl_Ceil                  1.406806  1        1.186089
+## cl_Days                  1.229422  1        1.108793
+## cl_Base2Ceil             1.250943  1        1.118456
+## Comp1or5                 1.336790  3        1.049568
+## Veh                      2.098985  4        1.097113
+## PricingUCA               1.128046  6        1.010091
+## Crisis                   1.448424  3        1.063692
 ```
 
 ```r
-#Plot residuals versus fitted   
 stargazer::stargazer(
                        Term_07B,Term_08A,Term_08B,
                        
@@ -3262,91 +3075,133 @@ stargazer::stargazer(
 ##                                             b_Term             
 ##                                   (1)        (2)        (3)    
 ## ---------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const        -0.23***              -0.19*** 
+## cl_US6_avg_sal_lag1Const        -0.16***              -0.14*** 
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_CFTE                           0.03                 -0.06*  
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pPBSC                          -0.01                 -0.01   
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pOffPSC                       0.71***               0.68***  
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pairHist                       -0.06*               -0.08**  
-##                                  (0.03)                (0.03)  
-##                                                                
-## cl_pairCA                       0.58***               0.70***  
+## cl_CFTE                          0.06*                  0.03   
 ##                                  (0.03)                (0.04)  
 ##                                                                
-## cl_Ceil                         0.40***               0.45***  
+## c_pPBSC                          -0.05                 -0.06*  
 ##                                  (0.03)                (0.03)  
 ##                                                                
-## capped_cl_Days                  1.45***               1.39***  
+## c_pOffPSC                       0.48***               0.47***  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## Comp1or51 offer                 0.34***               0.39***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## Comp1or52-4 offers              0.27***               0.28***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## Comp1or55+ offers               1.08***               1.11***  
-##                                  (0.04)                (0.05)  
-##                                                                
-## VehS-IDC                        -1.15***              -1.24*** 
+## c_pairHist                      -0.10***              -0.11*** 
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## VehM-IDC                        -0.90***              -0.94*** 
+## cl_pairCA                       0.39***               0.46***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Ceil                         0.17***               0.20***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Days                         1.13***               1.11***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Base2Ceil                    0.82***               0.81***  
+##                                  (0.02)                (0.02)  
+##                                                                
+## Comp1or51 offer                 0.18***               0.20***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## VehFSS/GWAC                     -0.36***              -0.41*** 
+## Comp1or52-4 offers              0.21***               0.22***  
+##                                  (0.05)                (0.05)  
+##                                                                
+## Comp1or55+ offers               0.81***               0.82***  
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehS-IDC                        -0.83***              -0.88*** 
+##                                  (0.04)                (0.04)  
+##                                                                
+## VehM-IDC                        -0.42***              -0.45*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehFSS/GWAC                     -0.41***              -0.43*** 
 ##                                  (0.07)                (0.07)  
 ##                                                                
-## VehBPA/BOA                      -1.20***              -1.21*** 
-##                                  (0.10)                (0.10)  
-##                                                                
-## PricingUCAOther FP              -0.42***              -0.49*** 
-##                                  (0.15)                (0.15)  
-##                                                                
-## PricingUCAT&M/LH/FPLOE          -0.82***              -0.86*** 
-##                                  (0.15)                (0.15)  
-##                                                                
-## PricingUCAIncentive             -3.64***              -3.67*** 
-##                                  (1.00)                (1.00)  
-##                                                                
-## PricingUCAOther CB              -1.77***              -1.80*** 
+## VehBPA/BOA                      -1.42***              -1.43*** 
 ##                                  (0.12)                (0.12)  
 ##                                                                
-## PricingUCAUCA                   -1.14***              -1.16*** 
-##                                  (0.23)                (0.23)  
+## PricingUCAOther FP                0.15                  0.11   
+##                                  (0.14)                (0.14)  
 ##                                                                
-## PricingUCACombination or Other  -1.16***              -1.19*** 
+## PricingUCAT&M/LH/FPLOE          -1.03***              -1.05*** 
+##                                  (0.16)                (0.16)  
+##                                                                
+## PricingUCAIncentive             -2.54***              -2.56*** 
+##                                  (0.71)                (0.71)  
+##                                                                
+## PricingUCAOther CB              -1.68***              -1.70*** 
+##                                  (0.13)                (0.13)  
+##                                                                
+## PricingUCAUCA                   -1.27***              -1.28*** 
+##                                  (0.28)                (0.28)  
+##                                                                
+## PricingUCACombination or Other  -1.29***              -1.31*** 
 ##                                  (0.22)                (0.22)  
 ##                                                                
-## CrisisARRA                                  -0.21     -0.57*** 
-##                                             (0.21)     (0.21)  
+## CrisisARRA                                 -0.62**    -0.62**  
+##                                             (0.26)     (0.26)  
 ##                                                                
-## CrisisDis                                   -0.09      -0.09   
-##                                             (0.38)     (0.39)  
+## CrisisDis                                    0.16       0.46   
+##                                             (0.34)     (0.34)  
 ##                                                                
-## CrisisOCO                                    0.09     -0.56*** 
-##                                             (0.06)     (0.08)  
+## CrisisOCO                                  -0.23***   -0.32*** 
+##                                             (0.07)     (0.09)  
 ##                                                                
-## Constant                        -3.93***   -3.95***   -3.86*** 
+## Constant                        -4.09***   -3.95***   -4.05*** 
 ##                                  (0.04)     (0.02)     (0.04)  
 ##                                                                
 ## ---------------------------------------------------------------
 ## Observations                    250,000    250,000    250,000  
-## Log Likelihood                 -21,077.26 -23,418.15 -21,045.20
-## Akaike Inf. Crit.              42,198.52  46,844.30  42,140.40 
+## Log Likelihood                 -19,840.15 -23,184.85 -19,828.66
+## Akaike Inf. Crit.              39,726.30  46,377.69  39,709.32 
 ## ===============================================================
 ## Note:                               *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_07B,Term_08B)
+#Plot residuals versus fitted   
+summary_residual_compare(Term_07B,Term_08B)
+```
+
+![](Model_Termination_files/figure-html/Model08B-1.png)<!-- -->
+
+```
+## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model08B-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 39680.30      46388.62   6708.314
+## 2 model1_new 39657.32      46388.62   6731.299
+## 
+## [[2]]
+##                              GVIF Df GVIF^(1/(2*Df))
+## cl_US6_avg_sal_lag1Const 1.463480  1        1.209744
+## cl_CFTE                  1.359972  1        1.166179
+## c_pPBSC                  1.311392  1        1.145160
+## c_pOffPSC                1.679329  1        1.295889
+## c_pairHist               1.350433  1        1.162081
+## cl_pairCA                2.437302  1        1.561186
+## cl_Ceil                  1.406806  1        1.186089
+## cl_Days                  1.229422  1        1.108793
+## cl_Base2Ceil             1.250943  1        1.118456
+## Comp1or5                 1.336790  3        1.049568
+## Veh                      2.098985  4        1.097113
+## PricingUCA               1.128046  6        1.010091
+## Crisis                   1.448424  3        1.063692
 ```
 
 Terminatins for OCO and ARRA are now significant in the expected direction.
@@ -3362,44 +3217,23 @@ HHI (logged, + means more consolidation)	cl_def6_HHI_lag1+		+	-	-
 Expectations are  unchanged.
 
 ```r
-#Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp,"def6_HHI_lag1")
+summary_continuous_plot(serv_smp1m,"def6_HHI_lag1")
 ```
 
 ![](Model_Termination_files/figure-html/Model09A-1.png)<!-- -->
 
 ```r
-summary_continuous_plot(serv_smp,"cl_def6_HHI_lag1")
+summary_continuous_plot(serv_smp1m,"def6_HHI_lag1",log=TRUE)
 ```
 
 ![](Model_Termination_files/figure-html/Model09A-2.png)<!-- -->
-
-```r
-summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
-```
-
-![](Model_Termination_files/figure-html/Model09A-3.png)<!-- -->
 
 ```r
 #Model
 Term_09A <- glm (data=serv_smp,
                  b_Term ~ cl_def6_HHI_lag1, family=binomial(link="logit"))
 
-display(Term_09A)
-```
 
-```
-## glm(formula = b_Term ~ cl_def6_HHI_lag1, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                  coef.est coef.se
-## (Intercept)      -3.95     0.01  
-## cl_def6_HHI_lag1 -0.04     0.03  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46838.0, null deviance = 46839.6 (difference = 1.7)
-```
-
-```r
 #Plot residuals versus fitted
 stargazer::stargazer(
                        Term_08B,Term_09A,
@@ -3416,113 +3250,116 @@ stargazer::stargazer(
 ##                                           b_Term           
 ##                                     (1)            (2)     
 ## -----------------------------------------------------------
-## cl_US6_avg_sal_lag1Const          -0.19***                 
+## cl_US6_avg_sal_lag1Const          -0.14***                 
 ##                                    (0.04)                  
 ##                                                            
-## cl_CFTE                            -0.06*                  
-##                                    (0.03)                  
-##                                                            
-## c_pPBSC                            -0.01                   
-##                                    (0.03)                  
-##                                                            
-## c_pOffPSC                         0.68***                  
-##                                    (0.03)                  
-##                                                            
-## c_pairHist                        -0.08**                  
-##                                    (0.03)                  
-##                                                            
-## cl_pairCA                         0.70***                  
+## cl_CFTE                             0.03                   
 ##                                    (0.04)                  
 ##                                                            
-## cl_Ceil                           0.45***                  
+## c_pPBSC                            -0.06*                  
 ##                                    (0.03)                  
 ##                                                            
-## capped_cl_Days                    1.39***                  
+## c_pOffPSC                         0.47***                  
 ##                                    (0.04)                  
 ##                                                            
-## Comp1or51 offer                   0.39***                  
-##                                    (0.05)                  
-##                                                            
-## Comp1or52-4 offers                0.28***                  
-##                                    (0.05)                  
-##                                                            
-## Comp1or55+ offers                 1.11***                  
-##                                    (0.05)                  
-##                                                            
-## VehS-IDC                          -1.24***                 
+## c_pairHist                        -0.11***                 
 ##                                    (0.04)                  
 ##                                                            
-## VehM-IDC                          -0.94***                 
+## cl_pairCA                         0.46***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Ceil                           0.20***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Days                           1.11***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Base2Ceil                      0.81***                  
+##                                    (0.02)                  
+##                                                            
+## Comp1or51 offer                   0.20***                  
 ##                                    (0.05)                  
 ##                                                            
-## VehFSS/GWAC                       -0.41***                 
+## Comp1or52-4 offers                0.22***                  
+##                                    (0.05)                  
+##                                                            
+## Comp1or55+ offers                 0.82***                  
+##                                    (0.05)                  
+##                                                            
+## VehS-IDC                          -0.88***                 
+##                                    (0.04)                  
+##                                                            
+## VehM-IDC                          -0.45***                 
+##                                    (0.05)                  
+##                                                            
+## VehFSS/GWAC                       -0.43***                 
 ##                                    (0.07)                  
 ##                                                            
-## VehBPA/BOA                        -1.21***                 
-##                                    (0.10)                  
-##                                                            
-## PricingUCAOther FP                -0.49***                 
-##                                    (0.15)                  
-##                                                            
-## PricingUCAT&M/LH/FPLOE            -0.86***                 
-##                                    (0.15)                  
-##                                                            
-## PricingUCAIncentive               -3.67***                 
-##                                    (1.00)                  
-##                                                            
-## PricingUCAOther CB                -1.80***                 
+## VehBPA/BOA                        -1.43***                 
 ##                                    (0.12)                  
 ##                                                            
-## PricingUCAUCA                     -1.16***                 
-##                                    (0.23)                  
+## PricingUCAOther FP                  0.11                   
+##                                    (0.14)                  
 ##                                                            
-## PricingUCACombination or Other    -1.19***                 
+## PricingUCAT&M/LH/FPLOE            -1.05***                 
+##                                    (0.16)                  
+##                                                            
+## PricingUCAIncentive               -2.56***                 
+##                                    (0.71)                  
+##                                                            
+## PricingUCAOther CB                -1.70***                 
+##                                    (0.13)                  
+##                                                            
+## PricingUCAUCA                     -1.28***                 
+##                                    (0.28)                  
+##                                                            
+## PricingUCACombination or Other    -1.31***                 
 ##                                    (0.22)                  
 ##                                                            
-## CrisisARRA                        -0.57***                 
-##                                    (0.21)                  
+## CrisisARRA                        -0.62**                  
+##                                    (0.26)                  
 ##                                                            
-## CrisisDis                          -0.09                   
-##                                    (0.39)                  
+## CrisisDis                           0.46                   
+##                                    (0.34)                  
 ##                                                            
-## CrisisOCO                         -0.56***                 
-##                                    (0.08)                  
+## CrisisOCO                         -0.32***                 
+##                                    (0.09)                  
 ##                                                            
 ## cl_def6_HHI_lag1                                  -0.04    
 ##                                                  (0.03)    
 ##                                                            
-## Constant                          -3.86***      -3.95***   
+## Constant                          -4.05***      -3.96***   
 ##                                    (0.04)        (0.01)    
 ##                                                            
 ## -----------------------------------------------------------
 ## Observations                      250,000        250,000   
-## Log Likelihood                   -21,045.20    -23,418.99  
-## Akaike Inf. Crit.                42,140.40      46,841.99  
+## Log Likelihood                   -19,828.66    -23,193.38  
+## Akaike Inf. Crit.                39,709.32      46,390.77  
 ## ===========================================================
 ## Note:                           *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_08B,Term_09A, skip_vif = TRUE)
+summary_residual_compare(Term_09A, skip_vif = TRUE)
 ```
 
-![](Model_Termination_files/figure-html/Model09A-4.png)<!-- -->
-
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
 ## > 1 and only the first element will be used
 ```
 
 ```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
-![](Model_Termination_files/figure-html/Model09A-5.png)<!-- -->
+![](Model_Termination_files/figure-html/Model09A-3.png)<!-- -->
 
 ```
-## NULL
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46386.77      46388.62   1.845905
 ```
 
 Expected direction for ceiling breach and termination, but no real results on options.
@@ -3534,14 +3371,17 @@ Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 
 
 ```r
-#Frequency Plot for unlogged ceiling
-      summary_continuous_plot(serv_smp,"def6_ratio_lag1")
+summary_continuous_plot(serv_smp1m,"def6_ratio_lag1")
 ```
 
 ![](Model_Termination_files/figure-html/Model09B-1.png)<!-- -->
 
 ```r
-      summary_continuous_plot(serv_smp,"cl_def6_ratio_lag1")
+summary_continuous_plot(serv_smp1m,"def6_ratio_lag1",log=TRUE)
+```
+
+```
+## Warning: Removed 658 rows containing non-finite values (stat_bin).
 ```
 
 ![](Model_Termination_files/figure-html/Model09B-2.png)<!-- -->
@@ -3551,21 +3391,7 @@ Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 Term_09B <- glm (data=serv_smp,
                  b_Term ~ cl_def6_ratio_lag1, family=binomial(link="logit"))
 
-display(Term_09B)
-```
 
-```
-## glm(formula = b_Term ~ cl_def6_ratio_lag1, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                    coef.est coef.se
-## (Intercept)        -3.97     0.02  
-## cl_def6_ratio_lag1 -0.50     0.05  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46708.5, null deviance = 46839.6 (difference = 131.2)
-```
-
-```r
 #Plot residuals versus fitted
 stargazer::stargazer(
                        Term_08B,Term_09A,Term_09B,
@@ -3582,98 +3408,119 @@ stargazer::stargazer(
 ##                                             b_Term             
 ##                                   (1)        (2)        (3)    
 ## ---------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const        -0.19***                       
+## cl_US6_avg_sal_lag1Const        -0.14***                       
 ##                                  (0.04)                        
 ##                                                                
-## cl_CFTE                          -0.06*                        
-##                                  (0.03)                        
-##                                                                
-## c_pPBSC                          -0.01                         
-##                                  (0.03)                        
-##                                                                
-## c_pOffPSC                       0.68***                        
-##                                  (0.03)                        
-##                                                                
-## c_pairHist                      -0.08**                        
-##                                  (0.03)                        
-##                                                                
-## cl_pairCA                       0.70***                        
+## cl_CFTE                           0.03                         
 ##                                  (0.04)                        
 ##                                                                
-## cl_Ceil                         0.45***                        
+## c_pPBSC                          -0.06*                        
 ##                                  (0.03)                        
 ##                                                                
-## capped_cl_Days                  1.39***                        
+## c_pOffPSC                       0.47***                        
 ##                                  (0.04)                        
 ##                                                                
-## Comp1or51 offer                 0.39***                        
-##                                  (0.05)                        
-##                                                                
-## Comp1or52-4 offers              0.28***                        
-##                                  (0.05)                        
-##                                                                
-## Comp1or55+ offers               1.11***                        
-##                                  (0.05)                        
-##                                                                
-## VehS-IDC                        -1.24***                       
+## c_pairHist                      -0.11***                       
 ##                                  (0.04)                        
 ##                                                                
-## VehM-IDC                        -0.94***                       
+## cl_pairCA                       0.46***                        
+##                                  (0.04)                        
+##                                                                
+## cl_Ceil                         0.20***                        
+##                                  (0.04)                        
+##                                                                
+## cl_Days                         1.11***                        
+##                                  (0.04)                        
+##                                                                
+## cl_Base2Ceil                    0.81***                        
+##                                  (0.02)                        
+##                                                                
+## Comp1or51 offer                 0.20***                        
 ##                                  (0.05)                        
 ##                                                                
-## VehFSS/GWAC                     -0.41***                       
+## Comp1or52-4 offers              0.22***                        
+##                                  (0.05)                        
+##                                                                
+## Comp1or55+ offers               0.82***                        
+##                                  (0.05)                        
+##                                                                
+## VehS-IDC                        -0.88***                       
+##                                  (0.04)                        
+##                                                                
+## VehM-IDC                        -0.45***                       
+##                                  (0.05)                        
+##                                                                
+## VehFSS/GWAC                     -0.43***                       
 ##                                  (0.07)                        
 ##                                                                
-## VehBPA/BOA                      -1.21***                       
-##                                  (0.10)                        
-##                                                                
-## PricingUCAOther FP              -0.49***                       
-##                                  (0.15)                        
-##                                                                
-## PricingUCAT&M/LH/FPLOE          -0.86***                       
-##                                  (0.15)                        
-##                                                                
-## PricingUCAIncentive             -3.67***                       
-##                                  (1.00)                        
-##                                                                
-## PricingUCAOther CB              -1.80***                       
+## VehBPA/BOA                      -1.43***                       
 ##                                  (0.12)                        
 ##                                                                
-## PricingUCAUCA                   -1.16***                       
-##                                  (0.23)                        
+## PricingUCAOther FP                0.11                         
+##                                  (0.14)                        
 ##                                                                
-## PricingUCACombination or Other  -1.19***                       
+## PricingUCAT&M/LH/FPLOE          -1.05***                       
+##                                  (0.16)                        
+##                                                                
+## PricingUCAIncentive             -2.56***                       
+##                                  (0.71)                        
+##                                                                
+## PricingUCAOther CB              -1.70***                       
+##                                  (0.13)                        
+##                                                                
+## PricingUCAUCA                   -1.28***                       
+##                                  (0.28)                        
+##                                                                
+## PricingUCACombination or Other  -1.31***                       
 ##                                  (0.22)                        
 ##                                                                
-## CrisisARRA                      -0.57***                       
-##                                  (0.21)                        
+## CrisisARRA                      -0.62**                        
+##                                  (0.26)                        
 ##                                                                
-## CrisisDis                        -0.09                         
-##                                  (0.39)                        
+## CrisisDis                         0.46                         
+##                                  (0.34)                        
 ##                                                                
-## CrisisOCO                       -0.56***                       
-##                                  (0.08)                        
+## CrisisOCO                       -0.32***                       
+##                                  (0.09)                        
 ##                                                                
 ## cl_def6_HHI_lag1                            -0.04              
 ##                                             (0.03)             
 ##                                                                
-## cl_def6_ratio_lag1                                    -0.50*** 
+## cl_def6_ratio_lag1                                    -0.64*** 
 ##                                                        (0.05)  
 ##                                                                
-## Constant                        -3.86***   -3.95***   -3.97*** 
+## Constant                        -4.05***   -3.96***   -3.99*** 
 ##                                  (0.04)     (0.01)     (0.02)  
 ##                                                                
 ## ---------------------------------------------------------------
 ## Observations                    250,000    250,000    250,000  
-## Log Likelihood                 -21,045.20 -23,418.99 -23,354.24
-## Akaike Inf. Crit.              42,140.40  46,841.99  46,712.48 
+## Log Likelihood                 -19,828.66 -23,193.38 -23,095.80
+## Akaike Inf. Crit.              39,709.32  46,390.77  46,195.60 
 ## ===============================================================
 ## Note:                               *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_08A,Term_09A)
-#summary_residual_compare(Term_09A,Term_09B)
+summary_residual_compare(Term_09B)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model09B-3.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old  46191.6      46388.62   197.0126
 ```
 
 
@@ -3682,14 +3529,13 @@ Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 
 
 ```r
-#Frequency Plot for unlogged ceiling
-      summary_continuous_plot(serv_smp,"def6_obl_lag1Const")
+summary_continuous_plot(serv_smp1m,"def6_obl_lag1Const")
 ```
 
 ![](Model_Termination_files/figure-html/Model09C-1.png)<!-- -->
 
 ```r
-      summary_continuous_plot(serv_smp,"cl_def6_obl_lag1Const")
+summary_continuous_plot(serv_smp1m,"def6_obl_lag1Const",log=TRUE)
 ```
 
 ![](Model_Termination_files/figure-html/Model09C-2.png)<!-- -->
@@ -3699,22 +3545,6 @@ Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 Term_09C <- glm (data=serv_smp,
                  b_Term ~ cl_def6_obl_lag1Const, family=binomial(link="logit"))
 
-display(Term_09C)
-```
-
-```
-## glm(formula = b_Term ~ cl_def6_obl_lag1Const, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                       coef.est coef.se
-## (Intercept)           -3.95     0.01  
-## cl_def6_obl_lag1Const -0.01     0.03  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46839.4, null deviance = 46839.6 (difference = 0.2)
-```
-
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(Term_09A,Term_09B,Term_09C,
                        
                        type="text",
@@ -3732,27 +3562,44 @@ stargazer::stargazer(Term_09A,Term_09B,Term_09C,
 ## cl_def6_HHI_lag1        -0.04                         
 ##                         (0.03)                        
 ##                                                       
-## cl_def6_ratio_lag1                -0.50***            
+## cl_def6_ratio_lag1                -0.64***            
 ##                                    (0.05)             
 ##                                                       
-## cl_def6_obl_lag1Const                         -0.01   
+## cl_def6_obl_lag1Const                         0.004   
 ##                                               (0.03)  
 ##                                                       
-## Constant               -3.95***   -3.97***   -3.95*** 
+## Constant               -3.96***   -3.99***   -3.96*** 
 ##                         (0.01)     (0.02)     (0.01)  
 ##                                                       
 ## ------------------------------------------------------
 ## Observations           250,000    250,000    250,000  
-## Log Likelihood        -23,418.99 -23,354.24 -23,419.70
-## Akaike Inf. Crit.     46,841.99  46,712.48  46,843.39 
+## Log Likelihood        -23,193.38 -23,095.80 -23,194.30
+## Akaike Inf. Crit.     46,390.77  46,195.60  46,392.60 
 ## ======================================================
 ## Note:                      *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_08A,Term_09C)
-#summary_residual_compare(Term_09A,Term_09C)
-#summary_residual_compare(Term_09B,Term_09C)
+summary_residual_compare(Term_09C)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model09C-3.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old  46388.6      46388.62  0.0204136
 ```
 
 Contrary to expectation. for termination and options.
@@ -3763,10 +3610,6 @@ Consolidation at lessa nd more granular levels may have different effects. Effic
 We'll start by adding in everything from both models and seeing what violates VIF.
 
 ```r
-#Frequency Plot for unlogged ceiling
-
-
-
 #Model
 Term_09D <- glm (data=serv_smp,
                  b_Term ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1+cl_def6_obl_lag1Const
@@ -3777,7 +3620,7 @@ glmer_examine(Term_09D)
 
 ```
 ##      cl_def6_HHI_lag1    cl_def6_ratio_lag1 cl_def6_obl_lag1Const 
-##              1.224432              1.525968              1.574301
+##              1.217699              1.510131              1.578797
 ```
 
 ```r
@@ -3790,11 +3633,10 @@ glmer_examine(Term_09D2)
 
 ```
 ##   cl_def6_HHI_lag1 cl_def6_ratio_lag1 
-##           1.037074           1.037074
+##           1.030932           1.030932
 ```
 
 ```r
-#Plot residuals versus fitted
 stargazer::stargazer(Term_09D,Term_09D2,
                      
                        type="text",
@@ -3809,22 +3651,22 @@ stargazer::stargazer(Term_09D,Term_09D2,
 ##                                  b_Term           
 ##                            (1)            (2)     
 ## --------------------------------------------------
-## cl_def6_HHI_lag1         0.14***         0.04     
+## cl_def6_HHI_lag1         0.19***         0.05*    
 ##                           (0.03)        (0.03)    
 ##                                                   
-## cl_def6_ratio_lag1       -0.76***      -0.51***   
-##                           (0.06)        (0.05)    
+## cl_def6_ratio_lag1       -1.04***      -0.66***   
+##                           (0.07)        (0.05)    
 ##                                                   
-## cl_def6_obl_lag1Const    0.27***                  
+## cl_def6_obl_lag1Const    0.39***                  
 ##                           (0.04)                  
 ##                                                   
-## Constant                 -3.98***      -3.97***   
+## Constant                 -4.02***      -3.99***   
 ##                           (0.02)        (0.02)    
 ##                                                   
 ## --------------------------------------------------
 ## Observations             250,000        250,000   
-## Log Likelihood          -23,327.25    -23,353.29  
-## Akaike Inf. Crit.       46,662.50      46,712.57  
+## Log Likelihood          -23,043.22    -23,094.15  
+## Akaike Inf. Crit.       46,094.45      46,194.29  
 ## ==================================================
 ## Note:                  *p<0.1; **p<0.05; ***p<0.01
 ```
@@ -3842,7 +3684,7 @@ summary_residual_compare(Term_09D,Term_09D2)
 
 ```
 ## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
@@ -3851,12 +3693,12 @@ summary_residual_compare(Term_09D,Term_09D2)
 ```
 ## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 46654.50      46839.64   185.1358
-## 2 model1_new 46706.57      46839.64   133.0631
+## 1 model1_old 46086.45      46388.62   302.1672
+## 2 model1_new 46188.29      46388.62   200.3227
 ## 
 ## [[2]]
 ##   cl_def6_HHI_lag1 cl_def6_ratio_lag1 
-##           1.037074           1.037074
+##           1.030932           1.030932
 ```
 The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
 
@@ -3873,14 +3715,12 @@ Consolidation at lessa nd more granular levels may have different effects. Effic
 We'll start by adding in everything from both models and seeing what violates VIF.
 
 ```r
-#Frequency Plot for unlogged ceiling
-
 #Model
 Term_09E <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -3891,24 +3731,24 @@ glmer_examine(Term_09E)
 
 ```
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.445756  1        1.202396
-## cl_CFTE                  1.363141  1        1.167536
-## c_pPBSC                  1.441240  1        1.200516
-## c_pOffPSC                1.696858  1        1.302635
-## c_pairHist               1.332179  1        1.154200
-## cl_pairCA                2.219493  1        1.489796
-## cl_Ceil                  1.380628  1        1.175001
-## capped_cl_Days           1.253906  1        1.119780
-## Comp1or5                 1.305371  3        1.045416
-## Veh                      1.892397  4        1.082995
-## PricingUCA               1.135345  6        1.010634
-## Crisis                   1.567488  3        1.077790
-## cl_def6_HHI_lag1         1.337516  1        1.156510
-## cl_def6_ratio_lag1       1.218466  1        1.103841
+## cl_US6_avg_sal_lag1Const 1.492000  1        1.221475
+## cl_CFTE                  1.347337  1        1.160749
+## c_pPBSC                  1.346920  1        1.160569
+## c_pOffPSC                1.810477  1        1.345540
+## c_pairHist               1.375752  1        1.172924
+## cl_pairCA                2.422277  1        1.556367
+## cl_Ceil                  1.440138  1        1.200057
+## cl_Days                  1.237429  1        1.112398
+## cl_Base2Ceil             1.292671  1        1.136957
+## Comp1or5                 1.374102  3        1.054395
+## Veh                      2.140583  4        1.099807
+## PricingUCA               1.144007  6        1.011274
+## Crisis                   1.417322  3        1.059851
+## cl_def6_HHI_lag1         1.252994  1        1.119372
+## cl_def6_ratio_lag1       1.204310  1        1.097411
 ```
 
 ```r
-#Plot residuals versus fitted
 stargazer::stargazer(Term_08B,Term_09D2,Term_09E,type="text",
                        digits=2)
 ```
@@ -3921,98 +3761,140 @@ stargazer::stargazer(Term_08B,Term_09D2,Term_09E,type="text",
 ##                                             b_Term             
 ##                                   (1)        (2)        (3)    
 ## ---------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const        -0.19***              -0.11*** 
+## cl_US6_avg_sal_lag1Const        -0.14***              -0.11*** 
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_CFTE                          -0.06*               -0.07**  
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pPBSC                          -0.01                  0.01   
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pOffPSC                       0.68***               0.77***  
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pairHist                      -0.08**               -0.11*** 
-##                                  (0.03)                (0.03)  
-##                                                                
-## cl_pairCA                       0.70***               0.75***  
+## cl_CFTE                           0.03                  0.01   
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_Ceil                         0.45***               0.50***  
-##                                  (0.03)                (0.04)  
+## c_pPBSC                          -0.06*                -0.05   
+##                                  (0.03)                (0.03)  
 ##                                                                
-## capped_cl_Days                  1.39***               1.32***  
+## c_pOffPSC                       0.47***               0.51***  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## Comp1or51 offer                 0.39***               0.40***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## Comp1or52-4 offers              0.28***               0.29***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## Comp1or55+ offers               1.11***               1.08***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## VehS-IDC                        -1.24***              -1.24*** 
+## c_pairHist                      -0.11***              -0.11*** 
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## VehM-IDC                        -0.94***              -0.84*** 
+## cl_pairCA                       0.46***               0.47***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Ceil                         0.20***               0.25***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Days                         1.11***               1.08***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Base2Ceil                    0.81***               0.78***  
+##                                  (0.02)                (0.02)  
+##                                                                
+## Comp1or51 offer                 0.20***               0.21***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## VehFSS/GWAC                     -0.41***              -0.37*** 
+## Comp1or52-4 offers              0.22***               0.22***  
+##                                  (0.05)                (0.05)  
+##                                                                
+## Comp1or55+ offers               0.82***               0.80***  
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehS-IDC                        -0.88***              -0.88*** 
+##                                  (0.04)                (0.05)  
+##                                                                
+## VehM-IDC                        -0.45***              -0.39*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehFSS/GWAC                     -0.43***              -0.41*** 
 ##                                  (0.07)                (0.07)  
 ##                                                                
-## VehBPA/BOA                      -1.21***              -1.14*** 
-##                                  (0.10)                (0.10)  
+## VehBPA/BOA                      -1.43***              -1.36*** 
+##                                  (0.12)                (0.11)  
 ##                                                                
-## PricingUCAOther FP              -0.49***              -0.61*** 
-##                                  (0.15)                (0.15)  
+## PricingUCAOther FP                0.11                  0.03   
+##                                  (0.14)                (0.14)  
 ##                                                                
-## PricingUCAT&M/LH/FPLOE          -0.86***              -0.80*** 
-##                                  (0.15)                (0.15)  
+## PricingUCAT&M/LH/FPLOE          -1.05***              -1.01*** 
+##                                  (0.16)                (0.16)  
 ##                                                                
-## PricingUCAIncentive             -3.67***              -3.66*** 
-##                                  (1.00)                (1.00)  
+## PricingUCAIncentive             -2.56***              -2.53*** 
+##                                  (0.71)                (0.71)  
 ##                                                                
-## PricingUCAOther CB              -1.80***              -1.76*** 
-##                                  (0.12)                (0.12)  
+## PricingUCAOther CB              -1.70***              -1.64*** 
+##                                  (0.13)                (0.13)  
 ##                                                                
-## PricingUCAUCA                   -1.16***              -1.18*** 
-##                                  (0.23)                (0.23)  
+## PricingUCAUCA                   -1.28***              -1.28*** 
+##                                  (0.28)                (0.28)  
 ##                                                                
-## PricingUCACombination or Other  -1.19***              -1.13*** 
+## PricingUCACombination or Other  -1.31***              -1.25*** 
 ##                                  (0.22)                (0.22)  
 ##                                                                
-## CrisisARRA                      -0.57***              -0.58*** 
-##                                  (0.21)                (0.21)  
+## CrisisARRA                      -0.62**               -0.64**  
+##                                  (0.26)                (0.26)  
 ##                                                                
-## CrisisDis                        -0.09                 0.005   
-##                                  (0.39)                (0.39)  
+## CrisisDis                         0.46                  0.48   
+##                                  (0.34)                (0.34)  
 ##                                                                
-## CrisisOCO                       -0.56***              -0.46*** 
-##                                  (0.08)                (0.08)  
+## CrisisOCO                       -0.32***              -0.28*** 
+##                                  (0.09)                (0.08)  
 ##                                                                
-## cl_def6_HHI_lag1                             0.04      -0.05   
+## cl_def6_HHI_lag1                            0.05*      0.06*   
 ##                                             (0.03)     (0.03)  
 ##                                                                
-## cl_def6_ratio_lag1                         -0.51***   -0.70*** 
+## cl_def6_ratio_lag1                         -0.66***   -0.48*** 
 ##                                             (0.05)     (0.05)  
 ##                                                                
-## Constant                        -3.86***   -3.97***   -3.91*** 
+## Constant                        -4.05***   -3.99***   -4.07*** 
 ##                                  (0.04)     (0.02)     (0.04)  
 ##                                                                
 ## ---------------------------------------------------------------
 ## Observations                    250,000    250,000    250,000  
-## Log Likelihood                 -21,045.20 -23,353.29 -20,914.82
-## Akaike Inf. Crit.              42,140.40  46,712.57  41,883.64 
+## Log Likelihood                 -19,828.66 -23,094.15 -19,778.26
+## Akaike Inf. Crit.              39,709.32  46,194.29  39,612.53 
 ## ===============================================================
 ## Note:                               *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_09D2,Term_09E)
-#summary_residual_compare(Term_08B,Term_09E)
+summary_residual_compare(Term_08B,Term_09E)
+```
+
+![](Model_Termination_files/figure-html/Model09E-1.png)<!-- -->
+
+```
+## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model09E-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 39657.32      46388.62   6731.299
+## 2 model1_new 39556.53      46388.62   6832.088
+## 
+## [[2]]
+##                              GVIF Df GVIF^(1/(2*Df))
+## cl_US6_avg_sal_lag1Const 1.492000  1        1.221475
+## cl_CFTE                  1.347337  1        1.160749
+## c_pPBSC                  1.346920  1        1.160569
+## c_pOffPSC                1.810477  1        1.345540
+## c_pairHist               1.375752  1        1.172924
+## cl_pairCA                2.422277  1        1.556367
+## cl_Ceil                  1.440138  1        1.200057
+## cl_Days                  1.237429  1        1.112398
+## cl_Base2Ceil             1.292671  1        1.136957
+## Comp1or5                 1.374102  3        1.054395
+## Veh                      2.140583  4        1.099807
+## PricingUCA               1.144007  6        1.011274
+## Crisis                   1.417322  3        1.059851
+## cl_def6_HHI_lag1         1.252994  1        1.119372
+## cl_def6_ratio_lag1       1.204310  1        1.097411
 ```
 
 Expectations are not upheld.
@@ -4023,32 +3905,23 @@ HHI (logged, + means more consolidation)	cl_def3_HHI_lag1+		+	++	-
 
 
 ```r
-#Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
+summary_continuous_plot(serv_smp1m,"def3_HHI_lag1")
 ```
 
 ![](Model_Termination_files/figure-html/Model10A-1.png)<!-- -->
 
 ```r
+summary_continuous_plot(serv_smp1m,"def3_HHI_lag1",log=TRUE)
+```
+
+![](Model_Termination_files/figure-html/Model10A-2.png)<!-- -->
+
+```r
 #Model
 Term_10A <- glm (data=serv_smp,
                  b_Term ~ cl_def3_HHI_lag1, family=binomial(link="logit"))
-display(Term_10A)
-```
 
-```
-## glm(formula = b_Term ~ cl_def3_HHI_lag1, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                  coef.est coef.se
-## (Intercept)      -3.97     0.01  
-## cl_def3_HHI_lag1  0.47     0.03  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46578.4, null deviance = 46839.6 (difference = 261.3)
-```
 
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_09A,Term_10A,
                        
@@ -4067,41 +3940,41 @@ stargazer::stargazer(
 ## cl_def6_HHI_lag1      -0.04                   
 ##                       (0.03)                  
 ##                                               
-## cl_def3_HHI_lag1                    0.47***   
+## cl_def3_HHI_lag1                    0.41***   
 ##                                     (0.03)    
 ##                                               
-## Constant             -3.95***      -3.97***   
+## Constant             -3.96***      -3.98***   
 ##                       (0.01)        (0.01)    
 ##                                               
 ## ----------------------------------------------
 ## Observations         250,000        250,000   
-## Log Likelihood      -23,418.99    -23,289.19  
-## Akaike Inf. Crit.   46,841.99      46,582.38  
+## Log Likelihood      -23,193.38    -23,092.51  
+## Akaike Inf. Crit.   46,390.77      46,189.02  
 ## ==============================================
 ## Note:              *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_09A,Term_10A, skip_vif =  TRUE)
+summary_residual_compare(Term_10A, skip_vif =  TRUE)
 ```
 
-![](Model_Termination_files/figure-html/Model10A-2.png)<!-- -->
-
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
 ## > 1 and only the first element will be used
 ```
 
 ```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
 ![](Model_Termination_files/figure-html/Model10A-3.png)<!-- -->
 
 ```
-## NULL
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46185.02      46388.62   203.5908
 ```
 
 Contrary to expectation on Ceiling breach and otions growth, in line with expectations on terminations.
@@ -4114,14 +3987,13 @@ Ratio Def. obligatons : US revenue	cl_def3_ratio_lag1+		+	+	-
 
 
 ```r
-#Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp,"capped_def3_ratio_lag1")
+summary_continuous_plot(serv_smp1m,"capped_def3_ratio_lag1")
 ```
 
 ![](Model_Termination_files/figure-html/Model10B-1.png)<!-- -->
 
 ```r
-summary_continuous_plot(serv_smp,"cl_def3_ratio_lag1")
+summary_continuous_plot(serv_smp1m,"capped_def3_ratio_lag1",log=TRUE)
 ```
 
 ![](Model_Termination_files/figure-html/Model10B-2.png)<!-- -->
@@ -4130,22 +4002,8 @@ summary_continuous_plot(serv_smp,"cl_def3_ratio_lag1")
 #Model
 Term_10B <- glm (data=serv_smp,
                  b_Term ~ cl_def3_ratio_lag1, family=binomial(link="logit"))
-display(Term_10B)
-```
 
-```
-## glm(formula = b_Term ~ cl_def3_ratio_lag1, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                    coef.est coef.se
-## (Intercept)        -4.01     0.02  
-## cl_def3_ratio_lag1 -0.79     0.04  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46293.6, null deviance = 46839.6 (difference = 546.0)
-```
 
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_09B,Term_10A,Term_10B,
                        
@@ -4161,47 +4019,47 @@ stargazer::stargazer(
 ##                                 b_Term             
 ##                       (1)        (2)        (3)    
 ## ---------------------------------------------------
-## cl_def6_ratio_lag1  -0.50***                       
+## cl_def6_ratio_lag1  -0.64***                       
 ##                      (0.05)                        
 ##                                                    
-## cl_def3_HHI_lag1               0.47***             
+## cl_def3_HHI_lag1               0.41***             
 ##                                 (0.03)             
 ##                                                    
-## cl_def3_ratio_lag1                        -0.79*** 
+## cl_def3_ratio_lag1                        -0.80*** 
 ##                                            (0.04)  
 ##                                                    
-## Constant            -3.97***   -3.97***   -4.01*** 
+## Constant            -3.99***   -3.98***   -4.03*** 
 ##                      (0.02)     (0.01)     (0.02)  
 ##                                                    
 ## ---------------------------------------------------
 ## Observations        250,000    250,000    250,000  
-## Log Likelihood     -23,354.24 -23,289.19 -23,146.82
-## Akaike Inf. Crit.  46,712.48  46,582.38  46,297.64 
+## Log Likelihood     -23,095.80 -23,092.51 -22,921.77
+## Akaike Inf. Crit.  46,195.60  46,189.02  45,847.54 
 ## ===================================================
 ## Note:                   *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_09B,Term_10B, skip_vif = TRUE)
+summary_residual_compare(Term_10B, skip_vif = TRUE)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
 ```
 
 ![](Model_Termination_files/figure-html/Model10B-3.png)<!-- -->
 
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
-## be used
-```
-
-![](Model_Termination_files/figure-html/Model10B-4.png)<!-- -->
-
-```
-## NULL
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 45843.54      46388.62   545.0714
 ```
 
 Expectations were in lined with ceiling breaches and options, not with termination, and 
@@ -4213,10 +4071,6 @@ Consolidation at lessa nd more granular levels may have different effects. Effic
 We'll start by adding in everything from both models and seeing what violates VIF.
 
 ```r
-#Frequency Plot for unlogged ceiling
-
-
-
 #Model
 Term_10C <- glm (data=serv_smp,
                  b_Term ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1, family=binomial(link="logit"))
@@ -4225,13 +4079,12 @@ glmer_examine(Term_10C)
 
 ```
 ##   cl_def3_HHI_lag1 cl_def3_ratio_lag1 
-##           1.043009           1.043009
+##           1.041561           1.041561
 ```
 
 ```r
-#Plot residuals versus fitted
 stargazer::stargazer(
-                     Term_09E,Term_10A,Term_10B,Term_10C,
+                     Term_08B,Term_09E,Term_10A,Term_10B,Term_10C,
                      
                        type="text",
                        digits=2)
@@ -4239,122 +4092,126 @@ stargazer::stargazer(
 
 ```
 ## 
-## ==========================================================================
-##                                            Dependent variable:            
-##                                -------------------------------------------
-##                                                  b_Term                   
-##                                   (1)        (2)        (3)        (4)    
-## --------------------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const        -0.11***                                  
-##                                  (0.04)                                   
-##                                                                           
-## cl_CFTE                         -0.07**                                   
-##                                  (0.03)                                   
-##                                                                           
-## c_pPBSC                           0.01                                    
-##                                  (0.03)                                   
-##                                                                           
-## c_pOffPSC                       0.77***                                   
-##                                  (0.03)                                   
-##                                                                           
-## c_pairHist                      -0.11***                                  
-##                                  (0.03)                                   
-##                                                                           
-## cl_pairCA                       0.75***                                   
-##                                  (0.04)                                   
-##                                                                           
-## cl_Ceil                         0.50***                                   
-##                                  (0.04)                                   
-##                                                                           
-## capped_cl_Days                  1.32***                                   
-##                                  (0.04)                                   
-##                                                                           
-## Comp1or51 offer                 0.40***                                   
-##                                  (0.05)                                   
-##                                                                           
-## Comp1or52-4 offers              0.29***                                   
-##                                  (0.05)                                   
-##                                                                           
-## Comp1or55+ offers               1.08***                                   
-##                                  (0.05)                                   
-##                                                                           
-## VehS-IDC                        -1.24***                                  
-##                                  (0.04)                                   
-##                                                                           
-## VehM-IDC                        -0.84***                                  
-##                                  (0.05)                                   
-##                                                                           
-## VehFSS/GWAC                     -0.37***                                  
-##                                  (0.07)                                   
-##                                                                           
-## VehBPA/BOA                      -1.14***                                  
-##                                  (0.10)                                   
-##                                                                           
-## PricingUCAOther FP              -0.61***                                  
-##                                  (0.15)                                   
-##                                                                           
-## PricingUCAT&M/LH/FPLOE          -0.80***                                  
-##                                  (0.15)                                   
-##                                                                           
-## PricingUCAIncentive             -3.66***                                  
-##                                  (1.00)                                   
-##                                                                           
-## PricingUCAOther CB              -1.76***                                  
-##                                  (0.12)                                   
-##                                                                           
-## PricingUCAUCA                   -1.18***                                  
-##                                  (0.23)                                   
-##                                                                           
-## PricingUCACombination or Other  -1.13***                                  
-##                                  (0.22)                                   
-##                                                                           
-## CrisisARRA                      -0.58***                                  
-##                                  (0.21)                                   
-##                                                                           
-## CrisisDis                        0.005                                    
-##                                  (0.39)                                   
-##                                                                           
-## CrisisOCO                       -0.46***                                  
-##                                  (0.08)                                   
-##                                                                           
-## cl_def6_HHI_lag1                 -0.05                                    
-##                                  (0.03)                                   
-##                                                                           
-## cl_def6_ratio_lag1              -0.70***                                  
-##                                  (0.05)                                   
-##                                                                           
-## cl_def3_HHI_lag1                           0.47***               0.34***  
-##                                             (0.03)                (0.03)  
-##                                                                           
-## cl_def3_ratio_lag1                                    -0.79***   -0.71*** 
-##                                                        (0.04)     (0.04)  
-##                                                                           
-## Constant                        -3.91***   -3.97***   -4.01***   -4.02*** 
-##                                  (0.04)     (0.01)     (0.02)     (0.02)  
-##                                                                           
-## --------------------------------------------------------------------------
-## Observations                    250,000    250,000    250,000    250,000  
-## Log Likelihood                 -20,914.82 -23,289.19 -23,146.82 -23,077.47
-## Akaike Inf. Crit.              41,883.64  46,582.38  46,297.64  46,160.93 
-## ==========================================================================
-## Note:                                          *p<0.1; **p<0.05; ***p<0.01
+## =====================================================================================
+##                                                 Dependent variable:                  
+##                                ------------------------------------------------------
+##                                                        b_Term                        
+##                                   (1)        (2)        (3)        (4)        (5)    
+## -------------------------------------------------------------------------------------
+## cl_US6_avg_sal_lag1Const        -0.14***   -0.11***                                  
+##                                  (0.04)     (0.04)                                   
+##                                                                                      
+## cl_CFTE                           0.03       0.01                                    
+##                                  (0.04)     (0.04)                                   
+##                                                                                      
+## c_pPBSC                          -0.06*     -0.05                                    
+##                                  (0.03)     (0.03)                                   
+##                                                                                      
+## c_pOffPSC                       0.47***    0.51***                                   
+##                                  (0.04)     (0.04)                                   
+##                                                                                      
+## c_pairHist                      -0.11***   -0.11***                                  
+##                                  (0.04)     (0.04)                                   
+##                                                                                      
+## cl_pairCA                       0.46***    0.47***                                   
+##                                  (0.04)     (0.04)                                   
+##                                                                                      
+## cl_Ceil                         0.20***    0.25***                                   
+##                                  (0.04)     (0.04)                                   
+##                                                                                      
+## cl_Days                         1.11***    1.08***                                   
+##                                  (0.04)     (0.04)                                   
+##                                                                                      
+## cl_Base2Ceil                    0.81***    0.78***                                   
+##                                  (0.02)     (0.02)                                   
+##                                                                                      
+## Comp1or51 offer                 0.20***    0.21***                                   
+##                                  (0.05)     (0.05)                                   
+##                                                                                      
+## Comp1or52-4 offers              0.22***    0.22***                                   
+##                                  (0.05)     (0.05)                                   
+##                                                                                      
+## Comp1or55+ offers               0.82***    0.80***                                   
+##                                  (0.05)     (0.05)                                   
+##                                                                                      
+## VehS-IDC                        -0.88***   -0.88***                                  
+##                                  (0.04)     (0.05)                                   
+##                                                                                      
+## VehM-IDC                        -0.45***   -0.39***                                  
+##                                  (0.05)     (0.05)                                   
+##                                                                                      
+## VehFSS/GWAC                     -0.43***   -0.41***                                  
+##                                  (0.07)     (0.07)                                   
+##                                                                                      
+## VehBPA/BOA                      -1.43***   -1.36***                                  
+##                                  (0.12)     (0.11)                                   
+##                                                                                      
+## PricingUCAOther FP                0.11       0.03                                    
+##                                  (0.14)     (0.14)                                   
+##                                                                                      
+## PricingUCAT&M/LH/FPLOE          -1.05***   -1.01***                                  
+##                                  (0.16)     (0.16)                                   
+##                                                                                      
+## PricingUCAIncentive             -2.56***   -2.53***                                  
+##                                  (0.71)     (0.71)                                   
+##                                                                                      
+## PricingUCAOther CB              -1.70***   -1.64***                                  
+##                                  (0.13)     (0.13)                                   
+##                                                                                      
+## PricingUCAUCA                   -1.28***   -1.28***                                  
+##                                  (0.28)     (0.28)                                   
+##                                                                                      
+## PricingUCACombination or Other  -1.31***   -1.25***                                  
+##                                  (0.22)     (0.22)                                   
+##                                                                                      
+## CrisisARRA                      -0.62**    -0.64**                                   
+##                                  (0.26)     (0.26)                                   
+##                                                                                      
+## CrisisDis                         0.46       0.48                                    
+##                                  (0.34)     (0.34)                                   
+##                                                                                      
+## CrisisOCO                       -0.32***   -0.28***                                  
+##                                  (0.09)     (0.08)                                   
+##                                                                                      
+## cl_def6_HHI_lag1                            0.06*                                    
+##                                             (0.03)                                   
+##                                                                                      
+## cl_def6_ratio_lag1                         -0.48***                                  
+##                                             (0.05)                                   
+##                                                                                      
+## cl_def3_HHI_lag1                                      0.41***               0.29***  
+##                                                        (0.03)                (0.03)  
+##                                                                                      
+## cl_def3_ratio_lag1                                               -0.80***   -0.73*** 
+##                                                                   (0.04)     (0.04)  
+##                                                                                      
+## Constant                        -4.05***   -4.07***   -3.98***   -4.03***   -4.03*** 
+##                                  (0.04)     (0.04)     (0.01)     (0.02)     (0.02)  
+##                                                                                      
+## -------------------------------------------------------------------------------------
+## Observations                    250,000    250,000    250,000    250,000    250,000  
+## Log Likelihood                 -19,828.66 -19,778.26 -23,092.51 -22,921.77 -22,872.89
+## Akaike Inf. Crit.              39,709.32  39,612.53  46,189.02  45,847.54  45,751.78 
+## =====================================================================================
+## Note:                                                     *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_08B,Term_10C)
+summary_residual_compare(Term_08B,Term_10C,Term_09E,Term_10C)
 ```
 
 ![](Model_Termination_files/figure-html/Model10C-1.png)<!-- -->
 
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
+## Warning in if (class(model1_new) == "glmerMod" & class(model2_new) ==
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
 ```
 
 ```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
-## be used
+## Warning in if ((class(model1_new) != "glmerMod" & class(model2_new) !
+## = "glmerMod") & : the condition has length > 1 and only the first element
+## will be used
 ```
 
 ![](Model_Termination_files/figure-html/Model10C-2.png)<!-- -->
@@ -4362,12 +4219,18 @@ summary_residual_compare(Term_08B,Term_10C)
 ```
 ## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 42090.40      46839.64  4749.2344
-## 2 model1_new 46154.93      46839.64   684.7043
+## 1 model1_old 39657.32      46388.62  6731.2993
+## 2 model1_new 45745.78      46388.62   642.8327
+## 3 model2_old 39556.53      46388.62  6832.0882
+## 4 model2_new 45745.78      46388.62   642.8327
 ## 
 ## [[2]]
 ##   cl_def3_HHI_lag1 cl_def3_ratio_lag1 
-##           1.043009           1.043009
+##           1.041561           1.041561 
+## 
+## [[3]]
+##   cl_def3_HHI_lag1 cl_def3_ratio_lag1 
+##           1.041561           1.041561
 ```
 
 NAICS Subsector (Level 3)					
@@ -4382,15 +4245,12 @@ ratio expectations for ceiling breach and options but not terminations.
 .
 
 ```r
-#Frequency Plot for unlogged ceiling
-
-
 #Model
 Term_10D <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -4403,26 +4263,26 @@ glmer_examine(Term_10D)
 
 ```
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.539279  1        1.240677
-## cl_CFTE                  1.376006  1        1.173033
-## c_pPBSC                  1.483644  1        1.218049
-## c_pOffPSC                1.685000  1        1.298076
-## c_pairHist               1.339104  1        1.157197
-## cl_pairCA                2.437808  1        1.561348
-## cl_Ceil                  1.381124  1        1.175212
-## capped_cl_Days           1.247267  1        1.116811
-## Comp1or5                 1.312185  3        1.046323
-## Veh                      2.018386  4        1.091756
-## PricingUCA               1.161386  6        1.012546
-## Crisis                   1.574977  3        1.078646
-## cl_def6_HHI_lag1         2.208069  1        1.485957
-## cl_def6_ratio_lag1       1.587655  1        1.260022
-## cl_def3_HHI_lag1         2.067675  1        1.437941
-## cl_def3_ratio_lag1       1.657985  1        1.287628
+## cl_US6_avg_sal_lag1Const 1.604580  1        1.266720
+## cl_CFTE                  1.351134  1        1.162383
+## c_pPBSC                  1.376365  1        1.173186
+## c_pOffPSC                1.825161  1        1.350985
+## c_pairHist               1.379678  1        1.174597
+## cl_pairCA                2.638424  1        1.624323
+## cl_Ceil                  1.439565  1        1.199819
+## cl_Days                  1.233730  1        1.110734
+## cl_Base2Ceil             1.318980  1        1.148468
+## Comp1or5                 1.379992  3        1.055146
+## Veh                      2.236242  4        1.105834
+## PricingUCA               1.168366  6        1.013052
+## Crisis                   1.417750  3        1.059904
+## cl_def6_HHI_lag1         1.882754  1        1.372135
+## cl_def6_ratio_lag1       1.556736  1        1.247692
+## cl_def3_HHI_lag1         1.893715  1        1.376123
+## cl_def3_ratio_lag1       1.687794  1        1.299151
 ```
 
 ```r
-#Plot residuals versus fitted
 stargazer::stargazer(Term_09E,Term_10C,Term_10D,
                      
                        type="text",
@@ -4437,103 +4297,106 @@ stargazer::stargazer(Term_09E,Term_10C,Term_10D,
 ##                                             b_Term             
 ##                                   (1)        (2)        (3)    
 ## ---------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const        -0.11***              0.13***  
+## cl_US6_avg_sal_lag1Const        -0.11***                0.06   
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_CFTE                         -0.07**                -0.01   
-##                                  (0.03)                (0.03)  
+## cl_CFTE                           0.01                 0.06*   
+##                                  (0.04)                (0.03)  
 ##                                                                
-## c_pPBSC                           0.01                 -0.03   
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pOffPSC                       0.77***               0.86***  
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pairHist                      -0.11***               -0.04   
-##                                  (0.03)                (0.03)  
-##                                                                
-## cl_pairCA                       0.75***               0.55***  
-##                                  (0.04)                (0.04)  
-##                                                                
-## cl_Ceil                         0.50***               0.50***  
-##                                  (0.04)                (0.04)  
-##                                                                
-## capped_cl_Days                  1.32***               1.27***  
-##                                  (0.04)                (0.04)  
-##                                                                
-## Comp1or51 offer                 0.40***               0.37***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## Comp1or52-4 offers              0.29***               0.29***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## Comp1or55+ offers               1.08***               1.04***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## VehS-IDC                        -1.24***              -1.11*** 
-##                                  (0.04)                (0.04)  
-##                                                                
-## VehM-IDC                        -0.84***              -0.84*** 
-##                                  (0.05)                (0.05)  
-##                                                                
-## VehFSS/GWAC                     -0.37***              -0.19*** 
-##                                  (0.07)                (0.07)  
-##                                                                
-## VehBPA/BOA                      -1.14***              -1.15*** 
-##                                  (0.10)                (0.10)  
-##                                                                
-## PricingUCAOther FP              -0.61***              -0.73*** 
-##                                  (0.15)                (0.15)  
-##                                                                
-## PricingUCAT&M/LH/FPLOE          -0.80***              -0.56*** 
-##                                  (0.15)                (0.15)  
-##                                                                
-## PricingUCAIncentive             -3.66***              -3.37*** 
-##                                  (1.00)                (1.00)  
-##                                                                
-## PricingUCAOther CB              -1.76***              -1.50*** 
-##                                  (0.12)                (0.12)  
-##                                                                
-## PricingUCAUCA                   -1.18***              -1.16*** 
-##                                  (0.23)                (0.23)  
-##                                                                
-## PricingUCACombination or Other  -1.13***              -0.89*** 
-##                                  (0.22)                (0.22)  
-##                                                                
-## CrisisARRA                      -0.58***              -0.67*** 
-##                                  (0.21)                (0.21)  
-##                                                                
-## CrisisDis                        0.005                 -0.08   
-##                                  (0.39)                (0.39)  
-##                                                                
-## CrisisOCO                       -0.46***              -0.46*** 
-##                                  (0.08)                (0.08)  
-##                                                                
-## cl_def6_HHI_lag1                 -0.05                -0.38*** 
+## c_pPBSC                          -0.05                -0.08**  
 ##                                  (0.03)                (0.04)  
 ##                                                                
-## cl_def6_ratio_lag1              -0.70***              -0.34*** 
+## c_pOffPSC                       0.51***               0.58***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## c_pairHist                      -0.11***               -0.06*  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_pairCA                       0.47***               0.31***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Ceil                         0.25***               0.28***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Days                         1.08***               1.06***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Base2Ceil                    0.78***               0.75***  
+##                                  (0.02)                (0.02)  
+##                                                                
+## Comp1or51 offer                 0.21***               0.20***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## cl_def3_HHI_lag1                           0.34***    0.51***  
+## Comp1or52-4 offers              0.22***               0.22***  
+##                                  (0.05)                (0.05)  
+##                                                                
+## Comp1or55+ offers               0.80***               0.78***  
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehS-IDC                        -0.88***              -0.81*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehM-IDC                        -0.39***              -0.39*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehFSS/GWAC                     -0.41***              -0.28*** 
+##                                  (0.07)                (0.07)  
+##                                                                
+## VehBPA/BOA                      -1.36***              -1.37*** 
+##                                  (0.11)                (0.12)  
+##                                                                
+## PricingUCAOther FP                0.03                 -0.06   
+##                                  (0.14)                (0.14)  
+##                                                                
+## PricingUCAT&M/LH/FPLOE          -1.01***              -0.82*** 
+##                                  (0.16)                (0.16)  
+##                                                                
+## PricingUCAIncentive             -2.53***              -2.31*** 
+##                                  (0.71)                (0.71)  
+##                                                                
+## PricingUCAOther CB              -1.64***              -1.44*** 
+##                                  (0.13)                (0.13)  
+##                                                                
+## PricingUCAUCA                   -1.28***              -1.25*** 
+##                                  (0.28)                (0.28)  
+##                                                                
+## PricingUCACombination or Other  -1.25***              -1.08*** 
+##                                  (0.22)                (0.22)  
+##                                                                
+## CrisisARRA                      -0.64**               -0.72*** 
+##                                  (0.26)                (0.26)  
+##                                                                
+## CrisisDis                         0.48                  0.44   
+##                                  (0.34)                (0.34)  
+##                                                                
+## CrisisOCO                       -0.28***              -0.27*** 
+##                                  (0.08)                (0.08)  
+##                                                                
+## cl_def6_HHI_lag1                 0.06*                -0.11**  
+##                                  (0.03)                (0.04)  
+##                                                                
+## cl_def6_ratio_lag1              -0.48***              -0.18*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## cl_def3_HHI_lag1                           0.29***    0.26***  
 ##                                             (0.03)     (0.04)  
 ##                                                                
-## cl_def3_ratio_lag1                         -0.71***   -0.63*** 
+## cl_def3_ratio_lag1                         -0.73***   -0.52*** 
 ##                                             (0.04)     (0.05)  
 ##                                                                
-## Constant                        -3.91***   -4.02***   -4.02*** 
+## Constant                        -4.07***   -4.03***   -4.14*** 
 ##                                  (0.04)     (0.02)     (0.04)  
 ##                                                                
 ## ---------------------------------------------------------------
 ## Observations                    250,000    250,000    250,000  
-## Log Likelihood                 -20,914.82 -23,077.47 -20,704.21
-## Akaike Inf. Crit.              41,883.64  46,160.93  41,466.41 
+## Log Likelihood                 -19,778.26 -22,872.89 -19,680.44
+## Akaike Inf. Crit.              39,612.53  45,751.78  39,420.87 
 ## ===============================================================
 ## Note:                               *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_09D2,Term_10D)
+summary_residual_compare(Term_09E,Term_10D)
 ```
 
 ![](Model_Termination_files/figure-html/Model10D-1.png)<!-- -->
@@ -4545,7 +4408,7 @@ summary_residual_compare(Term_09D2,Term_10D)
 
 ```
 ## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
@@ -4554,69 +4417,28 @@ summary_residual_compare(Term_09D2,Term_10D)
 ```
 ## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 46706.57      46839.64   133.0631
-## 2 model1_new 41408.41      46839.64  5431.2263
+## 1 model1_old 39556.53      46388.62   6832.088
+## 2 model1_new 39360.87      46388.62   7027.743
 ## 
 ## [[2]]
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.539279  1        1.240677
-## cl_CFTE                  1.376006  1        1.173033
-## c_pPBSC                  1.483644  1        1.218049
-## c_pOffPSC                1.685000  1        1.298076
-## c_pairHist               1.339104  1        1.157197
-## cl_pairCA                2.437808  1        1.561348
-## cl_Ceil                  1.381124  1        1.175212
-## capped_cl_Days           1.247267  1        1.116811
-## Comp1or5                 1.312185  3        1.046323
-## Veh                      2.018386  4        1.091756
-## PricingUCA               1.161386  6        1.012546
-## Crisis                   1.574977  3        1.078646
-## cl_def6_HHI_lag1         2.208069  1        1.485957
-## cl_def6_ratio_lag1       1.587655  1        1.260022
-## cl_def3_HHI_lag1         2.067675  1        1.437941
-## cl_def3_ratio_lag1       1.657985  1        1.287628
-```
-
-```r
-summary_residual_compare(Term_08B,Term_10D)
-```
-
-![](Model_Termination_files/figure-html/Model10D-3.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model10D-4.png)<!-- -->
-
-```
-## [[1]]
-##        model deviance null.deviance difference
-## 1 model1_old 42090.40      46839.64   4749.234
-## 2 model1_new 41408.41      46839.64   5431.226
-## 
-## [[2]]
-##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.539279  1        1.240677
-## cl_CFTE                  1.376006  1        1.173033
-## c_pPBSC                  1.483644  1        1.218049
-## c_pOffPSC                1.685000  1        1.298076
-## c_pairHist               1.339104  1        1.157197
-## cl_pairCA                2.437808  1        1.561348
-## cl_Ceil                  1.381124  1        1.175212
-## capped_cl_Days           1.247267  1        1.116811
-## Comp1or5                 1.312185  3        1.046323
-## Veh                      2.018386  4        1.091756
-## PricingUCA               1.161386  6        1.012546
-## Crisis                   1.574977  3        1.078646
-## cl_def6_HHI_lag1         2.208069  1        1.485957
-## cl_def6_ratio_lag1       1.587655  1        1.260022
-## cl_def3_HHI_lag1         2.067675  1        1.437941
-## cl_def3_ratio_lag1       1.657985  1        1.287628
+## cl_US6_avg_sal_lag1Const 1.604580  1        1.266720
+## cl_CFTE                  1.351134  1        1.162383
+## c_pPBSC                  1.376365  1        1.173186
+## c_pOffPSC                1.825161  1        1.350985
+## c_pairHist               1.379678  1        1.174597
+## cl_pairCA                2.638424  1        1.624323
+## cl_Ceil                  1.439565  1        1.199819
+## cl_Days                  1.233730  1        1.110734
+## cl_Base2Ceil             1.318980  1        1.148468
+## Comp1or5                 1.379992  3        1.055146
+## Veh                      2.236242  4        1.105834
+## PricingUCA               1.168366  6        1.013052
+## Crisis                   1.417750  3        1.059904
+## cl_def6_HHI_lag1         1.882754  1        1.372135
+## cl_def6_ratio_lag1       1.556736  1        1.247692
+## cl_def3_HHI_lag1         1.893715  1        1.376123
+## cl_def3_ratio_lag1       1.687794  1        1.299151
 ```
 HHI6 for ceiling breach now matches expectations but HHI6 for term went in the opposite direction. s
 
@@ -4629,7 +4451,7 @@ Market Share Vendor for that Office	c_pMarket		++	-	+
 
 
 ```r
-summary_continuous_plot(serv_smp,"c_pMarket")
+summary_continuous_plot(serv_smp1m,"pMarket")
 ```
 
 ![](Model_Termination_files/figure-html/Model11A-1.png)<!-- -->
@@ -4639,22 +4461,7 @@ summary_continuous_plot(serv_smp,"c_pMarket")
 Term_11A <- glm (data=serv_smp,
                  b_Term ~ c_pMarket, family=binomial(link="logit"))
 
-display(Term_11A)
-```
 
-```
-## glm(formula = b_Term ~ c_pMarket, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -3.96     0.01  
-## c_pMarket   -0.27     0.04  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46782.9, null deviance = 46839.6 (difference = 56.7)
-```
-
-```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                       Term_11A,
                        
@@ -4669,18 +4476,41 @@ stargazer::stargazer(
 ##                   ---------------------------
 ##                             b_Term           
 ## ---------------------------------------------
-## c_pMarket                  -0.27***          
+## c_pMarket                  -0.33***          
 ##                             (0.04)           
 ##                                              
-## Constant                   -3.96***          
+## Constant                   -3.97***          
 ##                             (0.01)           
 ##                                              
 ## ---------------------------------------------
 ## Observations                250,000          
-## Log Likelihood            -23,391.45         
-## Akaike Inf. Crit.          46,786.90         
+## Log Likelihood            -23,154.67         
+## Akaike Inf. Crit.          46,313.35         
 ## =============================================
 ## Note:             *p<0.1; **p<0.05; ***p<0.01
+```
+
+```r
+summary_residual_compare(Term_11A)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model11A-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46309.35      46388.62   79.26859
 ```
 
 Aligns with expectations on terminatio, but not for ceiling  breach or for options.
@@ -4690,15 +4520,12 @@ Aligns with expectations on terminatio, but not for ceiling  breach or for optio
 
 
 ```r
-#Frequency Plot for unlogged ceiling
-
-
 #Model
 Term_11B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -4712,27 +4539,27 @@ glmer_examine(Term_11B)
 
 ```
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.577004  1        1.255788
-## cl_CFTE                  1.420531  1        1.191860
-## c_pPBSC                  1.558436  1        1.248373
-## c_pOffPSC                1.703099  1        1.305028
-## c_pairHist               1.343553  1        1.159117
-## cl_pairCA                2.598335  1        1.611935
-## cl_Ceil                  1.394623  1        1.180941
-## capped_cl_Days           1.259909  1        1.122457
-## Comp1or5                 1.333992  3        1.049201
-## Veh                      2.019333  4        1.091820
-## PricingUCA               1.168453  6        1.013058
-## Crisis                   1.638719  3        1.085802
-## cl_def6_HHI_lag1         2.190180  1        1.479926
-## cl_def6_ratio_lag1       1.639912  1        1.280591
-## cl_def3_HHI_lag1         2.063285  1        1.436414
-## cl_def3_ratio_lag1       1.691829  1        1.300703
-## c_pMarket                1.364547  1        1.168138
+## cl_US6_avg_sal_lag1Const 1.631163  1        1.277170
+## cl_CFTE                  1.372030  1        1.171337
+## c_pPBSC                  1.417165  1        1.190447
+## c_pOffPSC                1.838303  1        1.355840
+## c_pairHist               1.378230  1        1.173980
+## cl_pairCA                2.818464  1        1.678828
+## cl_Ceil                  1.452819  1        1.205329
+## cl_Days                  1.238554  1        1.112903
+## cl_Base2Ceil             1.339245  1        1.157258
+## Comp1or5                 1.396807  3        1.057279
+## Veh                      2.256186  4        1.107062
+## PricingUCA               1.176727  6        1.013654
+## Crisis                   1.517636  3        1.072000
+## cl_def6_HHI_lag1         1.881620  1        1.371721
+## cl_def6_ratio_lag1       1.589102  1        1.260596
+## cl_def3_HHI_lag1         1.900180  1        1.378470
+## cl_def3_ratio_lag1       1.707689  1        1.306786
+## c_pMarket                1.385383  1        1.177023
 ```
 
 ```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                      Term_10D,Term_11A,Term_11B,
                      
@@ -4748,107 +4575,152 @@ stargazer::stargazer(
 ##                                             b_Term             
 ##                                   (1)        (2)        (3)    
 ## ---------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const        0.13***                0.08**  
+## cl_US6_avg_sal_lag1Const          0.06                  0.03   
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_CFTE                          -0.01                  0.05   
-##                                  (0.03)                (0.03)  
+## cl_CFTE                          0.06*                 0.08**  
+##                                  (0.03)                (0.04)  
 ##                                                                
-## c_pPBSC                          -0.03                -0.12*** 
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pOffPSC                       0.86***               0.92***  
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pairHist                       -0.04                 -0.03   
-##                                  (0.03)                (0.03)  
-##                                                                
-## cl_pairCA                       0.55***               0.69***  
+## c_pPBSC                         -0.08**               -0.12*** 
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_Ceil                         0.50***               0.53***  
+## c_pOffPSC                       0.58***               0.61***  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## capped_cl_Days                  1.27***               1.25***  
+## c_pairHist                       -0.06*                -0.06*  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## Comp1or51 offer                 0.37***               0.44***  
+## cl_pairCA                       0.31***               0.41***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Ceil                         0.28***               0.29***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Days                         1.06***               1.05***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Base2Ceil                    0.75***               0.74***  
+##                                  (0.02)                (0.02)  
+##                                                                
+## Comp1or51 offer                 0.20***               0.23***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## Comp1or52-4 offers              0.29***               0.29***  
+## Comp1or52-4 offers              0.22***               0.22***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## Comp1or55+ offers               1.04***               1.00***  
+## Comp1or55+ offers               0.78***               0.76***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## VehS-IDC                        -1.11***              -1.14*** 
-##                                  (0.04)                (0.04)  
-##                                                                
-## VehM-IDC                        -0.84***              -0.87*** 
+## VehS-IDC                        -0.81***              -0.84*** 
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## VehFSS/GWAC                     -0.19***              -0.22*** 
+## VehM-IDC                        -0.39***              -0.42*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehFSS/GWAC                     -0.28***              -0.29*** 
 ##                                  (0.07)                (0.07)  
 ##                                                                
-## VehBPA/BOA                      -1.15***              -1.05*** 
-##                                  (0.10)                (0.10)  
-##                                                                
-## PricingUCAOther FP              -0.73***              -0.78*** 
-##                                  (0.15)                (0.16)  
-##                                                                
-## PricingUCAT&M/LH/FPLOE          -0.56***              -0.55*** 
-##                                  (0.15)                (0.15)  
-##                                                                
-## PricingUCAIncentive             -3.37***              -3.39*** 
-##                                  (1.00)                (1.00)  
-##                                                                
-## PricingUCAOther CB              -1.50***              -1.40*** 
+## VehBPA/BOA                      -1.37***              -1.33*** 
 ##                                  (0.12)                (0.12)  
 ##                                                                
-## PricingUCAUCA                   -1.16***              -1.03*** 
-##                                  (0.23)                (0.23)  
+## PricingUCAOther FP               -0.06                 -0.09   
+##                                  (0.14)                (0.14)  
 ##                                                                
-## PricingUCACombination or Other  -0.89***              -0.86*** 
+## PricingUCAT&M/LH/FPLOE          -0.82***              -0.82*** 
+##                                  (0.16)                (0.16)  
+##                                                                
+## PricingUCAIncentive             -2.31***              -2.30*** 
+##                                  (0.71)                (0.71)  
+##                                                                
+## PricingUCAOther CB              -1.44***              -1.39*** 
+##                                  (0.13)                (0.13)  
+##                                                                
+## PricingUCAUCA                   -1.25***              -1.19*** 
+##                                  (0.28)                (0.28)  
+##                                                                
+## PricingUCACombination or Other  -1.08***              -1.06*** 
 ##                                  (0.22)                (0.22)  
 ##                                                                
-## CrisisARRA                      -0.67***              -0.68*** 
-##                                  (0.21)                (0.21)  
+## CrisisARRA                      -0.72***              -0.73*** 
+##                                  (0.26)                (0.26)  
 ##                                                                
-## CrisisDis                        -0.08                 -0.04   
-##                                  (0.39)                (0.39)  
+## CrisisDis                         0.44                  0.44   
+##                                  (0.34)                (0.34)  
 ##                                                                
-## CrisisOCO                       -0.46***               -0.09   
-##                                  (0.08)                (0.08)  
+## CrisisOCO                       -0.27***               -0.02   
+##                                  (0.08)                (0.09)  
 ##                                                                
-## cl_def6_HHI_lag1                -0.38***              -0.36*** 
+## cl_def6_HHI_lag1                -0.11**               -0.10**  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_def6_ratio_lag1              -0.34***              -0.35*** 
-##                                  (0.05)                (0.05)  
+## cl_def6_ratio_lag1              -0.18***              -0.19*** 
+##                                  (0.05)                (0.06)  
 ##                                                                
-## cl_def3_HHI_lag1                0.51***               0.50***  
+## cl_def3_HHI_lag1                0.26***               0.26***  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_def3_ratio_lag1              -0.63***              -0.61*** 
+## cl_def3_ratio_lag1              -0.52***              -0.50*** 
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## c_pMarket                                  -0.27***   -0.67*** 
-##                                             (0.04)     (0.06)  
+## c_pMarket                                  -0.33***   -0.39*** 
+##                                             (0.04)     (0.05)  
 ##                                                                
-## Constant                        -4.02***   -3.96***   -4.05*** 
+## Constant                        -4.14***   -3.97***   -4.15*** 
 ##                                  (0.04)     (0.01)     (0.04)  
 ##                                                                
 ## ---------------------------------------------------------------
 ## Observations                    250,000    250,000    250,000  
-## Log Likelihood                 -20,704.21 -23,391.45 -20,607.76
-## Akaike Inf. Crit.              41,466.41  46,786.90  41,275.52 
+## Log Likelihood                 -19,680.44 -23,154.67 -19,649.47
+## Akaike Inf. Crit.              39,420.87  46,313.35  39,360.93 
 ## ===============================================================
 ## Note:                               *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-#summary_residual_compare(Term_10D,Term_11B)
-#summary_residual_compare(Term_11S,Term_11B)
+summary_residual_compare(Term_10D,Term_11B)
+```
+
+![](Model_Termination_files/figure-html/Model11B-1.png)<!-- -->
+
+```
+## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model11B-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 39360.87      46388.62   7027.743
+## 2 model1_new 39298.93      46388.62   7089.681
+## 
+## [[2]]
+##                              GVIF Df GVIF^(1/(2*Df))
+## cl_US6_avg_sal_lag1Const 1.631163  1        1.277170
+## cl_CFTE                  1.372030  1        1.171337
+## c_pPBSC                  1.417165  1        1.190447
+## c_pOffPSC                1.838303  1        1.355840
+## c_pairHist               1.378230  1        1.173980
+## cl_pairCA                2.818464  1        1.678828
+## cl_Ceil                  1.452819  1        1.205329
+## cl_Days                  1.238554  1        1.112903
+## cl_Base2Ceil             1.339245  1        1.157258
+## Comp1or5                 1.396807  3        1.057279
+## Veh                      2.256186  4        1.107062
+## PricingUCA               1.176727  6        1.013654
+## Crisis                   1.517636  3        1.072000
+## cl_def6_HHI_lag1         1.881620  1        1.371721
+## cl_def6_ratio_lag1       1.589102  1        1.260596
+## cl_def3_HHI_lag1         1.900180  1        1.378470
+## cl_def3_ratio_lag1       1.707689  1        1.306786
+## c_pMarket                1.385383  1        1.177023
 ```
 Note that the VIF is getting high on pair_CA.
 
@@ -4862,33 +4734,28 @@ From looking at data, terminations, easier for big, less dependent. - less depen
 
 
 ```r
-summary_continuous_plot(serv_smp,"cl_OffVol")
+summary_continuous_plot(serv_smp1m,"office_obligatedamount_7year")
 ```
 
 ![](Model_Termination_files/figure-html/Model12A-1.png)<!-- -->
+
+```r
+summary_continuous_plot(serv_smp1m,"office_obligatedamount_7year",log=TRUE)
+```
+
+```
+## Warning: Removed 14076 rows containing non-finite values (stat_bin).
+```
+
+![](Model_Termination_files/figure-html/Model12A-2.png)<!-- -->
 
 ```r
 #Model
 Term_12A <- glm (data=serv_smp,
                  b_Term ~ cl_OffVol, family=binomial(link="logit"))
 
-display(Term_12A)
-```
 
-```
-## glm(formula = b_Term ~ cl_OffVol, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##             coef.est coef.se
-## (Intercept) -3.99     0.02  
-## cl_OffVol    0.66     0.05  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46586.3, null deviance = 46839.6 (difference = 253.4)
-```
-
-```r
-#Plot residuals versus fitted
-stargazer::stargazer(
+stargazer::stargazer(Term_11B,
                        Term_12A,
                        
                        type="text",
@@ -4897,66 +4764,137 @@ stargazer::stargazer(
 
 ```
 ## 
-## =============================================
-##                       Dependent variable:    
-##                   ---------------------------
-##                             b_Term           
-## ---------------------------------------------
-## cl_OffVol                   0.66***          
-##                             (0.05)           
-##                                              
-## Constant                   -3.99***          
-##                             (0.02)           
-##                                              
-## ---------------------------------------------
-## Observations                250,000          
-## Log Likelihood            -23,293.13         
-## Akaike Inf. Crit.          46,590.27         
-## =============================================
-## Note:             *p<0.1; **p<0.05; ***p<0.01
+## ===========================================================
+##                                    Dependent variable:     
+##                                ----------------------------
+##                                           b_Term           
+##                                     (1)            (2)     
+## -----------------------------------------------------------
+## cl_US6_avg_sal_lag1Const            0.03                   
+##                                    (0.04)                  
+##                                                            
+## cl_CFTE                            0.08**                  
+##                                    (0.04)                  
+##                                                            
+## c_pPBSC                           -0.12***                 
+##                                    (0.04)                  
+##                                                            
+## c_pOffPSC                         0.61***                  
+##                                    (0.04)                  
+##                                                            
+## c_pairHist                         -0.06*                  
+##                                    (0.04)                  
+##                                                            
+## cl_pairCA                         0.41***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Ceil                           0.29***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Days                           1.05***                  
+##                                    (0.04)                  
+##                                                            
+## cl_Base2Ceil                      0.74***                  
+##                                    (0.02)                  
+##                                                            
+## Comp1or51 offer                   0.23***                  
+##                                    (0.05)                  
+##                                                            
+## Comp1or52-4 offers                0.22***                  
+##                                    (0.05)                  
+##                                                            
+## Comp1or55+ offers                 0.76***                  
+##                                    (0.05)                  
+##                                                            
+## VehS-IDC                          -0.84***                 
+##                                    (0.05)                  
+##                                                            
+## VehM-IDC                          -0.42***                 
+##                                    (0.05)                  
+##                                                            
+## VehFSS/GWAC                       -0.29***                 
+##                                    (0.07)                  
+##                                                            
+## VehBPA/BOA                        -1.33***                 
+##                                    (0.12)                  
+##                                                            
+## PricingUCAOther FP                 -0.09                   
+##                                    (0.14)                  
+##                                                            
+## PricingUCAT&M/LH/FPLOE            -0.82***                 
+##                                    (0.16)                  
+##                                                            
+## PricingUCAIncentive               -2.30***                 
+##                                    (0.71)                  
+##                                                            
+## PricingUCAOther CB                -1.39***                 
+##                                    (0.13)                  
+##                                                            
+## PricingUCAUCA                     -1.19***                 
+##                                    (0.28)                  
+##                                                            
+## PricingUCACombination or Other    -1.06***                 
+##                                    (0.22)                  
+##                                                            
+## CrisisARRA                        -0.73***                 
+##                                    (0.26)                  
+##                                                            
+## CrisisDis                           0.44                   
+##                                    (0.34)                  
+##                                                            
+## CrisisOCO                          -0.02                   
+##                                    (0.09)                  
+##                                                            
+## cl_def6_HHI_lag1                  -0.10**                  
+##                                    (0.04)                  
+##                                                            
+## cl_def6_ratio_lag1                -0.19***                 
+##                                    (0.06)                  
+##                                                            
+## cl_def3_HHI_lag1                  0.26***                  
+##                                    (0.04)                  
+##                                                            
+## cl_def3_ratio_lag1                -0.50***                 
+##                                    (0.05)                  
+##                                                            
+## c_pMarket                         -0.39***                 
+##                                    (0.05)                  
+##                                                            
+## cl_OffVol                                        0.54***   
+##                                                  (0.05)    
+##                                                            
+## Constant                          -4.15***      -3.99***   
+##                                    (0.04)        (0.02)    
+##                                                            
+## -----------------------------------------------------------
+## Observations                      250,000        250,000   
+## Log Likelihood                   -19,649.47    -23,103.12  
+## Akaike Inf. Crit.                39,360.93      46,210.23  
+## ===========================================================
+## Note:                           *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-summary_residual_compare(Term_11A,Term_12A, skip_vif = TRUE)
+summary_residual_compare(Term_12A, skip_vif = TRUE)
 ```
 
-![](Model_Termination_files/figure-html/Model12A-2.png)<!-- -->
-
 ```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
 ## > 1 and only the first element will be used
 ```
 
 ```
-## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
 ![](Model_Termination_files/figure-html/Model12A-3.png)<!-- -->
 
 ```
-## NULL
-```
-
-```r
-summary_residual_compare(Term_03D,Term_12A, skip_vif = TRUE)
-```
-
-![](Model_Termination_files/figure-html/Model12A-4.png)<!-- -->
-
-```
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-
-## Warning in if (class(model1_new) == "glmerMod") {: the condition has length
-## > 1 and only the first element will be used
-```
-
-![](Model_Termination_files/figure-html/Model12A-5.png)<!-- -->
-
-```
-## NULL
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46206.23      46388.62   182.3838
 ```
 Fully 
 When considering past office volume alone, the relationship was as expected with cost-ceiling breaches. Out of our expectation, the results also showed increasing post office volume would reduce the possibility of exercised options but increase likelihood of having terminations.
@@ -4971,7 +4909,7 @@ Expectation: More diverse industries of contracts contracting offices handle, th
 
 
 ```r
-summary_continuous_plot(serv_smp,"cl_office_naics_hhi_k")
+summary_continuous_plot(serv_smp1m,"cl_office_naics_hhi_k")
 ```
 
 ![](Model_Termination_files/figure-html/Model12B-1.png)<!-- -->
@@ -4981,23 +4919,10 @@ summary_continuous_plot(serv_smp,"cl_office_naics_hhi_k")
 Term_12B <- glm (data=serv_smp,
                  b_Term ~ cl_office_naics_hhi_k, family=binomial(link="logit"))
 
-display(Term_12B)
-```
 
-```
-## glm(formula = b_Term ~ cl_office_naics_hhi_k, family = binomial(link = "logit"), 
-##     data = serv_smp)
-##                       coef.est coef.se
-## (Intercept)           -3.98     0.02  
-## cl_office_naics_hhi_k  0.49     0.03  
-## ---
-##   n = 250000, k = 2
-##   residual deviance = 46555.9, null deviance = 46839.6 (difference = 283.7)
-```
 
-```r
-#Plot residuals versus fitted
-stargazer::stargazer(
+stargazer::stargazer(Term_11B,
+                     Term_12A,
                        Term_12B,
                        
                        type="text",
@@ -5006,28 +4931,140 @@ stargazer::stargazer(
 
 ```
 ## 
-## =================================================
-##                           Dependent variable:    
-##                       ---------------------------
-##                                 b_Term           
-## -------------------------------------------------
-## cl_office_naics_hhi_k           0.49***          
-##                                 (0.03)           
-##                                                  
-## Constant                       -3.98***          
-##                                 (0.02)           
-##                                                  
-## -------------------------------------------------
-## Observations                    250,000          
-## Log Likelihood                -23,277.95         
-## Akaike Inf. Crit.              46,559.90         
-## =================================================
-## Note:                 *p<0.1; **p<0.05; ***p<0.01
+## ===============================================================
+##                                      Dependent variable:       
+##                                --------------------------------
+##                                             b_Term             
+##                                   (1)        (2)        (3)    
+## ---------------------------------------------------------------
+## cl_US6_avg_sal_lag1Const          0.03                         
+##                                  (0.04)                        
+##                                                                
+## cl_CFTE                          0.08**                        
+##                                  (0.04)                        
+##                                                                
+## c_pPBSC                         -0.12***                       
+##                                  (0.04)                        
+##                                                                
+## c_pOffPSC                       0.61***                        
+##                                  (0.04)                        
+##                                                                
+## c_pairHist                       -0.06*                        
+##                                  (0.04)                        
+##                                                                
+## cl_pairCA                       0.41***                        
+##                                  (0.04)                        
+##                                                                
+## cl_Ceil                         0.29***                        
+##                                  (0.04)                        
+##                                                                
+## cl_Days                         1.05***                        
+##                                  (0.04)                        
+##                                                                
+## cl_Base2Ceil                    0.74***                        
+##                                  (0.02)                        
+##                                                                
+## Comp1or51 offer                 0.23***                        
+##                                  (0.05)                        
+##                                                                
+## Comp1or52-4 offers              0.22***                        
+##                                  (0.05)                        
+##                                                                
+## Comp1or55+ offers               0.76***                        
+##                                  (0.05)                        
+##                                                                
+## VehS-IDC                        -0.84***                       
+##                                  (0.05)                        
+##                                                                
+## VehM-IDC                        -0.42***                       
+##                                  (0.05)                        
+##                                                                
+## VehFSS/GWAC                     -0.29***                       
+##                                  (0.07)                        
+##                                                                
+## VehBPA/BOA                      -1.33***                       
+##                                  (0.12)                        
+##                                                                
+## PricingUCAOther FP               -0.09                         
+##                                  (0.14)                        
+##                                                                
+## PricingUCAT&M/LH/FPLOE          -0.82***                       
+##                                  (0.16)                        
+##                                                                
+## PricingUCAIncentive             -2.30***                       
+##                                  (0.71)                        
+##                                                                
+## PricingUCAOther CB              -1.39***                       
+##                                  (0.13)                        
+##                                                                
+## PricingUCAUCA                   -1.19***                       
+##                                  (0.28)                        
+##                                                                
+## PricingUCACombination or Other  -1.06***                       
+##                                  (0.22)                        
+##                                                                
+## CrisisARRA                      -0.73***                       
+##                                  (0.26)                        
+##                                                                
+## CrisisDis                         0.44                         
+##                                  (0.34)                        
+##                                                                
+## CrisisOCO                        -0.02                         
+##                                  (0.09)                        
+##                                                                
+## cl_def6_HHI_lag1                -0.10**                        
+##                                  (0.04)                        
+##                                                                
+## cl_def6_ratio_lag1              -0.19***                       
+##                                  (0.06)                        
+##                                                                
+## cl_def3_HHI_lag1                0.26***                        
+##                                  (0.04)                        
+##                                                                
+## cl_def3_ratio_lag1              -0.50***                       
+##                                  (0.05)                        
+##                                                                
+## c_pMarket                       -0.39***                       
+##                                  (0.05)                        
+##                                                                
+## cl_OffVol                                  0.54***             
+##                                             (0.05)             
+##                                                                
+## cl_office_naics_hhi_k                                 0.44***  
+##                                                        (0.03)  
+##                                                                
+## Constant                        -4.15***   -3.99***   -3.98*** 
+##                                  (0.04)     (0.02)     (0.02)  
+##                                                                
+## ---------------------------------------------------------------
+## Observations                    250,000    250,000    250,000  
+## Log Likelihood                 -19,649.47 -23,103.12 -23,079.62
+## Akaike Inf. Crit.              39,360.93  46,210.23  46,163.24 
+## ===============================================================
+## Note:                               *p<0.1; **p<0.05; ***p<0.01
 ```
 
 ```r
-# summary_residual_compare(Term_11A,Term_12B, skip_vif = TRUE)
-# summary_residual_compare(Term_03D,Term_12B, skip_vif = TRUE)
+summary_residual_compare(Term_12B, skip_vif = TRUE)
+```
+
+```
+## Warning in if (class(model1_old) == "glmerMod") {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
+## Warning in if (class(model1_old) != "glmerMod" & class(model1_old) !=
+## "glmerMod") {: the condition has length > 1 and only the first element will
+## be used
+```
+
+![](Model_Termination_files/figure-html/Model12B-2.png)<!-- -->
+
+```
+## [[1]]
+##        model deviance null.deviance difference
+## 1 model1_old 46159.24      46388.62   229.3775
 ```
 
 When using hhi calculated based on contracting office obligation: considering hhi alone, expectation for Temrination was not met.
@@ -5037,15 +5074,12 @@ When using hhi calculated based on contracting office number of contarcts: consi
 
 
 ```r
-#Frequency Plot for unlogged ceiling
-
-
 #Model
 Term_12C <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + capped_cl_Days+
+                   cl_Ceil + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -5060,29 +5094,29 @@ glmer_examine(Term_12C)
 
 ```
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.612893  1        1.269997
-## cl_CFTE                  1.438268  1        1.199278
-## c_pPBSC                  1.588572  1        1.260385
-## c_pOffPSC                2.277646  1        1.509187
-## c_pairHist               1.389222  1        1.178653
-## cl_pairCA                2.830895  1        1.682526
-## cl_Ceil                  1.418564  1        1.191035
-## capped_cl_Days           1.280011  1        1.131376
-## Comp1or5                 1.344231  3        1.050539
-## Veh                      2.046869  4        1.093670
-## PricingUCA               1.177667  6        1.013721
-## Crisis                   1.657403  3        1.087856
-## cl_def6_HHI_lag1         2.204607  1        1.484792
-## cl_def6_ratio_lag1       1.640474  1        1.280810
-## cl_def3_HHI_lag1         2.089365  1        1.445464
-## cl_def3_ratio_lag1       1.704985  1        1.305751
-## c_pMarket                1.411540  1        1.188083
-## cl_OffVol                1.296365  1        1.138580
-## cl_office_naics_hhi_k    2.154490  1        1.467818
+## cl_US6_avg_sal_lag1Const 1.660007  1        1.288412
+## cl_CFTE                  1.384488  1        1.176642
+## c_pPBSC                  1.453346  1        1.205548
+## c_pOffPSC                2.298287  1        1.516010
+## c_pairHist               1.426617  1        1.194411
+## cl_pairCA                3.024030  1        1.738974
+## cl_Ceil                  1.461617  1        1.208973
+## cl_Days                  1.255878  1        1.120660
+## cl_Base2Ceil             1.342976  1        1.158868
+## Comp1or5                 1.404461  3        1.058242
+## Veh                      2.311727  4        1.110432
+## PricingUCA               1.186798  6        1.014374
+## Crisis                   1.523721  3        1.072715
+## cl_def6_HHI_lag1         1.908117  1        1.381346
+## cl_def6_ratio_lag1       1.591000  1        1.261349
+## cl_def3_HHI_lag1         1.919315  1        1.385394
+## cl_def3_ratio_lag1       1.722658  1        1.312501
+## c_pMarket                1.407394  1        1.186336
+## cl_OffVol                1.230562  1        1.109307
+## cl_office_naics_hhi_k    2.052344  1        1.432600
 ```
 
 ```r
-#Plot residuals versus fitted
 stargazer::stargazer(
                      Term_11B,Term_12A,Term_12C,
                      
@@ -5098,106 +5132,109 @@ stargazer::stargazer(
 ##                                             b_Term             
 ##                                   (1)        (2)        (3)    
 ## ---------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const         0.08**                 0.05   
+## cl_US6_avg_sal_lag1Const          0.03                  0.01   
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_CFTE                           0.05                  0.04   
-##                                  (0.03)                (0.03)  
+## cl_CFTE                          0.08**                0.08**  
+##                                  (0.04)                (0.04)  
 ##                                                                
 ## c_pPBSC                         -0.12***              -0.14*** 
-##                                  (0.03)                (0.03)  
-##                                                                
-## c_pOffPSC                       0.92***               0.92***  
-##                                  (0.03)                (0.04)  
-##                                                                
-## c_pairHist                       -0.03                 -0.06*  
-##                                  (0.03)                (0.04)  
-##                                                                
-## cl_pairCA                       0.69***               0.65***  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_Ceil                         0.53***               0.50***  
+## c_pOffPSC                       0.61***               0.54***  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## capped_cl_Days                  1.25***               1.23***  
+## c_pairHist                       -0.06*               -0.07**  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## Comp1or51 offer                 0.44***               0.45***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## Comp1or52-4 offers              0.29***               0.30***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## Comp1or55+ offers               1.00***               0.99***  
-##                                  (0.05)                (0.05)  
-##                                                                
-## VehS-IDC                        -1.14***              -1.14*** 
+## cl_pairCA                       0.41***               0.35***  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## VehM-IDC                        -0.87***              -0.87*** 
+## cl_Ceil                         0.29***               0.29***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Days                         1.05***               1.03***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_Base2Ceil                    0.74***               0.74***  
+##                                  (0.02)                (0.02)  
+##                                                                
+## Comp1or51 offer                 0.23***               0.24***  
 ##                                  (0.05)                (0.05)  
 ##                                                                
-## VehFSS/GWAC                     -0.22***              -0.21*** 
+## Comp1or52-4 offers              0.22***               0.23***  
+##                                  (0.05)                (0.05)  
+##                                                                
+## Comp1or55+ offers               0.76***               0.76***  
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehS-IDC                        -0.84***              -0.84*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehM-IDC                        -0.42***              -0.43*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## VehFSS/GWAC                     -0.29***              -0.28*** 
 ##                                  (0.07)                (0.07)  
 ##                                                                
-## VehBPA/BOA                      -1.05***              -1.03*** 
-##                                  (0.10)                (0.10)  
-##                                                                
-## PricingUCAOther FP              -0.78***              -0.79*** 
-##                                  (0.16)                (0.16)  
-##                                                                
-## PricingUCAT&M/LH/FPLOE          -0.55***              -0.55*** 
-##                                  (0.15)                (0.15)  
-##                                                                
-## PricingUCAIncentive             -3.39***              -3.41*** 
-##                                  (1.00)                (1.00)  
-##                                                                
-## PricingUCAOther CB              -1.40***              -1.42*** 
+## VehBPA/BOA                      -1.33***              -1.37*** 
 ##                                  (0.12)                (0.12)  
 ##                                                                
-## PricingUCAUCA                   -1.03***              -1.03*** 
-##                                  (0.23)                (0.23)  
+## PricingUCAOther FP               -0.09                 -0.12   
+##                                  (0.14)                (0.14)  
 ##                                                                
-## PricingUCACombination or Other  -0.86***              -0.85*** 
+## PricingUCAT&M/LH/FPLOE          -0.82***              -0.81*** 
+##                                  (0.16)                (0.16)  
+##                                                                
+## PricingUCAIncentive             -2.30***              -2.30*** 
+##                                  (0.71)                (0.71)  
+##                                                                
+## PricingUCAOther CB              -1.39***              -1.40*** 
+##                                  (0.13)                (0.13)  
+##                                                                
+## PricingUCAUCA                   -1.19***              -1.20*** 
+##                                  (0.28)                (0.28)  
+##                                                                
+## PricingUCACombination or Other  -1.06***              -1.04*** 
 ##                                  (0.22)                (0.22)  
 ##                                                                
-## CrisisARRA                      -0.68***              -0.68*** 
-##                                  (0.21)                (0.21)  
+## CrisisARRA                      -0.73***              -0.71*** 
+##                                  (0.26)                (0.26)  
 ##                                                                
-## CrisisDis                        -0.04                 -0.04   
-##                                  (0.39)                (0.39)  
+## CrisisDis                         0.44                  0.43   
+##                                  (0.34)                (0.34)  
 ##                                                                
-## CrisisOCO                        -0.09                 -0.09   
-##                                  (0.08)                (0.08)  
+## CrisisOCO                        -0.02                 -0.04   
+##                                  (0.09)                (0.09)  
 ##                                                                
-## cl_def6_HHI_lag1                -0.36***              -0.33*** 
+## cl_def6_HHI_lag1                -0.10**                -0.07*  
 ##                                  (0.04)                (0.04)  
 ##                                                                
-## cl_def6_ratio_lag1              -0.35***              -0.36*** 
-##                                  (0.05)                (0.05)  
-##                                                                
-## cl_def3_HHI_lag1                0.50***               0.48***  
-##                                  (0.04)                (0.04)  
-##                                                                
-## cl_def3_ratio_lag1              -0.61***              -0.60*** 
-##                                  (0.05)                (0.05)  
-##                                                                
-## c_pMarket                       -0.67***              -0.63*** 
+## cl_def6_ratio_lag1              -0.19***              -0.20*** 
 ##                                  (0.06)                (0.06)  
 ##                                                                
-## cl_OffVol                                  0.66***    0.23***  
+## cl_def3_HHI_lag1                0.26***               0.24***  
+##                                  (0.04)                (0.04)  
+##                                                                
+## cl_def3_ratio_lag1              -0.50***              -0.51*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## c_pMarket                       -0.39***              -0.38*** 
+##                                  (0.05)                (0.05)  
+##                                                                
+## cl_OffVol                                  0.54***    0.11***  
 ##                                             (0.05)     (0.04)  
 ##                                                                
-## cl_office_naics_hhi_k                                   0.06   
+## cl_office_naics_hhi_k                                 0.17***  
 ##                                                        (0.04)  
 ##                                                                
-## Constant                        -4.05***   -3.99***   -4.06*** 
+## Constant                        -4.15***   -3.99***   -4.15*** 
 ##                                  (0.04)     (0.02)     (0.04)  
 ##                                                                
 ## ---------------------------------------------------------------
 ## Observations                    250,000    250,000    250,000  
-## Log Likelihood                 -20,607.76 -23,293.13 -20,591.31
-## Akaike Inf. Crit.              41,275.52  46,590.27  41,246.62 
+## Log Likelihood                 -19,649.47 -23,103.12 -19,638.20
+## Akaike Inf. Crit.              39,360.93  46,210.23  39,342.39 
 ## ===============================================================
 ## Note:                               *p<0.1; **p<0.05; ***p<0.01
 ```
@@ -5215,7 +5252,7 @@ summary_residual_compare(Term_10D,Term_12C)
 
 ```
 ## Warning in if (class(model1_new) != "glmerMod" & class(model1_old) !=
-## "glmerMod" & : the condition has length > 1 and only the first element will
+## "glmerMod") {: the condition has length > 1 and only the first element will
 ## be used
 ```
 
@@ -5224,30 +5261,31 @@ summary_residual_compare(Term_10D,Term_12C)
 ```
 ## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 41408.41      46839.64   5431.226
-## 2 model1_new 41182.62      46839.64   5657.023
+## 1 model1_old 39360.87      46388.62   7027.743
+## 2 model1_new 39276.39      46388.62   7112.222
 ## 
 ## [[2]]
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.612893  1        1.269997
-## cl_CFTE                  1.438268  1        1.199278
-## c_pPBSC                  1.588572  1        1.260385
-## c_pOffPSC                2.277646  1        1.509187
-## c_pairHist               1.389222  1        1.178653
-## cl_pairCA                2.830895  1        1.682526
-## cl_Ceil                  1.418564  1        1.191035
-## capped_cl_Days           1.280011  1        1.131376
-## Comp1or5                 1.344231  3        1.050539
-## Veh                      2.046869  4        1.093670
-## PricingUCA               1.177667  6        1.013721
-## Crisis                   1.657403  3        1.087856
-## cl_def6_HHI_lag1         2.204607  1        1.484792
-## cl_def6_ratio_lag1       1.640474  1        1.280810
-## cl_def3_HHI_lag1         2.089365  1        1.445464
-## cl_def3_ratio_lag1       1.704985  1        1.305751
-## c_pMarket                1.411540  1        1.188083
-## cl_OffVol                1.296365  1        1.138580
-## cl_office_naics_hhi_k    2.154490  1        1.467818
+## cl_US6_avg_sal_lag1Const 1.660007  1        1.288412
+## cl_CFTE                  1.384488  1        1.176642
+## c_pPBSC                  1.453346  1        1.205548
+## c_pOffPSC                2.298287  1        1.516010
+## c_pairHist               1.426617  1        1.194411
+## cl_pairCA                3.024030  1        1.738974
+## cl_Ceil                  1.461617  1        1.208973
+## cl_Days                  1.255878  1        1.120660
+## cl_Base2Ceil             1.342976  1        1.158868
+## Comp1or5                 1.404461  3        1.058242
+## Veh                      2.311727  4        1.110432
+## PricingUCA               1.186798  6        1.014374
+## Crisis                   1.523721  3        1.072715
+## cl_def6_HHI_lag1         1.908117  1        1.381346
+## cl_def6_ratio_lag1       1.591000  1        1.261349
+## cl_def3_HHI_lag1         1.919315  1        1.385394
+## cl_def3_ratio_lag1       1.722658  1        1.312501
+## c_pMarket                1.407394  1        1.186336
+## cl_OffVol                1.230562  1        1.109307
+## cl_office_naics_hhi_k    2.052344  1        1.432600
 ```
 
 ```r
@@ -5269,30 +5307,31 @@ summary_residual_compare(Term_11B,Term_12C)
 ```
 ## [[1]]
 ##        model deviance null.deviance difference
-## 1 model1_old 41215.52      46839.64   5624.118
-## 2 model1_new 41182.62      46839.64   5657.023
+## 1 model1_old 39298.93      46388.62   7089.681
+## 2 model1_new 39276.39      46388.62   7112.222
 ## 
 ## [[2]]
 ##                              GVIF Df GVIF^(1/(2*Df))
-## cl_US6_avg_sal_lag1Const 1.612893  1        1.269997
-## cl_CFTE                  1.438268  1        1.199278
-## c_pPBSC                  1.588572  1        1.260385
-## c_pOffPSC                2.277646  1        1.509187
-## c_pairHist               1.389222  1        1.178653
-## cl_pairCA                2.830895  1        1.682526
-## cl_Ceil                  1.418564  1        1.191035
-## capped_cl_Days           1.280011  1        1.131376
-## Comp1or5                 1.344231  3        1.050539
-## Veh                      2.046869  4        1.093670
-## PricingUCA               1.177667  6        1.013721
-## Crisis                   1.657403  3        1.087856
-## cl_def6_HHI_lag1         2.204607  1        1.484792
-## cl_def6_ratio_lag1       1.640474  1        1.280810
-## cl_def3_HHI_lag1         2.089365  1        1.445464
-## cl_def3_ratio_lag1       1.704985  1        1.305751
-## c_pMarket                1.411540  1        1.188083
-## cl_OffVol                1.296365  1        1.138580
-## cl_office_naics_hhi_k    2.154490  1        1.467818
+## cl_US6_avg_sal_lag1Const 1.660007  1        1.288412
+## cl_CFTE                  1.384488  1        1.176642
+## c_pPBSC                  1.453346  1        1.205548
+## c_pOffPSC                2.298287  1        1.516010
+## c_pairHist               1.426617  1        1.194411
+## cl_pairCA                3.024030  1        1.738974
+## cl_Ceil                  1.461617  1        1.208973
+## cl_Days                  1.255878  1        1.120660
+## cl_Base2Ceil             1.342976  1        1.158868
+## Comp1or5                 1.404461  3        1.058242
+## Veh                      2.311727  4        1.110432
+## PricingUCA               1.186798  6        1.014374
+## Crisis                   1.523721  3        1.072715
+## cl_def6_HHI_lag1         1.908117  1        1.381346
+## cl_def6_ratio_lag1       1.591000  1        1.261349
+## cl_def3_HHI_lag1         1.919315  1        1.385394
+## cl_def3_ratio_lag1       1.722658  1        1.312501
+## c_pMarket                1.407394  1        1.186336
+## cl_OffVol                1.230562  1        1.109307
+## cl_office_naics_hhi_k    2.052344  1        1.432600
 ```
 
 
@@ -5322,106 +5361,109 @@ stargazer::stargazer(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 ##                                                                        b_Term                                         
 ##                                   (1)        (2)        (3)        (4)        (5)        (6)        (7)        (8)    
 ## ----------------------------------------------------------------------------------------------------------------------
-## cl_US6_avg_sal_lag1Const        0.10***                                                            -0.06*      0.05   
+## cl_US6_avg_sal_lag1Const         0.08**                                                            -0.06*      0.01   
 ##                                  (0.03)                                                            (0.03)     (0.04)  
 ##                                                                                                                       
-## cl_CFTE                                      0.04                                                  0.07**      0.04   
-##                                             (0.03)                                                 (0.03)     (0.03)  
+## cl_CFTE                                     0.07**                                                0.10***     0.08**  
+##                                             (0.03)                                                 (0.03)     (0.04)  
 ##                                                                                                                       
-## c_pPBSC                                               0.27***                                       0.03     -0.14*** 
-##                                                        (0.03)                                      (0.03)     (0.03)  
+## c_pPBSC                                               0.20***                                      -0.003    -0.14*** 
+##                                                        (0.03)                                      (0.03)     (0.04)  
 ##                                                                                                                       
-## c_pOffPSC                                                        0.50***                          0.37***    0.92***  
+## c_pOffPSC                                                        0.45***                          0.37***    0.54***  
 ##                                                                   (0.02)                           (0.03)     (0.04)  
 ##                                                                                                                       
-## c_pairHist                                                                   0.001                -0.23***    -0.06*  
+## c_pairHist                                                                   -0.05                -0.23***   -0.07**  
 ##                                                                              (0.03)                (0.03)     (0.04)  
 ##                                                                                                                       
-## cl_pairCA                                                                              0.47***    0.41***    0.65***  
+## cl_pairCA                                                                              0.36***    0.31***    0.35***  
 ##                                                                                         (0.03)     (0.03)     (0.04)  
 ##                                                                                                                       
-## cl_Ceil                                                                                                      0.50***  
+## cl_Ceil                                                                                                      0.29***  
 ##                                                                                                               (0.04)  
 ##                                                                                                                       
-## capped_cl_Days                                                                                               1.23***  
+## cl_Days                                                                                                      1.03***  
 ##                                                                                                               (0.04)  
 ##                                                                                                                       
-## Comp1or51 offer                                                                                              0.45***  
+## cl_Base2Ceil                                                                                                 0.74***  
+##                                                                                                               (0.02)  
+##                                                                                                                       
+## Comp1or51 offer                                                                                              0.24***  
 ##                                                                                                               (0.05)  
 ##                                                                                                                       
-## Comp1or52-4 offers                                                                                           0.30***  
+## Comp1or52-4 offers                                                                                           0.23***  
 ##                                                                                                               (0.05)  
 ##                                                                                                                       
-## Comp1or55+ offers                                                                                            0.99***  
+## Comp1or55+ offers                                                                                            0.76***  
 ##                                                                                                               (0.05)  
 ##                                                                                                                       
-## VehS-IDC                                                                                                     -1.14*** 
-##                                                                                                               (0.04)  
-##                                                                                                                       
-## VehM-IDC                                                                                                     -0.87*** 
+## VehS-IDC                                                                                                     -0.84*** 
 ##                                                                                                               (0.05)  
 ##                                                                                                                       
-## VehFSS/GWAC                                                                                                  -0.21*** 
+## VehM-IDC                                                                                                     -0.43*** 
+##                                                                                                               (0.05)  
+##                                                                                                                       
+## VehFSS/GWAC                                                                                                  -0.28*** 
 ##                                                                                                               (0.07)  
 ##                                                                                                                       
-## VehBPA/BOA                                                                                                   -1.03*** 
-##                                                                                                               (0.10)  
-##                                                                                                                       
-## PricingUCAOther FP                                                                                           -0.79*** 
-##                                                                                                               (0.16)  
-##                                                                                                                       
-## PricingUCAT&M/LH/FPLOE                                                                                       -0.55*** 
-##                                                                                                               (0.15)  
-##                                                                                                                       
-## PricingUCAIncentive                                                                                          -3.41*** 
-##                                                                                                               (1.00)  
-##                                                                                                                       
-## PricingUCAOther CB                                                                                           -1.42*** 
+## VehBPA/BOA                                                                                                   -1.37*** 
 ##                                                                                                               (0.12)  
 ##                                                                                                                       
-## PricingUCAUCA                                                                                                -1.03*** 
-##                                                                                                               (0.23)  
+## PricingUCAOther FP                                                                                            -0.12   
+##                                                                                                               (0.14)  
 ##                                                                                                                       
-## PricingUCACombination or Other                                                                               -0.85*** 
+## PricingUCAT&M/LH/FPLOE                                                                                       -0.81*** 
+##                                                                                                               (0.16)  
+##                                                                                                                       
+## PricingUCAIncentive                                                                                          -2.30*** 
+##                                                                                                               (0.71)  
+##                                                                                                                       
+## PricingUCAOther CB                                                                                           -1.40*** 
+##                                                                                                               (0.13)  
+##                                                                                                                       
+## PricingUCAUCA                                                                                                -1.20*** 
+##                                                                                                               (0.28)  
+##                                                                                                                       
+## PricingUCACombination or Other                                                                               -1.04*** 
 ##                                                                                                               (0.22)  
 ##                                                                                                                       
-## CrisisARRA                                                                                                   -0.68*** 
-##                                                                                                               (0.21)  
+## CrisisARRA                                                                                                   -0.71*** 
+##                                                                                                               (0.26)  
 ##                                                                                                                       
-## CrisisDis                                                                                                     -0.04   
-##                                                                                                               (0.39)  
+## CrisisDis                                                                                                      0.43   
+##                                                                                                               (0.34)  
 ##                                                                                                                       
-## CrisisOCO                                                                                                     -0.09   
-##                                                                                                               (0.08)  
+## CrisisOCO                                                                                                     -0.04   
+##                                                                                                               (0.09)  
 ##                                                                                                                       
-## cl_def6_HHI_lag1                                                                                             -0.33*** 
+## cl_def6_HHI_lag1                                                                                              -0.07*  
 ##                                                                                                               (0.04)  
 ##                                                                                                                       
-## cl_def6_ratio_lag1                                                                                           -0.36*** 
-##                                                                                                               (0.05)  
-##                                                                                                                       
-## cl_def3_HHI_lag1                                                                                             0.48***  
-##                                                                                                               (0.04)  
-##                                                                                                                       
-## cl_def3_ratio_lag1                                                                                           -0.60*** 
-##                                                                                                               (0.05)  
-##                                                                                                                       
-## c_pMarket                                                                                                    -0.63*** 
+## cl_def6_ratio_lag1                                                                                           -0.20*** 
 ##                                                                                                               (0.06)  
 ##                                                                                                                       
-## cl_OffVol                                                                                                    0.23***  
+## cl_def3_HHI_lag1                                                                                             0.24***  
 ##                                                                                                               (0.04)  
 ##                                                                                                                       
-## cl_office_naics_hhi_k                                                                                          0.06   
+## cl_def3_ratio_lag1                                                                                           -0.51*** 
+##                                                                                                               (0.05)  
+##                                                                                                                       
+## c_pMarket                                                                                                    -0.38*** 
+##                                                                                                               (0.05)  
+##                                                                                                                       
+## cl_OffVol                                                                                                    0.11***  
 ##                                                                                                               (0.04)  
 ##                                                                                                                       
-## Constant                        -3.95***   -3.95***   -3.96***   -3.98***   -3.95***   -3.97***   -3.99***   -4.06*** 
-##                                  (0.01)     (0.01)     (0.01)     (0.02)     (0.01)     (0.02)     (0.02)     (0.04)  
+## cl_office_naics_hhi_k                                                                                        0.17***  
+##                                                                                                               (0.04)  
+##                                                                                                                       
+## Constant                        -3.96***   -3.96***   -3.97***   -3.98***   -3.96***   -3.97***   -3.99***   -4.15*** 
+##                                  (0.01)     (0.01)     (0.01)     (0.02)     (0.01)     (0.01)     (0.02)     (0.04)  
 ##                                                                                                                       
 ## ----------------------------------------------------------------------------------------------------------------------
 ## Observations                    250,000    250,000    250,000    250,000    250,000    250,000    250,000    250,000  
-## Log Likelihood                 -23,414.38 -23,419.06 -23,375.66 -23,229.80 -23,419.82 -23,276.44 -23,149.37 -20,591.31
-## Akaike Inf. Crit.              46,832.76  46,842.12  46,755.33  46,463.61  46,843.64  46,556.88  46,312.75  41,246.62 
+## Log Likelihood                 -23,191.15 -23,191.65 -23,171.58 -23,048.00 -23,193.15 -23,112.98 -22,997.20 -19,638.20
+## Akaike Inf. Crit.              46,386.29  46,387.29  46,347.17  46,100.00  46,390.30  46,229.96  46,008.41  39,342.39 
 ## ======================================================================================================================
 ## Note:                                                                                      *p<0.1; **p<0.05; ***p<0.01
 ```

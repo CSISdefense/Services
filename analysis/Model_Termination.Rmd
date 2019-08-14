@@ -83,15 +83,11 @@ Expectations are matched  for terminations and the results are significant at th
 Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employees who are supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood terminations increases (decreases).
 
 ```{r Model01B}
-
-summary_continuous_plot(serv_smp1m,"cl_CFTE")
+summary_continuous_plot(serv_smp1m,"CFTE_Rate_1year",log=TRUE)
 
 #Model
 Term_01B <- glm (data=serv_smp,
                  b_Term ~ cl_CFTE, family=binomial(link="logit"))
-
-display(Term_01B)
-
 
 
   stargazer::stargazer(
@@ -156,8 +152,6 @@ summary_continuous_plot(serv_smp1m,"pPBSC",log=TRUE)
 Term_02A <- glm (data=serv_smp,
                  b_Term ~ c_pPBSC, family=binomial(link="logit"))
 
-display(Term_02A)
-
 
 stargazer::stargazer(
                        Term_02A,
@@ -183,9 +177,6 @@ summary_continuous_plot(serv_smp1m,"pOffPSC",log=TRUE)
 #Model
 Term_02B <- glm (data=serv_smp,
                  b_Term ~ c_pOffPSC, family=binomial(link="logit"))
-
-display(Term_02B)
-
 
 stargazer::stargazer(
                        Term_02A,Term_02B,
@@ -271,17 +262,14 @@ Expactation: The number of past years of the relationship between the contractin
 
 ```{r Model03A}
 
-  
-summary_discrete_plot(serv_smp,"c_pairHist")
+summary_discrete_plot(serv_smp,"office_entity_paircount_7year")
 
 #Model
 Term_03A <- glm (data=serv_smp,
                  b_Term ~ c_pairHist, family=binomial(link="logit"))
 
-display(Term_03A)
 
-
-  stargazer::stargazer(
+  stargazer::stargazer(Term_02D,
                        Term_03A,
                        
                        type="text",
@@ -305,9 +293,6 @@ summary_continuous_plot(serv_smp1m,"office_entity_numberofactions_1year", log=TR
 #Model
 Term_03B <- glm (data=serv_smp,
                  b_Term ~ cl_pairCA, family=binomial(link="logit"))
-
-display(Term_03B)
-
 
 stargazer::stargazer(                       Term_03A,Term_03B,
                        type="text",
@@ -525,23 +510,13 @@ Expectation: Initial Ceiling size positively estimates increasing probability of
 ```{r Model04A}
 
 #Frequency Plot for unlogged ceiling
-freq_continuous_term_plot(serv_smp,"UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
-freq_continuous_term_plot(subset(serv_smp,UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18<100000000),
-               "UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
-
-summary_continuous_plot(serv_smp1m,"cl_Ceil",bins=50)
-summary(serv_smp$cl_Ceil)
-
-str(serv_smp)
+summary_continuous_plot(serv_smp1m,"UnmodifiedCeiling_OMB20_GDP18",bins=1000)
+summary_continuous_plot(serv_smp1m,"UnmodifiedCeiling_OMB20_GDP18",bins=50,log=TRUE)
 
 #Model
 Term_04A <- glm (data=serv_smp,
                  b_Term ~ cl_Ceil, family=binomial(link="logit"))
-display(Term_04A)
 
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_03D,Term_04A,
                        
@@ -564,18 +539,13 @@ Expectation: Greater maximum duration will positively estimate the probability c
 
 ```{r Model04B}
 #Frequency Plot for max duration
-freq_continuous_term_plot(serv_smp,"UnmodifiedDays",
-               bins=1000)
-
-summary_continuous_plot(serv_smp1m,"cl_Days")
+summary_continuous_plot(serv_smp1m,"UnmodifiedDays")
+summary_continuous_plot(serv_smp1m,"UnmodifiedDays",log=TRUE)
 
 #Model
 Term_04B <- glm (data=serv_smp,
                  b_Term ~ cl_Days, family=binomial(link="logit"))
 
-display(Term_04B)
-
-#Plot residuals versus fitted
 stargazer::stargazer(
                        Term_03D,Term_04A,Term_04B,
                        
@@ -584,8 +554,7 @@ stargazer::stargazer(
 
 
 
-summary_residual_compare(Term_03D,Term_04B, skip_vif = TRUE)
-summary_residual_compare(Term_04A,Term_04B, skip_vif = TRUE)
+summary_residual_compare(Term_04B, skip_vif = TRUE)
 
 ```
 
@@ -593,17 +562,15 @@ All expections were upheld.
 
 ####04C: Ratio Initial Base : Ceiling Ratio (Logged)
 ```{r}
-summary_continuous_plot(serv_smp1m, "cl_Base2Ceil")
-
-#Scatter Plot
-ggplot(serv_smp, aes(x=cl_Base2Ceil, y=b_Term)) + geom_point(alpha = 0.1) + ggtitle("Terminations and Ratio Initial Base:Ceiling Ratio (Logged") + theme(plot.title = element_text(hjust = 0.5))
+summary_continuous_plot(serv_smp1m, "Base2Ceil",bins=100)
+summary_continuous_plot(serv_smp1m, "Base2Ceil",log=TRUE)
 
 #Model
 Term_04C <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil)
-display(Term_04C)
+
 
 #Plot Residuals vs. Fitted
-stargazer::stargazer(Term_12C, Term_04C, type="text", digits=2)
+stargazer::stargazer(Term_04C, type="text", digits=2)
 ```
 
 
@@ -615,20 +582,17 @@ stargazer::stargazer(Term_12C, Term_04C, type="text", digits=2)
 #Model
 Term_04D <- glm (data=serv_smp,
                  b_Term ~ cl_Ceil +cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
-display(Term_04D)
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
-                       Term_03D,Term_04A,Term_04B,Term_04D,
+                       Term_03D,Term_04A,Term_04B,Term_04C,Term_04D,
                        
                        type="text",
                        digits=2)
 
 
 
-#summary_residual_compare(Term_03D,Term_04D)
-#summary_residual_compare(Term_04A,Term_04D)
-#summary_residual_compare(Term_04B,Term_04D)
+summary_residual_compare(Term_03D,Term_04D)
 
 ```
 Days loses significance for ceiling breaches. Ceiling has a smaller coefficient for terminations. Otherwise largely unchanged.
@@ -646,7 +610,7 @@ Term_04E <- glm (data=serv_smp,
                    cl_Ceil + cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
 glmer_examine(Term_04E)
 
-#Plot residuals versus fitted   
+   
 
 stargazer::stargazer(
                        Term_03D,Term_04D,Term_04E,
@@ -655,9 +619,7 @@ stargazer::stargazer(
                        digits=2)
 
 
-summary_residual_compare(Term_04A,Term_04D,Term_04B,Term_04D)
-summary_residual_compare(Term_04A,Term_04C)
-
+summary_residual_compare(Term_03D,Term_04D,Term_04D,Term_04E)
 
 ```
 Salary no longer matches expectations for ceiling breaches. Invoice rate is no longer significant for terminations. 
@@ -679,7 +641,7 @@ Term_05A <- glm (data=serv_smp,
                  b_Term ~ Comp1or5, family=binomial(link="logit"))
 
 
-#Plot residuals versus fitted
+
 stargazer::stargazer(
                        Term_04E,Term_05A,
                        
@@ -687,7 +649,7 @@ stargazer::stargazer(
                        digits=2)
 
 
-summary_residual_compare(Term_05A)
+summary_residual_compare(Term_05A,bins=2)
 
 
 ```
@@ -825,7 +787,7 @@ stargazer::stargazer(
                        digits=2)
 
 
-summary_residual_compare(Term_07A,bins=30)
+summary_residual_compare(Term_07A,bins=2)
 
 ```
 
@@ -875,7 +837,6 @@ summary_discrete_plot(serv_smp,"Crisis")
 #Model
 Term_08A <- glm (data=serv_smp,
                  b_Term ~ Crisis, family=binomial(link="logit"))
-display(Term_08A)
 
 
 stargazer::stargazer(
@@ -885,7 +846,7 @@ stargazer::stargazer(
                        digits=2)
 
 #Plot residuals versus fitted
-summary_residual_compare(Term_08A,bins=30)
+summary_residual_compare(Term_08A,bins=2)
 
 ```
 
@@ -974,7 +935,6 @@ summary_continuous_plot(serv_smp1m,"def6_ratio_lag1",log=TRUE)
 Term_09B <- glm (data=serv_smp,
                  b_Term ~ cl_def6_ratio_lag1, family=binomial(link="logit"))
 
-display(Term_09B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -985,7 +945,7 @@ stargazer::stargazer(
 
 
 
-summary_residual_compare(Term_09A,Term_09B)
+summary_residual_compare(Term_09B)
 
 
 
@@ -1005,9 +965,6 @@ summary_continuous_plot(serv_smp1m,"def6_obl_lag1Const",log=TRUE)
 #Model
 Term_09C <- glm (data=serv_smp,
                  b_Term ~ cl_def6_obl_lag1Const, family=binomial(link="logit"))
-
-display(Term_09C)
-
 
 stargazer::stargazer(Term_09A,Term_09B,Term_09C,
                        
@@ -1085,8 +1042,7 @@ glmer_examine(Term_09E)
 stargazer::stargazer(Term_08B,Term_09D2,Term_09E,type="text",
                        digits=2)
 
-#summary_residual_compare(Term_09D2,Term_09E)
-#summary_residual_compare(Term_08B,Term_09E)
+summary_residual_compare(Term_08B,Term_09E)
 ```
 
 Expectations are not upheld.
@@ -1227,7 +1183,7 @@ stargazer::stargazer(
                        type="text",
                        digits=2)
 
-summary_residual_compare(Term_09E,Term_10D)
+summary_residual_compare(Term_11A)
 ```
 
 Aligns with expectations on terminatio, but not for ceiling  breach or for options.
@@ -1276,25 +1232,22 @@ Past Office Volume $s	cl_OffVol		-	+	+
 From looking at data, terminations, easier for big, less dependent. - less dependenct
 
 ```{r Model12A}
-
-summary_continuous_plot(serv_smp1m,"cl_OffVol")
+summary_continuous_plot(serv_smp1m,"office_obligatedamount_7year")
+summary_continuous_plot(serv_smp1m,"office_obligatedamount_7year",log=TRUE)
 
 #Model
 Term_12A <- glm (data=serv_smp,
                  b_Term ~ cl_OffVol, family=binomial(link="logit"))
 
-display(Term_12A)
 
-
-stargazer::stargazer(
+stargazer::stargazer(Term_11B,
                        Term_12A,
                        
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(Term_11A,Term_12A, skip_vif = TRUE)
-summary_residual_compare(Term_03D,Term_12A, skip_vif = TRUE)
+summary_residual_compare(Term_12A, skip_vif = TRUE)
 
 
 
@@ -1318,18 +1271,17 @@ summary_continuous_plot(serv_smp1m,"cl_office_naics_hhi_k")
 Term_12B <- glm (data=serv_smp,
                  b_Term ~ cl_office_naics_hhi_k, family=binomial(link="logit"))
 
-display(Term_12B)
 
 
-stargazer::stargazer(
+stargazer::stargazer(Term_11B,
+                     Term_12A,
                        Term_12B,
                        
                        type="text",
                        digits=2)
 
 
-# summary_residual_compare(Term_11A,Term_12B, skip_vif = TRUE)
-# summary_residual_compare(Term_03D,Term_12B, skip_vif = TRUE)
+summary_residual_compare(Term_12B, skip_vif = TRUE)
 
 ```
 
