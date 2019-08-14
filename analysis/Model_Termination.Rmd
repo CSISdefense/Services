@@ -19,7 +19,6 @@ library(R2WinBUGS)
 library(dplyr)
 library(Hmisc)
 library(stargazer)
-library(dummies)
 library(optimx)
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
 
@@ -73,8 +72,7 @@ stargazer::stargazer(Term_01A,type="text",
                        digits=2)
 
 
-
-summary_residual_compare(Term_01A,bins=2,skip_vif = TRUE)
+summary_residual_compare(Term_01A,skip_vif = TRUE)
 ```
 
 Expectations are matched  for terminations and the results are significant at the 0.05 level.
@@ -89,8 +87,6 @@ summary_continuous_plot(serv_smp1m,"cl_CFTE")
 #Model
 Term_01B <- glm (data=serv_smp,
                  b_Term ~ cl_CFTE, family=binomial(link="logit"))
-
-display(Term_01B)
 
 
 #Plot residuals versus fitted
@@ -156,17 +152,15 @@ summary_continuous_plot(serv_smp1m,"pPBSC",log=TRUE)
 Term_02A <- glm (data=serv_smp,
                  b_Term ~ c_pPBSC, family=binomial(link="logit"))
 
-display(Term_02A)
-
 #Plot residuals versus fitted
-stargazer::stargazer(
+stargazer::stargazer(Term_01C,
                        Term_02A,
                        
                        type="text",
                        digits=2)
 
 
-  summary_residual_compare(Term_02A)
+  summary_residual_compare(Term_02A,skip_vif=TRUE,bins=20)
 ```
 
 When considering PBSC alone, the expected sign was not found in terminations.
@@ -184,10 +178,8 @@ summary_continuous_plot(serv_smp1m,"pOffPSC",log=TRUE)
 Term_02B <- glm (data=serv_smp,
                  b_Term ~ c_pOffPSC, family=binomial(link="logit"))
 
-display(Term_02B)
-
 #Plot residuals versus fitted
-stargazer::stargazer(
+stargazer::stargazer(Term_01C,
                        Term_02A,Term_02B,
                        
                        type="text",
@@ -278,10 +270,8 @@ summary_discrete_plot(serv_smp,"c_pairHist")
 Term_03A <- glm (data=serv_smp,
                  b_Term ~ c_pairHist, family=binomial(link="logit"))
 
-display(Term_03A)
-
 #Plot residuals versus fitted
-  stargazer::stargazer(
+  stargazer::stargazer(Term_02D,
                        Term_03A,
                        
                        type="text",
@@ -306,10 +296,8 @@ summary_continuous_plot(serv_smp1m,"office_entity_numberofactions_1year", log=TR
 Term_03B <- glm (data=serv_smp,
                  b_Term ~ cl_pairCA, family=binomial(link="logit"))
 
-display(Term_03B)
-
 #Plot residuals versus fitted
-stargazer::stargazer(                       Term_03A,Term_03B,
+stargazer::stargazer(   Term_02D,Term_03A,Term_03B,
                        type="text",
                        digits=2)
 
@@ -331,7 +319,7 @@ Term_03C <- glm (data=serv_smp,
 glmer_examine(Term_03C)
 
 #Plot residuals versus fitted
-  stargazer::stargazer(
+  stargazer::stargazer(Term_02D,
                        Term_03A,Term_03B,Term_03C,
                        
                        type="text",
@@ -523,40 +511,24 @@ Expectation: Initial Ceiling size positively estimates increasing probability of
 
 
 ```{r Model04A}
-
-#Frequency Plot for unlogged ceiling
-freq_continuous_term_plot(serv_smp,"UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
-freq_continuous_term_plot(subset(serv_smp,UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18<100000000),
-               "UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
-
-summary_continuous_plot(serv_smp1m,"cl_Ceil",bins=50)
-summary(serv_smp$cl_Ceil)
-
-str(serv_smp)
+summary_continuous_plot(serv_smp1m,"UnmodifiedCeiling_OMB20_GDP18")
+summary_continuous_plot(serv_smp1m,"UnmodifiedCeiling_OMB20_GDP18", log=TRUE)
 
 #Model
 Term_04A <- glm (data=serv_smp,
                  b_Term ~ cl_Ceil, family=binomial(link="logit"))
-display(Term_04A)
-
 #Plot residuals versus fitted
 stargazer::stargazer(
                        Term_03D,Term_04A,
-                       
                        type="text",
                        digits=2)
 
-
-
-#summary_residual_compare(Term_03D,Term_04A, skip_vif = TRUE)
+summary_residual_compare(Term_04A, skip_vif = TRUE)
 
 
 ```
 
-Contract ceiling has a significant relationship, though the residuals show a possible non-linear patterns. This is most remarkable in the positive centered values between 0 and 1. This may be driven  by a missing value and is worth watching.
-Expectations upheld for ceiling breaches and terminations. Weak expectations for options growth were countered.
+Contract ceiling has a significant relationship, though with a bit of a bump in the fitted curve.
 
 #### 04B: Maximum Duration
 
@@ -572,8 +544,6 @@ summary_continuous_plot(serv_smp1m,"cl_Days")
 #Model
 Term_04B <- glm (data=serv_smp,
                  b_Term ~ cl_Days, family=binomial(link="logit"))
-
-display(Term_04B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -600,7 +570,7 @@ ggplot(serv_smp, aes(x=cl_Base2Ceil, y=b_Term)) + geom_point(alpha = 0.1) + ggti
 
 #Model
 Term_04C <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil)
-display(Term_04C)
+
 
 #Plot Residuals vs. Fitted
 stargazer::stargazer(Term_12C, Term_04C, type="text", digits=2)
@@ -615,7 +585,6 @@ stargazer::stargazer(Term_12C, Term_04C, type="text", digits=2)
 #Model
 Term_04D <- glm (data=serv_smp,
                  b_Term ~ cl_Ceil +cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
-display(Term_04D)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -677,8 +646,6 @@ summary_discrete_plot(serv_smp,"Comp1or5")
 #Model
 Term_05A <- glm (data=serv_smp,
                  b_Term ~ Comp1or5, family=binomial(link="logit"))
-
-display(Term_05A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -742,8 +709,6 @@ summary_discrete_plot(serv_smp,"Veh")
 #Model
 Term_06A <- glm (data=serv_smp,
                  b_Term ~ Veh, family=binomial(link="logit"))
-
-display(Term_06A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -820,8 +785,6 @@ serv_opt$PricingUCA<-factor(serv_opt$PricingUCA,
 Term_07A <- glm (data=serv_smp,
                  b_Term ~ PricingUCA, family=binomial(link="logit"))
 
-display(Term_07A)
-
 #Plot residuals versus fitted
 stargazer::stargazer(
                        Term_06B,Term_07A,
@@ -881,8 +844,6 @@ summary_discrete_plot(serv_smp,"Crisis")
 #Model
 Term_08A <- glm (data=serv_smp,
                  b_Term ~ Crisis, family=binomial(link="logit"))
-display(Term_08A)
-
 #Plot residuals versus fitted
 stargazer::stargazer(
                        Term_07B,Term_08A,
@@ -949,8 +910,6 @@ summary_continuous_plot(serv_smp1m,"cl_def3_HHI_lag1")
 Term_09A <- glm (data=serv_smp,
                  b_Term ~ cl_def6_HHI_lag1, family=binomial(link="logit"))
 
-display(Term_09A)
-
 #Plot residuals versus fitted
 stargazer::stargazer(
                        Term_08B,Term_09A,
@@ -979,8 +938,6 @@ Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 #Model
 Term_09B <- glm (data=serv_smp,
                  b_Term ~ cl_def6_ratio_lag1, family=binomial(link="logit"))
-
-display(Term_09B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -1011,8 +968,6 @@ Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 #Model
 Term_09C <- glm (data=serv_smp,
                  b_Term ~ cl_def6_obl_lag1Const, family=binomial(link="logit"))
-
-display(Term_09C)
 
 #Plot residuals versus fitted
 stargazer::stargazer(Term_09A,Term_09B,Term_09C,
@@ -1111,7 +1066,6 @@ summary_continuous_plot(serv_smp1m,"cl_def3_HHI_lag1")
 #Model
 Term_10A <- glm (data=serv_smp,
                  b_Term ~ cl_def3_HHI_lag1, family=binomial(link="logit"))
-display(Term_10A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -1142,7 +1096,6 @@ summary_continuous_plot(serv_smp1m,"cl_def3_ratio_lag1")
 #Model
 Term_10B <- glm (data=serv_smp,
                  b_Term ~ cl_def3_ratio_lag1, family=binomial(link="logit"))
-display(Term_10B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -1217,6 +1170,7 @@ stargazer::stargazer(Term_09E,Term_10C,Term_10D,
                        type="text",
                        digits=2)
 
+summary_residual_compare(Term_10D)
 summary_residual_compare(Term_09D2,Term_10D)
 summary_residual_compare(Term_08B,Term_10D)
 ```
@@ -1236,8 +1190,6 @@ summary_continuous_plot(serv_smp1m,"c_pMarket")
 #Model
 Term_11A <- glm (data=serv_smp,
                  b_Term ~ c_pMarket, family=binomial(link="logit"))
-
-display(Term_11A)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
@@ -1301,8 +1253,6 @@ summary_continuous_plot(serv_smp1m,"cl_OffVol")
 Term_12A <- glm (data=serv_smp,
                  b_Term ~ cl_OffVol, family=binomial(link="logit"))
 
-display(Term_12A)
-
 #Plot residuals versus fitted
 stargazer::stargazer(
                        Term_12A,
@@ -1335,8 +1285,6 @@ summary_continuous_plot(serv_smp1m,"cl_office_naics_hhi_k")
 #Model
 Term_12B <- glm (data=serv_smp,
                  b_Term ~ cl_office_naics_hhi_k, family=binomial(link="logit"))
-
-display(Term_12B)
 
 #Plot residuals versus fitted
 stargazer::stargazer(
