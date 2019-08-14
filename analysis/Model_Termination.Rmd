@@ -5,6 +5,7 @@ date: "Saturday, July 13, 2019"
 output:
   html_document:
     keep_md: yes
+    toc: yes
 --- 
 
 Modeling Likelihood of Contract Termination, Ceiling Breach, or Exercised Option
@@ -525,7 +526,7 @@ summary_residual_compare(Term_04A, skip_vif = TRUE)
 
 ```
 
-Contract ceiling has a significant relationship, though with a bit of a bump in the fitted curve.
+Contract ceiling has a significant relationship, high magnitude, in line with expectations, though with a bit of a sinsodial pattern in the residuals..
 
 #### 04B: Maximum Duration
 
@@ -552,21 +553,28 @@ summary_residual_compare(Term_04B, skip_vif = TRUE)
 
 ```
 
-All expections were upheld.
+All expections were upheld, even significant and greater magnitude than the ceiling.
 
 ####04C: Ratio Initial Base : Ceiling Ratio (Logged)
+
+Expectation, a high ratio means that the contract has more room for adjustment and incentives without radical steps. So higher ratio of total ceiling to base are expected to be associated with a lower frequency of termination, lower frequency and size of ceiling breach. For exercised options, a higher ratio would is expected to make it more likely that some options are exercised but less likely that all options are exercised.
+
 ```{r}
 summary_continuous_plot(serv_smp1m, "Base2Ceil",bins=100)
 summary_continuous_plot(serv_smp1m, "Base2Ceil",log=TRUE)
 
 #Model
-Term_04C <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil)
+Term_04C <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil, family=binomial(link="logit"))
 
 
 #Plot Residuals vs. Fitted
-stargazer::stargazer(Term_04C, type="text", digits=2)
-```
+stargazer::stargazer(Term_03D,Term_04A,Term_04B,Term_04C, type="text", digits=2)
 
+
+
+summary_residual_compare(Term_04C,bins=2)
+```
+Contrary to expectation, a larger base to ceil is associated with a much higher termination rate, though this may be driven by contracts with options being larger contracts, typically. 
 
 
 #### 04D: Both Scope variables
@@ -577,7 +585,7 @@ stargazer::stargazer(Term_04C, type="text", digits=2)
 Term_04D <- glm (data=serv_smp,
                  b_Term ~ cl_Ceil +cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
 
-
+glmer_examine(Term_04D)
 stargazer::stargazer(
                        Term_03D,Term_04A,Term_04B,Term_04C,Term_04D,
                        
@@ -586,11 +594,10 @@ stargazer::stargazer(
 
 
 
-summary_residual_compare(Term_03D,Term_04D)
+summary_residual_compare(Term_03D,Term_04D, bins=10)
 
 ```
-Days loses significance for ceiling breaches. Ceiling has a smaller coefficient for terminations. Otherwise largely unchanged.
-
+Surprisingly ceiling loses significance but the base to ceiling ratio retains it. The expectations predicted the opposite. 
 
 #### 04E: Cumulative  Model
 
@@ -616,16 +623,16 @@ stargazer::stargazer(
 summary_residual_compare(Term_03D,Term_04D,Term_04D,Term_04E)
 
 ```
-Salary no longer matches expectations for ceiling breaches. Invoice rate is no longer significant for terminations. 
+Salary has increased in significance in the opposite direction as expection while CFTE has lost it. Ceiling has regained signifiance, and other variables had small chains in magnitude.
 
 
 ### Competition
 #### 05A: No Competition / 1 / 2-4 / 5+ Offers
 Expectations
-No Competition (Baseline)			+	-	-
-1 Offer			+	-	-
-2-4 Offers			-	+	+
-5+ Offers			-	+	-
+No competition (baseline) and single offer competition  is expected to reduce willingness to terminate and increase frequency and size of terminations
+all due to the absence of alternatives. For options, there is a weak expectation of fewer options exercised. 
+
+Multioffer competition is expected to lead to more terminations, fewer and smaller ceiling breaches, abd  more options exercised for 2-4 options but fewer for 5+ as the diversity of competitors available may raise the appeal of going with a new contract rather than more options, especially if performance is below the desired level.
 
 ```{r Model05A}
 summary_discrete_plot(serv_smp,"Comp1or5")
@@ -647,7 +654,7 @@ summary_residual_compare(Term_05A,bins=2)
 
 
 ```
-Expectations were completely unmet for ceiling breaches. For terminations, expectations were met for 2-4 offers and 5+ offers, but not for 1 offer. For ceiling breaches expectations were met for 1 offer, but not for 2-4 or 5+.
+For terminations, expectations were met for 2-4 offers and 5+ offers, but not for 1 offer. The magnitude of the relationship for 5+ offers is notable.
 
 #### 05B: Cumulative  Model
 
@@ -674,19 +681,16 @@ stargazer::stargazer(
 summary_residual_compare(Term_04E,Term_05B)
 
 ```
-Minimal effect on study variables. 2-4 offers for terminations is not  longer significant, it's really 5+ that boosts the risks. But for exercised options, 5+ leads to more options while fewer having negative relationship with 2-4 offers, but only significant with p-value < 0.1 
+Minimal effect on study variables. Otherwise some changes in magnitude but no large shifts with the partial exception of the dropping coefficient for 2-4 offers.
 
 ### Contract Vehicle
 
 #### 06A: Def/Pur; S-IDC; M-IDC; FSS-GWAC; BPA-BOA.
 
-Old text:
-Expectation: Indefinite delivery vehicles, means that the government has an existing relationship with the vendor and administration is easier. The downside is that the government may be locked into the vendor, although exit does not necessarily require outright termination, instead the government may simply cease to use a vehicle. Taken together, across the board the four categories of vehicles are expected to  negatively estimate the probability of termination. Ceiling breaches are a more complex topic and the study team does not have immediate expecations aside from likely significance.
-Definitive Contract (base)			+	+	+
-Single-Award IDC			-	-	-
-Multi-Award IDC			-	-	-
-FSS/GWAC			-	-	-
-BPA/BOA			-	-	-
+
+Expectation: Indefinite delivery vehicles, means that the government has an existing relationship with the vendor and administration is easier. The downside is that the government may be locked into the vendor, although exit does not necessarily require outright termination, instead the government may simply cease to use a vehicle. Taken together, across the board the four categories of vehicles are expected to  negatively estimate the probability of termination. 
+
+Ceiling breaches and excerised options are both less straightforward, are a more complex topic though the study expects a negative relationship as all forms of IDVs make it easier to use a new task order and thus may both reduce the need to exercise options and may allow new work to flow into a different contract rather than prompting a breach.
 
 
 ```{r Model06A}
@@ -707,11 +711,9 @@ stargazer::stargazer(
 summary_residual_compare(Term_04E,Term_05B)
 
 ```
-For ceiling breaches, IDCs, particularly multiaward IDCs, were more likely to have breaches contrary to expecatitions.
 
-For terminations expectation were upheld or S-IDCs and BPA/BOA. They were not upheld for multi-award, which is significantly more likely to be terminated.
+For terminations expectation were upheld or BPA/BOA and S-IDCs and to a lesser extent for FSS/GWAC contracts. They were not upheld for multi-award, which are not significant.
 
-Expectations were largely upheld for options exercised, with the exception of FSS/GWAC.
 
 
 #### 06B: Cumulative  Model
@@ -742,7 +744,8 @@ stargazer::stargazer(
 summary_residual_compare(Term_05B,Term_06B)
 
 ```
-Expectations for vehicle are now upheld for both ceiling breaches and terminations. For other variables the addition of vehicle proved less pivotal, though coefficients were often decreased.
+Expectations for vehicle are now upheld for both terminations. Ceiling lost significance, performance based contracting gained significance at the 0.1 level, and magnitude for other variables fluxuated.
+
 
 ### Type of Contract
 
@@ -752,13 +755,16 @@ Expectation Prior CSIS research has found that fixed-price contracts estimate a 
 
 #### 07A: FFP / Other FP / Incentive / T&M/FP:LOE;LH / Other CB / Combination
 
-Firm-Fixed Price (base)			+	++	+
-Other Fixed Price			-	-	-
-Time & Materials / Labor Hours / FP: LoE			+	-	-
-Incentive Fee (both FPIF or CBIF)			-	-	+
-Other Cost Based			-	-	-
-Undefinitized Contract Award			++	++	--
-Combination			+	+	-
+Firm-fixed price contracting is expected to be associated with a high rate of options exercised, more ceiling breaches, and a strong expectation of greater levels of termination.
+
+(Options, breach, termination)
+Firm-Fixed Price (base)				+	+	++
+Other Fixed Price				-	-	-
+Time & Materials / Labor Hours / FP: LoE				-	+	-
+Incentive Fee (both FPIF or CBIF)				+	-	-
+Other Cost Based				-	-	-
+Undefinitized Contract Award				--	++	++
+Combination				-	+	+
 
 
 ```{r Model07A}
@@ -785,9 +791,9 @@ summary_residual_compare(Term_07A,bins=2)
 
 ```
 
-Other fixed price and other cost based aligned with expecations for ceiling breaches.
-For terminations, other fixed price, incentive, cost-based, were line with expectations. 
-For options exercied Other fixed-price, incentive, and UCA were in line with expectations
+For terminations firm fixed price (baseline), incentive, cost-based, and combination or other were in line with expectations. Fixed price other defies expectations of being lower risk and UCA and combination defy expectations by being negative.
+
+
 
 #### 07B: Cumulative  Model
 
