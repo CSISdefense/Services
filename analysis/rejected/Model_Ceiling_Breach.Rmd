@@ -1873,3 +1873,305 @@ texreg::htmlreg(list(n_CBre01A,n_CBre01B,n_CBre02A,n_CBre02B,n_CBre03A,n_CBre03B
 
 
 ```
+
+
+####15A: Average U.S. Salaries (logged):Contract Pricing
+```{r}
+#Create the models
+n_cbre_salary_pricing_15A_no_interact <- glm(data=serv_smp, ln_CBre ~ PricingUCA + cl_US6_avg_sal_lag1)
+glmer_examine(n_cbre_salary_pricing_15A_no_interact)
+
+n_cbre_salary_pricing_15A <- glm(data=serv_smp, ln_CBre ~ PricingUCA + cl_US6_avg_sal_lag1 + PricingUCA:cl_US6_avg_sal_lag1)
+glmer_examine(n_cbre_salary_pricing_15A)
+
+
+#compare the models
+
+stargazer::stargazer(n_cbre_salary_pricing_15A_no_interact, n_cbre_salary_pricing_15A, type="text", digits=2)
+
+summary_residual_compare(n_cbre_salary_pricing_15A_no_interact, n_cbre_salary_pricing_15A, bins=5)
+```
+
+####15B: Cumulative
+```{r}
+#Create the model
+n_cbre_salary_pricing_15B <- glm(data=serv_smp, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + PricingUCA:cl_US6_avg_sal_lag1)
+
+#Compare the models
+stargazer::stargazer(n_cbre_salary_pricing_15B, n_CBre13B, type="text", digits=2)
+
+summary_residual_compare(n_cbre_salary_pricing_15B, n_CBre13B, bins=5)
+
+```
+
+####16A: Office Partnership:Actions
+```{r}
+#Create the models
+n_cbre_partnership_actions_16A_no_interact <- glm(data=serv_smp, ln_CBre ~ c_pPBSC + cl_pairCA)
+glmer_examine(n_cbre_partnership_actions_16A_no_interact)
+
+n_cbre_partnership_actions_16A <- glm(data=serv_smp, ln_CBre ~ c_pPBSC + cl_pairCA + c_pPBSC:cl_pairCA)
+glmer_examine(n_cbre_partnership_actions_16A)
+
+
+#compare the models
+
+stargazer::stargazer(n_cbre_partnership_actions_16A_no_interact, n_cbre_partnership_actions_16A, type="text", digits=2)
+
+summary_residual_compare(n_cbre_partnership_actions_16A_no_interact, n_cbre_partnership_actions_16A, bins=5)
+
+```
+
+####16B: Cumulative
+```{r}
+#Create the model
+n_cbre_partnership_actions_16B <- glm(data=serv_smp, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + c_pPBSC:cl_pairCA)
+
+#Compare the models
+stargazer::stargazer(n_cbre_partnership_actions_16B, n_CBre13B, type="text", digits=2)
+
+summary_residual_compare(n_cbre_partnership_actions_16B, n_CBre13B, bins=5)
+```
+
+####17A: Office Partnership:Market Vendor Share for that Office
+```{r}
+#Define the models
+n_cbre_partnership_share_17A_no_interact <- glm(data=serv_smp, ln_CBre ~ c_pPBSC + c_pMarket)
+glmer_examine(n_cbre_partnership_share_17A_no_interact)
+
+n_cbre_partnership_share_17A <- glm(data=serv_smp, ln_CBre ~ c_pPBSC + c_pMarket + c_pPBSC:c_pMarket)
+glmer_examine(n_cbre_partnership_share_17A)
+
+#Compare the models
+stargazer::stargazer(n_cbre_partnership_share_17A_no_interact, n_cbre_partnership_share_17A, type="text", digits=2)
+
+summary_residual_compare(n_cbre_partnership_share_17A_no_interact, n_cbre_partnership_share_17A, bins=5)
+```
+
+####17B: Cumulative
+```{r}
+#Create the model
+n_cbre_partnership_share_17B <- glm(data=serv_smp, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + c_pPBSC:c_pMarket)
+
+#Compare the models
+stargazer::stargazer(n_cbre_partnership_share_17B, n_CBre13B, type="text", digits=2)
+
+summary_residual_compare(n_cbre_partnership_share_17B, n_CBre13B, bins=5)
+```
+
+####18A: Office Partnership:Initial Contract Duration (logged)
+```{r}
+#Create the Model
+n_cbre_partnership_duration_18A_no_interact <- glm(data=serv_smp , ln_CBre ~ c_pPBSC + capped_cl_Days)
+glmer_examine(n_cbre_partnership_duration_18A_no_interact)
+
+n_cbre_partnership_duration_18A <- glm(data=serv_smp, ln_CBre ~ c_pPBSC + capped_cl_Days + c_pPBSC: capped_cl_Days)
+glmer_examine(n_cbre_partnership_duration_18A)
+
+#Compare the models
+stargazer::stargazer(n_cbre_partnership_duration_18A_no_interact, n_cbre_partnership_duration_18A, type="text", digits=2)
+
+summary_residual_compare(n_cbre_partnership_duration_18A_no_interact, n_cbre_partnership_duration_18A, bins=5)
+```
+
+####18B: Cumulative
+```{r}
+#Create the model
+n_cbre_partnership_duration_18B <- glm(data=serv_smp, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + c_pPBSC:capped_cl_Days)
+
+#Compare the models
+stargazer::stargazer(n_cbre_partnership_duration_18B, n_CBre13B, type="text", digits=2)
+
+summary_residual_compare(n_cbre_partnership_duration_18B, n_CBre13B, bins=5)
+```
+
+####19A: Past Years:Contract Pricing
+```{r}
+#Create the models
+n_cbre_history_pricing_19A_no_interact <- glm(data=serv_smp, ln_CBre ~ c_pairHist + PricingUCA)
+glmer_examine(n_cbre_history_pricing_19A_no_interact)
+
+n_cbre_history_pricing_19A <- glm(data=serv_smp, ln_CBre ~ c_pairHist + PricingUCA + c_pairHist:PricingUCA)
+glmer_examine(n_cbre_history_pricing_19A)
+
+#Compare the models
+stargazer::stargazer(n_cbre_history_pricing_19A_no_interact, n_cbre_history_pricing_19A, type="text", digits=2)
+
+summary_residual_compare(n_cbre_history_pricing_19A_no_interact, n_cbre_history_pricing_19A, bins=5)
+```
+
+####19B: Cumulative
+```{r}
+#Create the model
+n_cbre_history_pricing_19B <- glm(data=serv_smp, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + c_pairHist:PricingUCA)
+
+#Compare the models
+stargazer::stargazer(n_cbre_history_pricing_19B, n_CBre13B, type="text", digits=2)
+
+summary_residual_compare(n_cbre_history_pricing_19B, n_CBre13B, bins=5)
+```
+
+####20A: Competition:NAICS Detailed Industry (Level 6)
+```{r}
+#Create the models
+n_cbre_competition_naics_20A_no_interact <- glm(data=serv_smp, ln_CBre ~ Comp1or5 + cl_def6_HHI_lag1)
+glmer_examine(n_cbre_competition_naics_20A_no_interact)
+
+n_cbre_competition_naics_20A <- glm(data=serv_smp, ln_CBre ~ Comp1or5 + cl_def6_HHI_lag1 + Comp1or5:cl_def6_HHI_lag1)
+glmer_examine(n_cbre_competition_naics_20A)
+
+#Compare the models
+stargazer::stargazer(n_cbre_competition_naics_20A_no_interact, n_cbre_competition_naics_20A, type="text", digits=2)
+
+summary_residual_compare(n_cbre_competition_naics_20A_no_interact, n_cbre_competition_naics_20A, bins=5)
+```
+
+####20B: Cumulative
+```{r}
+#Create the model
+n_cbre_competition_naics_20B <- glm(data=serv_smp, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + Comp1or5:cl_def6_HHI_lag1)
+
+#Compare the models
+stargazer::stargazer(n_cbre_competition_naics_20B, n_CBre13B, type="text", digits=2)
+
+summary_residual_compare(n_cbre_competition_naics_20B, n_CBre13B, bins=5)
+```
+
+####21A: Ratio Initial Base to Ceiling Ratio (logged):Initial Contract Ceiling (logged)
+```{r}
+#Create the models
+n_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_smp, ln_CBre ~ cl_Base2Ceil + cl_Ceil)
+glmer_examine(n_CBre_base2ceil_ceiling_21A_no_interact)
+
+n_CBre_base2ceil_ceiling_21A <- glm(data=serv_smp, ln_CBre ~ cl_Base2Ceil + cl_Ceil + cl_Base2Ceil:cl_Ceil)
+glmer_examine(n_CBre_base2ceil_ceiling_21A)
+
+#Compare the Models
+stargazer::stargazer(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, type="text", digits=2)
+
+summary_residual_compare(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, bins=5)
+```
+
+####21B: Cumulative
+```{r}
+#Create the model
+n_CBre_base2ceil_ceiling_21B <- glm(data=serv_smp, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + cl_Base2Ceil:cl_Ceil)
+
+#Compare the models
+stargazer::stargazer(n_CBre_base2ceil_ceiling_21B, n_CBre13B, type="text", digits=2)
+
+summary_residual_compare(n_CBre_base2ceil_ceiling_21B, n_CBre13B, bins=5)
+```
+
+####22A: Available Options:Initial Contract Duration (logged)
+```{r}
+n_CBre_base2ceil_duration_22A_no_interact <- glm(data=serv_smp, ln_CBre ~ cl_Base2Ceil + capped_cl_Days)
+glmer_examine(n_CBre_base2ceil_duration_22A_no_interact)
+
+n_CBre_base2ceil_duration_22A <- glm(data=serv_smp, ln_CBre ~ cl_Base2Ceil + capped_cl_Days + cl_Base2Ceil:capped_cl_Days)
+glmer_examine(n_CBre_base2ceil_duration_22A)
+
+#Compare the Models
+stargazer::stargazer(n_CBre_base2ceil_duration_22A_no_interact, n_CBre_base2ceil_duration_22A, type="text", digits=2)
+
+summary_residual_compare(n_CBre_base2ceil_duration_22A_no_interact, n_CBre_base2ceil_duration_22A, bins=5)
+```
+
+####22B: Cumulative
+```{r}
+#Create the model
+n_CBre_base2ceil_duration_22B <- glm(data=serv_smp, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Ceil + capped_cl_Days+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + cl_Base2Ceil:capped_cl_Days)
+
+#Compare the models
+stargazer::stargazer(n_CBre_base2ceil_duration_22B, n_CBre13B, type="text", digits=2)
+
+summary_residual_compare(n_CBre_base2ceil_duration_22B, n_CBre13B, bins=5)
+```

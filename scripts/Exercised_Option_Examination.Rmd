@@ -923,7 +923,7 @@ After the cleaning, 2 categories remain relevant.
   ggplot(opt, aes(x=n_OptGrowth_Then_Year,fill=qp_OptGrowth)) +
     geom_histogram(bins=100)+
     theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-    scale_x_log10()+
+    scale_x_log10()+ 
     #+
     geom_vline(xintercept = 1)+
     facet_wrap(~qHighBase,scales="free_y")#+, space="free_y"
@@ -938,9 +938,21 @@ After the cleaning, 2 categories remain relevant.
 
 ```
 
+## Proportion of Options Exercised
+```{r OptProp}
+
+serv_opt$OptSpace<-serv_opt$UnmodifiedCeiling_Then_Year-serv_opt$UnmodifiedBase_Then_Year
+summary(serv_opt$OptSpace)
+serv_opt$Exer<-(serv_opt$n_OptGrowth_Then_Year-1)/serv_opt$OptSpace
+serv_opt$Exer[serv_opt$Exer>1]<-1
+summary(serv_opt$Exer)
 
 
+ggplot(data=serv_opt, aes(x=Exer))+geom_histogram(bins=100)
 
 
+ostr(serv_opt$Exer)
+nrow(serv_opt[serv_opt$Exer<=0.000001,])
+nrow(serv_opt[serv_opt$n_OptGrowth_Then_Year==0,])
 
-
+```
