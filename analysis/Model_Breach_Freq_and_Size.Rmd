@@ -57,17 +57,10 @@ Expectation: Given the fact that one source for higher salaries is the difficult
 
 ```{r Model01A}
 
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
-
-summary_continuous_plot(serv_smp,"cl_US6_avg_sal_lag1Const")
+summary_continuous_plot(serv_smp1m,metric="cbre","cl_US6_avg_sal_lag1Const")
 
 #Scatter Plot of n_CBre01A
-ggplot(serv_smp, aes(x=cl_US6_avg_sal_lag1Const, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_US6_avg_sal_lag1Const, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre01A <- glm (data=serv_smp,
@@ -75,7 +68,7 @@ b_CBre01A <- glm (data=serv_smp,
 display(b_CBre01A)
 
 n_CBre01A <- glm(data=serv_breach,
-                        ln_CBre ~ cl_US6_avg_sal_lag1Const)
+                        ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const)
 display(n_CBre01A)
 
 #Plot residuals versus fitted
@@ -95,17 +88,17 @@ Expectation: The invoice rate approximates how much the government is charged an
 
 ```{r Model01B}
 
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
+ 
+ 
+ 
+ 
+ 
+ 
 
-summary_continuous_plot(serv_smp,"cl_CFTE")
+summary_continuous_plot(serv_smp1m,metric="cbre","cl_CFTE")
 
 #Scatter Plot 
-ggplot(serv_smp, aes(x=cl_CFTE, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_CFTE, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre01B <- glm (data=serv_smp,
@@ -113,7 +106,7 @@ b_CBre01B <- glm (data=serv_smp,
 display(b_CBre01B)
 
 n_CBre01B <- glm(data=serv_breach,
-                        ln_CBre ~ cl_CFTE)
+                        ln_CBre_OMB20_GDP18 ~ cl_CFTE)
 
 
 
@@ -124,7 +117,7 @@ n_CBre01B <- glm(data=serv_breach,
                        type="text",
                        digits=2)
 
-
+debug(summary_residual_compare)
 summary_residual_compare(b_CBre01A,b_CBre01B, skip_vif = TRUE)
 
 
@@ -141,10 +134,10 @@ Expectation: Collectively, the higher average salary and invoice rate (more comp
 ```{r Model01C}
 
 
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
+ 
+ 
+ 
+ 
 
 
 #Model
@@ -153,7 +146,7 @@ b_CBre01C <- glm (data=serv_smp,
 glmer_examine(b_CBre01C)
 
 n_CBre01C <- glm(data=serv_breach,
-                        ln_CBre ~ cl_US6_avg_sal_lag1Const +  cl_CFTE)
+                        ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const +  cl_CFTE)
 
 glmer_examine(n_CBre01C)
 #Plot residuals versus fitted
@@ -183,10 +176,10 @@ Expectation: Performance-based services contracting ties a portion of a contract
 
 ```{r Model02A}
 
-summary_continuous_plot(serv_smp,"pPBSC")
+summary_continuous_plot(serv_smp1m,metric="cbre","pPBSC")
 
 #Scatter Plot 
-ggplot(serv_smp, aes(x=c_pPBSC, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=c_pPBSC, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre02A <- glm (data=serv_smp,
@@ -194,7 +187,7 @@ b_CBre02A <- glm (data=serv_smp,
 display(b_CBre02A)
 
 n_CBre02A <- glm(data=serv_breach,
-                        ln_CBre ~ c_pPBSC)
+                        ln_CBre_OMB20_GDP18 ~ c_pPBSC)
 
 display(n_CBre02A)
 #Plot residuals versus fitted
@@ -215,17 +208,17 @@ Expectation: The increasing share of contracting office obligations for a given 
 
 ```{r Model02B}
 
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
+ 
+ 
+ 
+ 
+ 
+ 
 
-summary_continuous_plot(serv_smp,"c_pOffPSC")
+summary_continuous_plot(serv_smp1m,metric="cbre","c_pOffPSC")
 
 #Scatter Plot 
-ggplot(serv_smp, aes(x=c_pOffPSC, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=c_pOffPSC, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre02B <- glm (data=serv_smp,
@@ -233,7 +226,7 @@ b_CBre02B <- glm (data=serv_smp,
 display(b_CBre02B)
 
 n_CBre02B <- glm(data=serv_breach,
-                        ln_CBre ~ c_pOffPSC)
+                        ln_CBre_OMB20_GDP18 ~ c_pOffPSC)
 
 display(n_CBre02B)
 #Plot residuals versus fitted
@@ -263,7 +256,7 @@ b_CBre02C <- glm (data=serv_smp,
 glmer_examine(b_CBre02C)
 
 n_CBre02C <- glm(data=serv_breach,
-                        ln_CBre ~ c_pPBSC+c_pOffPSC)
+                        ln_CBre_OMB20_GDP18 ~ c_pPBSC+c_pOffPSC)
 
 glmer_examine(n_CBre02C)
 #Plot residuals versus fitted
@@ -300,7 +293,7 @@ b_CBre02D <- glm (data=serv_smp,
 glmer_examine(b_CBre02D)
 
 n_CBre02D <- glm(data=serv_breach,
-                        ln_CBre ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC)
+                        ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + cl_CFTE+ c_pPBSC+c_pOffPSC)
 
 glmer_examine(n_CBre02D)
 #Plot residuals versus fitted
@@ -330,17 +323,17 @@ Expactation: The number of past years of the relationship between the contractin
 
 ```{r Model03A}
 
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
+ 
+ 
+ 
+ 
+ 
+ 
 
-summary_discrete_plot(serv_smp,"c_pairHist")
+summary_discrete_plot(serv_smp1m,metric="cbre","c_pairHist")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=c_pairHist, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=c_pairHist, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre03A <- glm (data=serv_smp,
@@ -348,7 +341,7 @@ b_CBre03A <- glm (data=serv_smp,
 display(b_CBre03A)
 
 n_CBre03A <- glm(data=serv_breach,
-                        ln_CBre ~ c_pairHist)
+                        ln_CBre_OMB20_GDP18 ~ c_pairHist)
 
 display(n_CBre03A)
 #Plot residuals versus fitted
@@ -372,17 +365,17 @@ Expectation: As the number of contract actions a vendor has performed for an off
 
 ```{r Model03B}
 
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
+ 
+ 
+ 
+ 
+ 
+ 
 
-summary_continuous_plot(serv_smp,"cl_pairCA")
+summary_continuous_plot(serv_smp1m,metric="cbre","cl_pairCA")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_pairCA, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_pairCA, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre03B <- glm (data=serv_smp,
@@ -390,7 +383,7 @@ b_CBre03B <- glm (data=serv_smp,
 display(b_CBre03B)
 
 n_CBre03B <- glm(data=serv_breach,
-                        ln_CBre ~ cl_pairCA)
+                        ln_CBre_OMB20_GDP18 ~ cl_pairCA)
 
 display(n_CBre03B)
 #Plot residuals versus fitted
@@ -415,12 +408,12 @@ The importance of partnership, trust, and handling difficult problems and uncert
 
 ```{r Model03C}
 
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
+ 
+ 
+ 
+ 
+ 
+ 
 
 #Model
 b_CBre03C <- glm (data=serv_smp,
@@ -428,7 +421,7 @@ b_CBre03C <- glm (data=serv_smp,
 glmer_examine(b_CBre03C)
 
 n_CBre03C <- glm(data=serv_breach,
-                        ln_CBre ~ c_pairHist+cl_pairCA)
+                        ln_CBre_OMB20_GDP18 ~ c_pairHist+cl_pairCA)
 
 glmer_examine(n_CBre03C)
 
@@ -467,7 +460,7 @@ b_CBre03D <- glm (data=serv_smp,
 glmer_examine(b_CBre03D)
 
 n_CBre03D <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA)
 
@@ -535,12 +528,12 @@ In the cumulative model, per dependent variable and independent variable:
 ```{r StudyVariableAlone}
 
 
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
+ 
+ 
+ 
+ 
+ 
+ 
 
 
 study_coef_list<-list("(Intercept)"="(Intercept)",
@@ -696,19 +689,12 @@ Expectation: Initial Ceiling size positively estimates increasing probability of
 ```{r Model04A}
 
 #Frequency Plot for unlogged ceiling
-freq_continuous_cbre_plot(serv_smp,"UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
-freq_continuous_cbre_plot(subset(serv_smp,UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18<100000000),
-               "UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18",
-               bins=1000)
+summary_continuous_plot(serv_smp1m,metric="cbre","UnmodifiedCeiling_OMB20_GDP18",bins=1000)
+summary_continuous_plot(serv_smp1m,metric="cbre","UnmodifiedCeiling_OMB20_GDP18",bins=50,log=TRUE)
 
-summary_continuous_plot(serv_smp,"cl_Ceil",bins=50)
-summary(serv_smp$cl_Ceil)
-
-str(serv_smp)
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_Ceil, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_Ceil, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre04A <- glm (data=serv_smp,
@@ -716,7 +702,7 @@ b_CBre04A <- glm (data=serv_smp,
 display(b_CBre04A)
 
 n_CBre04A <- glm(data=serv_breach,
-                        ln_CBre ~ cl_Ceil)
+                        ln_CBre_OMB20_GDP18 ~ cl_Ceil)
 
 display(n_CBre04A)
 #Plot residuals versus fitted
@@ -745,10 +731,10 @@ Expectation: Greater maximum duration will positively estimate the probability c
 freq_continuous_cbre_plot(serv_smp,"UnmodifiedDays",
                bins=1000)
 
-summary_continuous_plot(serv_smp,"capped_cl_Days")
+summary_continuous_plot(serv_smp1m,metric="cbre","capped_cl_Days")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=capped_cl_Days, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=capped_cl_Days, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre04B <- glm (data=serv_smp,
@@ -756,7 +742,7 @@ b_CBre04B <- glm (data=serv_smp,
 display(b_CBre04B)
 
 n_CBre04B <- glm(data=serv_breach,
-                        ln_CBre ~ capped_cl_Days)
+                        ln_CBre_OMB20_GDP18 ~ capped_cl_Days)
 
 display(n_CBre04B)
 #Plot residuals versus fitted
@@ -785,7 +771,7 @@ b_CBre04C <- glm (data=serv_smp,
 display(b_CBre04C)
 
 n_CBre04C <- glm(data=serv_breach,
-                        ln_CBre ~cl_Ceil + capped_cl_Days)
+                        ln_CBre_OMB20_GDP18 ~cl_Ceil + capped_cl_Days)
 
 display(n_CBre04C)
 #Plot residuals versus fitted
@@ -817,7 +803,7 @@ b_CBre04D <- glm (data=serv_smp,
 glmer_examine(b_CBre04D)
 
 n_CBre04D <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days)
@@ -850,12 +836,12 @@ No Competition (Baseline)			+	-	-
 5+ Offers			-	+	-
 
 ```{r Model05A}
-summary_discrete_plot(serv_smp,"Comp1or5")
+summary_discrete_plot(serv_smp1m,metric="cbre","Comp1or5")
 
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=Comp1or5, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=Comp1or5, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre05A <- glm (data=serv_smp,
@@ -863,7 +849,7 @@ b_CBre05A <- glm (data=serv_smp,
 display(b_CBre05A)
 
 n_CBre05A <- glm(data=serv_breach,
-                        ln_CBre ~ Comp1or5)
+                        ln_CBre_OMB20_GDP18 ~ Comp1or5)
 
 display(n_CBre05A)
 #Plot residuals versus fitted
@@ -894,7 +880,7 @@ b_CBre05B <- glm (data=serv_smp,
 glmer_examine(b_CBre05B)
 
 n_CBre05B <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -931,11 +917,11 @@ BPA/BOA			-	-	-
 
 ```{r Model06A}
 
-summary_discrete_plot(serv_smp,"Veh")
+summary_discrete_plot(serv_smp1m,metric="cbre","Veh")
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=Veh, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=Veh, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre06A <- glm (data=serv_smp,
@@ -943,7 +929,7 @@ b_CBre06A <- glm (data=serv_smp,
 display(b_CBre06A)
 
 n_CBre06A <- glm(data=serv_breach,
-                        ln_CBre ~ Veh)
+                        ln_CBre_OMB20_GDP18 ~ Veh)
 
 display(n_CBre06A)
 #Plot residuals versus fitted
@@ -978,7 +964,7 @@ b_CBre06B <- glm (data=serv_smp,
 glmer_examine(b_CBre06B)
 
 n_CBre06B <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1023,10 +1009,10 @@ serv_smp$PricingUCA<-factor(serv_smp$PricingUCA,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
 serv_smp$PricingUCA<-factor(serv_smp$PricingUCA,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-  summary_discrete_plot(serv_smp,"PricingUCA")
+  summary_discrete_plot(serv_smp1m,metric="cbre","PricingUCA")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=PricingUCA, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=PricingUCA, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1035,7 +1021,7 @@ b_CBre07A <- glm (data=serv_smp,
 display(b_CBre07A)
 
 n_CBre07A <- glm(data=serv_breach,
-                        ln_CBre ~ PricingUCA)
+                        ln_CBre_OMB20_GDP18 ~ PricingUCA)
 display(n_CBre07A)
 
 #Plot residuals versus fitted
@@ -1070,7 +1056,7 @@ b_CBre07B <- glm (data=serv_smp,
 glmer_examine(b_CBre07B)
 
 n_CBre07B <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1102,9 +1088,9 @@ Expectation: Service Contract replying on crisis funds would have more likelihoo
 
 #### 08A: Crisis Funding
 ```{r Model08A}
-summary_discrete_plot(serv_smp,"Crisis")
+summary_discrete_plot(serv_smp1m,metric="cbre","Crisis")
 #Scatter Plot
-ggplot(serv_smp, aes(x=Crisis, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=Crisis, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1113,7 +1099,7 @@ b_CBre08A <- glm (data=serv_smp,
 display(b_CBre08A)
 
 n_CBre08A <- glm(data=serv_breach,
-                        ln_CBre ~ Crisis)
+                        ln_CBre_OMB20_GDP18 ~ Crisis)
 
 display(n_CBre08A)
 
@@ -1150,7 +1136,7 @@ b_CBre08B <- glm (data=serv_smp,
 glmer_examine(b_CBre08B)
 
 n_CBre08B <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1186,12 +1172,12 @@ HHI (logged, + means more consolidation)	cl_def6_HHI_lag1+		+	-	-
 Expectations are  unchanged.
 ```{r Model09A}
 #Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp,"def6_HHI_lag1")
-summary_continuous_plot(serv_smp,"cl_def6_HHI_lag1")
-summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
+summary_continuous_plot(serv_smp1m,metric="cbre","def6_HHI_lag1")
+summary_continuous_plot(serv_smp1m,metric="cbre","cl_def6_HHI_lag1")
+summary_continuous_plot(serv_smp1m,metric="cbre","cl_def3_HHI_lag1")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def6_HHI_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def6_HHI_lag1, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1200,7 +1186,7 @@ b_CBre09A <- glm (data=serv_smp,
 display(b_CBre09A)
 
 n_CBre09A <- glm(data=serv_breach,
-                        ln_CBre ~ cl_def6_HHI_lag1)
+                        ln_CBre_OMB20_GDP18 ~ cl_def6_HHI_lag1)
 
 display(n_CBre09A)
 
@@ -1225,14 +1211,14 @@ Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 
 ```{r Model09B}
 #Frequency Plot for unlogged ceiling
-      summary_continuous_plot(serv_smp,"def6_ratio_lag1")
+      summary_continuous_plot(serv_smp1m,metric="cbre","def6_ratio_lag1")
 
-      summary_continuous_plot(serv_smp,"cl_def6_ratio_lag1")
+      summary_continuous_plot(serv_smp1m,metric="cbre","cl_def6_ratio_lag1")
       
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def6_ratio_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def6_ratio_lag1, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1241,7 +1227,7 @@ b_CBre09B <- glm (data=serv_smp,
 display(b_CBre09B)
 
 n_CBre09B <- glm(data=serv_breach,
-                        ln_CBre ~ cl_def6_ratio_lag1)
+                        ln_CBre_OMB20_GDP18 ~ cl_def6_ratio_lag1)
 
 display(n_CBre09B)
 #Plot residuals versus fitted
@@ -1265,14 +1251,14 @@ Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 
 ```{r Model09C}
 #Frequency Plot for unlogged ceiling
-      summary_continuous_plot(serv_smp,"def6_obl_lag1Const")
+      summary_continuous_plot(serv_smp1m,metric="cbre","def6_obl_lag1Const")
 
-      summary_continuous_plot(serv_smp,"cl_def6_obl_lag1Const")
+      summary_continuous_plot(serv_smp1m,metric="cbre","cl_def6_obl_lag1Const")
       
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def6_obl_lag1Const, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def6_obl_lag1Const, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1281,7 +1267,7 @@ b_CBre09C <- glm (data=serv_smp,
 display(b_CBre09C)
 
 n_CBre09C <- glm(data=serv_breach,
-                        ln_CBre ~ cl_def6_obl_lag1Const)
+                        ln_CBre_OMB20_GDP18 ~ cl_def6_obl_lag1Const)
 
 display(n_CBre09C)
 #Plot residuals versus fitted
@@ -1318,7 +1304,7 @@ b_CBre09D <- glm (data=serv_smp,
 glmer_examine(b_CBre09D)
 
 n_CBre09D <- glm(data=serv_breach,
-                        ln_CBre ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
+                        ln_CBre_OMB20_GDP18 ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
 
 glmer_examine(n_CBre09D)
 
@@ -1329,7 +1315,7 @@ b_CBre09D2 <- glm (data=serv_smp,
 glmer_examine(b_CBre09D2)
 
 n_CBre09D2 <- glm(data=serv_breach,
-                        ln_CBre ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
+                        ln_CBre_OMB20_GDP18 ~ cl_def6_HHI_lag1+cl_def6_ratio_lag1)
 
 glmer_examine(n_CBre09D2)
 #Plot residuals versus fitted
@@ -1372,7 +1358,7 @@ b_CBre09E <- glm (data=serv_smp,
 glmer_examine(b_CBre09E)
 
 n_CBre09E <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1403,12 +1389,12 @@ HHI (logged, + means more consolidation)	cl_def3_HHI_lag1+		+	++	-
 
 ```{r Model10A}
 #Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp,"cl_def3_HHI_lag1")
+summary_continuous_plot(serv_smp1m,metric="cbre","cl_def3_HHI_lag1")
 
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def3_HHI_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def3_HHI_lag1, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1417,7 +1403,7 @@ b_CBre10A <- glm (data=serv_smp,
 display(b_CBre10A)
 
 n_CBre10A <- glm(data=serv_breach,
-                        ln_CBre ~ cl_def3_HHI_lag1)
+                        ln_CBre_OMB20_GDP18 ~ cl_def3_HHI_lag1)
 
 display(n_CBre10A)
 #Plot residuals versus fitted
@@ -1443,12 +1429,12 @@ Ratio Def. obligatons : US revenue	cl_def3_ratio_lag1+		+	+	-
 
 ```{r Model10B}
 #Frequency Plot for unlogged ceiling
-summary_continuous_plot(serv_smp,"capped_def3_ratio_lag1")
-summary_continuous_plot(serv_smp,"cl_def3_ratio_lag1")
+summary_continuous_plot(serv_smp1m,metric="cbre","capped_def3_ratio_lag1")
+summary_continuous_plot(serv_smp1m,metric="cbre","cl_def3_ratio_lag1")
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_def3_HHI_lag1, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_def3_HHI_lag1, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1457,7 +1443,7 @@ b_CBre10B <- glm (data=serv_smp,
 display(b_CBre10B)
 
 n_CBre10B <- glm(data=serv_breach,
-                        ln_CBre ~ cl_def3_ratio_lag1)
+                        ln_CBre_OMB20_GDP18 ~ cl_def3_ratio_lag1)
 
 display(n_CBre10B)
 #Plot residuals versus fitted
@@ -1488,7 +1474,7 @@ b_CBre10C <- glm (data=serv_smp,
 glmer_examine(b_CBre10C)
 
 n_CBre10C <- glm(data=serv_breach,
-                        ln_CBre ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1)
+                        ln_CBre_OMB20_GDP18 ~ cl_def3_HHI_lag1+cl_def3_ratio_lag1)
 glmer_examine(n_CBre10C)
 
 #Plot residuals versus fitted
@@ -1530,7 +1516,7 @@ b_CBre10D <- glm (data=serv_smp,
 glmer_examine(b_CBre10D)
 
 n_CBre10D <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1563,10 +1549,10 @@ Market Share Vendor for that Office	c_pMarket		++	-	+
 
 ```{r Model11A}
 
-summary_continuous_plot(serv_smp,"c_pMarket")
+summary_continuous_plot(serv_smp1m,metric="cbre","c_pMarket")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=c_pMarket, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=c_pMarket, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1575,7 +1561,7 @@ b_CBre11A <- glm (data=serv_smp,
 display(b_CBre11A)
 
 n_CBre11A <- glm(data=serv_breach,
-                        ln_CBre ~ c_pMarket)
+                        ln_CBre_OMB20_GDP18 ~ c_pMarket)
 
 display(n_CBre11A)
 #Plot residuals versus fitted
@@ -1614,7 +1600,7 @@ b_CBre11B <- glm (data=serv_smp,
 glmer_examine(b_CBre11B)
 
 n_CBre11B <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1650,10 +1636,10 @@ From looking at data, terminations, easier for big, less dependent. - less depen
 
 ```{r Model12A}
 
-summary_continuous_plot(serv_smp,"cl_OffVol")
+summary_continuous_plot(serv_smp1m,metric="cbre","cl_OffVol")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_OffVol, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_OffVol, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre12A <- glm (data=serv_smp,
@@ -1661,7 +1647,7 @@ b_CBre12A <- glm (data=serv_smp,
 display(b_CBre12A)
 
 n_CBre12A <- glm(data=serv_breach,
-                        ln_CBre ~ cl_OffVol)
+                        ln_CBre_OMB20_GDP18 ~ cl_OffVol)
 
 display(n_CBre12A)
 
@@ -1691,10 +1677,10 @@ Expectation: More diverse industries of contracts contracting offices handle, th
 
 
 ```{r Model12B}
-summary_continuous_plot(serv_smp,"cl_office_naics_hhi_k")
+summary_continuous_plot(serv_smp1m,metric="cbre","cl_office_naics_hhi_k")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_office_naics_hhi_k, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_office_naics_hhi_k, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_CBre12B <- glm (data=serv_smp,
@@ -1702,7 +1688,7 @@ b_CBre12B <- glm (data=serv_smp,
 display(b_CBre12B)
 
 n_CBre12B <- glm(data=serv_breach,
-                        ln_CBre ~ cl_office_naics_hhi_k)
+                        ln_CBre_OMB20_GDP18 ~ cl_office_naics_hhi_k)
 
 display(n_CBre12B)
 
@@ -1745,7 +1731,7 @@ b_CBre12C <- glm (data=serv_smp,
 glmer_examine(b_CBre12C)
 
 n_CBre12C <- glm(data=serv_breach,
-                        ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                        ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
                  cl_Ceil + capped_cl_Days+
@@ -1773,13 +1759,13 @@ summary_residual_compare(b_CBre11A,b_CBre12C)
 
 ####13A: Ratio Initial Base : Ceiling Ratio (Logged)
 ```{r}
-summary_continuous_plot(serv_smp, "cl_Base2Ceil")
+summary_continuous_plot(serv_smp1m,metric="cbre", "cl_Base2Ceil")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cl_Base2Ceil, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle("Terminations and Ratio Initial Base:Ceiling Ratio (Logged") + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cl_Base2Ceil, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1) + ggtitle("Terminations and Ratio Initial Base:Ceiling Ratio (Logged") + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
-n_CBre13A <- glm(data=serv_breach, ln_CBre ~ cl_Base2Ceil)
+n_CBre13A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil)
 display(n_CBre13A)
 
 #Plot Residuals vs. Fitted
@@ -1791,7 +1777,7 @@ stargazer::stargazer(n_CBre12C, n_CBre13A, type="text", digits=2)
 
 #Model
 n_CBre13B <- glm(data=serv_smp,
-                 ln_CBre ~  cl_US6_avg_sal_lag1Const + 
+                 ln_CBre_OMB20_GDP18 ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -1814,12 +1800,12 @@ stargazer::stargazer(n_CBre12C, n_CBre13A, n_CBre13B)
 ```{r StudyVariableSummary}
 
 
- # !is.na(def_serv$cl_US6_avg_sal_lag1)&
- #  !is.na(def_serv$cl_CFTE)&
- #  !is.na(def_serv$c_pPBSC)&
- #  !is.na(def_serv$c_pOffPSC)&
- #  !is.na(def_serv$c_pairHist)&
- #  !is.na(def_serv$cl_pairCA)&
+ 
+ 
+ 
+ 
+ 
+ 
 
 
 
@@ -1878,10 +1864,10 @@ texreg::htmlreg(list(n_CBre01A,n_CBre01B,n_CBre02A,n_CBre02B,n_CBre03A,n_CBre03B
 ####15A: Average U.S. Salaries (logged):Contract Pricing
 ```{r}
 #Create the models
-n_cbre_salary_pricing_15A_no_interact <- glm(data=serv_breach, ln_CBre ~ PricingUCA + cl_US6_avg_sal_lag1)
+n_cbre_salary_pricing_15A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ PricingUCA + cl_US6_avg_sal_lag1)
 glmer_examine(n_cbre_salary_pricing_15A_no_interact)
 
-n_cbre_salary_pricing_15A <- glm(data=serv_breach, ln_CBre ~ PricingUCA + cl_US6_avg_sal_lag1 + PricingUCA:cl_US6_avg_sal_lag1)
+n_cbre_salary_pricing_15A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ PricingUCA + cl_US6_avg_sal_lag1 + PricingUCA:cl_US6_avg_sal_lag1)
 glmer_examine(n_cbre_salary_pricing_15A)
 
 
@@ -1895,7 +1881,7 @@ summary_residual_compare(n_cbre_salary_pricing_15A_no_interact, n_cbre_salary_pr
 ####15B: Cumulative
 ```{r}
 #Create the model
-n_cbre_salary_pricing_15B <- glm(data=serv_breach, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+n_cbre_salary_pricing_15B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -1918,10 +1904,10 @@ summary_residual_compare(n_cbre_salary_pricing_15B, n_CBre13B, bins=5)
 ####16A: Office Partnership:Actions
 ```{r}
 #Create the models
-n_cbre_partnership_actions_16A_no_interact <- glm(data=serv_breach, ln_CBre ~ c_pPBSC + cl_pairCA)
+n_cbre_partnership_actions_16A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_pairCA)
 glmer_examine(n_cbre_partnership_actions_16A_no_interact)
 
-n_cbre_partnership_actions_16A <- glm(data=serv_breach, ln_CBre ~ c_pPBSC + cl_pairCA + c_pPBSC:cl_pairCA)
+n_cbre_partnership_actions_16A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_pairCA + c_pPBSC:cl_pairCA)
 glmer_examine(n_cbre_partnership_actions_16A)
 
 
@@ -1936,7 +1922,7 @@ summary_residual_compare(n_cbre_partnership_actions_16A_no_interact, n_cbre_part
 ####16B: Cumulative
 ```{r}
 #Create the model
-n_cbre_partnership_actions_16B <- glm(data=serv_breach, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+n_cbre_partnership_actions_16B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -1958,10 +1944,10 @@ summary_residual_compare(n_cbre_partnership_actions_16B, n_CBre13B, bins=5)
 ####17A: Office Partnership:Market Vendor Share for that Office
 ```{r}
 #Define the models
-n_cbre_partnership_share_17A_no_interact <- glm(data=serv_breach, ln_CBre ~ c_pPBSC + c_pMarket)
+n_cbre_partnership_share_17A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + c_pMarket)
 glmer_examine(n_cbre_partnership_share_17A_no_interact)
 
-n_cbre_partnership_share_17A <- glm(data=serv_breach, ln_CBre ~ c_pPBSC + c_pMarket + c_pPBSC:c_pMarket)
+n_cbre_partnership_share_17A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + c_pMarket + c_pPBSC:c_pMarket)
 glmer_examine(n_cbre_partnership_share_17A)
 
 #Compare the models
@@ -1973,7 +1959,7 @@ summary_residual_compare(n_cbre_partnership_share_17A_no_interact, n_cbre_partne
 ####17B: Cumulative
 ```{r}
 #Create the model
-n_cbre_partnership_share_17B <- glm(data=serv_breach, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+n_cbre_partnership_share_17B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -1995,10 +1981,10 @@ summary_residual_compare(n_cbre_partnership_share_17B, n_CBre13B, bins=5)
 ####18A: Office Partnership:Initial Contract Duration (logged)
 ```{r}
 #Create the Model
-n_cbre_partnership_duration_18A_no_interact <- glm(data=serv_smp , ln_CBre ~ c_pPBSC + capped_cl_Days)
+n_cbre_partnership_duration_18A_no_interact <- glm(data=serv_smp , ln_CBre_OMB20_GDP18 ~ c_pPBSC + capped_cl_Days)
 glmer_examine(n_cbre_partnership_duration_18A_no_interact)
 
-n_cbre_partnership_duration_18A <- glm(data=serv_breach, ln_CBre ~ c_pPBSC + capped_cl_Days + c_pPBSC: capped_cl_Days)
+n_cbre_partnership_duration_18A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + capped_cl_Days + c_pPBSC: capped_cl_Days)
 glmer_examine(n_cbre_partnership_duration_18A)
 
 #Compare the models
@@ -2010,7 +1996,7 @@ summary_residual_compare(n_cbre_partnership_duration_18A_no_interact, n_cbre_par
 ####18B: Cumulative
 ```{r}
 #Create the model
-n_cbre_partnership_duration_18B <- glm(data=serv_breach, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+n_cbre_partnership_duration_18B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -2032,10 +2018,10 @@ summary_residual_compare(n_cbre_partnership_duration_18B, n_CBre13B, bins=5)
 ####19A: Past Years:Contract Pricing
 ```{r}
 #Create the models
-n_cbre_history_pricing_19A_no_interact <- glm(data=serv_breach, ln_CBre ~ c_pairHist + PricingUCA)
+n_cbre_history_pricing_19A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pairHist + PricingUCA)
 glmer_examine(n_cbre_history_pricing_19A_no_interact)
 
-n_cbre_history_pricing_19A <- glm(data=serv_breach, ln_CBre ~ c_pairHist + PricingUCA + c_pairHist:PricingUCA)
+n_cbre_history_pricing_19A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pairHist + PricingUCA + c_pairHist:PricingUCA)
 glmer_examine(n_cbre_history_pricing_19A)
 
 #Compare the models
@@ -2047,7 +2033,7 @@ summary_residual_compare(n_cbre_history_pricing_19A_no_interact, n_cbre_history_
 ####19B: Cumulative
 ```{r}
 #Create the model
-n_cbre_history_pricing_19B <- glm(data=serv_breach, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+n_cbre_history_pricing_19B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -2069,10 +2055,10 @@ summary_residual_compare(n_cbre_history_pricing_19B, n_CBre13B, bins=5)
 ####20A: Competition:NAICS Detailed Industry (Level 6)
 ```{r}
 #Create the models
-n_cbre_competition_naics_20A_no_interact <- glm(data=serv_breach, ln_CBre ~ Comp1or5 + cl_def6_HHI_lag1)
+n_cbre_competition_naics_20A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ Comp1or5 + cl_def6_HHI_lag1)
 glmer_examine(n_cbre_competition_naics_20A_no_interact)
 
-n_cbre_competition_naics_20A <- glm(data=serv_breach, ln_CBre ~ Comp1or5 + cl_def6_HHI_lag1 + Comp1or5:cl_def6_HHI_lag1)
+n_cbre_competition_naics_20A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ Comp1or5 + cl_def6_HHI_lag1 + Comp1or5:cl_def6_HHI_lag1)
 glmer_examine(n_cbre_competition_naics_20A)
 
 #Compare the models
@@ -2084,7 +2070,7 @@ summary_residual_compare(n_cbre_competition_naics_20A_no_interact, n_cbre_compet
 ####20B: Cumulative
 ```{r}
 #Create the model
-n_cbre_competition_naics_20B <- glm(data=serv_breach, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+n_cbre_competition_naics_20B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -2106,10 +2092,10 @@ summary_residual_compare(n_cbre_competition_naics_20B, n_CBre13B, bins=5)
 ####21A: Ratio Initial Base to Ceiling Ratio (logged):Initial Contract Ceiling (logged)
 ```{r}
 #Create the models
-n_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_breach, ln_CBre ~ cl_Base2Ceil + cl_Ceil)
+n_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Ceil)
 glmer_examine(n_CBre_base2ceil_ceiling_21A_no_interact)
 
-n_CBre_base2ceil_ceiling_21A <- glm(data=serv_breach, ln_CBre ~ cl_Base2Ceil + cl_Ceil + cl_Base2Ceil:cl_Ceil)
+n_CBre_base2ceil_ceiling_21A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Ceil + cl_Base2Ceil:cl_Ceil)
 glmer_examine(n_CBre_base2ceil_ceiling_21A)
 
 #Compare the Models
@@ -2121,7 +2107,7 @@ summary_residual_compare(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2c
 ####21B: Cumulative
 ```{r}
 #Create the model
-n_CBre_base2ceil_ceiling_21B <- glm(data=serv_breach, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+n_CBre_base2ceil_ceiling_21B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+
@@ -2142,10 +2128,10 @@ summary_residual_compare(n_CBre_base2ceil_ceiling_21B, n_CBre13B, bins=5)
 
 ####22A: Available Options:Initial Contract Duration (logged)
 ```{r}
-n_CBre_base2ceil_duration_22A_no_interact <- glm(data=serv_breach, ln_CBre ~ cl_Base2Ceil + capped_cl_Days)
+n_CBre_base2ceil_duration_22A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + capped_cl_Days)
 glmer_examine(n_CBre_base2ceil_duration_22A_no_interact)
 
-n_CBre_base2ceil_duration_22A <- glm(data=serv_breach, ln_CBre ~ cl_Base2Ceil + capped_cl_Days + cl_Base2Ceil:capped_cl_Days)
+n_CBre_base2ceil_duration_22A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + capped_cl_Days + cl_Base2Ceil:capped_cl_Days)
 glmer_examine(n_CBre_base2ceil_duration_22A)
 
 #Compare the Models
@@ -2157,7 +2143,7 @@ summary_residual_compare(n_CBre_base2ceil_duration_22A_no_interact, n_CBre_base2
 ####22B: Cumulative
 ```{r}
 #Create the model
-n_CBre_base2ceil_duration_22B <- glm(data=serv_breach, ln_CBre ~ cl_US6_avg_sal_lag1Const + 
+n_CBre_base2ceil_duration_22B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + capped_cl_Days+

@@ -530,8 +530,7 @@ summary_residual_compare(Term_04A, skip_vif = TRUE)
 
 ```
 
-Contract ceiling has a significant relationship, though the residuals show a possible non-linear patterns. This is most remarkable in the positive centered values between 0 and 1. This may be driven  by a missing value and is worth watching.
-Expectations upheld for ceiling breaches and terminations. Weak expectations for options growth were countered.
+Contract ceiling has a significant relationship and upholds expections with a lower AIC than the study variables collectively. Residuals show a possible  sinusoidal patterns.
 
 #### 04B: Maximum Duration
 
@@ -558,7 +557,7 @@ summary_residual_compare(Term_04B, skip_vif = TRUE)
 
 ```
 
-All expections were upheld.
+All expections were upheld and the coefficient is the largest and the AIC the lowest.
 
 ####04C: Ratio Initial Base : Ceiling Ratio (Logged)
 ```{r}
