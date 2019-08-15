@@ -577,9 +577,11 @@ summary_residual_compare(Term_04C,bins=2)
 Contrary to expectation, a larger base to ceil is associated with a much higher termination rate, though this may be driven by contracts with options being larger contracts, typically. 
 
 
-#### 04D: Both Scope variables
+#### 04D: Base (Instead of Ceiling)
 
 ```{r Model04D}
+serv_smp$ln_base
+
 
 #Model
 Term_04D <- glm (data=serv_smp,
