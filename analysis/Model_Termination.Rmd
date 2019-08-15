@@ -577,19 +577,18 @@ summary_residual_compare(Term_04C,bins=2)
 Contrary to expectation, a larger base to ceil is associated with a much higher termination rate, though this may be driven by contracts with options being larger contracts, typically. 
 
 
-#### 04D: Base (Instead of Ceiling)
+#### 04D: Cumulative Ceiling Scope
 
 ```{r Model04D}
-summary_continuous_plot(serv_smp1m,"UnmodifiedBase_OMB20_GDP18")
-summary_continuous_plot(serv_smp1m,"UnmodifiedBase_OMB20_GDP18", log=TRUE)
+
 
 #Model
 Term_04D <- glm (data=serv_smp,
-                 b_Term ~ cl_Base, family=binomial(link="logit"))
+                 b_Term ~ cl_Ceil +cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
 
-
+glmer_examine(Term_04D)
 stargazer::stargazer(
-                       Term_03D,Term_04A,Term_04D,
+                       Term_03D,Term_04A,Term_04B,Term_04C,Term_04D,
                        
                        type="text",
                        digits=2)
@@ -601,31 +600,79 @@ summary_residual_compare(Term_03D,Term_04D, bins=10)
 ```
 Surprisingly ceiling loses significance but the base to ceiling ratio retains it. The expectations predicted the opposite. 
 
-#### 04E: Cumulative  Model
+#### 04E: Base (Instead of Ceiling)
+Expectation: As with initial ceiling, inital base estimates increasing probability of ceiling breaches and terminations and negatively estimates the option growth. Terminations and ceiling breaches simply comes down to large being associated with higher risk. For options growth, higher base is expected to make some options more likely, as project scale gives it more momentum, but likewise the scale is expected to make exercising all options less likely.
 
 ```{r Model04E}
+summary_continuous_plot(serv_smp1m,"UnmodifiedBase_OMB20_GDP18")
+summary_continuous_plot(serv_smp1m,"UnmodifiedBase_OMB20_GDP18", log=TRUE)
 
 #Model
 Term_04E <- glm (data=serv_smp,
-                 b_Term ~ cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                   c_pairHist+cl_pairCA+
-                   cl_Ceil + cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
-glmer_examine(Term_04E)
+                 b_Term ~ cl_Base, family=binomial(link="logit"))
 
-   
 
 stargazer::stargazer(
-                       Term_03D,Term_04D,Term_04E,
+                       Term_03D,Term_04A,Term_04E,
                        
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(Term_03D,Term_04D,Term_04D,Term_04E)
+
+summary_residual_compare(Term_04E, bins=10)
 
 ```
-Salary has increased in significance in the opposite direction as expection while CFTE has lost it. Ceiling has regained signifiance, and other variables had small chains in magnitude.
+The relationship between base and termination is more complex, with two peaks than it is for ceiling. LIkewise it has less explanatory value. That said, the results are significant and in line with expectations.
+
+#### 04F: Cumulative Ceiling Scope
+The next step is to look at ratio of base to ceiling and initial maximum duration combined with base instead of ceiling.
+```{r Model04F}
+
+
+#Model
+Term_04F <- glm (data=serv_smp,
+                 b_Term ~ cl_Base +cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
+
+glmer_examine(Term_04F)
+stargazer::stargazer(
+                       Term_03D,Term_04A,Term_04B,Term_04C,Term_04D, Term_04E,Term_04F,
+                       
+                       type="text",
+                       digits=2)
+
+
+
+summary_residual_compare(Term_03D,Term_04F,Term_04D,Term_04F, bins=10)
+
+```
+There's marginal difference between the two, but descriptively it's easier to explain and thus likely worth using instead.
+
+#### 04G: Cumulative  Model
+
+```{r Model04G}
+
+#Model
+Term_04G <- glm (data=serv_smp,
+                 b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                   c_pairHist+cl_pairCA+
+                   cl_Base + cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
+glmer_examine(Term_04G)
+
+
+stargazer::stargazer(
+                       Term_03D,Term_04D,Term_04F,Term_04G,Term_04G2,
+                       
+                       type="text",
+                       digits=2)
+
+#
+summary_residual_compare(Term_03D,Term_04G2, bins=3)
+summary_residual_compare(Term_04G,Term_04G2, bins=3)
+
+```
+Salary has increased in significance in the opposite direction as expection while CFTE has lost it. Ceiling/Base has regained signifiance, and other variables had small chains in magnitude. Per discussion in 04F, sticking with base as there seems to be no downside.
 
 
 ### Competition
@@ -646,7 +693,7 @@ Term_05A <- glm (data=serv_smp,
 
 
 stargazer::stargazer(
-                       Term_04E,Term_05A,
+                       Term_04G,Term_05A,
                        
                        type="text",
                        digits=2)
@@ -667,20 +714,20 @@ Term_05B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + cl_Days+cl_Base2Ceil+
+                   cl_Base + cl_Days+cl_Base2Ceil+
                    Comp1or5, family=binomial(link="logit"))
 
 glmer_examine(Term_05B)
 
 
 stargazer::stargazer(
-                       Term_04E,Term_05A,Term_05B,
+                       Term_04G,Term_05A,Term_05B,
                        
                        type="text",
                        digits=2)
 
 #Plot residuals versus fitted   
-summary_residual_compare(Term_04E,Term_05B)
+summary_residual_compare(Term_04G,Term_05B)
 
 ```
 Minimal effect on study variables. Otherwise some changes in magnitude but no large shifts with the partial exception of the dropping coefficient for 2-4 offers.
@@ -710,7 +757,7 @@ stargazer::stargazer(
                        digits=2)
 
 #Plot residuals versus fitted
-summary_residual_compare(Term_04E,Term_05B)
+summary_residual_compare(Term_04G,Term_05B)
 
 ```
 
@@ -727,7 +774,7 @@ Term_06B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + cl_Days+cl_Base2Ceil+
+                   cl_Base + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh, family=binomial(link="logit"))
 
@@ -806,7 +853,7 @@ Term_07B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + cl_Days+cl_Base2Ceil+
+                   cl_Base + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA, family=binomial(link="logit"))
@@ -867,7 +914,7 @@ Term_08B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + cl_Days+cl_Base2Ceil+
+                   cl_Base + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1032,7 +1079,7 @@ Term_09E <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + cl_Days+cl_Base2Ceil+
+                   cl_Base + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1139,7 +1186,7 @@ Term_10D <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + cl_Days+cl_Base2Ceil+
+                   cl_Base + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1198,7 +1245,7 @@ Term_11B <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + cl_Days+cl_Base2Ceil+
+                   cl_Base + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1298,7 +1345,7 @@ Term_12C <- glm (data=serv_smp,
                  b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                    c_pairHist+cl_pairCA+
-                   cl_Ceil + cl_Days+cl_Base2Ceil+
+                   cl_Base + cl_Days+cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1335,7 +1382,7 @@ Combination				+	-	-
 Cost-based and incentive contract types may do a  better job at handling complex contracts.
 
 ```{r}
-summary_continuous_plot(def_breach,"cl_Ceil_Then_Year","PricingUCA",metric="cbre")
+summary_continuous_plot(serv_smp1m,"cl_Base_Then_Year","PricingUCA",metric="cbre")
 
 #Create the models
 term_salary_pricing_15A_no_interact <- glm(data=serv_smp, b_Term ~ PricingUCA + cl_US6_avg_sal_lag1,
@@ -1360,7 +1407,7 @@ Other cost based and other fixed price are in line with expectations. UCA is str
 term_salary_pricing_15B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
-                   cl_Ceil + cl_Days+ cl_Base2Ceil+
+                   cl_Base + cl_Days+ cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1382,7 +1429,7 @@ Excluded for VIF reasons.
 Performance based contracting should  encourage higher communication interactions and allow for more flexability, potentially increasing the benefits of regular interaction.
 Interact: Actions	c_pPBSC:cl_pairCA			+	-	-
 ```{r}
-summary_continuous_plot(def_breach,"c_pPBSC","cl_pairCA",metric="cbre")
+summary_continuous_plot(serv_smp1m,"c_pPBSC","cl_pairCA",metric="cbre")
 
 #Create the models
 term_partnership_actions_16A_no_interact <- glm(data=serv_smp, b_Term ~ c_pPBSC + cl_pairCA,
@@ -1409,7 +1456,7 @@ Expectations are contrary to expectations.
 term_partnership_actions_16B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
-                   cl_Ceil + cl_Days+ cl_Base2Ceil+
+                   cl_Base + cl_Days+ cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1433,7 +1480,7 @@ Performance based contracting is thought to mitigte some of the risks of vendor 
 Interact: Market Share Vendor for that Office	c_pPBSC: c_pMarket			++	--	--
 
 ```{r}
-summary_double_continuous(def_breach,"c_pPBSC","c_pMarket")
+summary_double_continuous(serv_smp1m,"c_pPBSC","c_pMarket")
 
 #Define the models
 term_partnership_share_17A_no_interact <- glm(data=serv_smp, b_Term ~ c_pPBSC + c_pMarket,
@@ -1456,7 +1503,7 @@ Significant and contrary to expectation, small reduction in AIC.
 term_partnership_share_17B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
-                   cl_Ceil + cl_Days+ cl_Base2Ceil+
+                   cl_Base + cl_Days+ cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1480,7 +1527,7 @@ Performance  based contracting is thought to mitigate the risks of longer time h
 (option, breach, term)
 Interact: Initial Contract Duration (logged)	c_pPBSC: capped_cl_Days			++	--	--
 ```{r}
-summary_double_continuous(def_breach,"c_pPBSC","cl_Days")
+summary_double_continuous(serv_smp1m,"c_pPBSC","cl_Days")
 
 #Create the Model
 term_partnership_duration_18A_no_interact <- glm(data=serv_smp , b_Term ~ c_pPBSC + cl_Days,
@@ -1504,7 +1551,7 @@ Significant and contrary to expectation.
 term_partnership_duration_18B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
-                   cl_Ceil + cl_Days+ cl_Base2Ceil+
+                   cl_Base + cl_Days+ cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1535,7 +1582,7 @@ Other Cost Based				+	-	-
 Undefinitized Contract Award				+	-	-
 Combination				+	-	-
 ```{r}
-summary_discrete_plot(def_breach,"c_pairHist","PricingUCA")
+summary_discrete_plot(serv_smp1m,"c_pairHist","PricingUCA")
 
 #Create the models
 term_history_pricing_19A_no_interact <- glm(data=serv_smp, b_Term ~ c_pairHist + PricingUCA,
@@ -1558,7 +1605,7 @@ Combination in line with expectations. Others are as well, but almost nothing is
 term_history_pricing_19B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
-                   cl_Ceil + cl_Days+ cl_Base2Ceil+
+                   cl_Base + cl_Days+ cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1577,7 +1624,7 @@ summary_residual_compare(Term_12C, term_history_pricing_19B, bins=5)
 Largely not significant and only lowers AIC a bit, but seems worth leaving in for now.
 ####20A: Competition:NAICS Detailed Industry (Level 6)
 ```{r}
-summary_continuous_plot(def_breach,"cl_def6_HHI_lag1","Comp1or5",metric="cbre")
+summary_continuous_plot(serv_smp1m,"cl_def6_HHI_lag1","Comp1or5",metric="cbre")
 
 #Create the models
 term_competition_naics_20A_no_interact <- glm(data=serv_smp, b_Term ~ Comp1or5 + cl_def6_HHI_lag1,
@@ -1592,18 +1639,18 @@ glmer_examine(term_competition_naics_20A)
 Excluded on VIF grounds.
 
 ####21A: Ratio Initial Base to Ceiling Ratio (logged):Initial Contract Ceiling (logged)
-More option  space gives more flexibility to the government and may lessen the eed for ceiling breaches and terminations. Likewise, this interaction provides something like the dollar size of available  options, so naturally it can be associated with a greater spending.
+This interaction approximates has a role similar to that of contract ceiling, although due to centering and logging it isn't equivalent. More option  space gives more flexibility to the government and may lessen the need for ceiling breaches and terminations. Likewise, this interaction provides something like the dollar size of available  options, so naturally it can be associated with a greater spending.
 (Options, Breach, Terminations)
-Initial Contract Ceiling (logged)	cl_Base2Ceil:cl_Ceil		TRUE	++	-	-
+Initial Contract Ceiling (logged)	cl_Base2Ceil:cl_Base		TRUE	++	-	-
 ```{r}
-summary_double_continuous(def_breach,"cl_Base2Ceil","cl_Ceil")
+summary_double_continuous(serv_smp1m,"cl_Base2Ceil","cl_Base")
 
 #Create the models
-term_base2ceil_ceiling_21A_no_interact <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil + cl_Ceil,
+term_base2ceil_ceiling_21A_no_interact <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil + cl_Base,
                  family=binomial(link="logit"))
 glmer_examine(term_base2ceil_ceiling_21A_no_interact)
 
-term_base2ceil_ceiling_21A <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil + cl_Ceil + cl_Base2Ceil:cl_Ceil,
+term_base2ceil_ceiling_21A <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil + cl_Base + cl_Base2Ceil:cl_Base,
                  family=binomial(link="logit"))
 glmer_examine(term_base2ceil_ceiling_21A)
 
@@ -1619,7 +1666,7 @@ Significant and in line with expectations.
 term_base2ceil_ceiling_21B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
-                   cl_Ceil + cl_Days+ cl_Base2Ceil+
+                   cl_Base + cl_Days+ cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1629,7 +1676,7 @@ term_base2ceil_ceiling_21B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Con
                    c_pMarket+
                    cl_OffVol+cl_office_naics_hhi_k +
                     c_pairHist:PricingUCA+ 
-                   cl_Base2Ceil:cl_Ceil,
+                   cl_Base2Ceil:cl_Base,
                  family=binomial(link="logit"))
 glmer_examine(term_base2ceil_ceiling_21B)
 #Compare the models
@@ -1645,7 +1692,7 @@ Option years are commonly associated with long contracts. This approach reduces 
 ++	-	-
 
 ```{r Model22A}
-summary_double_continuous(def_breach,"cl_Base2Ceil","cl_Days")
+summary_double_continuous(serv_smp1m,"cl_Base2Ceil","cl_Days")
 
 #Create Models
 term_base2ceil_duration_22A_no_interact <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil + cl_Days,
@@ -1668,7 +1715,7 @@ Significant but contrary to expectations and small AIC increase.
 term_base2ceil_duration_22B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
-                   cl_Ceil + cl_Days+ cl_Base2Ceil+
+                   cl_Base + cl_Days+ cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1678,7 +1725,7 @@ term_base2ceil_duration_22B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Co
                    c_pMarket+
                    cl_OffVol+cl_office_naics_hhi_k +
                     c_pairHist:PricingUCA+ 
-                   cl_Base2Ceil:cl_Ceil +
+                   cl_Base2Ceil:cl_Base +
                  cl_Base2Ceil:cl_Days,
                  family=binomial(link="logit"))
 glmer_examine(term_base2ceil_duration_22B)
@@ -1735,6 +1782,7 @@ texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 
 # Multilevel Model
 ####25A: 
+This was created while we were still using ceiling instead of base.
 ```{r}
 #Create the model
 term25A <- glmer(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
