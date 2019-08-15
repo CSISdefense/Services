@@ -1333,6 +1333,8 @@ Combination				+	-	-
 Cost-based and incentive contract types may do a  better job at handling complex contracts.
 
 ```{r}
+summary_continuous_plot(def_breach,"cl_Ceil_Then_Year","PricingUCA",metric="cbre")
+
 #Create the models
 term_salary_pricing_15A_no_interact <- glm(data=serv_smp, b_Term ~ PricingUCA + cl_US6_avg_sal_lag1,
                                            family=binomial(link="logit"))
@@ -1378,6 +1380,8 @@ Excluded for VIF reasons.
 Performance based contracting should  encourage higher communication interactions and allow for more flexability, potentially increasing the benefits of regular interaction.
 Interact: Actions	c_pPBSC:cl_pairCA			+	-	-
 ```{r}
+summary_continuous_plot(def_breach,"c_pPBSC","cl_pairCA",metric="cbre")
+
 #Create the models
 term_partnership_actions_16A_no_interact <- glm(data=serv_smp, b_Term ~ c_pPBSC + cl_pairCA,
                                                 family=binomial(link="logit"))
@@ -1398,6 +1402,7 @@ summary_residual_compare(term_partnership_actions_16A_no_interact, term_partners
 Expectations are contrary to expectations.
 ####16B: Cumulative
 ```{r}
+
 #Create the model
 term_partnership_actions_16B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -1426,6 +1431,8 @@ Performance based contracting is thought to mitigte some of the risks of vendor 
 Interact: Market Share Vendor for that Office	c_pPBSC: c_pMarket			++	--	--
 
 ```{r}
+summary_double_continuous(def_breach,"c_pPBSC","c_pMarket")
+
 #Define the models
 term_partnership_share_17A_no_interact <- glm(data=serv_smp, b_Term ~ c_pPBSC + c_pMarket,
                  family=binomial(link="logit"))
@@ -1471,6 +1478,8 @@ Performance  based contracting is thought to mitigate the risks of longer time h
 (option, breach, term)
 Interact: Initial Contract Duration (logged)	c_pPBSC: capped_cl_Days			++	--	--
 ```{r}
+summary_double_continuous(def_breach,"c_pPBSC","cl_Days")
+
 #Create the Model
 term_partnership_duration_18A_no_interact <- glm(data=serv_smp , b_Term ~ c_pPBSC + cl_Days,
                  family=binomial(link="logit"))
@@ -1524,6 +1533,8 @@ Other Cost Based				+	-	-
 Undefinitized Contract Award				+	-	-
 Combination				+	-	-
 ```{r}
+summary_discrete_plot(def_breach,"c_pairHist","PricingUCA")
+
 #Create the models
 term_history_pricing_19A_no_interact <- glm(data=serv_smp, b_Term ~ c_pairHist + PricingUCA,
                  family=binomial(link="logit"))
@@ -1564,6 +1575,8 @@ summary_residual_compare(Term_12C, term_history_pricing_19B, bins=5)
 Largely not significant and only lowers AIC a bit, but seems worth leaving in for now.
 ####20A: Competition:NAICS Detailed Industry (Level 6)
 ```{r}
+summary_continuous_plot(def_breach,"cl_def6_HHI_lag1","Comp1or5",metric="cbre")
+
 #Create the models
 term_competition_naics_20A_no_interact <- glm(data=serv_smp, b_Term ~ Comp1or5 + cl_def6_HHI_lag1,
                  family=binomial(link="logit"))
@@ -1581,6 +1594,8 @@ More option  space gives more flexibility to the government and may lessen the e
 (Options, Breach, Terminations)
 Initial Contract Ceiling (logged)	cl_Base2Ceil:cl_Ceil		TRUE	++	-	-
 ```{r}
+summary_double_continuous(def_breach,"cl_Base2Ceil","cl_Ceil")
+
 #Create the models
 term_base2ceil_ceiling_21A_no_interact <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil + cl_Ceil,
                  family=binomial(link="logit"))
@@ -1628,6 +1643,9 @@ Option years are commonly associated with long contracts. This approach reduces 
 ++	-	-
 
 ```{r Model22A}
+summary_double_continuous(def_breach,"cl_Base2Ceil","cl_Days")
+
+#Create Models
 term_base2ceil_duration_22A_no_interact <- glm(data=serv_smp, b_Term ~ cl_Base2Ceil + cl_Days,
                  family=binomial(link="logit"))
 glmer_examine(term_base2ceil_duration_22A_no_interact)
@@ -1717,7 +1735,7 @@ texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 ####25A: 
 ```{r}
 #Create the model
-term25A <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
+term25A <- glmer(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
                    cl_Ceil + cl_Days+ cl_Base2Ceil+
@@ -1735,13 +1753,14 @@ term25A <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const +
                    (1 | Agency/Office) +
                    (1 | PlaceCountryISO3)+ 
                    (1 | StartFY),
-                 family=binomial(link="logit"))
-glmer_examine(term_base2ceil_duration_22B)
-
+                 family=binomial(link="logit"),
+               verbose=TRUE)
+glmer_examine(term25A,display = TRUE)
+display(term25A)
 save(term25A,file="..\\output\\term25A.rdata")
 
 #Compare the models
-stargazer::stargazer(term_base2ceil_ceiling_21B, term_base2ceil_duration_22B, type="text", digits=2)
+stargazer::stargazer(term_base2ceil_ceiling_21B, term25A, type="text", digits=2)
 
-summary_residual_compare( term_base2ceil_ceiling_21B, term_base2ceil_duration_22B,bins=100)
+summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ```
