@@ -47,13 +47,15 @@ load(file="..//data//clean//def_sample.Rdata")
 
 The sample is created by including the entirity of the ARRA and Disaster datasets, as well as 100,000 records each from the OCO datase and another 100,000 from all remaining records.
 
+Two models are employed throughout, one looking at the probability of a ceiling breach occurring, and the other looking at the magnitude of ceiling breaches.  To avoid clustering at zero problems, the magnitude-based model is calculated only using transactions where a breach occurs, while the probabiliyt-based model is calculated on the full dataset.
+
 #Study Variables
 
 ##Services Complexity
-Expectation: Higher service complexity would make work more demanding and thus raises the risks of negative contracting outcomes, namely the likelihood of cost ceiling breaches and terminations increases and the likelihood exercised options decraeses.
+Expectation: Higher service complexity would make work more demanding and thus raises the risks of negative contracting outcomes, namely the likelihood of cost ceiling breaches and terminations increases and the likelihood exercised options decreases.
 
 ### 01A NAICS Salary
-Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS salary increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases) and exercised options decreases (increases).  We also then expect that higher average NAICS salaries (lower) will be correlated with ceiling breaches larger (smaller) in absolute size.
+Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS salary increases (decreases), the likelihood of cost ceiling breaches increases (decreases). We also then expect that higher average NAICS salaries (lower) will be correlated with ceiling breaches larger (smaller) in absolute size.
 
 ```{r Model01A}
 
@@ -74,26 +76,15 @@ display(n_CBre01A)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01A,n_CBre01A,type="text",
                        digits=2)
-
-
-
-
-
+summary_residual_compare(b_CBre01A, skip_vif = TRUE)
 ```
 
-Individually, expectations are matched for ceiing breaches, as higher average salaries estimate a higher risk of ceiling breaches.  In our GLM, we find an analogous relationship to our logit model, with higher salaries correlated with ceiling breaches of larger magnitudes.
+Individually, expectations are matched for ceiing breaches, as higher average salaries estimate a higher risk of ceiling breaches.  In our model based on ceiling breach size, we find an analogous relationship to our logit model, with higher salaries correlated with ceiling breaches of larger magnitudes.  However, a plot of the residuals of the logit model does reveal some irregularities, namely a deep valley at around 6% estimated probability, that then rises in a concave curve as estimated probability increases.
 
 ### 01B Invoice Rate
-Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employees who are supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood of cost ceiling breaches and terminations increases (decreases), and exercised options decrease (increase).  Likewise, we expect a higher invoice rate (lower) to be associated with ceiling breaches larger (smaller) in absolute magnitude.
+Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employee who is supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood of cost ceiling breaches increases (decreases).  Likewise, we expect a higher invoice rate (lower) to be associated with ceiling breaches larger (smaller) in absolute magnitude.
 
 ```{r Model01B}
-
- 
- 
- 
- 
- 
- 
 
 summary_continuous_plot(serv_smp1m,metric="cbre","cl_CFTE")
 
@@ -112,33 +103,23 @@ n_CBre01B <- glm(data=serv_breach,
 
 #Plot residuals versus fitted
   stargazer::stargazer(b_CBre01A,b_CBre01B,
-                       
                        n_CBre01A,n_CBre01B,
                        type="text",
                        digits=2)
 
-debug(summary_residual_compare)
+undebug(summary_residual_compare)
 summary_residual_compare(b_CBre01A,b_CBre01B, skip_vif = TRUE)
-
-
 
 ```
 
-When considered alone, expectations are matched for ceiling breaches, as higher invoice rate estimates a higher risk of ceiling breaches and lower possibility of exercised options. Similarly, higher invoice rates are correlated with larger ceiling breaches, matching our expectations.
+When considered alone, expectations are matched for ceiling breaches, as higher invoice rate estimates a higher risk of ceiling breaches. Similarly, higher invoice rates are correlated with larger ceiling breaches, matching our expectations.
 
 
 ### 01C Service Complexity
-Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), the higher risk of ceiling breaches and terminations and the less exercised options there would be. Also, we expect the result of combined model would be the same as individual models. Again, we expect higher levels of complexity to be correlated with larger ceiling breaches.
+Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), the higher risk of ceiling breaches. Also, we expect the result of combined model would be the same as individual models. Again, we expect higher levels of complexity to be correlated with larger ceiling breaches.
 
  
 ```{r Model01C}
-
-
- 
- 
- 
- 
-
 
 #Model
 b_CBre01C <- glm (data=serv_smp,
@@ -157,8 +138,8 @@ stargazer::stargazer(b_CBre01A,b_CBre01B,b_CBre01C,
                        digits=2)
 
 
-  summary_residual_compare(b_CBre01A,b_CBre01C)
-  summary_residual_compare(b_CBre01B,b_CBre01C)
+summary_residual_compare(b_CBre01A,b_CBre01C)
+summary_residual_compare(b_CBre01B,b_CBre01C)
 
 
 
@@ -166,13 +147,13 @@ stargazer::stargazer(b_CBre01A,b_CBre01B,b_CBre01C,
 
 Both average salary and invoiced rate have a not inconsiderable VIF but one well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
 
-Both individually and pair-wise, higher average salary and invoiced rate estimate higher possibility of cost ceiling breaches.  Likewise, both individually and pair-wise, higher average salary and invoiced rate are correlated with larger ceiling breaches.
+Both individually and pair-wise, higher average salary and invoiced rate estimate higher probability of cost ceiling breaches.  Likewise, both individually and pair-wise, higher average salary and invoiced rate are correlated with larger ceiling breaches.  The residuals for the pair-wise model are moderately irregular, and approach sinusoidal behavior.
 
 
 ## Office Capacity
 
 ### 02A: Performance Based Services
-Expectation: Performance-based services contracting ties a portion of a contractor's payment, contract extensions, or contract renewals to the achievement of specific, measurable performance standards and requirements, which encourages better contracting results. PBSC has the potential to reduce terminations and ceiling breaches and bring more possibility of exercised options.
+Expectation: Performance-based services contracting ties a portion of a contractor's payment, contract extensions, or contract renewals to the achievement of specific, measurable performance standards and requirements, which encourages better contracting results. PBSC has the potential to reduce ceiling breaches, and the size of the breaches that do occur.
 
 ```{r Model02A}
 
@@ -196,24 +177,17 @@ stargazer::stargazer(b_CBre01C,b_CBre02A,
                        type="text",
                        digits=2)
 
-
+summary_residual_compare(n_CBre02A)
 
 ```
 
-When considering PBSC alone, our logit model finds our expected relationship: higher levels of performance-based services contracting is associated with a lower likelihood of a ceiling breach occurring. However, our GLM demonstrates that higher levels of performance-based contracting are correlated with larger ceiling breaches (contrasting with our expectation), undermining this result (at least in part).  Given that the study team has more confidence in modelling ceiling breaches in dollar terms, it may be wise to disregard the logit result.
+When considering PBSC alone, our logit model finds the opposite of our expected relationship: higher levels of performance-based services contracting is associated with a higher likelihood of a ceiling breach occurring. However, our ceiling breach size-based model demonstrates that higher levels of performance-based contracting are correlated with smaller ceiling breaches (meeting our expectation).  Given that the study team has more confidence in modelling ceiling breaches in dollar terms, it may be wise to disregard the logit result.
 
 
 ### 02B: No.Office PSC History
-Expectation: The increasing share of contracting office obligations for a given service indicates high capcaity in that area, lower likelihood of cost ceiling breaches and termination and higher likelihood of exercised options are expected to be observed. Similarly, we expect the overall magnitude of ceiling breaches to be decreasing as the share of contracting office oglibations for a given service increases.
+Expectation: The increasing share of contracting office obligations for a given service indicates high capcaity in that area, lower likelihood of cost ceiling breaches are expected to be observed. Similarly, we expect the overall magnitude of ceiling breaches to be decreasing as the share of contracting office oglibations for a given service increases.
 
 ```{r Model02B}
-
- 
- 
- 
- 
- 
- 
 
 summary_continuous_plot(serv_smp1m,metric="cbre","c_pOffPSC")
 
@@ -245,7 +219,7 @@ When considering number of contracting office obligations for a given service al
 
 
 ### 02C: Office Capacity
-Expectation: Collectively, the larger share of PBSC and contracting office obligations for a given service, the less risk of ceiling breaches and terminations and the more exercised options there would be. Also we expect the results of combined model would be the same as two individual models above. Similarly, we expect that, as the collective share of PBSC and contracting office obligations for a given service increase, the magnitude of associated ceiling breaches declines.
+Expectation: Collectively, the larger share of PBSC and contracting office obligations for a given service, the less risk of ceiling breaches there would be. Also we expect the results of combined model would be the same as two individual models above. Similarly, we expect that, as the collective share of PBSC and contracting office obligations for a given service increase jointly, the magnitude of associated ceiling breaches declines.
 
 ```{r Model02C}
 
@@ -276,13 +250,15 @@ summary_residual_compare(b_CBre02B,b_CBre02C)
 
 No high correlation is observed between PBSC and Contract Office Obligations for PSC based on the vif score.
 
-After combining PBSC and Contract office obligations for PSC, PBSC had a flipped relationship with ceiling breaches that matches with expectation (A look at summary statistics for Performance-Based experience did find that as the percent of performance-based service went from 0 percent to 75 percent, the ceiling breach rate declined. Above 75 percent, it rose dramatically, suggesting an additional variable may influence that relationship.) but lost significance with terminations. The rest of results remained unmatching with expectations.
+After combining PBSC and Contract office obligations for PSC, PBSC had a flipped relationship with ceiling breach probability that matches with expectation. The rest of results continued to fail to meet expectations.
 
 That said, we find the expected relationship in the model estimating ceiling breach sizes (as c_pPBSC and c_pOffPSC rise, the size of a given ceiling breach falls).
 
+The binned residual plot for the logit model for PBSC shows a near-linear upward trend, and is thus highly abnormal.
+
 
 ### 02D: Cumulative  Model
-Expectation: When all the four variables are combined into one model, same expectations are applied as individual ones. Per service complexity indicator increases, higher risk of ceiling breaches and terminations and less exercised options expected. Per office capacity indicator increases, lower risk of ceiling breaches and terminations and more exercised options expected.  Again, per service complexity indicator increases, larger ceiling breaches in size expected.
+Expectation: When all the four variables are combined into one model, same expectations are applied as individual ones. Per service complexity indicator increase, higher risk of ceiling breaches expected. Per office capacity indicator increase, lower risk of ceiling breaches expected.  Again, per service complexity indicator increase, larger ceiling breaches in size expected; per office capacity indicator increase, smaller ceiling breaches in size expected.
 
 ```{r Model02D}
 
@@ -319,16 +295,9 @@ Ceiling Breaches: All variables remain the same within each subgroup (Services C
 ## Office-Vendor Relationship
 
 ### 03A: Pair History
-Expactation: The number of past years of the relationship between the contracting office or the contractors with a single transaction in a given fiscal year enough to qualify, namely, pair history increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and the exercised options increase (decrease) for that partnership.  Similarly, as the length of the pair history increases (decreases). the size of cost ceiling breaches is expected to decrease (increase).
+Expactation: As the number of past years of the relationship between the contracting office or the contractors with a single transaction in a given fiscal year enough to qualify, namely, pair history increases (decreases), the likelihood of cost ceiling breaches for that partnership decreases (increases).  Similarly, as the length of the pair history increases (decreases). the size of cost ceiling breaches is expected to decrease (increase).
 
 ```{r Model03A}
-
- 
- 
- 
- 
- 
- 
 
 summary_discrete_plot(serv_smp1m,metric="cbre","c_pairHist")
 
@@ -361,16 +330,9 @@ When considering pair history alone, expectations were met for ceiling breaches,
 
 
 ### 03B: Interaction
-Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) and that of exercised options increases (decreases) for that partnership.  Similarly, as the number of contract actions a vendor has performed for an office in the past year increases (decreases), the size of cost ceiling breaches should decrease (increase).
+Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) for that partnership.  Similarly, as the number of contract actions a vendor has performed for an office in the past year increases (decreases), the size of cost ceiling breaches should decrease (increase).
 
 ```{r Model03B}
-
- 
- 
- 
- 
- 
- 
 
 summary_continuous_plot(serv_smp1m,metric="cbre","cl_pairCA")
 
@@ -400,20 +362,13 @@ summary_residual_compare(b_CBre02D,b_CBre03B, skip_vif = TRUE)
 
 ```
 
-When considering contract actions alone, no expectations were met in the logit model. The patterns in the plots are complex, ceiling breaches has a sinusoidal or perhaps exponential relationship while terminations has an neative relationship, until the number of ations grows extreme at which point the risk jumps up.  However, when switching to modeling ceiling breach size, a strong negative relationship is found, as expected.
+When considering contract actions alone, no expectations were met in the logit model. The patterns in the plots are complex, ceiling breaches has a sinusoidal or perhaps exponential relationship.  However, when switching to modeling ceiling breach size, a strong negative relationship is found, as expected.
 
 ### 03C: Office-Vendor Relationship
 Expectation: 
-The importance of partnership, trust, and handling difficult problems and uncertainty together naturally lead into the last characteristic: the relationship between the contractor and buyer. The higher level of interaction provides the more opportunity to build a deeper relationship, the likelihood of cost ceiling breaches and terminations decreases and the exercised options increase for that partnership. Moreover, a higher level of interaction should decrease the size of associated ceiling breaches. Also we expect the result of combined model would be the same as individual models above.
+The importance of partnership, trust, and handling difficult problems and uncertainty together naturally lead into the last characteristic: the relationship between the contractor and buyer. The higher level of interaction provides the more opportunity to build a deeper relationship, the likelihood of a cost ceiling breach increases as pair history and pair contract actions rises. Moreover, a higher level of interaction should decrease the size of associated ceiling breaches. Also we expect the result of combined model would be the same as individual models above.
 
 ```{r Model03C}
-
- 
- 
- 
- 
- 
- 
 
 #Model
 b_CBre03C <- glm (data=serv_smp,
@@ -440,7 +395,7 @@ summary_residual_compare(b_CBre02D,b_CBre03C)
 
 ```
 
-When combining pair history and contract actions, magnitude of relationships with dependent variables incraesed.  However, the results of the combined model were the same as previous individual models: i.e. the contract options relationship expectation (more contract actions in the past, lower probability of breach) was not, but again, the expectation for pair history (longer pair history, lower probability of breach) was met.  However, when specifying the model in terms of ceiling breach size, the results of the combined model are quite different. Again, as above, we actually do find the strong negative relationship that we expected for past contract actions, which actually increases in magnitude in the combined model.  Interestingly, however, in the combined model, length of pair history actually exhibits a positive relationship with size of ceiling breach, the opposite of the relationship in the individual model, and violating our expectation.
+When combining pair history and contract actions, magnitude of relationships with dependent variables incraesed.  However, the results of the combined model were the same as previous individual models: i.e. the contract options relationship expectation (more contract actions in the past, lower probability of breach) was not met, but again, the expectation for pair history (longer pair history, lower probability of breach) was met.  However, when specifying the model in terms of ceiling breach size, the results of the combined model are quite different. Again, as above, we actually do find the strong negative relationship that we expected for past contract actions, which actually increases in magnitude in the combined model.  Moreover, in the combined magnitude-based model, pair history also displays a statistically significant negative relationship with the size of correlated ceiling breaches, as expected, and as above.
 
 
 ### 03D: Cumulative  Model
