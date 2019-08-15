@@ -580,16 +580,16 @@ Contrary to expectation, a larger base to ceil is associated with a much higher 
 #### 04D: Base (Instead of Ceiling)
 
 ```{r Model04D}
-serv_smp$ln_base
-
+summary_continuous_plot(serv_smp1m,"UnmodifiedBase_OMB20_GDP18")
+summary_continuous_plot(serv_smp1m,"UnmodifiedBase_OMB20_GDP18", log=TRUE)
 
 #Model
 Term_04D <- glm (data=serv_smp,
-                 b_Term ~ cl_Ceil +cl_Days+cl_Base2Ceil, family=binomial(link="logit"))
+                 b_Term ~ cl_Base, family=binomial(link="logit"))
 
-glmer_examine(Term_04D)
+
 stargazer::stargazer(
-                       Term_03D,Term_04A,Term_04B,Term_04C,Term_04D,
+                       Term_03D,Term_04A,Term_04D,
                        
                        type="text",
                        digits=2)
