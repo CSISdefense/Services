@@ -95,6 +95,7 @@ load(file="../data/clean/defense_services_complete.RData")
   
 
 colnames(def_serv)[colnames(def_serv)=="SteadyScopeOptionRescinded"]<-"SteadyScopeOptionRescision"
+colnames(def_serv)[colnames(def_serv)=="ln_base"]<-"l_Base"
 
 
   sumcheck<-abs(def_serv$UnmodifiedBase+
@@ -200,8 +201,6 @@ Should be transferred into transform contract at some point
 ### Office Diversity NAICS 
 ```{r UnnecessaryNAICS}
 load(file="../data/clean/transformed_def_serv.Rdata")
-
-
 
 cal_deflator<-remove_bom(read.csv("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/economic/Lookup_Calendar_Deflator.csv"))
 cal_deflator<-cal_deflator %>% dplyr::select(Calendar_Year,BEA18)
