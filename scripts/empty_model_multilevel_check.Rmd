@@ -16,8 +16,8 @@ library(R2WinBUGS)
 library(Hmisc)
 library(sjstats)
 library(optimx)
-source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/DIIGstat.r")
-source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/NAICS.r")
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/scripts/DIIGstat.r")
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/scripts/NAICS.r")
 
 axis.text.size<-10
 strip.text.size<-10
@@ -35,39 +35,6 @@ note.text.size<-1.40
 ## Load in data
 ```{r Sample}
  load(file="..//data//clean//def_sample.Rdata")
-# save(serv_smp,smp1m,file="../data//def_sample.Rdata")
-
-
-
-# complete<-!is.na(def$b_Term)&
-#   !is.na(def$b_CBre)&
-#   !is.na(def$n_Comp)&
-#   !is.na(def$l_Ceil)&
-#   !is.na(def$l_Days)&
-#   !is.na(def$Veh) &
-#   !is.na(def$n_Fixed)&
-#   !is.na(def$b_Intl)&
-#   !is.na(def$b_UCA)&
-#   !is.na(def$NAICS)&
-#   !is.na(def$NAICS2)&
-#   !is.na(def$cl_def6_HHI_lag1)&
-#   !is.na(def$US6_avg_sal_lag1)
-# # 
-# serv_smp<-def[complete,]
-# #8818392  to 8818392
-# 13057769 to 8335209
-# nrow(def[!complete,])/nrow(def)
-# sum(def[!complete,]$Action.Obligation,na.rm=TRUE)/sum(def$Action.Obligation,na.rm=TRUE)
-# 
-# smp1m<-serv_smp[sample(nrow(serv_smp),1000000),]
-# serv_smp<-serv_smp[sample(nrow(serv_smp),250000),]
-# save(file="data//def_sample.Rdata",serv_smp,smp1m)
-
-# levels(serv_smp$Intl)<- list("Just U.S."=c("Just U.S."), 
-#                                 "Any Intl."=c("Any International"))
-# levels(smp1m$Intl)<- list("Just U.S."=c("Just U.S."), 
-#                                 "Any Intl."=c("Any International"))
-
 
 ```
 

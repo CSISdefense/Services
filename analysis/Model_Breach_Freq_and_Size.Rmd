@@ -75,10 +75,8 @@ display(n_CBre01A)
 stargazer::stargazer(b_CBre01A,n_CBre01A,type="text",
                        digits=2)
 
-
-
-
-
+summary_residual_compare(b_CBre01A)
+summary_residual_compare(n_CBre01A)
 ```
 
 Individually, expectations are matched for ceiing breaches, as higher average salaries estimate a higher risk of ceiling breaches.  In our GLM, we find an analogous relationship to our logit model, with higher salaries correlated with ceiling breaches of larger magnitudes.
@@ -88,13 +86,6 @@ Expectation: The invoice rate approximates how much the government is charged an
 
 ```{r Model01B}
 
- 
- 
- 
- 
- 
- 
-
 summary_continuous_plot(serv_smp1m,metric="cbre","cl_CFTE")
 
 #Scatter Plot 
@@ -103,12 +94,9 @@ ggplot(serv_smp, aes(x=cl_CFTE, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1
 #Model
 b_CBre01B <- glm (data=serv_smp,
                  b_CBre ~ cl_CFTE, family=binomial(link="logit"))
-display(b_CBre01B)
 
 n_CBre01B <- glm(data=serv_breach,
                         ln_CBre_OMB20_GDP18 ~ cl_CFTE)
-
-
 
 #Plot residuals versus fitted
   stargazer::stargazer(b_CBre01A,b_CBre01B,
@@ -117,10 +105,8 @@ n_CBre01B <- glm(data=serv_breach,
                        type="text",
                        digits=2)
 
-debug(summary_residual_compare)
-summary_residual_compare(b_CBre01A,b_CBre01B, skip_vif = TRUE)
-
-
+summary_residual_compare(b_CBre01B)
+summary_residual_compare(n_CBre01B)
 
 ```
 
@@ -132,13 +118,6 @@ Expectation: Collectively, the higher average salary and invoice rate (more comp
 
  
 ```{r Model01C}
-
-
- 
- 
- 
- 
-
 
 #Model
 b_CBre01C <- glm (data=serv_smp,
@@ -157,11 +136,9 @@ stargazer::stargazer(b_CBre01A,b_CBre01B,b_CBre01C,
                        digits=2)
 
 
-  summary_residual_compare(b_CBre01A,b_CBre01C)
-  summary_residual_compare(b_CBre01B,b_CBre01C)
-
-
-
+  
+summary_residual_compare(b_CBre01A,b_CBre01C,b_CBre01B,b_CBre01C)
+summary_residual_compare(n_CBre01A,n_CBre01C,n_CBre01B,n_CBre01C)
 ```
 
 Both average salary and invoiced rate have a not inconsiderable VIF but one well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
@@ -237,7 +214,7 @@ stargazer::stargazer(b_CBre01C,b_CBre02A,b_CBre02B,
 
 
 
-summary_residual_compare(b_CBre02A,b_CBre02B, skip_vif = TRUE)
+summary_residual_compare(b_CBre02A,b_CBre02B)
 
 ```
 
@@ -353,7 +330,7 @@ display(n_CBre03A)
 
 
 
-summary_residual_compare(b_CBre02D,b_CBre03A, skip_vif = TRUE)
+summary_residual_compare(b_CBre02D,b_CBre03A)
 
 ```
 
@@ -395,8 +372,8 @@ stargazer::stargazer(b_CBre02D,b_CBre03A,b_CBre03B,
 
 
 
-summary_residual_compare(b_CBre03A,b_CBre03B, skip_vif = TRUE)
-summary_residual_compare(b_CBre02D,b_CBre03B, skip_vif = TRUE)
+summary_residual_compare(b_CBre03A,b_CBre03B)
+summary_residual_compare(b_CBre02D,b_CBre03B)
 
 ```
 
@@ -714,7 +691,7 @@ stargazer::stargazer(b_CBre03D,b_CBre04A,
 
 
 
-#summary_residual_compare(b_CBre03D,b_CBre04A, skip_vif = TRUE)
+#summary_residual_compare(b_CBre03D,b_CBre04A)
 
 
 ```
@@ -754,8 +731,8 @@ stargazer::stargazer(b_CBre03D,b_CBre04A,b_CBre04B,
 
 
 
-summary_residual_compare(b_CBre03D,b_CBre04B, skip_vif = TRUE)
-summary_residual_compare(b_CBre04A,b_CBre04B, skip_vif = TRUE)
+summary_residual_compare(b_CBre03D,b_CBre04B)
+summary_residual_compare(b_CBre04A,b_CBre04B)
 
 ```
 
@@ -1198,7 +1175,7 @@ stargazer::stargazer(b_CBre08B,b_CBre09A,
                        digits=2)
 
 
-summary_residual_compare(b_CBre08B,b_CBre09A, skip_vif = TRUE)
+summary_residual_compare(b_CBre08B,b_CBre09A)
 
 ```
 
@@ -1453,7 +1430,7 @@ stargazer::stargazer(b_CBre09B,b_CBre10A,b_CBre10B,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_CBre09B,b_CBre10B, skip_vif = TRUE)
+summary_residual_compare(b_CBre09B,b_CBre10B)
 ```
 
 Expectations were in lined with ceiling breaches and options, not with termination, and 
@@ -1659,8 +1636,8 @@ stargazer::stargazer(b_CBre12A,
                        digits=2)
 
 
-summary_residual_compare(b_CBre11A,b_CBre12A, skip_vif = TRUE)
-summary_residual_compare(b_CBre03D,b_CBre12A, skip_vif = TRUE)
+summary_residual_compare(b_CBre11A,b_CBre12A)
+summary_residual_compare(b_CBre03D,b_CBre12A)
 
 
 
@@ -1700,8 +1677,8 @@ stargazer::stargazer(b_CBre12B,
                        digits=2)
 
 
-# summary_residual_compare(b_CBre11A,b_CBre12B, skip_vif = TRUE)
-# summary_residual_compare(b_CBre03D,b_CBre12B, skip_vif = TRUE)
+# summary_residual_compare(b_CBre11A,b_CBre12B)
+# summary_residual_compare(b_CBre03D,b_CBre12B)
 
 ```
 
