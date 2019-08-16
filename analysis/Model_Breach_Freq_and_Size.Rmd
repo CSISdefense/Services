@@ -76,7 +76,9 @@ display(n_CBre01A)
 #Plot residuals versus fitted
 stargazer::stargazer(b_CBre01A,n_CBre01A,type="text",
                        digits=2)
-summary_residual_compare(b_CBre01A, skip_vif = TRUE)
+
+summary_residual_compare(b_CBre01A)
+summary_residual_compare(n_CBre01A)
 ```
 
 Individually, expectations are matched for ceiing breaches, as higher average salaries estimate a higher risk of ceiling breaches.  In our model based on ceiling breach size, we find an analogous relationship to our logit model, with higher salaries correlated with ceiling breaches of larger magnitudes.  However, a plot of the residuals of the logit model does reveal some irregularities, namely a deep valley at around 6% estimated probability, that then rises in a concave curve as estimated probability increases.
@@ -94,7 +96,6 @@ ggplot(serv_smp, aes(x=cl_CFTE, y=ln_CBre_OMB20_GDP18)) + geom_point(alpha = 0.1
 #Model
 b_CBre01B <- glm (data=serv_smp,
                  b_CBre ~ cl_CFTE, family=binomial(link="logit"))
-display(b_CBre01B)
 
 n_CBre01B <- glm(data=serv_breach,
                         ln_CBre_OMB20_GDP18 ~ cl_CFTE)
@@ -107,8 +108,8 @@ n_CBre01B <- glm(data=serv_breach,
                        type="text",
                        digits=2)
 
-undebug(summary_residual_compare)
-summary_residual_compare(b_CBre01A,b_CBre01B, skip_vif = TRUE)
+summary_residual_compare(b_CBre01B)
+summary_residual_compare(n_CBre01B)
 
 ```
 
@@ -142,7 +143,8 @@ summary_residual_compare(b_CBre01A,b_CBre01C)
 summary_residual_compare(b_CBre01B,b_CBre01C)
 
 
-
+summary_residual_compare(b_CBre01A,b_CBre01C,b_CBre01B,b_CBre01C)
+summary_residual_compare(n_CBre01A,n_CBre01C,n_CBre01B,n_CBre01C)
 ```
 
 Both average salary and invoiced rate have a not inconsiderable VIF but one well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
@@ -211,7 +213,7 @@ stargazer::stargazer(b_CBre01C,b_CBre02A,b_CBre02B,
 
 
 
-summary_residual_compare(b_CBre02A,b_CBre02B, skip_vif = TRUE)
+summary_residual_compare(b_CBre02A,b_CBre02B)
 
 ```
 
@@ -322,7 +324,7 @@ display(n_CBre03A)
 
 
 
-summary_residual_compare(b_CBre02D,b_CBre03A, skip_vif = TRUE)
+summary_residual_compare(b_CBre02D,b_CBre03A)
 
 ```
 

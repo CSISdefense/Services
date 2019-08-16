@@ -93,6 +93,7 @@ complete<-
   #Controls
   !is.na(def_serv$CompOffr)&
   !is.na(def_serv$cl_Offr)&
+  !is.na(def_serv$cl_Base)&
   !is.na(def_serv$cl_Ceil)&
   !is.na(def_serv$capped_cl_Days)&
   !is.na(def_serv$Veh) &
@@ -148,20 +149,20 @@ serv_breach<-def_serv[complete&def_serv$b_CBre==1,]
 
 #To instead replace entries in existing sample, use  this code.
 # load(file="data/clean/def_sample.Rdata")
-# serv_smp<-update_sample_col_CSIScontractID(serv_smp,
-#                                            def_serv[complete,],
-#                                            col=NULL,
-#                                            drop_and_replace=TRUE)
-# 
-# serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
-#                                            def_serv[complete,],
-#                                            col=NULL,
-#                                            drop_and_replace=TRUE)
-# 
-# serv_opt<-update_sample_col_CSIScontractID(serv_opt,
-#                                              def_serv[complete,],
-#                                              col=NULL,
-#                                              drop_and_replace=TRUE)
+serv_smp<-update_sample_col_CSIScontractID(serv_smp,
+                                           def_serv[complete,],
+                                           col=NULL,
+                                           drop_and_replace=TRUE)
+
+serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
+                                           def_serv[complete,],
+                                           col=NULL,
+                                           drop_and_replace=TRUE)
+
+serv_opt<-update_sample_col_CSIScontractID(serv_opt,
+                                             def_serv[complete,],
+                                             col=NULL,
+                                             drop_and_replace=TRUE)
 
 # serv_smp<-serv_smp %>% dplyr::select(-c(Ceil, qCRais))
 # serv_smp1m<-serv_smp1m %>% dplyr::select(-c(Ceil, qCRais))
