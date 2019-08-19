@@ -557,7 +557,7 @@ All expections were upheld, even significant and greater magnitude than the ceil
 
 Expectation, a high ratio means that the contract has more room for adjustment and incentives without radical steps. So higher ratio of total ceiling to base are expected to be associated with a lower frequency of termination, lower frequency and size of ceiling breach. For exercised options, a higher ratio would is expected to make it more likely that some options are exercised but less likely that all options are exercised.
 
-```{r}
+```{r Model04C}
 summary_continuous_plot(serv_smp1m, "Base2Ceil",bins=100)
 summary_continuous_plot(serv_smp1m, "Base2Ceil",log=TRUE)
 
@@ -877,7 +877,7 @@ Ceiling regains significance.
 
 
 ### Crisis Dataset
-Expectation: Service Contract replying on crisis funds would have more likelihood of cost-ceiling breaches and exercised options but less terminations.  
+Expectation: Service Contract replying on crisis funds would have more likelihood of cost-ceiling breaches and exercised options but fewer terminations.  
 
 #### 08A: Crisis Funding
 ```{r Model08A}
@@ -1303,10 +1303,9 @@ Out of our expectation, the results also showed increasing past office volume wo
 
 
 
-#### 12B: Detailed Industry Diveristy
+#### 12B: Detailed Industry Focus
 
-Expectation: More diverse industries of contracts contracting offices handle, the higher complexity they deal with, which would increase the likelihood of having cost ceiling breaches and terminations, and decreasing the likelihood of having options exercised.
-
+Expectation: If a office is focused on a smaller number of industries than it has a less complex set of responsibilities which would decrease the likelihood of having cost ceiling breaches and terminations, and increase the likelihood of having options exercised.
 
 ```{r Model12B}
 
@@ -1330,7 +1329,7 @@ summary_residual_compare(Term_12B, skip_vif = TRUE, bins=10)
 
 ```
 
-When using hhi calculated based on contracting office number of contracts: considering hhi alone, termination expectations were met.
+When using hhi calculated based on contracting office number of contracts: considering hhi alone, termination expectations were  not met.
 
 #### 12C: Cumulative Model
 
@@ -1365,7 +1364,7 @@ stargazer::stargazer(
 summary_residual_compare(Term_10D,Term_12C)
 summary_residual_compare(Term_11B,Term_12C)
 ```
-Pair history regains significance at the 0.05 level but HHI loses it. Both volume and diversity stay significant but have their magnitude sharply reduced.
+Pair history regains significance at the 0.05 level but HHI loses it. Both volume and focus stay significant but have their magnitude sharply reduced.
 # Interactions
 (Option, Breach, Termination)
 Firm-Fixed Price (base)				--	+	++
@@ -1544,7 +1543,7 @@ summary_residual_compare(term_partnership_duration_18A_no_interact, term_partner
 Significant and contrary to expectation.
 
 ####18B: Cumulative
-```{r}
+```{r Model18B}
 #Create the model
 term_partnership_duration_18B <- glm(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
