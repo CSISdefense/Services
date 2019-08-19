@@ -98,8 +98,6 @@ Term_01B <- glm (data=serv_smp,
 
 summary_residual_compare(Term_01B, skip_vif = TRUE)
 
-
-
 ```
 
 When considered alone, expectations are matched for ceiling breaches and exercised options, as higher invoice rate estimates a higher risk of ceiling breaches and lower possibility of exercised options.
@@ -1659,7 +1657,7 @@ stargazer::stargazer(term_base2ceil_ceiling_21A_no_interact, term_base2ceil_ceil
 
 summary_residual_compare(term_base2ceil_ceiling_21A_no_interact, term_base2ceil_ceiling_21A, bins=20)
 ```
-Significant and in line with expectations.
+Not significant, no longer in line with expecations. Leaving it out.
 ####21B: Cumulative
 ```{r}
 #Create the model
