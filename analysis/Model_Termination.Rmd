@@ -1636,7 +1636,7 @@ glmer_examine(term_competition_naics_20A)
 Excluded on VIF grounds.
 
 ####21A: Ratio Initial Base to Ceiling Ratio (logged):Initial Contract Ceiling (logged)
-This interaction approximates has a role similar to that of contract ceiling, although due to centering and logging it isn't equivalent. More option  space gives more flexibility to the government and may lessen the need for ceiling breaches and terminations. Likewise, this interaction provides something like the dollar size of available  options, so naturally it can be associated with a greater spending.
+This interaction approximates has a role similar to that of contract ceiling, although due to centering and logging it isn't equivalent. Thus in essence it covers the dollars rather than merely the proportion available for options. More option  space gives more flexibility to the government and may lessen the need for ceiling breaches and terminations. Likewise, this interaction provides something like the dollar size of available  options, so naturally it can be associated with a greater spending.
 (Options, Breach, Terminations)
 Initial Contract Ceiling (logged)	cl_Base2Ceil:cl_Base		TRUE	++	-	-
 ```{r}
@@ -1654,7 +1654,7 @@ glmer_examine(term_base2ceil_ceiling_21A)
 #Compare the Models
 stargazer::stargazer(term_base2ceil_ceiling_21A_no_interact, term_base2ceil_ceiling_21A, type="text", digits=2)
 
-summary_residual_compare(term_base2ceil_ceiling_21A_no_interact, term_base2ceil_ceiling_21A, bins=5)
+summary_residual_compare(term_base2ceil_ceiling_21A_no_interact, term_base2ceil_ceiling_21A, bins=20)
 ```
 Not significant, no longer in line with expecations. Leaving it out.
 ####21B: Cumulative
@@ -1778,14 +1778,14 @@ texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 ```
 
 # Multilevel Model
-####25A: 
+####25A: 2019-08-14 First run, original multilevel.
 This was created while we were still using ceiling instead of base.
-```{r}
+```{r Term25A}
 #Create the model
 term25A <- glmer(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA +
-                   cl_Ceil + cl_Days+ cl_Base2Ceil+
+                   cl_Base + cl_Days+ cl_Base2Ceil+
                    Comp1or5+
                    Veh+
                    PricingUCA+
@@ -1810,4 +1810,36 @@ save(term25A,file="..\\output\\term25A.rdata")
 stargazer::stargazer(term_base2ceil_ceiling_21B, term25A, type="text", digits=2)
 
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
+```
+
+####25B: 2019-08-14 Switch to base and 1m sample.
+```{r Term26A}
+#Create the model
+term26A <- glmer(data=serv_smp1m, b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Base + cl_Days+ cl_Base2Ceil+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k +
+                    c_pairHist:PricingUCA+ 
+                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                   (1 | Agency/Office) +
+                   (1 | PlaceCountryISO3)+ 
+                   (1 | StartFY),
+                 family=binomial(link="logit"),
+               verbose=TRUE)
+glmer_examine(term26A,display = TRUE)
+display(term26A)
+save(term26A,file="..\\output\\term26A.rdata")
+
+#Compare the models
+stargazer::stargazer(term_base2ceil_ceiling_21B, term26A, type="text", digits=2)
+
+summary_residual_compare( term_base2ceil_ceiling_21B, term26A,bins=100)
 ```
