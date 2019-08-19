@@ -941,35 +941,48 @@ After the cleaning, 2 categories remain relevant.
 ## Proportion of Options Exercised
 ```{r OptProp}
 
-serv_opt$OptSpaceOriginal<-serv_opt$UnmodifiedCeiling_Then_Year-serv_opt$UnmodifiedBase_Then_Year
-summary(serv_opt$OptSpaceOriginal)
-serv_opt$Exer<-(serv_opt$n_OptGrowth_Then_Year-1)/serv_opt$OptSpaceOriginal
+load(file="../data/clean/defense_services_complete.RData")
+
+def_serv$OptSpaceOriginal<-def_serv$UnmodifiedCeiling_Then_Year-def_serv$UnmodifiedBase_Then_Year
+summary(def_serv$OptSpaceOriginal)
+
+def_serv$OptSpaceUpdated<-(def_serv$UnmodifiedCeiling_Then_Year+def_serv$ChangeOrderCeilingGrowth+
+  def_serv$AdminCeilingModification+def_serv$OtherCeilingModification+
+  def_serv$SteadyScopeCeilingModification)-def_serv$UnmodifiedBase_Then_Year
 
 
 
 
-serv_opt$Exer[serv_opt$Exer>1]<-1
-summary(serv_opt$Exer)
+def_serv$Exer<-(def_serv$n_OptGrowth_Then_Year-1)/def_serv$OptSpaceOriginal
+def_serv$Exer[def_serv$Exer>1]<-1
+summary(def_serv$Exer)
 
 
 
 
 
 
-(serv_opt$UnmodifiedCeiling_Then_Year+serv_opt$ChangeOrderCeilingGrowth+
-  serv_opt$AdminCeilingModification+serv_opt$OtherCeilingModification+
-  serv_opt$SteadyScopeCeilingModification)-
+  def_serv$ChangeOrderOptionModification+
+  def_serv$SteadyScopeOptionGrowthAlone+
+    def_serv$SteadyScopeOptionGrowthMixed+
+    def_serv$SteadyScopeOptionRescision+
+    def_serv$AdminOptionModification+
+    def_serv$EndingOptionModification+
+    def_serv$OtherOptionModification-
+    ifelse(is.na(def_serv$SumOfbaseandexercisedoptionsvalue),
+           0,def_serv$SumOfbaseandexercisedoptionsvalue))>1
+
 #Not included in the ceiling.
 #ChangeOrderCeilingRescision
 #EndingCeilingModification+
 #OtherCeilingModification+
 
 
-ggplot(data=serv_opt, aes(x=Exer))+geom_histogram(bins=100)
+ggplot(data=def_serv, aes(x=Exer))+geom_histogram(bins=100)
 
 
-ostr(serv_opt$Exer)
-nrow(serv_opt[serv_opt$Exer<=0.000001,])
-nrow(serv_opt[serv_opt$n_OptGrowth_Then_Year==0,])
+ostr(def_serv$Exer)
+nrow(def_serv[def_serv$Exer<=0.000001,])
+nrow(def_serv[def_serv$n_OptGrowth_Then_Year==0,])
 
 ```
