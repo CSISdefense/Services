@@ -1945,8 +1945,19 @@ texreg::htmlreg(list(n_CBre01A,n_CBre01B,n_CBre02A,n_CBre02B,n_CBre03A,n_CBre03B
 
 
 ####15A: Average U.S. Salaries (logged):Contract Pricing
+Cost-based and incentive contract types may do a  better job at handling complex contracts.
+
 ```{r Model15A}
 #Create the models
+b_cbre_salary_pricing_15A_no_interact <- glm(data=serv_smp, b_CBre ~ PricingUCA + cl_US6_avg_sal_lag1, 
+                                             family=binomial(link="logit"))
+glmer_examine(b_cbre_salary_pricing_15A_no_interact)
+
+b_cbre_salary_pricing_15A <- glm(data=serv_smp, b_CBre ~ PricingUCA + cl_US6_avg_sal_lag1 + PricingUCA:cl_US6_avg_sal_lag1,
+                                 family=binomial(link="logit"))
+glmer_examine(b_cbre_salary_pricing_15A)
+
+
 n_cbre_salary_pricing_15A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ PricingUCA + cl_US6_avg_sal_lag1)
 glmer_examine(n_cbre_salary_pricing_15A_no_interact)
 
@@ -1956,11 +1967,13 @@ glmer_examine(n_cbre_salary_pricing_15A)
 
 #compare the models
 
-stargazer::stargazer(n_cbre_salary_pricing_15A_no_interact, n_cbre_salary_pricing_15A, type="text", digits=2)
+stargazer::stargazer(b_cbre_salary_pricing_15A_no_interact, b_cbre_salary_pricing_15A, 
+                     n_cbre_salary_pricing_15A_no_interact, n_cbre_salary_pricing_15A, type="text", digits=2)
 
 summary_residual_compare(n_cbre_salary_pricing_15A_no_interact, n_cbre_salary_pricing_15A, bins=5)
+summary_residual_compare(b_cbre_salary_pricing_15A_no_interact, b_cbre_salary_pricing_15A, bins=5)
 ```
-
+For frequency expectations are only partially hold, predominately for other cost based and combination or other. For size, expectations are widely upheld, except UCA contratts which are a special case of cost absed. 
 ####15B: Cumulative
 ```{r Model15B}
 #Create the model
