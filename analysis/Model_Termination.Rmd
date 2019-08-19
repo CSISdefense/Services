@@ -1422,8 +1422,8 @@ glmer_examine(term_salary_pricing_15B)
 Excluded for VIF reasons.
 
 ####16A: Office Partnership:Actions
-(Options, Breach, Terminations)
 Performance based contracting should  encourage higher communication interactions and allow for more flexability, potentially increasing the benefits of regular interaction.
+(Options, Breach, Terminations)
 Interact: Actions	c_pPBSC:cl_pairCA			+	-	-
 ```{r}
 summary_continuous_plot(serv_smp1m,"c_pPBSC","cl_pairCA",metric="cbre")
@@ -1523,6 +1523,7 @@ No value added according to AIC. Leave it out.
 Performance  based contracting is thought to mitigate the risks of longer time horizons and may even work  better with  them by incentivizing vendor investments.
 (option, breach, term)
 Interact: Initial Contract Duration (logged)	c_pPBSC: capped_cl_Days			++	--	--
+
 ```{r}
 summary_double_continuous(serv_smp1m,"c_pPBSC","cl_Days")
 
@@ -1619,7 +1620,15 @@ stargazer::stargazer(Term_12C,term_history_pricing_19B,  type="text", digits=2)
 summary_residual_compare(Term_12C, term_history_pricing_19B, bins=5)
 ```
 Largely not significant and only lowers AIC a bit, but seems worth leaving in for now.
+
 ####20A: Competition:NAICS Detailed Industry (Level 6)
+If competition is an instrument for consolidation, than it should be most effective when consolidation is lower.
+
+(Option, Breach,Term)
+No Competition (Baseline)				-	++	-
+1 Offer:				-	+	-
+2-4 Offers				+	-	+
+5+ Offers				-	-	+
 ```{r}
 summary_continuous_plot(serv_smp1m,"cl_def6_HHI_lag1","Comp1or5",metric="cbre")
 
@@ -1634,6 +1643,28 @@ glmer_examine(term_competition_naics_20A)
 
 ```
 Excluded on VIF grounds.
+
+####20B: Cumulative
+```{r Model20B}
+#Create the model
+n_cbre_competition_naics_20B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Base + cl_Base2Ceil + cl_Days
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k + Comp1or5:cl_def6_HHI_lag1)
+
+#Compare the models
+stargazer::stargazer(n_cbre_competition_naics_20B, n_CBre13B, type="text", digits=2)
+
+summary_residual_compare(n_cbre_competition_naics_20B, n_CBre13B, bins=5)
+```
 
 ####21A: Ratio Initial Base to Ceiling Ratio (logged):Initial Contract Ceiling (logged)
 This interaction approximates has a role similar to that of contract ceiling, although due to centering and logging it isn't equivalent. Thus in essence it covers the dollars rather than merely the proportion available for options. More option  space gives more flexibility to the government and may lessen the need for ceiling breaches and terminations. Likewise, this interaction provides something like the dollar size of available  options, so naturally it can be associated with a greater spending.
