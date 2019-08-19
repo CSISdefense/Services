@@ -948,6 +948,19 @@ serv_opt$Exer[serv_opt$Exer>1]<-1
 summary(serv_opt$Exer)
 
 
+
+
+
+
+(serv_opt$UnmodifiedCeiling_Then_Year+serv_opt$ChangeOrderCeilingGrowth+
+  serv_opt$AdminCeilingModification+serv_opt$OtherCeilingModification+
+  serv_opt$SteadyScopeCeilingModification)-
+#Not included in the ceiling.
+#ChangeOrderCeilingRescision
+#EndingCeilingModification+
+#OtherCeilingModification+
+
+
 ggplot(data=serv_opt, aes(x=Exer))+geom_histogram(bins=100)
 
 
