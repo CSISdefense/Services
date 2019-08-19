@@ -52,3 +52,5 @@ data/clean/def_serv_sample250k\.dat
 data/clean/def_serv_sample250k_code\.do
 
 data/semi_clean/Defense_Office\.sp_OfficeHistoryNAICS\.txt
+
+data/semi_clean/Contract.SP_ContractCeilingBreachCustomer.txt
