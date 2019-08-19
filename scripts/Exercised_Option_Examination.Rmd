@@ -941,9 +941,13 @@ After the cleaning, 2 categories remain relevant.
 ## Proportion of Options Exercised
 ```{r OptProp}
 
-serv_opt$OptSpace<-serv_opt$UnmodifiedCeiling_Then_Year-serv_opt$UnmodifiedBase_Then_Year
-summary(serv_opt$OptSpace)
-serv_opt$Exer<-(serv_opt$n_OptGrowth_Then_Year-1)/serv_opt$OptSpace
+serv_opt$OptSpaceOriginal<-serv_opt$UnmodifiedCeiling_Then_Year-serv_opt$UnmodifiedBase_Then_Year
+summary(serv_opt$OptSpaceOriginal)
+serv_opt$Exer<-(serv_opt$n_OptGrowth_Then_Year-1)/serv_opt$OptSpaceOriginal
+
+
+
+
 serv_opt$Exer[serv_opt$Exer>1]<-1
 summary(serv_opt$Exer)
 
