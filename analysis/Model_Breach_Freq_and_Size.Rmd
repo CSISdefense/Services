@@ -1983,6 +1983,10 @@ summary_residual_compare(n_cbre_salary_pricing_15B, n_CBre13B, bins=5)
 ```
 
 ####16A: Office Partnership:Actions
+Performance based contracting should  encourage higher communication interactions and allow for more flexability, potentially increasing the benefits of regular interaction.
+(Options, Breach, Terminations)
+Interact: Actions	c_pPBSC:cl_pairCA			+	-	-
+
 ```{r Model16A}
 #Create the models
 n_cbre_partnership_actions_16A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_pairCA)
@@ -2023,6 +2027,10 @@ summary_residual_compare(n_cbre_partnership_actions_16B, n_CBre13B, bins=5)
 ```
 
 ####17A: Office Partnership:Market Vendor Share for that Office
+Performance based contracting is thought to mitigte some of the risks of vendor  lock.
+(option,breach,termination)
+Interact: Market Share Vendor for that Office	c_pPBSC: c_pMarket			++	--	--
+
 ```{r Model17A}
 #Define the models
 n_cbre_partnership_share_17A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + c_pMarket)
@@ -2060,6 +2068,10 @@ summary_residual_compare(n_cbre_partnership_share_17B, n_CBre13B, bins=5)
 ```
 
 ####18A: Office Partnership:Initial Contract Duration (logged)
+Performance  based contracting is thought to mitigate the risks of longer time horizons and may even work  better with  them by incentivizing vendor investments.
+(option, breach, term)
+Interact: Initial Contract Duration (logged)	c_pPBSC: capped_cl_Days			++	--	--
+
 ```{r Model18A}
 #Create the Model
 n_cbre_partnership_duration_18A_no_interact <- glm(data=serv_smp , ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_Days)
@@ -2097,6 +2109,16 @@ summary_residual_compare(n_cbre_partnership_duration_18B, n_CBre13B, bins=5)
 ```
 
 ####19A: Past Years:Contract Pricing
+Positive prior relationships increase the effectiveness of cost-based contracts. T&M / LH / FP: LoE are in the middle here, so leaving  them out.
+
+(Option, Breach,Term)
+Firm-Fixed Price (base)				-	+	+
+Other Fixed Price				-	+	+
+Time & Materials / Labor Hours / FP: LoE						
+Incentive Fee (both FPIF or CBIF)				++	--	--
+Other Cost Based				+	-	-
+Undefinitized Contract Award				+	-	-
+Combination				+	-	-
 ```{r Model19A}
 #Create the models
 n_cbre_history_pricing_19A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pairHist + PricingUCA)
@@ -2134,6 +2156,13 @@ summary_residual_compare(n_cbre_history_pricing_19B, n_CBre13B, bins=5)
 ```
 
 ####20A: Competition:NAICS Detailed Industry (Level 6)
+If competition is an instrument for consolidation, than it should be most effective when consolidation is lower.
+
+(Option, Breach,Term)
+No Competition (Baseline)				-	++	-
+1 Offer:				-	+	-
+2-4 Offers				+	-	+
+5+ Offers				-	-	+
 ```{r Model20A}
 #Create the models
 n_cbre_competition_naics_20A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ Comp1or5 + cl_def6_HHI_lag1)
@@ -2171,12 +2200,16 @@ summary_residual_compare(n_cbre_competition_naics_20B, n_CBre13B, bins=5)
 ```
 
 ####21A: Ratio Initial Base to Ceiling Ratio (logged):Initial Contract Ceiling (logged)
+This interaction approximates has a role similar to that of contract ceiling, although due to centering and logging it isn't equivalent. Thus in essence it covers the dollars rather than merely the proportion available for options. More option  space gives more flexibility to the government and may lessen the need for ceiling breaches and terminations. Likewise, this interaction provides something like the dollar size of available  options, so naturally it can be associated with a greater spending.
+(Options, Breach, Terminations)
+Initial Contract Ceiling (logged)	cl_Base2Ceil:cl_Base		TRUE	++	-	-
+
 ```{r Model21A}
 #Create the models
-n_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Base-)
+n_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Base)
 glmer_examine(n_CBre_base2ceil_ceiling_21A_no_interact)
 
-n_CBre_base2ceil_ceiling_21A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Base- + cl_Base2Ceil:cl_Base-)
+n_CBre_base2ceil_ceiling_21A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Base- + cl_Base2Ceil:cl_Base)
 glmer_examine(n_CBre_base2ceil_ceiling_21A)
 
 #Compare the Models
@@ -2199,7 +2232,7 @@ n_CBre_base2ceil_ceiling_21B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_U
                    cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                    cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                    c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k + cl_Base2Ceil:cl_Base-)
+                   cl_OffVol+cl_office_naics_hhi_k + cl_Base2Ceil:cl_Base)
 
 #Compare the models
 stargazer::stargazer(n_CBre_base2ceil_ceiling_21B, n_CBre13B, type="text", digits=2)
@@ -2208,6 +2241,9 @@ summary_residual_compare(n_CBre_base2ceil_ceiling_21B, n_CBre13B, bins=5)
 ```
 
 ####22A: Available Options:Initial Contract Duration (logged)
+increase the extend of options exercised as it means continuing a contract rather than including additional features. Option years may also provide more options for cost controls. and reduce ceiling breaches.
+(Options, Ceiling Breach, Terminations)
+++	-	-
 ```{r Model22A}
 n_CBre_base2ceil_duration_22A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Days)
 glmer_examine(n_CBre_base2ceil_duration_22A_no_interact)
