@@ -1963,11 +1963,11 @@ summary_residual_compare(b_cbre_salary_pricing_15A_no_interact, b_cbre_salary_pr
 summary_residual_compare(n_cbre_salary_pricing_15A_no_interact, n_cbre_salary_pricing_15A, bins=5)
 
 ```
-For frequency expectations are only partially hold, predominately for other cost based and combination or other. For size, expectations are widely upheld, except UCA contratts which are a special case of cost absed. 
+For frequency expectations are only partially hold, predominately for other cost based and combination or other. For size, expectations are widely upheld, except UCA contracts which are a special case of cost absed. 
 ####15B: Cumulative
 ```{r Model15B}
 #Create the model
-b_cbre_salary_pricing_15B <- glm(data=serv_breach,
+b_cbre_salary_pricing_15B <- glm(data=serv_smp,
                         b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -1983,6 +1983,7 @@ b_cbre_salary_pricing_15B <- glm(data=serv_breach,
                    cl_OffVol+ 
                  #cl_office_naics_hhi_k+ 
                  PricingUCA:cl_US6_avg_sal_lag1, family=binomial(link="logit"))
+glmer_examine(b_cbre_salary_pricing_15B)
 
 n_cbre_salary_pricing_15B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -1999,15 +2000,10 @@ n_cbre_salary_pricing_15B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_
                    cl_OffVol+ 
                  #cl_office_naics_hhi_k+
                    PricingUCA:cl_US6_avg_sal_lag1)
-
-#Compare the models
-stargazer::stargazer(b_cbre_salary_pricing_15B, b_CBre12C3, 
-                     n_cbre_salary_pricing_15B, n_CBre12C3, type="text", digits=2)
-
-summary_residual_compare(b_cbre_salary_pricing_15B, b_CBre12C3, bins=5)
-summary_residual_compare(n_cbre_salary_pricing_15B, n_CBre12C3, bins=5)
+glmer_examine(n_cbre_salary_pricing_15B)
 
 ```
+Maximum VIF greatly exceeds 2 in both cases.
 
 ####16A: Office Partnership:Actions
 Performance based contracting should  encourage higher communication interactions and allow for more flexability, potentially increasing the benefits of regular interaction.
@@ -2016,33 +2012,54 @@ Interact: Actions	c_pPBSC:cl_pairCA			+	-	-
 
 ```{r Model16A}
 #Create the models
+
+b_cbre_partnership_actions_16A_no_interact <- glm(data=serv_smp, b_CBre ~ c_pPBSC + cl_pairCA, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_actions_16A_no_interact)
+
+b_cbre_partnership_actions_16A <- glm(data=serv_smp, b_CBre ~ c_pPBSC + cl_pairCA + c_pPBSC:cl_pairCA, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_actions_16A)
+
+
+#compare the models
+
 n_cbre_partnership_actions_16A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_pairCA)
 glmer_examine(n_cbre_partnership_actions_16A_no_interact)
 
 n_cbre_partnership_actions_16A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_pairCA + c_pPBSC:cl_pairCA)
 glmer_examine(n_cbre_partnership_actions_16A)
 
-b_cbre_partnership_actions_16A_no_interact <- glm(data=serv_breach, b_CBre ~ c_pPBSC + cl_pairCA, family=binomial(link="logit"))
-glmer_examine(b_cbre_partnership_actions_16A_no_interact)
-
-b_cbre_partnership_actions_16A <- glm(data=serv_breach, b_CBre ~ c_pPBSC + cl_pairCA + c_pPBSC:cl_pairCA, family=binomial(link="logit"))
-glmer_examine(b_cbre_partnership_actions_16A)
-
-
-#compare the models
 
 stargazer::stargazer(b_cbre_partnership_actions_16A_no_interact, b_cbre_partnership_actions_16A, 
                      n_cbre_partnership_actions_16A_no_interact, n_cbre_partnership_actions_16A, type="text", digits=2)
 
-summary_residual_compare( b_cbre_partnership_actions_16A_no_interact, b_cbre_partnership_actions_16A, bins=3)
+summary_residual_compare(b_cbre_partnership_actions_16A_no_interact, b_cbre_partnership_actions_16A, bins=3)
 
 summary_residual_compare(n_cbre_partnership_actions_16A_no_interact, n_cbre_partnership_actions_16A, bins=3)
 
 ```
-
+The interaction was signiicant in both cases but positive and contrary to expectations for frequency and negative and in keeping with expectations for breach size. That said for frequency  the introduction of the interaction does result in pairCA switching to a negative sign which is in keeping with expectations. Seems worth considering adding in both cases.
 ####16B: Cumulative
 ```{r Model16B}
 #Create the model
+b_cbre_partnership_actions_16B <- glm(data=serv_smp,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+
+                 c_pPBSC:cl_pairCA, family=binomial(link="logit"))
+
+
 n_cbre_partnership_actions_16B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -2059,31 +2076,19 @@ n_cbre_partnership_actions_16B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl
                  #cl_office_naics_hhi_k+
                    c_pPBSC:cl_pairCA)
 
-b_cbre_partnership_actions_16B <- glm(data=serv_breach,
-                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Base + cl_Base2Ceil + cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                 #cl_def3_HHI_lag1+
-                   cl_def3_ratio_lag1+
-                 c_pMarket+
-                   cl_OffVol+ 
-                 #cl_office_naics_hhi_k+ 
-                 c_pPBSC:cl_pairCA, family=binomial(link="logit"))
-
 
 #Compare the models
-stargazer::stargazer(b_cbre_partnership_actions_16B, b_CBre12C3, 
-                     n_cbre_partnership_actions_16B, n_CBre12C3,type="text", digits=2)
+stargazer::stargazer(b_CBre12C3, b_cbre_partnership_actions_16B, 
+                     n_CBre12C3, n_cbre_partnership_actions_16B, type="text", digits=2)
 
-summary_residual_compare(b_cbre_partnership_actions_16B, b_CBre12C3, bins=5)
-summary_residual_compare(n_cbre_partnership_actions_16B, n_CBre12C3, bins=5)
+summary_residual_compare(b_CBre12C3, b_cbre_partnership_actions_16B, bins=5)
+summary_residual_compare(n_CBre12C3, n_cbre_partnership_actions_16B, bins=5)
 ```
+
+The results were similar to those of the isolated models. Doesn't seem to worsen residuals and greatly helps AIC. Adding in both cases, despite being positive contrary to expectations for b_CBre.
+
+Current cumulative b_CBre model: b_cbre_partnership_actions_16B
+Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
 
 ####17A: Office Partnership:Market Vendor Share for that Office
 Performance based contracting is thought to mitigte some of the risks of vendor  lock.
@@ -2092,29 +2097,32 @@ Interact: Market Share Vendor for that Office	c_pPBSC: c_pMarket			++	--	--
 
 ```{r Model17A}
 #Define the models
+
+b_cbre_partnership_share_17A_no_interact <- glm(data=serv_smp, b_CBre ~ c_pPBSC + c_pMarket, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_share_17A_no_interact)
+
+b_cbre_partnership_share_17A <- glm(data=serv_smp, b_CBre ~ c_pPBSC + c_pMarket + c_pPBSC:c_pMarket, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_share_17A)
+
 n_cbre_partnership_share_17A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + c_pMarket)
 glmer_examine(n_cbre_partnership_share_17A_no_interact)
 
 n_cbre_partnership_share_17A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + c_pMarket + c_pPBSC:c_pMarket)
 glmer_examine(n_cbre_partnership_share_17A)
 
-b_cbre_partnership_share_17A_no_interact <- glm(data=serv_breach, b_CBre ~ c_pPBSC + c_pMarket, family=binomial(link="logit"))
-glmer_examine(b_cbre_partnership_share_17A_no_interact)
-
-b_cbre_partnership_share_17A <- glm(data=serv_breach, b_CBre ~ c_pPBSC + c_pMarket + c_pPBSC:c_pMarket, family=binomial(link="logit"))
-glmer_examine(b_cbre_partnership_share_17A)
 
 #Compare the models
-stargazer::stargazer(n_cbre_partnership_share_17A_no_interact, n_cbre_partnership_share_17A, b_cbre_partnership_share_17A_no_interact, b_cbre_partnership_share_17A, type="text", digits=2)
+stargazer::stargazer(b_cbre_partnership_share_17A_no_interact, b_cbre_partnership_share_17A, 
+                     n_cbre_partnership_share_17A_no_interact, n_cbre_partnership_share_17A, type="text", digits=2)
 
 summary_residual_compare(b_cbre_partnership_share_17A_no_interact, b_cbre_partnership_share_17A, bins=5)
 summary_residual_compare(n_cbre_partnership_share_17A_no_interact, n_cbre_partnership_share_17A, bins=5)
 ```
-
+Positive, contrary to expectation in both cases. No clear benefit in the residuals.
 ####17B: Cumulative
 ```{r Model17B}
 #Create the model
-b_cbre_partnership_share_17B <- glm(data=serv_breach,
+b_cbre_partnership_share_17B <- glm(data=serv_smp,
                         b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -2129,7 +2137,28 @@ b_cbre_partnership_share_17B <- glm(data=serv_breach,
                  c_pMarket+
                    cl_OffVol+ 
                  #cl_office_naics_hhi_k+ 
-                 c_pPBSC:c_pMarket, family=binomial(link="logit"))
+                 c_pPBSC:cl_pairCA+c_pPBSC:c_pMarket, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_share_17B)
+
+b_cbre_partnership_share_17B2 <- glm(data=serv_smp,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                 #c_pPBSC:cl_pairCA+
+                   c_pPBSC:c_pMarket, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_share_17B2)
+
 
 n_cbre_partnership_share_17B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -2145,13 +2174,41 @@ n_cbre_partnership_share_17B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_U
                  c_pMarket+
                    cl_OffVol+ 
                  #cl_office_naics_hhi_k+
+                   c_pPBSC:cl_pairCA+c_pPBSC:c_pMarket)
+glmer_examine(n_cbre_partnership_share_17B)
+
+
+n_cbre_partnership_share_17B2 <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+
                    c_pPBSC:c_pMarket)
+glmer_examine(n_cbre_partnership_share_17B2)
 
 #Compare the models
-stargazer::stargazer(n_cbre_partnership_share_17B, n_CBre12C3, b_cbre_partnership_share_17B, b_CBre12C3, type="text", digits=2)
+stargazer::stargazer(b_cbre_partnership_actions_16B, b_cbre_partnership_share_17B, b_cbre_partnership_share_17B2,
+                     n_cbre_partnership_actions_16B, n_cbre_partnership_share_17B2, type="text", digits=2)
 
-#summary_residual_compare(n_cbre_partnership_share_17B, n_CBre12C3, b_cbre_partnership_share_17B, b_CBre12C3, bins=5)
+summary_residual_compare(b_cbre_partnership_actions_16B, b_cbre_partnership_share_17B, bins=5)
+summary_residual_compare(n_cbre_partnership_actions_16B, n_cbre_partnership_share_17B2, bins=5)
 ```
+For frequency, it negative in alignment with expectations, does prompt a small reduction in AIC and thus seems worth adding.
+
+For size, VIF violations preclude allowing both PBSC:pairCA and PBSC and p_Mark for frequency. PBSC:pairCA is in line with expectations and has a lower AIC, so is clearly the one to keep.
+
+
+Current cumulative b_CBre model: b_cbre_partnership_share_17B
+Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
 
 ####18A: Office Partnership:Initial Contract Duration (logged)
 Performance  based contracting is thought to mitigate the risks of longer time horizons and may even work  better with  them by incentivizing vendor investments.
@@ -2160,17 +2217,17 @@ Interact: Initial Contract Duration (logged)	c_pPBSC: capped_cl_Days			++	--	--
 
 ```{r Model18A}
 #Create the Model
-n_cbre_partnership_duration_18A_no_interact <- glm(data=serv_smp , ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_Days)
+b_cbre_partnership_duration_18A_no_interact <- glm(data=serv_smp , b_CBre ~ c_pPBSC + cl_Days, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_duration_18A_no_interact)
+
+b_cbre_partnership_duration_18A <- glm(data=serv_smp, b_CBre ~ c_pPBSC + cl_Days + c_pPBSC: cl_Days, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_duration_18A)
+
+n_cbre_partnership_duration_18A_no_interact <- glm(data=serv_breach , ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_Days)
 glmer_examine(n_cbre_partnership_duration_18A_no_interact)
 
 n_cbre_partnership_duration_18A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_Days + c_pPBSC: cl_Days)
 glmer_examine(n_cbre_partnership_duration_18A)
-
-b_cbre_partnership_duration_18A_no_interact <- glm(data=serv_smp , b_CBre ~ c_pPBSC + cl_Days, family=binomial(link="logit"))
-glmer_examine(b_cbre_partnership_duration_18A_no_interact)
-
-b_cbre_partnership_duration_18A <- glm(data=serv_breach, b_CBre ~ c_pPBSC + cl_Days + c_pPBSC: cl_Days, family=binomial(link="logit"))
-glmer_examine(b_cbre_partnership_duration_18A)
 
 #Compare the models
 stargazer::stargazer(b_cbre_partnership_duration_18A_no_interact, b_cbre_partnership_duration_18A, 
@@ -2184,7 +2241,7 @@ summary_residual_compare(n_cbre_partnership_duration_18A_no_interact, n_cbre_par
 ####18B: Cumulative
 ```{r Model18B}
 #Create the model
-b_cbre_partnership_duration_18B <- glm(data=serv_breach,
+b_cbre_partnership_duration_18B <- glm(data=serv_smp,
                         b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -2218,11 +2275,11 @@ n_cbre_partnership_duration_18B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c
                    c_pPBSC:cl_Days)
 
 #Compare the models
-stargazer::stargazer(b_cbre_partnership_duration_18B, b_CBre12C3, 
-                     n_cbre_partnership_duration_18B, n_CBre12C3,type="text", digits=2)
+stargazer::stargazer(b_cbre_partnership_share_17B, b_cbre_partnership_duration_18B, 
+                     n_cbre_partnership_actions_16B, n_cbre_partnership_duration_18B, type="text", digits=2)
 
-summary_residual_compare(b_cbre_partnership_duration_18B, b_CBre12C3, bins=5)
-summary_residual_compare(n_cbre_partnership_duration_18B, n_CBre12C3, bins=5)
+summary_residual_compare(b_cbre_partnership_share_17B, b_cbre_partnership_duration_18B, bins=5)
+summary_residual_compare(n_cbre_partnership_actions_16B, n_cbre_partnership_duration_18B, bins=5)
 ```
 
 ####19A: Past Years:Contract Pricing
@@ -2238,17 +2295,18 @@ Undefinitized Contract Award				+	-	-
 Combination				+	-	-
 ```{r Model19A}
 #Create the models
+b_cbre_history_pricing_19A_no_interact <- glm(data=serv_smp, b_CBre ~ c_pairHist + PricingUCA, family=binomial(link="logit"))
+glmer_examine(b_cbre_history_pricing_19A_no_interact)
+
+b_cbre_history_pricing_19A <- glm(data=serv_smp, b_CBre ~ c_pairHist + PricingUCA + c_pairHist:PricingUCA, family=binomial(link="logit"))
+glmer_examine(b_cbre_history_pricing_19A)
+
 n_cbre_history_pricing_19A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pairHist + PricingUCA)
 glmer_examine(n_cbre_history_pricing_19A_no_interact)
 
 n_cbre_history_pricing_19A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pairHist + PricingUCA + c_pairHist:PricingUCA)
 glmer_examine(n_cbre_history_pricing_19A)
 
-b_cbre_history_pricing_19A_no_interact <- glm(data=serv_breach, b_CBre ~ c_pairHist + PricingUCA, family=binomial(link="logit"))
-glmer_examine(b_cbre_history_pricing_19A_no_interact)
-
-b_cbre_history_pricing_19A <- glm(data=serv_breach, b_CBre ~ c_pairHist + PricingUCA + c_pairHist:PricingUCA, family=binomial(link="logit"))
-glmer_examine(b_cbre_history_pricing_19A)
 
 #Compare the models
 stargazer::stargazer(b_cbre_history_pricing_19A_no_interact, b_cbre_history_pricing_19A,
@@ -2263,7 +2321,7 @@ summary_residual_compare(n_cbre_history_pricing_19A_no_interact, n_cbre_history_
 ####19B: Cumulative
 ```{r Model19B}
 #Create the model
-b_cbre_history_pricing_19B <- glm(data=serv_breach,
+b_cbre_history_pricing_19B <- glm(data=serv_smp,
                         b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -2297,11 +2355,11 @@ n_cbre_history_pricing_19B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6
                    c_pairHist:PricingUCA)
 
 #Compare the models
-stargazer::stargazer(b_cbre_history_pricing_19B, b_CBre12C3, 
-                     n_cbre_history_pricing_19B, n_CBre12C3, type="text", digits=2)
+stargazer::stargazer(b_cbre_partnership_share_17B, b_cbre_history_pricing_19B,
+                     n_cbre_partnership_actions_16B, n_cbre_history_pricing_19B, type="text", digits=2)
 
-summary_residual_compare(b_cbre_history_pricing_19B, b_CBre12C3, bins=5)
-summary_residual_compare(n_cbre_history_pricing_19B, n_CBre12C3, bins=5)
+summary_residual_compare(b_cbre_partnership_share_17B, b_cbre_history_pricing_19B, bins=5)
+summary_residual_compare(n_cbre_partnership_actions_16B, n_cbre_history_pricing_19B, bins=5)
 ```
 
 ####20A: Competition:NAICS Detailed Industry (Level 6)
@@ -2314,17 +2372,18 @@ No Competition (Baseline)				-	++	-
 5+ Offers				-	-	+
 ```{r Model20A}
 #Create the models
+b_cbre_competition_naics_20A_no_interact <- glm(data=serv_smp, b_CBre ~ Comp1or5 + cl_def6_HHI_lag1, family=binomial(link="logit"))
+glmer_examine(b_cbre_competition_naics_20A_no_interact)
+
+b_cbre_competition_naics_20A <- glm(data=serv_smp, b_CBre ~ Comp1or5 + cl_def6_HHI_lag1 + Comp1or5:cl_def6_HHI_lag1, family=binomial(link="logit"))
+glmer_examine(b_cbre_competition_naics_20A)
+
 n_cbre_competition_naics_20A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ Comp1or5 + cl_def6_HHI_lag1)
 glmer_examine(n_cbre_competition_naics_20A_no_interact)
 
 n_cbre_competition_naics_20A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ Comp1or5 + cl_def6_HHI_lag1 + Comp1or5:cl_def6_HHI_lag1)
 glmer_examine(n_cbre_competition_naics_20A)
 
-b_cbre_competition_naics_20A_no_interact <- glm(data=serv_breach, b_CBre ~ Comp1or5 + cl_def6_HHI_lag1, family=binomial(link="logit"))
-glmer_examine(b_cbre_competition_naics_20A_no_interact)
-
-b_cbre_competition_naics_20A <- glm(data=serv_breach, b_CBre ~ Comp1or5 + cl_def6_HHI_lag1 + Comp1or5:cl_def6_HHI_lag1, family=binomial(link="logit"))
-glmer_examine(b_cbre_competition_naics_20A)
 
 #Compare the models
 stargazer::stargazer(b_cbre_competition_naics_20A_no_interact, b_cbre_competition_naics_20A, 
@@ -2338,7 +2397,7 @@ summary_residual_compare(n_cbre_competition_naics_20A_no_interact, n_cbre_compet
 ####20B: Cumulative
 ```{r Model20B}
 #Create the model
-b_cbre_competition_naics_20B <- glm(data=serv_breach,
+b_cbre_competition_naics_20B <- glm(data=serv_smp,
                         b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -2372,11 +2431,11 @@ n_cbre_competition_naics_20B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_U
                    Comp1or5:cl_def6_HHI_lag1)
 
 #Compare the models
-stargazer::stargazer(b_CBre12C3, b_cbre_competition_naics_20B, 
-                     n_CBre12C3, n_cbre_competition_naics_20B, type="text", digits=2)
+stargazer::stargazer(b_cbre_partnership_share_17B, b_cbre_competition_naics_20B, 
+                     n_cbre_partnership_actions_16B, n_cbre_competition_naics_20B, type="text", digits=2)
 
-summary_residual_compare(b_cbre_competition_naics_20B, b_CBre12C3, 
-                         n_cbre_competition_naics_20B, n_CBre12C3, 
+summary_residual_compare(b_cbre_partnership_share_17B, b_cbre_competition_naics_20B, 
+                         n_cbre_partnership_actions_16B, n_cbre_competition_naics_20B, 
                          bins=5)
 ```
 
@@ -2387,6 +2446,12 @@ Initial Contract Ceiling (logged)	cl_Base2Ceil:cl_Base		TRUE	++	-	-
 
 ```{r Model21A}
 #Create the models
+b_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_smp,b_CBre ~ cl_Base2Ceil + cl_Base, family=binomial(link="logit"))
+glmer_examine(b_CBre_base2ceil_ceiling_21A_no_interact)
+
+b_CBre_base2ceil_ceiling_21A <- glm(data=serv_smp, b_CBre ~ cl_Base2Ceil + cl_Base + cl_Base2Ceil:cl_Base, family=binomial(link="logit"))
+glmer_examine(b_CBre_base2ceil_ceiling_21A)
+
 n_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Base)
 
 glmer_examine(n_CBre_base2ceil_ceiling_21A_no_interact)
@@ -2394,22 +2459,18 @@ glmer_examine(n_CBre_base2ceil_ceiling_21A_no_interact)
 n_CBre_base2ceil_ceiling_21A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Base- + cl_Base2Ceil:cl_Base)
 glmer_examine(n_CBre_base2ceil_ceiling_21A)
 
-b_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_breach,b_CBre ~ cl_Base2Ceil + cl_Base, family=binomial(link="logit"))
-glmer_examine(b_CBre_base2ceil_ceiling_21A_no_interact)
-
-b_CBre_base2ceil_ceiling_21A <- glm(data=serv_breach, b_CBre ~ cl_Base2Ceil + cl_Base + cl_Base2Ceil:cl_Base, family=binomial(link="logit"))
-glmer_examine(b_CBre_base2ceil_ceiling_21A)
-
 #Compare the Models
-stargazer::stargazer(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, b_CBre_base2ceil_ceiling_21A_no_interac, b_CBre_base2ceil_ceiling_21A, type="text", digits=2)
+stargazer::stargazer(b_CBre_base2ceil_ceiling_21A_no_interac, b_CBre_base2ceil_ceiling_21A, 
+                     n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, type="text", digits=2)
 
-#summary_residual_compare(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, b_CBre_base2ceil_ceiling_21A_no_interact, b_CBre_base2ceil_ceiling_21A, bins=5)
+summary_residual_compare(b_CBre_base2ceil_ceiling_21A_no_interact, b_CBre_base2ceil_ceiling_21A, bins=5)
+summary_residual_compare(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, bins=5)
 ```
 
 ####21B: Cumulative
 ```{r Model21B}
 #Create the model
-b_CBre_base2ceil_ceiling_21B <- glm(data=serv_breach,
+b_CBre_base2ceil_ceiling_21B <- glm(data=serv_smp,
                         b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -2439,18 +2500,12 @@ n_CBre_base2ceil_ceiling_21B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_U
                    c_pMarket+
                    cl_OffVol+cl_office_naics_hhi_k + cl_Base2Ceil:cl_Base)
 
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                 #cl_def3_HHI_lag1+
-                   cl_def3_ratio_lag1+
-                 c_pMarket+
-                   cl_OffVol+ 
-                 #cl_office_naics_hhi_k+
-                   cl_Base2Ceil:cl_Base)
-
 #Compare the models
-stargazer::stargazer(n_CBre_base2ceil_ceiling_21B, n_CBre12C3, b_CBre_base2ceil_ceiling_21B, b_CBre12C3, type="text", digits=2)
+stargazer::stargazer(b_cbre_partnership_share_17B, b_CBre_base2ceil_ceiling_21B, 
+                     n_cbre_partnership_actions_16B, n_CBre_base2ceil_ceiling_21B,  type="text", digits=2)
 
-#summary_residual_compare(n_CBre_base2ceil_ceiling_21B, n_CBre12C3, b_CBre_base2ceil_ceiling_21B, b_CBre12C3, bins=5)
+summary_residual_compare(b_cbre_partnership_share_17B, b_CBre_base2ceil_ceiling_21B, bins=5)
+summary_residual_compare(n_cbre_partnership_actions_16B, n_CBre_base2ceil_ceiling_21B, bins=5)
 ```
 
 ####22A: Available Options:Initial Contract Duration (logged)
@@ -2458,17 +2513,17 @@ increase the extend of options exercised as it means continuing a contract rathe
 (Options, Ceiling Breach, Terminations)
 ++	-	-
 ```{r Model22A}
+b_CBre_base2ceil_duration_22A_no_interact <- glm(data=serv_smp, b_CBre ~ cl_Base2Ceil + cl_Days, family=binomial(link="logit"))
+glmer_examine(b_CBre_base2ceil_duration_22A_no_interact)
+
+b_CBre_base2ceil_duration_22A <- glm(data=serv_smp, b_CBre ~ cl_Base2Ceil + cl_Days + cl_Base2Ceil:cl_Days, family=binomial(link="logit"))
+glmer_examine(b_CBre_base2ceil_duration_22A)
+
 n_CBre_base2ceil_duration_22A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Days)
 glmer_examine(n_CBre_base2ceil_duration_22A_no_interact)
 
 n_CBre_base2ceil_duration_22A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Days + cl_Base2Ceil:cl_Days)
 glmer_examine(n_CBre_base2ceil_duration_22A)
-
-b_CBre_base2ceil_duration_22A_no_interact <- glm(data=serv_breach, b_CBre ~ cl_Base2Ceil + cl_Days, family=binomial(link="logit"))
-glmer_examine(b_CBre_base2ceil_duration_22A_no_interact)
-
-b_CBre_base2ceil_duration_22A <- glm(data=serv_breach, b_CBre ~ cl_Base2Ceil + cl_Days + cl_Base2Ceil:cl_Days, family=binomial(link="logit"))
-glmer_examine(b_CBre_base2ceil_duration_22A)
 
 #Compare the Models
 stargazer::stargazer(n_CBre_base2ceil_duration_22A_no_interact, n_CBre_base2ceil_duration_22A, b_CBre_base2ceil_duration_22A_no_interact, b_CBre_base2ceil_duration_22A, type="text", digits=2)
@@ -2479,7 +2534,7 @@ stargazer::stargazer(n_CBre_base2ceil_duration_22A_no_interact, n_CBre_base2ceil
 ####22B: Cumulative
 ```{r Model22B}
 #Create the model
-b_CBre_base2ceil_duration_22B <- glm(data=serv_breach,
+b_CBre_base2ceil_duration_22B <- glm(data=serv_smp,
                         b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -2513,7 +2568,9 @@ n_CBre_base2ceil_duration_22B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_
                    cl_Base2Ceil:cl_Days)
 
 #Compare the models
-stargazer::stargazer(n_CBre_base2ceil_duration_22B, n_CBre12C3, b_CBre_base2ceil_duration_22B, b_CBre12C3, type="text", digits=2)
+stargazer::stargazer(b_cbre_partnership_share_17B, b_CBre_base2ceil_duration_22B, 
+                     n_cbre_partnership_actions_16B, n_CBre_base2ceil_duration_22B, type="text", digits=2)
 
-#summary_residual_compare(n_CBre_base2ceil_duration_22B, n_CBre12C3, b_CBre_base2ceil_duration_22B, b_CBre12C3, bins=5)
+summary_residual_compare(b_cbre_partnership_share_17B, b_CBre_base2ceil_duration_22B, bins=5)
+summary_residual_compare(n_cbre_partnership_actions_16B, n_CBre_base2ceil_duration_22B, bins=5)
 ```
