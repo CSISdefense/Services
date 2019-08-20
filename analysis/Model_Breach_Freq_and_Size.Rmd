@@ -160,7 +160,7 @@ n_CBre02A <- glm(data=serv_breach,
                         ln_CBre_OMB20_GDP18 ~ c_pPBSC)
 
 
-s#Plot residuals versus fitted
+#Plot residuals versus fitted
 stargazer::stargazer(b_CBre01C,b_CBre02A,
                        n_CBre01C,n_CBre02A,
                        type="text",
@@ -1186,12 +1186,8 @@ n_CBre09A <- glm(data=serv_breach,
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_CBre08B,b_CBre09A,
-                       
-                       n_CBre08B,n_CBre09A,
-                       type="text",
-                       digits=2)
-
+#stargazer::stargazer(b_CBre08B, b_CBre09A, n_CBre08B,n_CBre09A, type="text",digits=2)
+stargazer::stargazer(b_CBre09A, n_CBre09A, type="text",digits=2)
 
 ```
 
@@ -1225,13 +1221,9 @@ n_CBre09B <- glm(data=serv_breach,
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_CBre08B,b_CBre09A,b_CBre09B,
-                       
-                       n_CBre08B,n_CBre09A,n_CBre09B,
-                       type="text",
-                       digits=2)
+#stargazer::stargazer(b_CBre08B,b_CBre09A,b_CBre09B,n_CBre08B,n_CBre09A,n_CBre09B,type="text",digits=2)
 
-
+stargazer::stargazer(b_CBre09A,b_CBre09B,n_CBre09A,n_CBre09B,type="text",digits=2)
 
 ```
 Breach size results were significant and a higher ratio was associated with an increase is size as expected. For breach frequency the results were not significant and had a small magnitude.
@@ -1262,18 +1254,14 @@ n_CBre09C <- glm(data=serv_breach,
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_CBre09A,b_CBre09B,b_CBre09C,
-                       
-                       n_CBre09A,n_CBre09B,n_CBre09C,
-                       type="text",
-                       digits=2)
+stargazer::stargazer(b_CBre09A,b_CBre09B,b_CBre09C,n_CBre09A,n_CBre09B,n_CBre09C,type="text",digits=2)
 
 ```
 
 Contrary to expectation. for ceiling breach frequecny and size.
 
 #### Model 09D: NAICS 6 Combined
-Consolidation at lessa nd more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS levels, e.g. power plants, rather than more specific NAICS levels, like solar vs. coal. As a result, consolidation for more granular NAICS codes should estimate higher rates of ceiling breaches compared to less granular NAICS code.
+Consolidation at less and more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS levels, e.g. power plants, rather than more specific NAICS levels, like solar vs. coal. As a result, consolidation for more granular NAICS codes should estimate higher rates of ceiling breaches compared to less granular NAICS code.
 
 We'll start by adding in everything from both models and seeing what violates VIF.
 ```{r Model09D}
@@ -1300,7 +1288,7 @@ The hypothesis is upheld. Deviance is a little lower and residuals a little high
 Ratio at either level is no longer in line with expectations for ceiling breaches.
 
 #### Model 09E: Cumulative Model
-Consolidation at lessa nd more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS levels, e.g. power plants, rather than more specific NAICS levels, like solar vs. coal. As a result, consolidation for more granular NAICS codes should estimate higher rates of ceiling breaches compared to less granular NAICS code.
+Consolidation at less and more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS levels, e.g. power plants, rather than more specific NAICS levels, like solar vs. coal. As a result, consolidation for more granular NAICS codes should estimate higher rates of ceiling breaches compared to less granular NAICS code.
 
 We'll start by adding in everything from both models and seeing what violates VIF.
 ```{r Model09E}
@@ -1331,14 +1319,11 @@ n_CBre09E <- glm(data=serv_breach,
 glmer_examine(n_CBre09E)
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_CBre08B,b_CBre09D,b_CBre09E,
-                     
-                     n_CBre08B,n_CBre09D,n_CBre09E,
-                       type="text",
-                       digits=2)
+#stargazer::stargazer(b_CBre08B,b_CBre09D,b_CBre09E,n_CBre08B,n_CBre09D,n_CBre09E,type="text",digits=2)
+stargazer::stargazer(b_CBre09D,b_CBre09E,n_CBre09D,n_CBre09E,type="text",digits=2)
 
-summary_residual_compare(b_CBre08B,b_CBre09E)
-summary_residual_compare(b_CBre08B,b_CBre09E)
+#summary_residual_compare(b_CBre08B,b_CBre09E)
+#summary_residual_compare(b_CBre08B,b_CBre09E)
 ```
 
 Detailed Industry HHI is no longer significant for frequency or size. Detailed Industry Ratio is now significant but now is associated with less frequent breaches, contrary to expectation. Detailed Industry Ratio remains in  ine with expectation tough with a smaller magnitude.
