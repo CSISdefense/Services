@@ -1186,8 +1186,12 @@ n_CBre09A <- glm(data=serv_breach,
 
 
 #Plot residuals versus fitted
-#stargazer::stargazer(b_CBre08B, b_CBre09A, n_CBre08B,n_CBre09A, type="text",digits=2)
-stargazer::stargazer(b_CBre09A, n_CBre09A, type="text",digits=2)
+stargazer::stargazer(b_CBre08B,b_CBre09A,
+                       
+                       n_CBre08B,n_CBre09A,
+                       type="text",
+                       digits=2)
+
 
 ```
 
@@ -1221,9 +1225,13 @@ n_CBre09B <- glm(data=serv_breach,
 
 
 #Plot residuals versus fitted
-#stargazer::stargazer(b_CBre08B,b_CBre09A,b_CBre09B,n_CBre08B,n_CBre09A,n_CBre09B,type="text",digits=2)
+stargazer::stargazer(b_CBre08B,b_CBre09A,b_CBre09B,
+                       
+                       n_CBre08B,n_CBre09A,n_CBre09B,
+                       type="text",
+                       digits=2)
 
-stargazer::stargazer(b_CBre09A,b_CBre09B,n_CBre09A,n_CBre09B,type="text",digits=2)
+
 
 ```
 Breach size results were significant and a higher ratio was associated with an increase is size as expected. For breach frequency the results were not significant and had a small magnitude.
@@ -1254,7 +1262,11 @@ n_CBre09C <- glm(data=serv_breach,
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_CBre09A,b_CBre09B,b_CBre09C,n_CBre09A,n_CBre09B,n_CBre09C,type="text",digits=2)
+stargazer::stargazer(b_CBre09A,b_CBre09B,b_CBre09C,
+                       
+                       n_CBre09A,n_CBre09B,n_CBre09C,
+                       type="text",
+                       digits=2)
 
 ```
 
@@ -1319,11 +1331,14 @@ n_CBre09E <- glm(data=serv_breach,
 glmer_examine(n_CBre09E)
 
 #Plot residuals versus fitted
-#stargazer::stargazer(b_CBre08B,b_CBre09D,b_CBre09E,n_CBre08B,n_CBre09D,n_CBre09E,type="text",digits=2)
-stargazer::stargazer(b_CBre09D,b_CBre09E,n_CBre09D,n_CBre09E,type="text",digits=2)
+stargazer::stargazer(b_CBre08B,b_CBre09D,b_CBre09E,
+                     
+                     n_CBre08B,n_CBre09D,n_CBre09E,
+                       type="text",
+                       digits=2)
 
-#summary_residual_compare(b_CBre08B,b_CBre09E)
-#summary_residual_compare(b_CBre08B,b_CBre09E)
+summary_residual_compare(b_CBre08B,b_CBre09E)
+summary_residual_compare(b_CBre08B,b_CBre09E)
 ```
 
 Detailed Industry HHI is no longer significant for frequency or size. Detailed Industry Ratio is now significant but now is associated with less frequent breaches, contrary to expectation. Detailed Industry Ratio remains in  ine with expectation tough with a smaller magnitude.
@@ -1859,23 +1874,13 @@ stargazer::stargazer(n_CBre11B,n_CBre12A,n_CBre12B,n_CBre12C2,n_CBre12C3,
 summary_residual_compare(b_CBre11B,b_CBre12C)
 summary_residual_compare(n_CBre11B,n_CBre12C)
 ```
-Detailed Industry Focus unfortunately runs into VIF problems wit office PBSC for the breach size model. Keeping breach size does not always align with expectations, but is  significant, is a study variable and has a lower AIC, so keeping it.
+Detailed Industry Focus unfortunately runs into VIF problems with office PBSC for the breach size model. Keeping breach size does not always align with expectations, but is  significant, is a study variable and has a lower AIC, so keeping it.
 
 Office Volumne keeps its same significance and sign though pair history becomes insignificant, perhaps because offices with a great deal of volume had more history with momre vendors.
 
 ## Pre-Multilevel Model Summary
 
 ```{r StudyVariableSummary}
-
-
- 
- 
- 
- 
- 
- 
-
-
 
 
 #Binary Ceiling Breaches
@@ -1962,23 +1967,43 @@ For frequency expectations are only partially hold, predominately for other cost
 ####15B: Cumulative
 ```{r Model15B}
 #Create the model
-n_cbre_salary_pricing_15B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+b_cbre_salary_pricing_15B <- glm(data=serv_breach,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Base + cl_Base2Ceil + cl_Days
-                   Comp1or5+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
                    Veh+
                    PricingUCA+
                    Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k + PricingUCA:cl_US6_avg_sal_lag1)
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                 PricingUCA:cl_US6_avg_sal_lag1, family=binomial(link="logit"))
+
+n_cbre_salary_pricing_15B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+
+                   PricingUCA:cl_US6_avg_sal_lag1)
 
 #Compare the models
-stargazer::stargazer(n_cbre_salary_pricing_15B, n_CBre13B, type="text", digits=2)
+stargazer::stargazer(b_cbre_salary_pricing_15B, b_CBre12C3, n_cbre_salary_pricing_15B, n_CBre12C3, type="text", digits=2)
 
-summary_residual_compare(n_cbre_salary_pricing_15B, n_CBre13B, bins=5)
+summary_residual_compare(b_cbre_salary_pricing_15B, b_CBre12C3, n_cbre_salary_pricing_15B, n_CBre12C3, bins=5)
 
 ```
 
@@ -1995,12 +2020,18 @@ glmer_examine(n_cbre_partnership_actions_16A_no_interact)
 n_cbre_partnership_actions_16A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_pairCA + c_pPBSC:cl_pairCA)
 glmer_examine(n_cbre_partnership_actions_16A)
 
+b_cbre_partnership_actions_16A_no_interact <- glm(data=serv_breach, b_CBre ~ c_pPBSC + cl_pairCA, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_actions_16A_no_interact)
+
+b_cbre_partnership_actions_16A <- glm(data=serv_breach, b_CBre ~ c_pPBSC + cl_pairCA + c_pPBSC:cl_pairCA, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_actions_16A)
+
 
 #compare the models
 
-stargazer::stargazer(n_cbre_partnership_actions_16A_no_interact, n_cbre_partnership_actions_16A, type="text", digits=2)
+stargazer::stargazer(n_cbre_partnership_actions_16A_no_interact, n_cbre_partnership_actions_16A, b_cbre_partnership_actions_16A_no_interact, b_cbre_partnership_actions_16A, type="text", digits=2)
 
-summary_residual_compare(n_cbre_partnership_actions_16A_no_interact, n_cbre_partnership_actions_16A, bins=5)
+#summary_residual_compare(n_cbre_partnership_actions_16A_no_interact, n_cbre_partnership_actions_16A, b_cbre_partnership_actions_16A_no_interact, b_cbre_partnership_actions_16A, bins=3)
 
 ```
 
@@ -2009,21 +2040,42 @@ summary_residual_compare(n_cbre_partnership_actions_16A_no_interact, n_cbre_part
 #Create the model
 n_cbre_partnership_actions_16B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Base + cl_Base2Ceil + cl_Days
-                   Comp1or5+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
                    Veh+
                    PricingUCA+
                    Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k + c_pPBSC:cl_pairCA)
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+
+                   c_pPBSC:cl_pairCA)
+
+b_cbre_partnership_actions_16B <- glm(data=serv_breach,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                 c_pPBSC:cl_pairCA, family=binomial(link="logit"))
+
 
 #Compare the models
-stargazer::stargazer(n_cbre_partnership_actions_16B, n_CBre13B, type="text", digits=2)
+stargazer::stargazer(n_cbre_partnership_actions_16B, n_CBre12C3,b_cbre_partnership_actions_16B, b_CBre12C3, type="text", digits=2)
 
-summary_residual_compare(n_cbre_partnership_actions_16B, n_CBre13B, bins=5)
+#summary_residual_compare(n_cbre_partnership_actions_16B, n_CBre12C3, b_cbre_partnership_actions_16B, b_CBre12C3, bins=5)
 ```
 
 ####17A: Office Partnership:Market Vendor Share for that Office
@@ -2039,32 +2091,58 @@ glmer_examine(n_cbre_partnership_share_17A_no_interact)
 n_cbre_partnership_share_17A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + c_pMarket + c_pPBSC:c_pMarket)
 glmer_examine(n_cbre_partnership_share_17A)
 
-#Compare the models
-stargazer::stargazer(n_cbre_partnership_share_17A_no_interact, n_cbre_partnership_share_17A, type="text", digits=2)
+b_cbre_partnership_share_17A_no_interact <- glm(data=serv_breach, b_CBre ~ c_pPBSC + c_pMarket, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_share_17A_no_interact)
 
-summary_residual_compare(n_cbre_partnership_share_17A_no_interact, n_cbre_partnership_share_17A, bins=5)
+b_cbre_partnership_share_17A <- glm(data=serv_breach, b_CBre ~ c_pPBSC + c_pMarket + c_pPBSC:c_pMarket, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_share_17A)
+
+#Compare the models
+stargazer::stargazer(n_cbre_partnership_share_17A_no_interact, n_cbre_partnership_share_17A, b_cbre_partnership_share_17A_no_interact, b_cbre_partnership_share_17A, type="text", digits=2)
+
+#summary_residual_compare(n_cbre_partnership_share_17A_no_interact, n_cbre_partnership_share_17A, b_cbre_partnership_share_17A_no_interact, b_cbre_partnership_share_17A, bins=5)
 ```
 
 ####17B: Cumulative
 ```{r Model17B}
 #Create the model
-n_cbre_partnership_share_17B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+b_cbre_partnership_share_17B <- glm(data=serv_breach,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Base + cl_Base2Ceil + cl_Days
-                   Comp1or5+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
                    Veh+
                    PricingUCA+
                    Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k + c_pPBSC:c_pMarket)
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                 c_pPBSC:c_pMarket, family=binomial(link="logit"))
+
+n_cbre_partnership_share_17B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+
+                   c_pPBSC:c_pMarket)
 
 #Compare the models
-stargazer::stargazer(n_cbre_partnership_share_17B, n_CBre13B, type="text", digits=2)
+stargazer::stargazer(n_cbre_partnership_share_17B, n_CBre12C3, b_cbre_partnership_share_17B, b_CBre12C3, type="text", digits=2)
 
-summary_residual_compare(n_cbre_partnership_share_17B, n_CBre13B, bins=5)
+#summary_residual_compare(n_cbre_partnership_share_17B, n_CBre12C3, b_cbre_partnership_share_17B, b_CBre12C3, bins=5)
 ```
 
 ####18A: Office Partnership:Initial Contract Duration (logged)
@@ -2080,32 +2158,58 @@ glmer_examine(n_cbre_partnership_duration_18A_no_interact)
 n_cbre_partnership_duration_18A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pPBSC + cl_Days + c_pPBSC: cl_Days)
 glmer_examine(n_cbre_partnership_duration_18A)
 
-#Compare the models
-stargazer::stargazer(n_cbre_partnership_duration_18A_no_interact, n_cbre_partnership_duration_18A, type="text", digits=2)
+b_cbre_partnership_duration_18A_no_interact <- glm(data=serv_smp , b_CBre ~ c_pPBSC + cl_Days, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_duration_18A_no_interact)
 
-summary_residual_compare(n_cbre_partnership_duration_18A_no_interact, n_cbre_partnership_duration_18A, bins=5)
+b_cbre_partnership_duration_18A <- glm(data=serv_breach, b_CBre ~ c_pPBSC + cl_Days + c_pPBSC: cl_Days, family=binomial(link="logit"))
+glmer_examine(b_cbre_partnership_duration_18A)
+
+#Compare the models
+stargazer::stargazer(n_cbre_partnership_duration_18A_no_interact, n_cbre_partnership_duration_18A, b_cbre_partnership_duration_18A_no_interact, b_cbre_partnership_duration_18A, type="text", digits=2)
+
+#summary_residual_compare(n_cbre_partnership_duration_18A_no_interact, n_cbre_partnership_duration_18A, b_cbre_partnership_duration_18A_no_interact, b_cbre_partnership_duration_18A, bins=5)
 ```
 
 ####18B: Cumulative
 ```{r Model18B}
 #Create the model
-n_cbre_partnership_duration_18B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+b_cbre_partnership_duration_18B <- glm(data=serv_breach,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Base + cl_Base2Ceil + cl_Days
-                   Comp1or5+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
                    Veh+
                    PricingUCA+
                    Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k + c_pPBSC:cl_Days)
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                 c_pPBSC:cl_Days, family=binomial(link="logit"))
+
+n_cbre_partnership_duration_18B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+
+                   c_pPBSC:cl_Days)
 
 #Compare the models
-stargazer::stargazer(n_cbre_partnership_duration_18B, n_CBre13B, type="text", digits=2)
+stargazer::stargazer(n_cbre_partnership_duration_18B, n_CBre12C3, b_cbre_partnership_duration_18B, b_CBre12C3, type="text", digits=2)
 
-summary_residual_compare(n_cbre_partnership_duration_18B, n_CBre13B, bins=5)
+#summary_residual_compare(n_cbre_partnership_duration_18B, n_CBre12C3, b_cbre_partnership_duration_18B, b_CBre12C3, bins=5)
 ```
 
 ####19A: Past Years:Contract Pricing
@@ -2127,32 +2231,58 @@ glmer_examine(n_cbre_history_pricing_19A_no_interact)
 n_cbre_history_pricing_19A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ c_pairHist + PricingUCA + c_pairHist:PricingUCA)
 glmer_examine(n_cbre_history_pricing_19A)
 
-#Compare the models
-stargazer::stargazer(n_cbre_history_pricing_19A_no_interact, n_cbre_history_pricing_19A, type="text", digits=2)
+b_cbre_history_pricing_19A_no_interact <- glm(data=serv_breach, b_CBre ~ c_pairHist + PricingUCA, family=binomial(link="logit"))
+glmer_examine(b_cbre_history_pricing_19A_no_interact)
 
-summary_residual_compare(n_cbre_history_pricing_19A_no_interact, n_cbre_history_pricing_19A, bins=5)
+b_cbre_history_pricing_19A <- glm(data=serv_breach, b_CBre ~ c_pairHist + PricingUCA + c_pairHist:PricingUCA, family=binomial(link="logit"))
+glmer_examine(b_cbre_history_pricing_19A)
+
+#Compare the models
+stargazer::stargazer(n_cbre_history_pricing_19A_no_interact, n_cbre_history_pricing_19A, b_cbre_history_pricing_19A_no_interact, b_cbre_history_pricing_19A, type="text", digits=2)
+
+#summary_residual_compare(n_cbre_history_pricing_19A_no_interact, n_cbre_history_pricing_19A, b_cbre_history_pricing_19A_no_interact, b_cbre_history_pricing_19A, bins=5)
 ```
 
 ####19B: Cumulative
 ```{r Model19B}
 #Create the model
-n_cbre_history_pricing_19B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+b_cbre_history_pricing_19B <- glm(data=serv_breach,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Base + cl_Base2Ceil + cl_Days
-                   Comp1or5+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
                    Veh+
                    PricingUCA+
                    Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k + c_pairHist:PricingUCA)
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                 c_pairHist:PricingUCA, family=binomial(link="logit"))
+
+n_cbre_history_pricing_19B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+
+                   c_pairHist:PricingUCA)
 
 #Compare the models
-stargazer::stargazer(n_cbre_history_pricing_19B, n_CBre13B, type="text", digits=2)
+stargazer::stargazer(n_cbre_history_pricing_19B, n_CBre12C3, b_cbre_history_pricing_19B, b_CBre12C3, type="text", digits=2)
 
-summary_residual_compare(n_cbre_history_pricing_19B, n_CBre13B, bins=5)
+#summary_residual_compare(n_cbre_history_pricing_19B, n_CBre12C3, b_cbre_history_pricing_19B, b_CBre12C3, bins=5)
 ```
 
 ####20A: Competition:NAICS Detailed Industry (Level 6)
@@ -2171,32 +2301,58 @@ glmer_examine(n_cbre_competition_naics_20A_no_interact)
 n_cbre_competition_naics_20A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ Comp1or5 + cl_def6_HHI_lag1 + Comp1or5:cl_def6_HHI_lag1)
 glmer_examine(n_cbre_competition_naics_20A)
 
-#Compare the models
-stargazer::stargazer(n_cbre_competition_naics_20A_no_interact, n_cbre_competition_naics_20A, type="text", digits=2)
+b_cbre_competition_naics_20A_no_interact <- glm(data=serv_breach, b_CBre ~ Comp1or5 + cl_def6_HHI_lag1, family=binomial(link="logit"))
+glmer_examine(b_cbre_competition_naics_20A_no_interact)
 
-summary_residual_compare(n_cbre_competition_naics_20A_no_interact, n_cbre_competition_naics_20A, bins=5)
+b_cbre_competition_naics_20A <- glm(data=serv_breach, b_CBre ~ Comp1or5 + cl_def6_HHI_lag1 + Comp1or5:cl_def6_HHI_lag1, family=binomial(link="logit"))
+glmer_examine(b_cbre_competition_naics_20A)
+
+#Compare the models
+stargazer::stargazer(n_cbre_competition_naics_20A_no_interact, n_cbre_competition_naics_20A, b_cbre_competition_naics_20A_no_interact, b_cbre_competition_naics_20A, type="text", digits=2)
+
+#summary_residual_compare(n_cbre_competition_naics_20A_no_interact, n_cbre_competition_naics_20A, b_cbre_competition_naics_20A_no_interact, b_cbre_competition_naics_20A, bins=5)
 ```
 
 ####20B: Cumulative
 ```{r Model20B}
 #Create the model
-n_cbre_competition_naics_20B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+b_cbre_competition_naics_20B <- glm(data=serv_breach,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Base + cl_Base2Ceil + cl_Days
-                   Comp1or5+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
                    Veh+
                    PricingUCA+
                    Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k + Comp1or5:cl_def6_HHI_lag1)
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                 c_pairHist:PricingUCA, family=binomial(link="logit"))
+
+n_cbre_competition_naics_20B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+
+                   Comp1or5:cl_def6_HHI_lag1)
 
 #Compare the models
-stargazer::stargazer(n_cbre_competition_naics_20B, n_CBre13B, type="text", digits=2)
+stargazer::stargazer(n_cbre_competition_naics_20B, n_CBre12C3, b_cbre_competition_naics_20B, b_CBre12C3, type="text", digits=2)
 
-summary_residual_compare(n_cbre_competition_naics_20B, n_CBre13B, bins=5)
+#summary_residual_compare(n_cbre_competition_naics_20B, n_CBre12C3, b_cbre_competition_naics_20B, b_CBre12C3, bins=5)
 ```
 
 ####21A: Ratio Initial Base to Ceiling Ratio (logged):Initial Contract Ceiling (logged)
@@ -2207,25 +2363,49 @@ Initial Contract Ceiling (logged)	cl_Base2Ceil:cl_Base		TRUE	++	-	-
 ```{r Model21A}
 #Create the models
 n_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Base)
+
 glmer_examine(n_CBre_base2ceil_ceiling_21A_no_interact)
 
 n_CBre_base2ceil_ceiling_21A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Base- + cl_Base2Ceil:cl_Base)
 glmer_examine(n_CBre_base2ceil_ceiling_21A)
 
-#Compare the Models
-stargazer::stargazer(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, type="text", digits=2)
+b_CBre_base2ceil_ceiling_21A_no_interact <- glm(data=serv_breach,b_CBre ~ cl_Base2Ceil + cl_Base, family=binomial(link="logit"))
+glmer_examine(b_CBre_base2ceil_ceiling_21A_no_interact)
 
-summary_residual_compare(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, bins=5)
+b_CBre_base2ceil_ceiling_21A <- glm(data=serv_breach, b_CBre ~ cl_Base2Ceil + cl_Base + cl_Base2Ceil:cl_Base, family=binomial(link="logit"))
+glmer_examine(b_CBre_base2ceil_ceiling_21A)
+
+#Compare the Models
+stargazer::stargazer(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, b_CBre_base2ceil_ceiling_21A_no_interac, b_CBre_base2ceil_ceiling_21A, type="text", digits=2)
+
+#summary_residual_compare(n_CBre_base2ceil_ceiling_21A_no_interact, n_CBre_base2ceil_ceiling_21A, b_CBre_base2ceil_ceiling_21A_no_interact, b_CBre_base2ceil_ceiling_21A, bins=5)
 ```
 
 ####21B: Cumulative
 ```{r Model21B}
 #Create the model
+b_CBre_base2ceil_ceiling_21B <- glm(data=serv_breach,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                 cl_Base2Ceil:cl_Base, family=binomial(link="logit"))
+
 n_CBre_base2ceil_ceiling_21B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Base + cl_Base2Ceil + cl_Days
-                   Comp1or5+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
                    Veh+
                    PricingUCA+
                    Crisis+
@@ -2234,10 +2414,18 @@ n_CBre_base2ceil_ceiling_21B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_U
                    c_pMarket+
                    cl_OffVol+cl_office_naics_hhi_k + cl_Base2Ceil:cl_Base)
 
-#Compare the models
-stargazer::stargazer(n_CBre_base2ceil_ceiling_21B, n_CBre13B, type="text", digits=2)
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+
+                   cl_Base2Ceil:cl_Base)
 
-summary_residual_compare(n_CBre_base2ceil_ceiling_21B, n_CBre13B, bins=5)
+#Compare the models
+stargazer::stargazer(n_CBre_base2ceil_ceiling_21B, n_CBre12C3, b_CBre_base2ceil_ceiling_21B, b_CBre12C3, type="text", digits=2)
+
+#summary_residual_compare(n_CBre_base2ceil_ceiling_21B, n_CBre12C3, b_CBre_base2ceil_ceiling_21B, b_CBre12C3, bins=5)
 ```
 
 ####22A: Available Options:Initial Contract Duration (logged)
@@ -2251,30 +2439,56 @@ glmer_examine(n_CBre_base2ceil_duration_22A_no_interact)
 n_CBre_base2ceil_duration_22A <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_Base2Ceil + cl_Days + cl_Base2Ceil:cl_Days)
 glmer_examine(n_CBre_base2ceil_duration_22A)
 
-#Compare the Models
-stargazer::stargazer(n_CBre_base2ceil_duration_22A_no_interact, n_CBre_base2ceil_duration_22A, type="text", digits=2)
+b_CBre_base2ceil_duration_22A_no_interact <- glm(data=serv_breach, b_CBre ~ cl_Base2Ceil + cl_Days, family=binomial(link="logit"))
+glmer_examine(b_CBre_base2ceil_duration_22A_no_interact)
 
-summary_residual_compare(n_CBre_base2ceil_duration_22A_no_interact, n_CBre_base2ceil_duration_22A, bins=5)
+b_CBre_base2ceil_duration_22A <- glm(data=serv_breach, b_CBre ~ cl_Base2Ceil + cl_Days + cl_Base2Ceil:cl_Days, family=binomial(link="logit"))
+glmer_examine(b_CBre_base2ceil_duration_22A)
+
+#Compare the Models
+stargazer::stargazer(n_CBre_base2ceil_duration_22A_no_interact, n_CBre_base2ceil_duration_22A, b_CBre_base2ceil_duration_22A_no_interact, b_CBre_base2ceil_duration_22A, type="text", digits=2)
+
+#summary_residual_compare(n_CBre_base2ceil_duration_22A_no_interact, n_CBre_base2ceil_duration_22A, b_CBre_base2ceil_duration_22A_no_interact, b_CBre_base2ceil_duration_22A, bins=5)
 ```
 
 ####22B: Cumulative
 ```{r Model22B}
 #Create the model
-n_CBre_base2ceil_duration_22B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+b_CBre_base2ceil_duration_22B <- glm(data=serv_breach,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Base + cl_Base2Ceil + cl_Days
-                   Comp1or5+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
                    Veh+
                    PricingUCA+
                    Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k + cl_Base2Ceil:cl_Days)
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                 cl_Base2Ceil:cl_Days, family=binomial(link="logit"))
+
+n_CBre_base2ceil_duration_22B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+
+                   cl_Base2Ceil:cl_Days)
 
 #Compare the models
-stargazer::stargazer(n_CBre_base2ceil_duration_22B, n_CBre13B, type="text", digits=2)
+stargazer::stargazer(n_CBre_base2ceil_duration_22B, n_CBre12C3, b_CBre_base2ceil_duration_22B, b_CBre12C3, type="text", digits=2)
 
-summary_residual_compare(n_CBre_base2ceil_duration_22B, n_CBre13B, bins=5)
+#summary_residual_compare(n_CBre_base2ceil_duration_22B, n_CBre12C3, b_CBre_base2ceil_duration_22B, b_CBre12C3, bins=5)
 ```
