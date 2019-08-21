@@ -2870,40 +2870,81 @@ n_CBre25A <- lmer(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Con
 #Compare the models
 glmer_examine(n_CBre25A,display = TRUE)
 
-save(b_CBre25A,n_CBre25A,file="..\\output\\CBre25A")
-stargazer::stargazer(term_base2ceil_ceiling_21B, term25A, type="text", digits=2)
+save(b_CBre25A,n_CBre25A,file="..\\output\\CBre25A.rda")
+
+stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A, 
+                     n_cbre_partnership_actions_16B, n_CBre25A, type="text", digits=2)
+
 
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ```
+Both models  failed to converge after a 100000 evaluations but the boolean model took a lot longer which, combined with multiple interactions and study variables losing significance, suggests that perhaps the  interactions should  be trimmed back.
+# Multilevel Model
+####25A: 2019-08-20 First run, original multilevel.
+This was created while we were still using ceiling instead of base.
 
-####25B: 2019-08-20 Switch to base and 1m sample.
-```{r Term26A}
+Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B
+Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
+
+```{r Term25A}
 #Create the model
-term26A <- glmer(data=serv_smp1m, b_Term ~ cl_US6_avg_sal_lag1Const + 
+b_CBre25A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Base + cl_Days+ cl_Base2Ceil+
-                   Comp1or5+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
                    Veh+
                    PricingUCA+
                    Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k +
-                    c_pairHist:PricingUCA+ 
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_k+ 
+                #c_pPBSC:cl_pairCA+
+                  #c_pPBSC:c_pMarket+
+                 c_pPBSC:cl_Days+
+                   cl_Base2Ceil:cl_Base+
                    (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
                    (1 | Agency/Office) +
                    (1 | PlaceCountryISO3)+ 
                    (1 | StartFY),
                  family=binomial(link="logit"),
                verbose=TRUE)
-glmer_examine(term26A,display = TRUE)
-display(term26A)
-save(term26A,file="..\\output\\term26A.rdata")
+glmer_examine(b_CBre25A,display = TRUE)
+
+
+n_CBre25A <- lmer(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_kc+
+                   # c_pPBSC:cl_pairCA+
+                   cl_Base2Ceil:cl_Base+
+                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                   (1 | Agency/Office) +
+                   (1 | PlaceCountryISO3)+ 
+                   (1 | StartFY),
+               verbose=TRUE)
 
 #Compare the models
-stargazer::stargazer(term_base2ceil_ceiling_21B, term26A, type="text", digits=2)
+glmer_examine(n_CBre25A,display = TRUE)
 
-summary_residual_compare( term_base2ceil_ceiling_21B, term26A,bins=100)
+save(b_CBre25A,n_CBre25A,file="..\\output\\CBre25A.rda")
+
+stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A, 
+                     n_cbre_partnership_actions_16B, n_CBre25A, type="text", digits=2)
+
+
+summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ```
