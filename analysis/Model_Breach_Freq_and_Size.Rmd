@@ -231,7 +231,7 @@ summary_residual_compare(b_CBre02A,n_CBre02B)
 
 ```
 
-For frequency, no high correlation is observed between PBSC and Contract Office Obligations for frequency PSC based on the vif score. For size, VIF is a problem and Office PSC appears to be the better predictor, so using that.
+For likelihood, no high correlation is observed between PBSC and Contract Office Obligations for likelihood PSC based on the vif score. For size, VIF is a problem and Office PSC appears to be the better predictor, so using that.
 
 After combining PBSC and Contract office obligations for PSC, PBSC had a flipped relationship with ceiling breach probability that matches with expectation. The rest of results continued to fail to meet expectations.
 
@@ -593,7 +593,7 @@ Expectation: Initial Ceiling size positively estimates increasing probability of
 
 ```{r Model04A}
 
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
 summary_continuous_plot(serv_smp1m,metric="cbre","UnmodifiedCeiling_OMB20_GDP18",bins=1000)
 summary_continuous_plot(serv_smp1m,metric="cbre","UnmodifiedCeiling_OMB20_GDP18",bins=50,log=TRUE)
 
@@ -617,7 +617,7 @@ stargazer::stargazer(b_CBre03D,b_CBre04A,
 
 ```
 
-Contract ceiling has a significant relationship with ceiling breach frequency and size, though the residuals show a possible non-linear patterns. The relationship is strong in both cases but remarkably for breach size the AIC is lower than for all of the prior variales together. Both frequency and size show some sign of sinusoidal patterns. 
+Contract ceiling has a significant relationship with ceiling breach likelihood and size, though the residuals show a possible non-linear patterns. The relationship is strong in both cases but remarkably for breach size the AIC is lower than for all of the prior variales together. Both likelihood and size show some sign of sinusoidal patterns. 
 
 
 #### 04B: Maximum Duration
@@ -625,7 +625,7 @@ Contract ceiling has a significant relationship with ceiling breach frequency an
 Expectation: Greater maximum duration will positively estimate the probability ceiling of  breaches and terminations. Greater growth for options is also expected, because year-on-year options may be more of a default, though the scatter plot seems to go the other way.
 
 ```{r Model04B}
-#Frequency Plot for max duration
+#Likelihood Plot for max duration
 freq_continuous_cbre_plot(serv_smp,"UnmodifiedDays",
                bins=1000)
 
@@ -656,10 +656,10 @@ All expections were upheld and although the relationship is not as strong as it 
 ####04C: Ratio Initial Base : Ceiling Ratio (Logged)
 
 
-Expectation, in combination with ceiling, a high ratio means that the contract has more room for adjustment and incentives without radical steps. So higher ratio of total ceiling to base are expected to be associated with a lower frequency of termination, lower frequency and size of ceiling breach. For exercised options, a higher ratio would is expected to make it more likely that some options are exercised but less likely that all options are exercised.
+Expectation, in combination with ceiling, a high ratio means that the contract has more room for adjustment and incentives without radical steps. So higher ratio of total ceiling to base are expected to be associated with a lower likelihood of termination, lower likelihood and size of ceiling breach. For exercised options, a higher ratio would is expected to make it more likely that some options are exercised but less likely that all options are exercised.
 
 
-(Ex post facto) Expectation, in combination with base, a higher ratio means a contract with greater scope, just as the ceiling variable includes base and all exercised options. In this case, the expected sign for terminations and ceiling breach frequency and size. The expectations for options are the same whetehr combined with ceiling or ratio.
+(Ex post facto) Expectation, in combination with base, a higher ratio means a contract with greater scope, just as the ceiling variable includes base and all exercised options. In this case, the expected sign for terminations and ceiling breach likelihood and size. The expectations for options are the same whetehr combined with ceiling or ratio.
 
 ```{r Model04C}
 summary_continuous_plot(serv_smp1m,metric="cbre", "cl_Base2Ceil")
@@ -710,13 +710,13 @@ stargazer::stargazer(n_CBre04A,n_CBre04B,n_CBre04C,n_CBre04D,
 summary_residual_compare(b_CBre04A,b_CBre04D,b_CBre04B,b_CBre04D)
 summary_residual_compare(n_CBre04A,n_CBre04D,n_CBre04B,n_CBre04D)
 ```
-Days reduces in  significance and changes in sign  for  frequency, no longer aligning with expectations, and reduces in magnitude for size. For both frequence and size, ratio of base to ceiling swaps signs and now aligns with expectations.
+Days reduces in  significance and changes in sign  for  likelihood, no longer aligning with expectations, and reduces in magnitude for size. For both frequence and size, ratio of base to ceiling swaps signs and now aligns with expectations.
 
 #### 04E: Base
 
 ```{r Model04E}
 
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
 summary_continuous_plot(serv_smp1m,metric="cbre","UnmodifiedBase_OMB20_GDP18",bins=1000)
 summary_continuous_plot(serv_smp1m,metric="cbre","UnmodifiedBase_OMB20_GDP18",bins=50,log=TRUE)
 
@@ -743,7 +743,7 @@ summary_residual_compare(n_CBre04A,n_CBre04E)
 
 
 ```
-Base has the expected positive relationship with oth the frequeny and size of ceiling reach. In both cases the coefficient is significat, has a high magnitude, and is comparable with ceiling. According to AIC, for frequency, base is a slightly bebtter estimator but for size, ceiling is the etter predictor.
+Base has the expected positive relationship with both the frequeny and size of ceiling reach. In both cases the coefficient is significat, has a high magnitude, and is comparable with ceiling. According to AIC, for likelihood, base is a slightly bebtter estimator but for size, ceiling is the etter predictor.
 
 #### 04F: Base-Days-Ratio
 
@@ -807,14 +807,14 @@ summary_residual_compare(b_CBre03D,b_CBre04G)
 
 
 ```
-Salary no longer matches expectations for ceiling breach frequency. Pair history becomes significant for size, but contrary to expectations estimates larger breaches. Likewise pair contract actions changes signs contrary to expectation though only achieves significance at the 0.1 level.
+Salary no longer matches expectations for ceiling breach likelihood. Pair history becomes significant for size, but contrary to expectations estimates larger breaches. Likewise pair contract actions changes signs contrary to expectation though only achieves significance at the 0.1 level.
 
 For the frequenc model, days switches back and is again significant and in line with expectation.
 
 
 ### Competition
 #### 05A: No Competition / 1 / 2-4 / 5+ Offers
-No competition (baseline) and single offer competition  is expected to reduce willingness to terminate and increase frequency and size of terminations
+No competition (baseline) and single offer competition  is expected to reduce willingness to terminate and increase likelihood and size of terminations
 all due to the absence of alternatives. For options, there is a weak expectation of fewer options exercised. 
 
 Multioffer competition is expected to lead to more terminations, fewer and smaller ceiling breaches, abd  more options exercised for 2-4 options but fewer for 5+ as the diversity of competitors available may raise the appeal of going with a new contract rather than more options, especially if performance is below the desired level.
@@ -847,7 +847,7 @@ stargazer::stargazer(b_CBre04G,b_CBre05A,
 
 
 ```
-Expectations were completely unmet for ceiling breach frequency, as while the results are all significant, only single offer competition is associated with a lower frequency of ceiling breaches and as the number of offers in the categories grows, so to  does the frequency of ceiling breaches. Thus is not true for ceilinng breach size. Multi-offer and single  offer competition both estimate smaller ceiling breaches, with competition with 2-4 offers having the most notable affect. 
+Expectations were completely unmet for ceiling breach likelihood, as while the results are all significant, only single offer competition is associated with a lower likelihood of ceiling breaches and as the number of offers in the categories grows, so to  does the likelihood of ceiling breaches. Thus is not true for ceilinng breach size. Multi-offer and single  offer competition both estimate smaller ceiling breaches, with competition with 2-4 offers having the most notable affect. 
 
 . For terminations, expectations were met for 2-4 offers and 5+ offers, but not for 1 offer. For ceiling breaches expectations were met for 1 offer, but not for 2-4 or 5+.
 
@@ -891,9 +891,9 @@ summary_residual_compare(n_CBre04G,n_CBre05B)
 ```
 Double checked if it was now safe to add pPBSC back in, and it is. Minimal effect on study variables otherwise, though pair CA is now significant for contract size, but in the opposite direction as expected.
 
-The ceiling  breach frequency model largely follows the competition a lone model, but for ceiling breach size, the magnitude of the results decrease for multioffer competition buut the results for single offer competition now are significantly positive and  in line with expectation.
+The ceiling  breach likelihood model largely follows the competition a lone model, but for ceiling breach size, the magnitude of the results decrease for multioffer competition buut the results for single offer competition now are significantly positive and  in line with expectation.
 
-For the frequency model, ratio of base to ceiling is no longer significant at the  0.05 level, though it remains significant for breach size.
+For the likelihood model, ratio of base to ceiling is no longer significant at the  0.05 level, though it remains significant for breach size.
 
 ### Contract Vehicle
 
@@ -932,7 +932,7 @@ stargazer::stargazer(b_CBre05B,b_CBre06A,
 
 
 ```
-For ceiling breaches, IDCs, particularly multiaward IDCs, had a greater frequency of  ceiling breaches contrary to expecations. For size the results were similarly mixed, with single award IDCS and BPA/BOAs estimating smaller  breaches in line with expetations and Mutiple Award and FSS/GWAC estimated larger breaches, contrary to expectation.
+For ceiling breaches, IDCs, particularly multiaward IDCs, had a greater likelihood of  ceiling breaches contrary to expecations. For size the results were similarly mixed, with single award IDCS and BPA/BOAs estimating smaller  breaches in line with expetations and Mutiple Award and FSS/GWAC estimated larger breaches, contrary to expectation.
 
 
 #### 06B: Cumulative  Model
@@ -972,11 +972,11 @@ summary_residual_compare(n_CBre05B,n_CBre06B)
 
 
 ```
-Expectations for vehicle are now upheld for both ceiling breaches frequency, but the results are now acrsoss theboard contrary to expectations for breach size. Ceilng breaches appear to be  less common for all types of indefinite vehicles butwhen they do occur the breach size is larger. 
+Expectations for vehicle are now upheld for both ceiling breaches likelihood, but the results are now acrsoss theboard contrary to expectations for breach size. Ceilng breaches appear to be  less common for all types of indefinite vehicles butwhen they do occur the breach size is larger. 
 
 Fitted versus actual seems to get off course with fitted values  above 0.1. For size the results look more as expected  in the scatter plot but do show a sinusodial pattern in the binend residuals.
 
-For controls, the relationship between days and frequency gains significance in the expected direction. Single offer competition reduces its significance with breach size.
+For controls, the relationship between days and likelihood gains significance in the expected direction. Single offer competition reduces its significance with breach size.
 
 ### Type of Contract
 
@@ -1028,7 +1028,7 @@ stargazer::stargazer(b_CBre06B,b_CBre07A,
 
 ```
 
-For frequency, other fixed price, other cost based and aligned with expecations that they would reduce frequency. Combination and other is significant and aligned with expectations that it would increase frequency. 
+For likelihood, other fixed price, other cost based and aligned with expecations that they would reduce likelihood. Combination and other is significant and aligned with expectations that it would increase likelihood. 
 
 For contract size, the  baseline of  FFP unexpectedly is not associated with larger  breaches, tough this may be explained by the prevelance of small FFP contracts. T&M/LH/FFLOE, UCA, and  Combination and  other are all significant and in line with expectations of larger breaches. The remainig vriables are significant but contrary to expectations.
 
@@ -1072,9 +1072,9 @@ summary_residual_compare(n_CBre06B,n_CBre07B,bins=3)
 
 ```
 
-Incentive contracts are no longer significantly associated with a greater frequency of ceiling breaches, though they are still associated with a greater size. Other fixed price is now assoicated with smaller ceiling breaches. Surprisingly UCA and Combination and  Other  are now associated with less frequent ceiling breaches,  though only with a p-value of <=0.1 in the case of UCA. Both are still associated with larger breaches.
+Incentive contracts are no longer significantly associated with a greater likelihood of ceiling breaches, though they are still associated with a greater size. Other fixed price is now assoicated with smaller ceiling breaches. Surprisingly UCA and Combination and  Other  are now associated with less frequent ceiling breaches,  though only with a p-value of <=0.1 in the case of UCA. Both are still associated with larger breaches.
 
-The binned residuals remain od for the frequency plot but show less of pattern for frequency size.
+The binned residuals remain od for the likelihood plot but show less of pattern for likelihood size.
 
 
 ### Crisis Dataset
@@ -1107,7 +1107,7 @@ stargazer::stargazer(b_CBre07B,b_CBre08A,
 
 ```
 
-For ceiling breach frequency ARRA and Disaster results were in keeping with expcetations but OCO results were not. For ceiling breach size, al results are significant and in line with expectation that crisis contracts face a risk of larger ceiling breaches, though the magnitude is greater for ARRA and Disaster in line with the frequency results.
+For ceiling breach likelihood ARRA and Disaster results were in keeping with expcetations but OCO results were not. For ceiling breach size, al results are significant and in line with expectation that crisis contracts face a risk of larger ceiling breaches, though the magnitude is greater for ARRA and Disaster in line with the likelihood results.
 
 
 
@@ -1153,7 +1153,7 @@ summary_residual_compare(n_CBre07B,n_CBre08B)
 
 ```
 
-After inclusion of crisis, llittle changes for study variables. ARRA is no longer associated with larger breaches, thouh Disasters and OCO still are. Frequency coefficients for crisis are unchanged. There are some changes in vehicle coefficients for size, with BPA/BOA losing significance and M-IDC gaining it.
+After inclusion of crisis, llittle changes for study variables. ARRA is no longer associated with larger breaches, thouh Disasters and OCO still are. Likelihood coefficients for crisis are unchanged. There are some changes in vehicle coefficients for size, with BPA/BOA losing significance and M-IDC gaining it.
 
 The residuals grew more extreme and patterned.
 
@@ -1168,7 +1168,7 @@ HHI (logged, + means more consolidation)	cl_def6_HHI_lag1+	-	+	-
 
 Expectations are  unchanged.
 ```{r Model09A}
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
 summary_continuous_plot(serv_smp1m,metric="cbre","def6_HHI_lag1")
 summary_continuous_plot(serv_smp1m,metric="cbre","cl_def6_HHI_lag1")
 summary_continuous_plot(serv_smp1m,metric="cbre","cl_def3_HHI_lag1")
@@ -1203,7 +1203,7 @@ The higher the ratio of defense obligations to reciepts in the overall economy, 
 Ratio Def. obligatons : US revenue	cl_def6_obl_lag1+		+	-	-
 
 ```{r Model09B}
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
       summary_continuous_plot(serv_smp1m,metric="cbre","def6_ratio_lag1")
 
       summary_continuous_plot(serv_smp1m,metric="cbre","cl_def6_ratio_lag1")
@@ -1233,14 +1233,14 @@ stargazer::stargazer(b_CBre08B,b_CBre09A,b_CBre09B,
 
 
 ```
-Breach size results were significant and a higher ratio was associated with an increase is size as expected. For breach frequency the results were not significant and had a small magnitude.
+Breach size results were significant and a higher ratio was associated with an increase is size as expected. For breach likelihood the results were not significant and had a small magnitude.
 
 #### Model 09C: Defense Obligations
 (Options, breach, termination)
 Defense obligations (logged)	cl_def6_ratio_lag1+		-	-	+
 
 ```{r Model09C}
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
       summary_continuous_plot(serv_smp1m,metric="cbre","def6_obl_lag1Const")
 
       summary_continuous_plot(serv_smp1m,metric="cbre","cl_def6_obl_lag1Const")
@@ -1276,7 +1276,7 @@ Consolidation at less and more granular levels may have different effects. Effic
 
 We'll start by adding in everything from both models and seeing what violates VIF.
 ```{r Model09D}
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
 
 
 
@@ -1340,7 +1340,7 @@ summary_residual_compare(b_CBre08B,b_CBre09E)
 summary_residual_compare(b_CBre08B,b_CBre09E)
 ```
 
-Detailed Industry HHI is no longer significant for frequency or size. Detailed Industry Ratio is now significant but now is associated with less frequent breaches, contrary to expectation. Detailed Industry Ratio remains in  ine with expectation tough with a smaller magnitude.
+Detailed Industry HHI is no longer significant for likelihood or size. Detailed Industry Ratio is now significant but now is associated with less frequent breaches, contrary to expectation. Detailed Industry Ratio remains in  ine with expectation tough with a smaller magnitude.
 
 ### Level 3
 #### Model 10A: cl_def3_HHI
@@ -1348,7 +1348,7 @@ Detailed Industry HHI is no longer significant for frequency or size. Detailed I
 HHI (logged, + means more consolidation)	cl_def3_HHI_lag1		TRUE	-	+	++
 
 ```{r Model10A}
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
 summary_continuous_plot(serv_smp1m,metric="cbre","cl_def3_HHI_lag1")
 
 #Scatter Plot
@@ -1379,7 +1379,7 @@ summary_residual_compare(n_CBre09A,n_CBre10A, skip_vif =  TRUE)
 
 ```
 
-The results for subsector HHI is contrary to expectation on Ceiling breach frequency and size.
+The results for subsector HHI is contrary to expectation on Ceiling breach likelihood and size.
 
 Level 3 HHI seems to slightly out perform level 6.
 
@@ -1389,7 +1389,7 @@ Level 3 HHI seems to slightly out perform level 6.
 Ratio Def. obligatons : US revenue	cl_def3_ratio_lag1+		-	+	+
 
 ```{r Model10B}
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
 summary_continuous_plot(serv_smp1m,metric="cbre","capped_def3_ratio_lag1")
 summary_continuous_plot(serv_smp1m,metric="cbre","cl_def3_ratio_lag1")
 
@@ -1419,7 +1419,7 @@ summary_residual_compare(b_CBre09B,b_CBre10B)
 summary_residual_compare(n_CBre09B,n_CBre10B)
 ```
 
-Expectations were in lined with ceiling breach frequency and size.
+Expectations were in lined with ceiling breach likelihood and size.
 
 
 #### Model 10C: NAICS 6 and NAICS 3
@@ -1521,7 +1521,7 @@ Continuing with no detailed industry defense obligtions or subsector HHI for the
 #### Model 10D: Cumulative Model
 .
 ```{r Model10D}
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
 
 
 #Model
@@ -1595,7 +1595,7 @@ summary_residual_compare(b_CBre09E,b_CBre10D)
 For the breach size model, not adding HHI6 helps keep VIF below the 1.8 mark, with the exception of officePSC and also has a lower  AIC than the model that includid obligations const but not ratio. 
 
 
-For frequency, both ratio variables are contrary to expectation, but signifiant. Detailed industry HHI is not significant.
+For likelihood, both ratio variables are contrary to expectation, but signifiant. Detailed industry HHI is not significant.
 For size, Detailed  industry HHI has lost significance, bubt  both ratio variables retain it. 
 
 ## Office 
@@ -1632,12 +1632,12 @@ stargazer::stargazer(b_CBre11A,
 
 ```
 
-Contrary to expetations for both frequency and size.
+Contrary to expetations for both likelihood and size.
 
 #### Model 11B: Cumulative Model
 
 ```{r Model11B}
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
 
 
 #Model
@@ -1682,7 +1682,7 @@ stargazer::stargazer(b_CBre10D2,b_CBre11A,b_CBre11B,
 summary_residual_compare(b_CBre10D2,b_CBre11B)
 summary_residual_compare(n_CBre10D2,n_CBre11B)
 ```
-Expectations are now upheld with market estimating larger ceiling breaches, although for frequency, the magnitude increased in the opposite of the  expected direction.
+Expectations are now upheld with market estimating larger ceiling breaches, although for likelihood, the magnitude increased in the opposite of the  expected direction.
 ### Other Office Characteristics
 #### 12A: Past Office Volume (dollars)
 
@@ -1717,7 +1717,7 @@ stargazer::stargazer(b_CBre12A,
 
 
 ```
-When considering past office volume alone, the relationship was as expected with cost-ceiling breaches frequency but contrary to expectation for breach size.
+When considering past office volume alone, the relationship was as expected with cost-ceiling breaches likelihood but contrary to expectation for breach size.
 
 
 
@@ -1749,12 +1749,12 @@ stargazer::stargazer(b_CBre12B,
 
 ```
 
-When using hhi calculated based on contracting office number of contarcts: results were contrary to expectations for frequency but in line with expectations for size to expectations for size.
+When using hhi calculated based on contracting office number of contarcts: results were contrary to expectations for likelihood but in line with expectations for size to expectations for size.
 
 #### 12C: Cumulative Model
 
 ```{r Model12C}
-#Frequency Plot for unlogged ceiling
+#Likelihood Plot for unlogged ceiling
 
 
 #Model
@@ -1963,7 +1963,7 @@ summary_residual_compare(b_cbre_salary_pricing_15A_no_interact, b_cbre_salary_pr
 summary_residual_compare(n_cbre_salary_pricing_15A_no_interact, n_cbre_salary_pricing_15A, bins=5)
 
 ```
-For frequency expectations are only partially hold, predominately for other cost based and combination or other. For size, expectations are widely upheld, except UCA contracts which are a special case of cost absed. 
+For likelihood expectations are only partially hold, predominately for other cost based and combination or other. For size, expectations are widely upheld, except UCA contracts which are a special case of cost absed. 
 ####15B: Cumulative
 ```{r Model15B}
 #Create the model
@@ -2039,7 +2039,7 @@ summary_residual_compare(b_cbre_partnership_actions_16A_no_interact, b_cbre_part
 summary_residual_compare(n_cbre_partnership_actions_16A_no_interact, n_cbre_partnership_actions_16A, bins=3)
 
 ```
-The interaction was signiicant in both cases but positive and contrary to expectations for frequency and negative and in keeping with expectations for breach size. That said for frequency  the introduction of the interaction does result in pairCA switching to a negative sign which is in keeping with expectations. Seems worth considering adding in both cases.
+The interaction was signiicant in both cases but positive and contrary to expectations for likelihood and negative and in keeping with expectations for breach size. That said for likelihood  the introduction of the interaction does result in pairCA switching to a negative sign which is in keeping with expectations. Seems worth considering adding in both cases.
 ####16B: Cumulative
 ```{r Model16B}
 #Create the model
@@ -2204,9 +2204,9 @@ stargazer::stargazer(b_cbre_partnership_actions_16B, b_cbre_partnership_share_17
 summary_residual_compare(b_cbre_partnership_actions_16B, b_cbre_partnership_share_17B)
 summary_residual_compare(n_cbre_partnership_actions_16B, n_cbre_partnership_share_17B2)
 ```
-For frequency, it negative in alignment with expectations, does prompt a small reduction in AIC and thus seems worth adding.
+For likelihood, it negative in alignment with expectations, does prompt a small reduction in AIC and thus seems worth adding.
 
-For size, VIF violations preclude allowing both PBSC:pairCA and PBSC and p_Mark for frequency. PBSC:pairCA is in line with expectations and has a lower AIC, so is clearly the one to keep.
+For size, VIF violations preclude allowing both PBSC:pairCA and PBSC and p_Mark for likelihood. PBSC:pairCA is in line with expectations and has a lower AIC, so is clearly the one to keep.
 
 
 Current cumulative b_CBre model: b_cbre_partnership_share_17B
@@ -2239,7 +2239,7 @@ stargazer::stargazer(b_cbre_partnership_duration_18A_no_interact, b_cbre_partner
 summary_residual_compare(b_cbre_partnership_duration_18A_no_interact, b_cbre_partnership_duration_18A)
 summary_residual_compare(n_cbre_partnership_duration_18A_no_interact, n_cbre_partnership_duration_18A)
 ```
-The results are siginificant, negative, and align with expectations in both cases.  The maginitude of the coeefficient and reduction in AIC is notably larger for frequency than for size, but both seem worth considering.
+The results are siginificant, negative, and align with expectations in both cases.  The maginitude of the coeefficient and reduction in AIC is notably larger for likelihood than for size, but both seem worth considering.
 ####18B: Cumulative
 ```{r Model18B}
 #Create the model
@@ -2306,7 +2306,7 @@ stargazer::stargazer(b_cbre_partnership_share_17B, b_cbre_partnership_duration_1
 summary_residual_compare(b_cbre_partnership_share_17B, b_cbre_partnership_duration_18B)
 summary_residual_compare(n_cbre_partnership_actions_16B, n_cbre_partnership_duration_18B2)
 ```
-For frequeny, the results are significant andin  line with expectations. For sign the results violate VIF requiring the removal of c_pPBSC:cl_pairCA to procede. The coeficient for the c_pPBSC:cl_days in the resulting model is not significant and has a AIC notably than for the prior model. The interaction will be added for frequency but not size.
+For frequeny, the results are significant andin  line with expectations. For sign the results violate VIF requiring the removal of c_pPBSC:cl_pairCA to procede. The coeficient for the c_pPBSC:cl_days in the resulting model is not significant and has a AIC notably than for the prior model. The interaction will be added for likelihood but not size.
 
 Current cumulative b_CBre model: b_cbre_partnership_duration_18B
 Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
@@ -2347,7 +2347,7 @@ summary_residual_compare(b_cbre_history_pricing_19A_no_interact, b_cbre_history_
 summary_residual_compare(n_cbre_history_pricing_19A_no_interact, n_cbre_history_pricing_19A)
 
 ```
-For frequency the results are negative in line with expectations hold for other CA and combination or other but not for incentive. For size the results are largely out of line with expectations at all.
+For likelihood the results are negative in line with expectations hold for other CA and combination or other but not for incentive. For size the results are largely out of line with expectations at all.
 ####19B: Cumulative
 ```{r Model19B}
 #Create the model
@@ -2415,7 +2415,7 @@ stargazer::stargazer(b_cbre_partnership_duration_18B, b_cbre_history_pricing_19B
 summary_residual_compare(b_cbre_partnership_duration_18B, b_cbre_history_pricing_19B)
 summary_residual_compare(n_cbre_partnership_actions_16B, n_cbre_history_pricing_19B2)
 ```
-For frequency the results are insignificant and in line with expectations for other cost based but are otherwise not significant at the 0.05 level or contrary to expectations. Leaving it out. For breach size, VIF exceeded 2 for the initial model requiring consideration without the other  interaction in place. c_PBSC and cl_PairCA has the advantage of having both base variables e significant and a lower AIC. The residuals are smaller for past years:pricing but show more of a sinusodial pattern. Leaving this out for size as well.
+For likelihood the results are insignificant and in line with expectations for other cost based but are otherwise not significant at the 0.05 level or contrary to expectations. Leaving it out. For breach size, VIF exceeded 2 for the initial model requiring consideration without the other  interaction in place. c_PBSC and cl_PairCA has the advantage of having both base variables e significant and a lower AIC. The residuals are smaller for past years:pricing but show more of a sinusodial pattern. Leaving this out for size as well.
 
 Current cumulative b_CBre model: b_cbre_partnership_duration_18B
 Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
@@ -2718,7 +2718,7 @@ summary_residual_compare(n_cbre_partnership_actions_16B, n_CBre_base2ceil_ceilin
 ```
 The results are significant and positive, in line with expectations, in both cases. For breach size the residuals are perhaps lower magnitude residuals for the new model, although the significance and magnitude of the interaction coeffficient coefficient as well as the AIC are all better for the _pPBSC:cl_PairCA model. 
 
-Adding for frequency but leaving out for size, though it's a borderline judgment.
+Adding for likelihood but leaving out for size, though it's a borderline judgment.
 
 Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B
 Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
@@ -3000,7 +3000,7 @@ Both models  failed to converge after a 100000 evaluations but the boolean model
 
 ####26A: 2019-08-21 For size, swapping from p_PBSC to PairCA and base:basetoceiling ratio
 
-Dropping PBSC:pairCA for both models. For frequency it's contrary to expectation and for size the base variables are no longer significant. Also dropping  c_pPBSC:c_pMarketand for frequency, which is not siginifcant. Keeping base:ratio despite lack of significance because of switching to it for size.
+Dropping PBSC:pairCA for both models. For likelihood it's contrary to expectation and for size the base variables are no longer significant. Also dropping  c_pPBSC:c_pMarketand for likelihood, which is not siginifcant. Keeping base:ratio despite lack of significance because of switching to it for size.
 This was created while we were still using ceiling instead of base.
 
 Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B; b_CBre25A
@@ -3069,11 +3069,11 @@ stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A,
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ```
 
-####27A: 2019-08-20 First run, original multilevel.
-This was created while we were still using ceiling instead of base.
+####27A: 2019-08-22 CFTE:Pricing
+Dropping c_pPBSC:c_pMarket and c_pPBSC:c_pMarket as they were not significant in 2A. Adding PricingUCA:cl_CFTE as a realized that it is another way to consider PricingUCA:AverageSalary that turns out to avoid VIF problems in the likelihood of breach model. 
 
-Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B
-Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
+Current cumulative b_CBre model: b_cbre_CFTE_pricing_23B, b_CBre25A
+Current cumulative n_Cbre model: n_cbre_partnership_actions_16B, n_CBre25A
 
 ```{r Term27A}
 #Create the model
@@ -3104,15 +3104,10 @@ b_CBre27A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const +
                verbose=TRUE)
 glmer_examine(b_CBre27A,display = TRUE)
 
+save(b_CBre27A,file="..\\output\\b_CBre27A.rda")
 
-#Compare the models
-glmer_examine(n_CBre27A,display = TRUE)
-
-save(b_CBre27A,file="..\\output\\CBre27A.rda")
-
-stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre27A, 
-                     n_cbre_partnership_actions_16B, n_CBre27A, type="text", digits=2)
+stargazer::stargazer(b_cbre_CFTE_pricing_23B, b_CBre25A, b_CBre27A, type="text", digits=2)
 
 
-summary_residual_compare( term_base2ceil_ceiling_21B, term27A,bins=100)
+summary_residual_compare(b_cbre_CFTE_pricing_23B, b_CBre27A, b_CBre25A, b_CBre27A,bins=100)
 ```
