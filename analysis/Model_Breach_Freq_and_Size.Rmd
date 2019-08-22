@@ -3110,4 +3110,6 @@ stargazer::stargazer(b_cbre_CFTE_pricing_23B, b_CBre25A, b_CBre27A, type="text",
 
 
 summary_residual_compare(b_cbre_CFTE_pricing_23B, b_CBre27A, b_CBre25A, b_CBre27A,bins=100)
+
 ```
+AIC is a  bit lower but the results, when significant, are not in line with expectation. Leaving out CFTE:PPricing.
