@@ -3069,7 +3069,7 @@ stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A,
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ```
 
-####26A: 2019-08-21 For size, swapping from p_PBSC to PairCA and base:basetoceiling ratio
+####27A: 2019-08-21 For size, swapping from p_PBSC to PairCA and base:basetoceiling ratio
 
 Dropping PBSC:pairCA for both models. For frequency it's contrary to expectation and for size the base variables are no longer significant. Also dropping  c_pPBSC:c_pMarketand for frequency, which is not siginifcant. Keeping base:ratio despite lack of significance because of switching to it for size.
 This was created while we were still using ceiling instead of base.
