@@ -3069,6 +3069,77 @@ stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A,
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ```
 
+####26A: 2019-08-21 For size, swapping from p_PBSC to PairCA and base:basetoceiling ratio
+
+Dropping PBSC:pairCA for both models. For frequency it's contrary to expectation and for size the base variables are no longer significant. Also dropping  c_pPBSC:c_pMarketand for frequency, which is not siginifcant. Keeping base:ratio despite lack of significance because of switching to it for size.
+This was created while we were still using ceiling instead of base.
+
+Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B; b_CBre25A
+Current cumulative n_Cbre model: n_cbre_partnership_actions_16B; n_CBre25A
+
+```{r Term27A}
+#Create the model
+b_CBre27A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const +
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+
+                 #cl_office_naics_hhi_k+
+                c_pPBSC:cl_pairCA+
+                  #c_pPBSC:c_pMarket+
+                 c_pPBSC:cl_Days+
+                   # cl_Base2Ceil:cl_Base+
+                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+
+                   (1 | Agency/Office) +
+                   (1 | PlaceCountryISO3)+
+                   (1 | StartFY),
+                 family=binomial(link="logit"),
+               verbose=TRUE)
+glmer_examine(b_CBre27A,display = TRUE)
+save(b_CBre27A,file="..\\output\\b_CBre27A.rda")
+
+n_CBre26A <- lmer(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 #cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 #cl_office_naics_hhi_kc+
+                   # c_pPBSC:cl_pairCA+
+                   cl_Base2Ceil:cl_Base+
+                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                   (1 | Agency/Office) +
+                   (1 | PlaceCountryISO3)+ 
+                   (1 | StartFY),
+               verbose=TRUE)
+
+#Compare the models
+glmer_examine(n_CBre26A,display = TRUE)
+
+save(n_CBre26A,file="..\\output\\n_CBre26A.rda")
+
+stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A, 
+                     n_cbre_partnership_actions_16B, n_CBre25A, type="text", digits=2)
+
+
+summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
+```
+
 ####27A: 2019-08-22 CFTE:Pricing
 Dropping c_pPBSC:c_pMarket and c_pPBSC:c_pMarket as they were not significant in 2A. Adding PricingUCA:cl_CFTE as a realized that it is another way to consider PricingUCA:AverageSalary that turns out to avoid VIF problems in the likelihood of breach model. 
 
