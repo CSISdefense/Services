@@ -523,7 +523,7 @@ gridExtra::grid.arrange(dotplot(ranef(b_CBre25A, condVar = T), strip = T, scales
 ### Ceiling Breach 
 ```{r Odds-Term}
 comp_or<-odds_ratio(b_CBre25A,output="Breach Likelihood",rename_list=all_coef_list)
-  comp_or_walds<-odds_ratio(b_CBre25A,"b_CBre25A",output="Termination Likelihood",walds=TRUE,rename_list=all_coef_list)
+  comp_or_walds<-odds_ratio(b_CBre25A,"b_CBre25A",output="Breach Likelihood",walds=TRUE,rename_list=all_coef_list)
 # save(comp.or,file="..//Output//comp.or.rdata")
 write.csv(get_study_variables_odds_ratio(comp_or_walds,study="services"),file="..//output//ceiling_breach_study_odds_ratio_walds.csv",row.names=FALSE)
 get_icc(b_CBre25A)
@@ -541,9 +541,9 @@ gridExtra::grid.arrange(dotplot(ranef(b_CBre25A, condVar = T), strip = T, scales
 ```{r Odds-Term}
 
 
-  term_or_walds<-odds_ratio(term25A,"term25A",output="Breach Likelihood",walds=TRUE,rename_list=all_coef_list)
+  term_or_walds<-odds_ratio(term25A,"term25A",output="Termination Likelihood",walds=TRUE,rename_list=all_coef_list)
 # save(term.or,file="..//Output//term.or.rdata")
-write.csv(get_study_variables_odds_ratio(term_or_walds,study="services"),file="..//output//terminations_study_odds_ratio_walds.csv",row.names=FALSE)
+write.csv(get_study_variables_odds_ratio(term_or_walds,study="services"),file="..//output//termination_study_odds_ratio_walds.csv",row.names=FALSE)
 get_icc(term25A)
 
 
