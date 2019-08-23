@@ -1,0 +1,7 @@
+"Output","Model","Variable","Odds Ratio","Lower Bound","Upper Bound"
+"Both","Both","cl_US6_avg_sal_lag1Const",0.87,0.74,1.02
+"Both","Both","cl_CFTE",1.04,0.99,1.1
+"Both","Both","c_pPBSC",1.08,0.98,1.19
+"Both","Both","c_pOffPSC",1.16,1.06,1.26
+"Both","Both","c_pairHist",0.94,0.89,0.99
+"Both","Both","cl_pairCA",1.57,1.45,1.69

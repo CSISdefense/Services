@@ -508,7 +508,7 @@ texreg::htmlreg(list(term25A),file="..//Output//terminations.html",
 
 
 ### Exercised Options
-```{r Odds-CBre}
+```{r Odds-Opt}
 
 
 comp.or<-odds_ratio(b_CBre25A,"b_CBre25A","Both","Both")
@@ -523,11 +523,12 @@ gridExtra::grid.arrange(dotplot(ranef(b_CBre25A, condVar = T), strip = T, scales
 ```
 
 ### Ceiling Breach 
-```{r Odds-CBre}
-
-
-comp.or<-odds_ratio(b_CBre25A,"b_CBre25A","Both","Both")
-write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio.csv",row.names=FALSE)
+```{r Odds-Term}
+comp_or<-odds_ratio(b_CBre25A,output="Breach Likelihood",rename_list=all_coef_list)
+debug(odds_ratio)
+  comp_or_welds<-odds_ratio(b_CBre25A,"b_CBre25A",output="Breach Likelihood",walds=TRUE,rename_list=all_coef_list)
+# save(comp.or,file="..//Output//comp.or.rdata")
+write.csv(get_study_variables_odds_ratio(comp_or_welds,study="services"),file="..//output//ceiling_breach_study_odds_ratio.csv",row.names=FALSE)
 get_icc(b_CBre25A)
 
 #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
@@ -547,8 +548,8 @@ gridExtra::grid.arrange(dotplot(ranef(term25A, condVar = T), strip = T, scales=l
 dotplot(ranef(term25A, condVar = T), strip = T, scales=list(relation='free'))$NAICS3
  
  
-term.or<-odds_ratio(term25A,"Term_12C","Concentration","Ceiling Breaches")
- 
+term.or<-odds_ratio(term25A,"term25A","Concentration","Ceiling Breaches",walds=TRUE)
+ get_study_variables_odds_ratio(term.or)
 write.csv(get_study_variables_odds_ratio(term.or),file="..//output//termination_study_odds_ratio.csv",row.names=FALSE)
 
 ```
@@ -572,7 +573,6 @@ ceiling_breach_residual<-gridExtra::grid.arrange(
     binned_fitted_versus_residuals(term25A,bins=50)+
       labs(title="Termination Binned Actuals Plot",caption=NULL,
            x="Estimated Pr(Termination)",y="Actual Pr(Termination)"))
-)
 )
 
 options_residual<-gridExtra::grid.arrange(
