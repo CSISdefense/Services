@@ -1873,7 +1873,7 @@ stargazer::stargazer(n_CBre11B,n_CBre12A,n_CBre12B,n_CBre12C2,n_CBre12C3,
 summary_residual_compare(b_CBre11B,b_CBre12C)
 summary_residual_compare(n_CBre11B,n_CBre12C)
 ```
-Detailed Industry Focus unfortunately runs into VIF problems with office PBSC for the breach size model. Keeping breach size does not always align with expectations, but is  significant, is a study variable and has a lower AIC, so keeping it.
+Detailed Industry Focus unfortunately runs into VIF problems with office PBSC for the breach size model. Keeping office focus in the breach size model  does not always align with expectations, but is  significant, is a study variable and has a lower AIC, so keeping it.
 
 Office Volumne keeps its same significance and sign though pair history becomes insignificant, perhaps because offices with a great deal of volume had more history with momre vendors.
 
