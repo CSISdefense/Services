@@ -216,8 +216,6 @@ glmer_examine(n_CBre25A)
 ```{r Model-Term}
 if(file.exists("..//Output//term25A.rdata")) load("..//Output//term25A.rdata")
 
-
-
 if(!exists("term25A")){
   term25A <- glmer(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                      cl_CFTE+ c_pPBSC+c_pOffPSC+

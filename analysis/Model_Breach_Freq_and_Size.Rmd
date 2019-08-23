@@ -2936,58 +2936,64 @@ Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B
 Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
 
 ```{r CBre25A}
+if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
+
+if(!exists("b_CBre25A")){
 #Create the model
-b_CBre25A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Base + cl_Base2Ceil + cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                 #cl_def3_HHI_lag1+
-                   cl_def3_ratio_lag1+
-                 c_pMarket+
-                   cl_OffVol+ 
-                 #cl_office_naics_hhi_k+ 
-                                  c_pPBSC:cl_pairCA+c_pPBSC:c_pMarket+
-                 c_pPBSC:cl_Days+
-                   cl_Base2Ceil:cl_Base+
-                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
-                   (1 | Agency/Office) +
-                   (1 | PlaceCountryISO3)+ 
-                   (1 | StartFY),
-                 family=binomial(link="logit"),
-               verbose=TRUE)
-glmer_examine(b_CBre25A,display = TRUE)
+  b_CBre25A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                       cl_CFTE+ c_pPBSC+c_pOffPSC+
+                       c_pairHist+cl_pairCA+
+                       cl_Base + cl_Base2Ceil + cl_Days+
+                       Comp1or5+
+                       Veh+
+                       PricingUCA+
+                       Crisis+
+                       cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                       #cl_def3_HHI_lag1+
+                       cl_def3_ratio_lag1+
+                       c_pMarket+
+                       cl_OffVol+ 
+                       #cl_office_naics_hhi_k+ 
+                       c_pPBSC:cl_pairCA+c_pPBSC:c_pMarket+
+                       c_pPBSC:cl_Days+
+                       cl_Base2Ceil:cl_Base+
+                       (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                       (1 | Agency/Office) +
+                       (1 | PlaceCountryISO3)+ 
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
 
-
-n_CBre25A <- lmer(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Base + cl_Base2Ceil + cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                 #cl_def3_HHI_lag1+
-                   cl_def3_ratio_lag1+
-                 c_pMarket+
-                   cl_OffVol+ 
-                 #cl_office_naics_hhi_kc+
-                   c_pPBSC:cl_pairCA+
-                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
-                   (1 | Agency/Office) +
-                   (1 | PlaceCountryISO3)+ 
-                   (1 | StartFY),
-               verbose=TRUE)
+  
+  
+  n_CBre25A <- lmer(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                      cl_CFTE+ c_pPBSC+c_pOffPSC+
+                      c_pairHist+cl_pairCA+
+                      cl_Base + cl_Base2Ceil + cl_Days+
+                      Comp1or5+
+                      Veh+
+                      PricingUCA+
+                      Crisis+
+                      cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                      #cl_def3_HHI_lag1+
+                      cl_def3_ratio_lag1+
+                      c_pMarket+
+                      cl_OffVol+ 
+                      #cl_office_naics_hhi_kc+
+                      c_pPBSC:cl_pairCA+
+                      (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                      (1 | Agency/Office) +
+                      (1 | PlaceCountryISO3)+ 
+                      (1 | StartFY),
+                    verbose=TRUE)
+  
+  save(b_CBre25A,n_CBre25A,file="..\\output\\CBre25A.rda")
+}
 
 #Compare the models
+  glmer_examine(b_CBre25A,display = TRUE)
 glmer_examine(n_CBre25A,display = TRUE)
 
-save(b_CBre25A,n_CBre25A,file="..\\output\\CBre25A.rda")
 
 stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A, 
                      n_cbre_partnership_actions_16B, n_CBre25A, type="text", digits=2)
@@ -3006,35 +3012,37 @@ Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B; b_CBre25A
 Current cumulative n_Cbre model: n_cbre_partnership_actions_16B; n_CBre25A
 
 ```{r Term26A}
-#Create the model
-# 
+if(file.exists("..//Output//n_CBre26A.rda")) load("..//Output//n_CBre26A.rda")
 
-n_CBre26A <- lmer(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Base + cl_Base2Ceil + cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                 #cl_def3_HHI_lag1+
-                   cl_def3_ratio_lag1+
-                 c_pMarket+
-                   cl_OffVol+ 
-                 #cl_office_naics_hhi_kc+
-                   # c_pPBSC:cl_pairCA+
-                   cl_Base2Ceil:cl_Base+
-                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
-                   (1 | Agency/Office) +
-                   (1 | PlaceCountryISO3)+ 
-                   (1 | StartFY),
-               verbose=TRUE)
-
+if(!exists("n_CBre26A")){
+  #Create the model
+  n_CBre26A <- lmer(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                      cl_CFTE+ c_pPBSC+c_pOffPSC+
+                      c_pairHist+cl_pairCA+
+                      cl_Base + cl_Base2Ceil + cl_Days+
+                      Comp1or5+
+                      Veh+
+                      PricingUCA+
+                      Crisis+
+                      cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                      #cl_def3_HHI_lag1+
+                      cl_def3_ratio_lag1+
+                      c_pMarket+
+                      cl_OffVol+ 
+                      #cl_office_naics_hhi_kc+
+                      # c_pPBSC:cl_pairCA+
+                      cl_Base2Ceil:cl_Base+
+                      (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                      (1 | Agency/Office) +
+                      (1 | PlaceCountryISO3)+ 
+                      (1 | StartFY),
+                    verbose=TRUE)
+  save(n_CBre26A,file="..\\output\\n_CBre26A.rda")
+}
 #Compare the models
 glmer_examine(n_CBre26A,display = TRUE)
 
-save(n_CBre26A,file="..\\output\\n_CBre26A.rda")
+
 
 stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A, 
                      n_cbre_partnership_actions_16B, n_CBre25A, type="text", digits=2)
@@ -3051,35 +3059,39 @@ Current cumulative b_CBre model: b_cbre_CFTE_pricing_23B, b_CBre25A
 Current cumulative n_Cbre model: n_cbre_partnership_actions_16B, n_CBre25A
 
 ```{r Term27A}
-#Create the model
-b_CBre27A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA+
-                 cl_Base + cl_Base2Ceil + cl_Days+
-                 Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                 #cl_def3_HHI_lag1+
-                   cl_def3_ratio_lag1+
-                 c_pMarket+
-                   cl_OffVol+ 
-                 #cl_office_naics_hhi_k+ 
-                                  c_pPBSC:cl_pairCA+#c_pPBSC:c_pMarket+
-                 c_pPBSC:cl_Days+
-                 PricingUCA:cl_CFTE+
-                   #cl_Base2Ceil:cl_Base+
-                   
-                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
-                   (1 | Agency/Office) +
-                   (1 | PlaceCountryISO3)+ 
-                   (1 | StartFY),
-                 family=binomial(link="logit"),
-               verbose=TRUE)
-glmer_examine(b_CBre27A,display = TRUE)
+if(file.exists("..//Output//b_CBre27A.rda")) load("..//Output//b_CBre27A.rda")
 
-save(b_CBre27A,file="..\\output\\b_CBre27A.rda")
+if(!exists("b_CBre27A")){
+  #Create the model
+  b_CBre27A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                       cl_CFTE+ c_pPBSC+c_pOffPSC+
+                       c_pairHist+cl_pairCA+
+                       cl_Base + cl_Base2Ceil + cl_Days+
+                       Comp1or5+
+                       Veh+
+                       PricingUCA+
+                       Crisis+
+                       cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                       #cl_def3_HHI_lag1+
+                       cl_def3_ratio_lag1+
+                       c_pMarket+
+                       cl_OffVol+ 
+                       #cl_office_naics_hhi_k+ 
+                       c_pPBSC:cl_pairCA+#c_pPBSC:c_pMarket+
+                       c_pPBSC:cl_Days+
+                       PricingUCA:cl_CFTE+
+                       #cl_Base2Ceil:cl_Base+
+                       
+                       (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                       (1 | Agency/Office) +
+                       (1 | PlaceCountryISO3)+ 
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
+  save(b_CBre27A,file="..\\output\\b_CBre27A.rda")
+}
+
+glmer_examine(b_CBre27A,display = TRUE)
 
 stargazer::stargazer(b_cbre_CFTE_pricing_23B, b_CBre25A, b_CBre27A, type="text", digits=2)
 
@@ -3102,6 +3114,9 @@ Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B; b_CBre25A
 Current cumulative n_Cbre model: n_cbre_partnership_actions_16B; n_CBre25A
 
 ```{r b_CBre28A}
+if(file.exists("..//Output//b_CBre28AB.rda")) load("..//Output//b_CBre28AB.rda")
+
+if(!exists("b_CBre28B")){
 #Create the model
 b_CBre28A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const +
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -3127,9 +3142,6 @@ b_CBre28A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const +
                    (1 | StartFY),
                  family=binomial(link="logit"),
                verbose=TRUE)
-save(b_CBre28A,file="..\\output\\b_CBre28AB.rda")
-glmer_examine(b_CBre28A,display = TRUE)
-
 
 b_CBre28B <- glmer(data=serv_smp1m, b_CBre ~  cl_US6_avg_sal_lag1Const +
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
@@ -3155,8 +3167,10 @@ b_CBre28B <- glmer(data=serv_smp1m, b_CBre ~  cl_US6_avg_sal_lag1Const +
                    (1 | StartFY),
                  family=binomial(link="logit"),
                verbose=TRUE)
-
 save(b_CBre28A,b_CBre28B,file="..\\output\\b_CBre28AB.rda")
+}
+
+
 #Compare the models
 glmer_examine(b_CBre28B,display = TRUE)
 
