@@ -1813,33 +1813,28 @@ texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 This was created while we were still using ceiling instead of base.
 ```{r Term25A}
 #Create the model
-if(file.exists("..//Output//term25A.rdata")) load("..//Output//term25A.rdata")
-
-if(!exists("term25A")){
-  term25A <- glmer(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
-                     cl_CFTE+ c_pPBSC+c_pOffPSC+
-                     c_pairHist+cl_pairCA +
-                     cl_Base + cl_Days+ cl_Base2Ceil+
-                     Comp1or5+
-                     Veh+
-                     PricingUCA+
-                     Crisis+
-                     cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                     cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                     c_pMarket+
-                     cl_OffVol+cl_office_naics_hhi_k +
-                     c_pairHist:PricingUCA+ 
-                     cl_Base2Ceil:cl_Ceil+
-                     (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
-                     (1 | Agency/Office) +
-                     (1 | PlaceCountryISO3)+ 
-                     (1 | StartFY),
-                   family=binomial(link="logit"),
-                   verbose=TRUE)
-  
-  save(term25A,file="..\\output\\term25A.rdata")
-}
+term25A <- glmer(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Base + cl_Days+ cl_Base2Ceil+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k +
+                    c_pairHist:PricingUCA+ 
+                   cl_Base2Ceil:cl_Ceil+
+                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                   (1 | Agency/Office) +
+                   (1 | PlaceCountryISO3)+ 
+                   (1 | StartFY),
+                 family=binomial(link="logit"),
+               verbose=TRUE)
 glmer_examine(term25A,display = TRUE)
+save(term25A,file="..\\output\\term25A.rdata")
 
 #Compare the models
 stargazer::stargazer(term_base2ceil_ceiling_21B, term25A, type="text", digits=2)
@@ -1848,37 +1843,33 @@ summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ```
 
 ####25B: 2019-08-14 Switch to base and 1m sample.
-```{r Term26A}
-#Create the model
-if(file.exists("..//Output//term26A.rdata")) load("..//Output//term26A.rdata")
 
-if(!exists("term26A")){
-  term26A <- glmer(data=serv_smp1m, b_Term ~ cl_US6_avg_sal_lag1Const + 
-                     cl_CFTE+ c_pPBSC+c_pOffPSC+
-                     c_pairHist+cl_pairCA +
-                     cl_Base + cl_Days+ cl_Base2Ceil+
-                     Comp1or5+
-                     Veh+
-                     PricingUCA+
-                     Crisis+
-                     cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                     cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                     c_pMarket+
-                     cl_OffVol+cl_office_naics_hhi_k +
-                     c_pairHist:PricingUCA+ 
-                     (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
-                     (1 | Agency/Office) +
-                     (1 | PlaceCountryISO3)+ 
-                     (1 | StartFY),
-                   family=binomial(link="logit"),
-                   verbose=TRUE)
- 
-  save(term26A,file="..\\output\\term26A.rdata")
-}
- glmer_examine(term26A,display = TRUE)
+```{r Term25B}
+#Create the model
+term25B <- glmer(data=serv_smp1m, b_Term ~ cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA +
+                   cl_Base + cl_Days+ cl_Base2Ceil+
+                   Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                   c_pMarket+
+                   cl_OffVol+cl_office_naics_hhi_k +
+                    c_pairHist:PricingUCA+ 
+                   (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                   (1 | Agency/Office) +
+                   (1 | PlaceCountryISO3)+ 
+                   (1 | StartFY),
+                 family=binomial(link="logit"),
+               verbose=TRUE)
+glmer_examine(term25B,display = TRUE)
+save(term25B,file="..\\output\\term25B.rdata")
 
 #Compare the models
-stargazer::stargazer(term_base2ceil_ceiling_21B, term26A, type="text", digits=2)
+stargazer::stargazer(term_base2ceil_ceiling_21B, term25B, type="text", digits=2)
 
-summary_residual_compare( term_base2ceil_ceiling_21B, term26A,bins=100)
+summary_residual_compare( term_base2ceil_ceiling_21B, term25B,bins=100)
 ```
