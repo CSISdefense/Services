@@ -97,85 +97,114 @@ stargazer::stargazer(p_Opt_12C,type="text",
 ### Ceiling Breach
 
 ```{r Model-CBre}
-if(file.exists("..//Output//b_CBre12C.rdata")) load("..//Output//b_CBre12C.rdata")
+if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
 
-if(!exists("b_CBre12C")){
-  b_CBre12C <- glm (data=serv_smp,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k , family=binomial(link="logit")#,
-                 # verbose=1
-                 )
+if(!exists("b_CBre25A")){
+  b_CBre25A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                       cl_CFTE+ c_pPBSC+c_pOffPSC+
+                       c_pairHist+cl_pairCA+
+                       cl_Base + cl_Base2Ceil + cl_Days+
+                       Comp1or5+
+                       Veh+
+                       PricingUCA+
+                       Crisis+
+                       cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                       #cl_def3_HHI_lag1+
+                       cl_def3_ratio_lag1+
+                       c_pMarket+
+                       cl_OffVol+ 
+                       #cl_office_naics_hhi_k+ 
+                       c_pPBSC:cl_pairCA+c_pPBSC:c_pMarket+
+                       c_pPBSC:cl_Days+
+                       cl_Base2Ceil:cl_Base+
+                       (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                       (1 | Agency/Office) +
+                       (1 | PlaceCountryISO3)+ 
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
   
   
-  b_CBre12C_1m <- glm (data=serv_smp1m,
-                 b_CBre ~  cl_US6_avg_sal_lag1Const + 
-                   cl_CFTE+ c_pPBSC+c_pOffPSC+
-                 c_pairHist+cl_pairCA +
-                   cl_Ceil + capped_cl_Days+
-                   Comp1or5+
-                   Veh+
-                   PricingUCA+
-                   Crisis+
-                   cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                   c_pMarket+
-                   cl_OffVol+cl_office_naics_hhi_k , family=binomial(link="logit")#,
-                 # verbose=1
-                 )
+  n_CBre25A <- lmer(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cl_US6_avg_sal_lag1Const + 
+                      cl_CFTE+ c_pPBSC+c_pOffPSC+
+                      c_pairHist+cl_pairCA+
+                      cl_Base + cl_Base2Ceil + cl_Days+
+                      Comp1or5+
+                      Veh+
+                      PricingUCA+
+                      Crisis+
+                      cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                      #cl_def3_HHI_lag1+
+                      cl_def3_ratio_lag1+
+                      c_pMarket+
+                      cl_OffVol+ 
+                      #cl_office_naics_hhi_kc+
+                      c_pPBSC:cl_pairCA+
+                      (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                      (1 | Agency/Office) +
+                      (1 | PlaceCountryISO3)+ 
+                      (1 | StartFY),
+                    verbose=TRUE)
+  
+  #Compare the models
   
   
-  save(b_CBre12C,b_CBre12C_1m,#b_CBre12C,b_CBre12C.restart,
-       file="..//output//b_CBre12C.rdata")
+  save(b_CBre25A,n_CBre25A,file="..\\output\\CBre25A.rda")
+  
+  # b_CBre25A_1m <- glm (data=serv_smp1m,
+  #                b_CBre ~  cl_US6_avg_sal_lag1Const + 
+  #                  cl_CFTE+ c_pPBSC+c_pOffPSC+
+  #                c_pairHist+cl_pairCA +
+  #                  cl_Ceil + capped_cl_Days+
+  #                  Comp1or5+
+  #                  Veh+
+  #                  PricingUCA+
+  #                  Crisis+
+  #                  cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+  #                  cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+  #                  c_pMarket+
+  #                  cl_OffVol+cl_office_naics_hhi_k , family=binomial(link="logit")#,
+  #                # verbose=1
+  #                )
+  
+  
 }
-glmer_examine(b_CBre12C_1m,display=TRUE)
-# odds_ratio(b_CBre12C_1m,"b_CBre12C")
-stargazer::stargazer(b_CBre12C,b_CBre12C,type="text",
-                       digits=2)
+glmer_examine(b_CBre25A)
+glmer_examine(n_CBre25A)
 
+# odds_ratio(b_CBre25A_1m,"b_CBre25A")
 
-# if(!exists("b_CBre12C_restart")){
-#   pars<-get_pars(b_CBre12C)
-#   b_CBre12C_restart <- update(b_CBre12C, 
+# if(!exists("b_CBre25A_restart")){
+#   pars<-get_pars(b_CBre25A)
+#   b_CBre25A_restart <- update(b_CBre25A, 
 #                                      start=pars,
 #                                      verbose=1)
-#   save(b_CBre12C,
-#        b_CBre12C.restart,
-#        b_CBre12C,
-#        b_CBre12C_restart,
-#        file="..//output//b_CBre12C.rdata")
+#   save(b_CBre25A,
+#        b_CBre25A_restart,
+#        file="..//output//b_CBre25A.rdata")
 # }
-# glmer_examine(b_CBre12C_restart)
+# glmer_examine(b_CBre25A_restart)
 
 
 
 # 
-# save(b_CBre12C,
-#      b_CBre12C.devfun,
+# save(b_CBre25A,
+#      b_CBre25A.devfun,
 #      CBre_Cons_13_scgrad,
-#      b_CBre12C.restart,
+#      b_CBre25A.restart,
 #      CBre_Comp_13B,
 #      CBre_Comp_13B.devfun,
 #      CBre_Comp_13B.restart,
-#      file="..//output//b_CBre12C.rdata")
+#      file="..//output//b_CBre25A.rdata")
 
 # source(system.file("utils", "allFit.R", package="lme4"))
-# b_CBre12C.all <- allFit(b_CBre12C)
-# b_CBre12C_ss_cons <- summary(b_CBre12C.all)
+# b_CBre25A.all <- allFit(b_CBre25A)
+# b_CBre25A_ss_cons <- summary(b_CBre25A.all)
 
 
 
-# glmer_examine(b_CBre12C.restart,display=TRUE)
-# odds_ratio(b_CBre12C.restart,"b_CBre12C")
+# glmer_examine(b_CBre25A.restart,display=TRUE)
+# odds_ratio(b_CBre25A.restart,"b_CBre25A")
 
 ```
 "Model failed to converge with max|grad| = 0.00750942 (tol = 0.001, component 1)"
@@ -185,14 +214,13 @@ stargazer::stargazer(b_CBre12C,b_CBre12C,type="text",
 ### Termination
 
 ```{r Model-Term}
-if(file.exists("..//Output//Term_12C.rdata")) load("..//Output//Term_12C.rdata")
+if(file.exists("..//Output//term25A.rdata")) load("..//Output//term25A.rdata")
 
-if(!exists("Term_12C")){
-  Term_12C <- glm (data=serv_smp,
-                   b_Term ~ cl_US6_avg_sal_lag1Const + 
+if(!exists("term25A")){
+  term25A <- glmer(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const + 
                      cl_CFTE+ c_pPBSC+c_pOffPSC+
-                     c_pairHist+cl_pairCA+
-                     cl_Ceil + capped_cl_Days+
+                     c_pairHist+cl_pairCA +
+                     cl_Base + cl_Days+ cl_Base2Ceil+
                      Comp1or5+
                      Veh+
                      PricingUCA+
@@ -200,39 +228,41 @@ if(!exists("Term_12C")){
                      cl_def6_HHI_lag1+cl_def6_ratio_lag1+
                      cl_def3_HHI_lag1+cl_def3_ratio_lag1+
                      c_pMarket+
-                     cl_OffVol+cl_office_naics_hhi_k, family=binomial(link="logit")#,
-                   # verbose=1
-                   )
-  glmer_examine(Term_12C)
+                     cl_OffVol+cl_office_naics_hhi_k +
+                     c_pairHist:PricingUCA+ 
+                     cl_Base2Ceil:cl_Ceil+
+                     (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                     (1 | Agency/Office) +
+                     (1 | PlaceCountryISO3)+ 
+                     (1 | StartFY),
+                   family=binomial(link="logit"),
+                   verbose=TRUE)
   
-    Term_12C_1m <- glm (data=serv_smp1m,
-                   b_Term ~ cl_US6_avg_sal_lag1Const + 
-                     cl_CFTE+ c_pPBSC+c_pOffPSC+
-                     c_pairHist+cl_pairCA+
-                     cl_Ceil + capped_cl_Days+
-                     Comp1or5+
-                     Veh+
-                     PricingUCA+
-                     Crisis+
-                     cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                     cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                     c_pMarket+
-                     cl_OffVol+cl_office_naics_hhi_k, family=binomial(link="logit")#,
-                   # verbose=1
-                   )
-  glmer_examine(Term_12C_1m)
-
-  save(Term_12C,Term_12C_1m,file="..//output//Term_12C.rdata")
+  #   term25A <- glm (data=serv_smp1m,
+  #                  b_Term ~ cl_US6_avg_sal_lag1Const + 
+  #                    cl_CFTE+ c_pPBSC+c_pOffPSC+
+  #                    c_pairHist+cl_pairCA+
+  #                    cl_Ceil + capped_cl_Days+
+  #                    Comp1or5+
+  #                    Veh+
+  #                    PricingUCA+
+  #                    Crisis+
+  #                    cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+  #                    cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+  #                    c_pMarket+
+  #                    cl_OffVol+cl_office_naics_hhi_k, family=binomial(link="logit")#,
+  #                  # verbose=1
+  #                  )
+  # glmer_examine(term25A)
+  
+  save(term25A,file="..\\output\\term25A.rdata")
 }
 
-glmer_examine(Term_12C_1m,display=TRUE)
-# odds_ratio(Term_12C_1m,"Term_12C")
-stargazer::stargazer(Term_12C,Term_12C_1m,type="text",
-                       digits=2)
+glmer_examine(term25A)
 
 ```
 
-## Tables for Paper
+## Tables for Conference Paper
 ```{r CoefficientList}
 study_coef_list<-list("(Intercept)"="(Intercept)",
                       "cl_US6_avg_sal_lag1Const"="Log(Det. Ind. Salary)",
@@ -264,7 +294,10 @@ all_coef_list<-list("(Intercept)"="(Intercept)",
                     "CompOffr5+ offers"="Comp=5+ offers",
                     
                     "cl_Ceil"="Log(Init. Ceiling)",
+                    "cl_Base"="Log(Init. Base)",
+                    "cl_Base2Ceil"="Log(Ratio Base to Ceiling)",
                     "capped_cl_Days"="Log(Init. Days)",
+                    "cl_Days"="Log(Init. Days)",
                     "VehS-IDC"="Vehicle=S-IDC",
                     "VehM-IDC"="Vehicle=M-IDC",
                     "VehFSS/GWAC"="Vehicle=FSS/GWAC",
@@ -297,7 +330,7 @@ all_coef_list<-list("(Intercept)"="(Intercept)",
                     #Office
                     "c_pMarket"="Percent Market",
                     "cl_OffVol"="Office Volume",
-                    "cl_office_naics_hhi_k"="Office Concentration",
+                    "cl_office_naics_hhi_k"="Office Focus",
                     
                     
                     #interations
@@ -316,10 +349,21 @@ all_coef_list<-list("(Intercept)"="(Intercept)",
                     "VehBPA/BOA:b_Intl"="Vehicle=BPA/BOA:Performed Abroad",
                     "cl_US6_avg_sal_lag1:PricingFeeOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
                     "cl_US6_avg_sal_lag1:PricingFeeIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
-                    "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"="Pricing=Comb./or Other:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_US6_avg_sal_lag1:PricingFeeCombination or Other"="Pricing=Comb./Other:Log(Det. Ind. U.S. Avg. Salary)",
                     "cl_US6_avg_sal_lag1:PricingFeeOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
-                    "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)"
-)
+                    "cl_US6_avg_sal_lag1:PricingFeeT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)",
+                    "c_pairHist:PricingUCAOther FP"="Pricing=Other FP:Log(Det. Ind. U.S. Avg. Salary)",
+                    "c_pairHist:PricingUCAT&M/LH/FPLOE"="Pricing=T&M/LH/FP:LoE:Log(Det. Ind. U.S. Avg. Salary)",
+                    "c_pairHist:PricingUCAIncentive"="Pricing=Incentive Fee:Log(Det. Ind. U.S. Avg. Salary)",
+                    "c_pairHist:PricingUCAOther CB"="Pricing=Other CB:Log(Det. Ind. U.S. Avg. Salary)",
+                    "c_pairHist:PricingUCAUCA"="Pricing=UCA:Log(Det. Ind. U.S. Avg. Salary)",
+                    "c_pairHist:PricingUCACombination or Other"="Pricing=Comb./Other:Log(Det. Ind. U.S. Avg. Salary)",
+                    "cl_Ceil:cl_Base2Ceil"="Log(Init. Ceiling):Log(Ratio Base to Ceiling)",
+                    "c_pPBSC:cl_pairCA"="Office Perf.-Based %:Log(Paired Actions)",
+                    "c_pPBSC:c_pMarket"="Office Perf.-Based %:Percent Market",
+                    "c_pPBSC:cl_Days"="Office Perf.-Based %:Log(Init. Days)",
+                    "cl_Base:cl_Base2Ceil"="Log(Init. Base):Log(Ratio Base to Ceiling)"
+                    )
 
 
 ```
@@ -327,7 +371,7 @@ all_coef_list<-list("(Intercept)"="(Intercept)",
 ### Study Variables Only
 ```{r StudyVariableSummary}
 
-texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//study_var_model_lvl1.html",
+texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25A),file="..//Output//study_var_model_lvl1.html",
                 single.row = TRUE,
                 custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -345,12 +389,13 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//study
 ```
 
 
-### All Variables
+### All Level 1 Variables
 
 ```{r AllVariableSummary}
 
 #Absolute Exercised Options
-  stargazer::stargazer(p_Opt_12C,b_CBre12C_1m,Term_12C_1m,
+  stargazer::stargazer(#p_Opt_12C,
+                       b_CBre12C_1m,term25A,
                        single.row = TRUE,
                 custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -358,7 +403,7 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//study
                        digits=2)
 
 
-texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//all_var_model_lvl1.html",
+texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25A),file="..//Output//all_var_model_lvl1.html",
                 single.row = TRUE,
                 custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -380,34 +425,113 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//all_v
 
 
 ```
+## Tables for Final Paper
+
+
+### Ceiling Breach
+```{r CeilingResults}
+
+  stargazer::stargazer(#p_Opt_12C,
+                       b_CBre25A,n_CBre25A,
+                       single.row = TRUE,
+                custom.model.name=c("Breach Frequency (Logit)","Breach Size for Breached Contracts (Regression"),
+                stars=c(0.1,0.05,0.01,0.001),
+                       type="text",
+                       digits=2)
+
+
+texreg::htmlreg(list(b_CBre25A,n_CBre25A),file="..//Output//ceiling_breaches.html",
+                single.row = TRUE,
+                custom.model.name=c("Likelihood\n(Logit)","Size Given Breach\n(Regression)"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              "Services Complexity" = 2:3,
+                              "Office Capacity" =4:5,
+                              "Past Relationship"=6:7,
+                              "Contract Characteristics"=8:26,
+                              "NAICS Characteristics" =27:29,
+                              "Office Characteristics" =30:31,
+                              "Interactions"=32:35
+                              ),
+                custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 8: Ceiling Breaches",
+                caption.above=TRUE)
+
+
+
+```
+
+### Terminations
+
+```{r AllVariableSummary}
+
+#Absolute Exercised Options
+  stargazer::stargazer(#p_Opt_12C,
+                       term25A,
+                       single.row = TRUE,
+                custom.model.name=c("Termination"),
+                stars=c(0.1,0.05,0.01,0.001),
+                       type="text",
+                       digits=2)
+
+
+texreg::htmlreg(list(term25A),file="..//Output//terminations.html",
+                single.row = TRUE,
+                custom.model.name=c("Termination"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              "Services Complexity" = 2:3,
+                              "Office Capacity" =4:5,
+                              "Past Relationship"=6:7,
+                              "Contract Characteristics"=8:26,
+                              "NAICS Characteristics" =27:30,
+                              "Office Characteristics" =31:33,
+                              "Interactions"=34:40
+                              ),
+                custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 7: Terminations",
+                caption.above=TRUE)
+
+
+
+```
+
 
 ## Odds Ratios
 
+
+
+### Exercised Options
+```{r Odds-Opt}
+
+
+comp.or<-odds_ratio(b_CBre25A,"b_CBre25A","Both","Both")
+write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio.csv",row.names=FALSE)
+get_icc(b_CBre25A)
+
+#https://www.lcampanelli.org/mixed-effects-modeling-lme4/
+gridExtra::grid.arrange(dotplot(ranef(b_CBre25A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+             nrow=1)
+
+
+```
+
 ### Ceiling Breach 
-```{r Odds-CBre}
-# or1<-odds_ratio(b_CBre12C_1m,"b_CBre12C","Both","Both")
-# or2<-odds_ratio(CBre_Comp_13C,"CBre_Comp_13C","Competition","Ceiling Breaches")
-# or3<-odds_ratio(CBre_Cons_Comp_15A,"CBre_Cons_Comp_15A","Both","Ceiling Breaches")
-# comp.or<-rbind(or1,or2,or3)
-# 
-# write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio.csv",row.names=FALSE)
-# 
-# 
-# 
-# or1<-odds_ratio(b_CBre12C,"b_CBre12C","Concentration","Ceiling Breaches")
-# or2<-odds_ratio(CBre_Comp_13C_1m,"CBre_Comp_13C_1m","Competition","Ceiling Breaches")
-# or3<-odds_ratio(CBre_Cons_Comp_15A_1m,"CBre_Cons_Comp_15A_1m","Both","Ceiling Breaches")
-# comp.or<-rbind(or1,or2,or3)
-# 
-# write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio_1m.csv",row.names=FALSE)
-# get_icc(CBre_Cons_Comp_15A_1m)
-# 
-# #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
-# gridExtra::grid.arrange(dotplot(ranef(b_CBre12C.restart, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-#              dotplot(ranef(CBre_Comp_13C, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-#              dotplot(ranef(CBre_Cons_Comp_15A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-#              nrow=1)
-# 
+```{r Odds-Term}
+comp_or<-odds_ratio(b_CBre25A,output="Breach Likelihood",rename_list=all_coef_list)
+  comp_or_walds<-odds_ratio(b_CBre25A,"b_CBre25A",output="Breach Likelihood",walds=TRUE,rename_list=all_coef_list)
+# save(comp.or,file="..//Output//comp.or.rdata")
+write.csv(get_study_variables_odds_ratio(comp_or_walds,study="services"),file="..//output//ceiling_breach_study_odds_ratio_walds.csv",row.names=FALSE)
+get_icc(b_CBre25A)
+
+#https://www.lcampanelli.org/mixed-effects-modeling-lme4/
+gridExtra::grid.arrange(dotplot(ranef(b_CBre25A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+             nrow=1)
+
 
 ```
 
@@ -416,27 +540,17 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//all_v
 
 ```{r Odds-Term}
 
-# gridExtra::grid.arrange(dotplot(ranef(Term_12C, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-#              dotplot(ranef(Term_Comp_13E2, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-#              dotplot(ranef(Term_Cons_Comp_14A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-#              nrow=1)
-# dotplot(ranef(Term_12C, condVar = T), strip = T, scales=list(relation='free'))$NAICS3
-# 
-# 
-# or1<-odds_ratio(Term_12C,"Term_12C","Concentration","Ceiling Breaches")
-# or2<-odds_ratio(Term_Comp_13E2,"Term_Comp_13E2","Competition","Ceiling Breaches")
-# or3<-odds_ratio(Term_Cons_Comp_14C,"Term_Cons_Comp_14C","Both","Ceiling Breaches")
-# term.or<-rbind(or1,or2,or3)
-# 
-# write.csv(get_study_variables_odds_ratio(term.or),file="..//output//termination_study_odds_ratio.csv",row.names=FALSE)
-# 
-# or1<-odds_ratio(Term_12C_1m,"Term_12C_1m","Concentration","Ceiling Breaches")
-#   or2<-odds_ratio(Term_Comp_13E2,"Term_Comp_13F_1m","Competition","Ceiling Breaches")
-# or3<-odds_ratio(Term_Cons_Comp_14C_1m,"Term_Cons_Comp_14C_1m","Both","Ceiling Breaches")
-# term.or<-rbind(or1,or2,or3)
-# 
-# write.csv(get_study_variables_odds_ratio(term.or),file="..//output//termination_study_odds_ratio_1m.csv",row.names=FALSE)
-# 
+
+  term_or_walds<-odds_ratio(term25A,"term25A",output="Termination Likelihood",walds=TRUE,rename_list=all_coef_list)
+# save(term.or,file="..//Output//term.or.rdata")
+write.csv(get_study_variables_odds_ratio(term_or_walds,study="services"),file="..//output//termination_study_odds_ratio_walds.csv",row.names=FALSE)
+get_icc(term25A)
+
+
+gridExtra::grid.arrange(dotplot(ranef(term25A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+             nrow=1)
+dotplot(ranef(term25A, condVar = T), strip = T, scales=list(relation='free'))$NAICS3
+ 
 
 ```
 
@@ -448,17 +562,23 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//all_v
 # debug(binned_fitted_versus_residuals)
 
 (
-  residual_logit<-gridExtra::grid.arrange(
-    binned_fitted_versus_residuals(b_CBre12C_1m,bins=50)+
+  terminations_residual<-gridExtra::grid.arrange(
+    binned_fitted_versus_residuals(b_CBre25A,bins=50)+
       labs(title="Ceiling Breach Binned Actuals",caption=NULL,
-           x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
-    residuals_plot(b_CBre12C_1m, bins=50)+labs(title="Ceiling Breach Binned Residual Plot"),
-    binned_fitted_versus_residuals(Term_12C_1m,bins=50)+
+           x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)")
+    )
+)
+ceiling_breach_residual<-gridExtra::grid.arrange(
+    residuals_plot(b_CBre25A, bins=50)+labs(title="Ceiling Breach Binned Residual Plot"),
+    binned_fitted_versus_residuals(term25A,bins=50)+
       labs(title="Termination Binned Actuals Plot",caption=NULL,
-           x="Estimated Pr(Termination)",y="Actual Pr(Termination)"),
-    residuals_plot(Term_12C_1m, bins=50)+labs(title="Termination Residuals Plot"),
+           x="Estimated Pr(Termination)",y="Actual Pr(Termination)"))
+)
+
+options_residual<-gridExtra::grid.arrange(
+    residuals_plot(term25A, bins=50)+labs(title="Termination Residuals Plot"),
     binned_fitted_versus_residuals(p_Opt_12C,bins=50)+
-      labs(title="Both Binned Actuals",
+      labs(title="Exercised Options Actuals",
            caption=NULL,
            x="Estimated % Exercised Option Growth",y="Actual % Exercised Option Growth"),
     residuals_plot(p_Opt_12C, bins=50)+labs(title="Exercised Options Binned Residuals Plot")
@@ -466,6 +586,6 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,Term_12C_1m),file="..//Output//all_v
 )
 
 ggsave(residual_logit,file="..//output//residual_logit.png",width=7.5, height=8.5)
-ggsave(residual_logit,file="..//output//residual_lot.eps",width=7.5, height=8.5)
+ggsave(residual_logit,file="..//output//residual_logit.png",width=7.5, height=8.5)
 
 ```

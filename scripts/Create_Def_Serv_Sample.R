@@ -93,6 +93,7 @@ complete<-
   #Controls
   !is.na(def_serv$CompOffr)&
   !is.na(def_serv$cl_Offr)&
+  !is.na(def_serv$cl_Base)&
   !is.na(def_serv$cl_Ceil)&
   !is.na(def_serv$capped_cl_Days)&
   !is.na(def_serv$Veh) &
@@ -144,30 +145,31 @@ serv_smp1m<-serv_complete[sample(nrow(serv_complete),1000000),]
 serv_smp<-serv_complete[sample(nrow(serv_complete),250000),]
 rm(serv_complete)
 serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
+serv_breach<-def_serv[complete&def_serv$b_CBre==1,]
 
 #To instead replace entries in existing sample, use  this code.
 # load(file="data/clean/def_sample.Rdata")
-# serv_smp<-update_sample_col_CSIScontractID(serv_smp,
-#                                            def_serv[complete,],
-#                                            col=NULL,
-#                                            drop_and_replace=TRUE)
-# 
-# serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
-#                                            def_serv[complete,],
-#                                            col=NULL,
-#                                            drop_and_replace=TRUE)
-# 
-# serv_opt<-update_sample_col_CSIScontractID(serv_opt,
-#                                              def_serv[complete,],
-#                                              col=NULL,
-#                                              drop_and_replace=TRUE)
+serv_smp<-update_sample_col_CSIScontractID(serv_smp,
+                                           def_serv[complete,],
+                                           col=NULL,
+                                           drop_and_replace=TRUE)
+
+serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
+                                           def_serv[complete,],
+                                           col=NULL,
+                                           drop_and_replace=TRUE)
+
+serv_opt<-update_sample_col_CSIScontractID(serv_opt,
+                                             def_serv[complete,],
+                                             col=NULL,
+                                             drop_and_replace=TRUE)
 
 # serv_smp<-serv_smp %>% dplyr::select(-c(Ceil, qCRais))
 # serv_smp1m<-serv_smp1m %>% dplyr::select(-c(Ceil, qCRais))
 # serv_opt<-serv_opt %>% dplyr::select(-c(Ceil, qCRais))
 
 
-save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt)
+save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt,serv_breach)
 write.foreign(df=serv_smp,
               datafile="data//clean//def_serv_sample250k.dat",
               codefile="data//clean//def_serv_sample250k_code.do",
