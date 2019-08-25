@@ -1826,7 +1826,7 @@ term25A <- glmer(data=serv_smp, b_Term ~ cl_US6_avg_sal_lag1Const +
                    c_pMarket+
                    cl_OffVol+cl_office_naics_hhi_k +
                     c_pairHist:PricingUCA+ 
-                   cl_Base2Ceil:cl_Ceil+
+                   # cl_Base2Ceil:cl_Ceil+
                    (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
                    (1 | Agency/Office) +
                    (1 | PlaceCountryISO3)+ 
