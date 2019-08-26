@@ -3155,7 +3155,7 @@ Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
 ####24A: Restoring cl_def3_HHI_lag1 and cl_office_naics_hhi_k
 ```{r Model24A}
 #Create the model
-b_cbre24A <- glm(data=serv_smp,
+b_cbre24A <- b_cbre_CFTE_pricing_22B <- glm(data=serv_smp,
                         b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -3174,8 +3174,8 @@ b_cbre24A <- glm(data=serv_smp,
                    c_pPBSC:c_pMarket+
                  c_pPBSC:cl_Days+
                    cl_Base2Ceil:cl_Base+
-                 PricingUCA:cl_CFTE+
-                   pOffPSC:cl_OffVol, family=binomial(link="logit"))
+                 PricingUCA:cl_CFTE
+  , family=binomial(link="logit"))
 glmer_examine(b_cbre24A)
 
 
@@ -3353,9 +3353,13 @@ b_cbre24E <- glm(data=serv_smp,
                    cl_OffVol:cl_office_naics_hhi_k, family=binomial(link="logit"))
 glmer_examine(b_cbre24E)
 
+#Compare the models
+  stargazer::stargazer(b_cbre24A, b_cbre24E, type="text", digits=2)
+
+summary_residual_compare(b_cbre24A, b_cbre24E)
 
 ```
-
+Significant and nagative, contrary to expectation, leaving out.
 # Multilevel Model
 ####25A: 2019-08-20 First run, original multilevel.
 This was created while we were still using ceiling instead of base.
