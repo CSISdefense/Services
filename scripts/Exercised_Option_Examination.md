@@ -1576,7 +1576,7 @@ Other Unexplained 10x Options Growth            3            1277333            
   ggplot(opt, aes(x=n_OptGrowth_Then_Year,fill=qp_OptGrowth)) +
     geom_histogram(bins=100)+
     theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-    scale_x_log10()+
+    scale_x_log10()+ 
     #+
     geom_vline(xintercept = 1)+
     facet_wrap(~qHighBase,scales="free_y")#+, space="free_y"
@@ -1595,9 +1595,267 @@ Other Unexplained 10x Options Growth            3            1277333            
 
 ![](Exercised_Option_Examination_files/figure-html/OptionsGrowthAfterCleaning-8.png)<!-- -->
 
+# Proportion of Options Exercised
+
+```r
+if(file.exists("..\\data\\semi_clean\\serv_opt.rdata")){
+  load("..\\data\\semi_clean\\serv_opt.rdata")
+} else {
+  serv_opt<-csis360::standardize_variable_names(serv_opt)
+  dupe_psa<-which(colnames(serv_opt)=="ProductOrServiceArea")
+  if(length(dupe_psa)>1)
+    serv_opt<-serv_opt[,-c(dupe_psa[2:length(dupe_psa)])]
+  colnames(serv_opt)[colnames(serv_opt)=="UnmodifiedCeiling_Then_Year"]<-"UnmodifiedCeiling"
+  
+  #Ceiling Variables
+  serv_opt<-input_contract_ceiling_breach(serv_opt,
+                                          file="Contract.SP_ContractCeilingBreachCustomer.txt")
+  colnames(serv_opt)[colnames(serv_opt)=="UnmodifiedCeiling"]<-"UnmodifiedCeiling_Then_Year"
+  
+#Base Variables
+  serv_opt<-read_and_join_experiment( serv_opt  ,
+                                        "Contract.sp_ContractExercisedOptions.txt",
+                                        path="",
+                                        directory="..\\data\\semi_clean\\",
+                                        by=c("CSIScontractID"),
+                                        # add_var=c("AnyUnmodifiedUnexercisedOptions",
+                                        #           "AnyUnmodifiedUnexercisedOptionsWhy",
+                                        #           "UnmodifiedBase",
+                                        #           "SteadyScopeOptionGrowthAlone",
+                                        #           "SteadyScopeOptionRescision",
+                                        #           "AdminOptionModification"),
+                                        new_var_checked=FALSE,
+                                        create_lookup_rdata=TRUE,
+                                        lookup_char_as_factor=TRUE)
+  
+  
+  
+  colnames(serv_opt)[colnames(serv_opt)=="UnmodifiedBase"]<-"UnmodifiedBase_Then_Year"
+    colnames(serv_opt)[colnames(serv_opt)=="n_OptGrowth"]<-"n_OptGrowth_Then_Year"
+
+    
+    
+  
+}
+```
 
 
+```r
+#Determine original and updated space available 
+serv_opt$OptSpaceOriginal<-serv_opt$UnmodifiedCeiling_Then_Year-serv_opt$UnmodifiedBase_Then_Year
+summary(serv_opt$OptSpaceOriginal)
+```
+
+```
+##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## 0.000e+00 2.697e+04 9.999e+04 2.063e+07 5.885e+05 7.255e+10
+```
+
+```r
+serv_opt$OptSpaceUpdated<-serv_opt$UnmodifiedCeiling_Then_Year+serv_opt$ChangeOrderCeilingGrowth+
+  serv_opt$AdminCeilingModification+serv_opt$SteadyScopeCeilingModification+serv_opt$OtherCeilingModification-
+  serv_opt$UnmodifiedBase_Then_Year
+summary(serv_opt$OptSpaceUpdated)
+```
+
+```
+##       Min.    1st Qu.     Median       Mean    3rd Qu.       Max. 
+## -4.990e+07  2.585e+04  1.041e+05  2.110e+07  6.499e+05  7.255e+10
+```
+
+```r
+#Not included in the update ceiling.
+#ChangeOrderCeilingRescision
+#EndingCeilingModification+
+#OtherCeilingModification+
+summary(serv_opt$Opt)
+```
+
+```
+## Initial Base=Ceiling        Option Growth 
+##                    0                74274
+```
+
+```r
+# colnames(serv_opt)[duplicated(colnames(serv_opt))]
+# serv_opt<-serv_opt[,-which(duplicated(colnames(serv_opt)))]
+# which(duplicated(colnames(serv_opt)))
+serv_opt$OptSpaceUpdated[serv_opt$OptSpaceOriginal>serv_opt$OptSpaceUpdated] <-
+  serv_opt$OptSpaceOriginal[serv_opt$OptSpaceOriginal>serv_opt$OptSpaceUpdated]
+
+if(any(colnames(serv_opt)[duplicated(colnames(serv_opt))])) stop("duplicte column names")
+#This only works if there's just one duplicated name.
+# dupe<-which(colnames(serv_opt) %in% colnames(serv_opt)[duplicated(colnames(serv_opt))])
+# serv_opt<-serv_opt[,-c(dupe[2:length(dupe)])]
+
+ggplot(serv_opt,aes(x=OptSpaceOriginal,y=OptSpaceUpdated))+geom_point(alpha=0.01)+scale_x_log10()+scale_y_log10()
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptProp-1.png)<!-- -->
+
+```r
+#Proportion of options
+serv_opt$ExerOriginal<-(serv_opt$n_OptGrowth_Then_Year-1)/serv_opt$OptSpaceOriginal
+serv_opt$ExerOriginal[serv_opt$ExerOriginal>1]<-1
+summary(serv_opt$ExerOriginal)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  0.3443  0.4325  0.9675  1.0000
+```
+
+```r
+ggplot(serv_opt, aes(x=ExerOriginal)) + stat_ecdf(geom = "step")
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptProp-2.png)<!-- -->
+
+```r
+serv_opt$ExerUpdate<-(serv_opt$ChangeOrderOptionModification+
+                        serv_opt$SteadyScopeOptionGrowthAlone+
+                        serv_opt$SteadyScopeOptionGrowthMixed+
+                        serv_opt$SteadyScopeOptionRescision+
+                        serv_opt$AdminOptionModification+
+                        serv_opt$OtherOptionModification
+                      )/serv_opt$OptSpaceUpdated
+serv_opt$ExerUpdate[serv_opt$ExerUpdate>1]<-1
+serv_opt$ExerUpdate[serv_opt$ExerUpdate<0]<-0
+summary(serv_opt$ExerUpdate)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  0.5096  0.5314  1.0000  1.0000
+```
+
+```r
+ggplot(serv_opt, aes(x=ExerUpdate)) + stat_ecdf(geom = "step")
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptProp-3.png)<!-- -->
+
+```r
+#Excludes serv_opt$EndingOptionModification+
+    
+serv_opt$Exer<-ifelse(serv_opt$ExerUpdate>serv_opt$ExerOriginal,serv_opt$ExerUpdate,serv_opt$ExerOriginal)
+summary(serv_opt$Exer)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  0.5229  0.5378  1.0000  1.0000
+```
+
+```r
+ggplot(serv_opt, aes(x=Exer)) + stat_ecdf(geom = "step")
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptProp-4.png)<!-- -->
+
+```r
+serv_opt_long<-tidyr::gather(serv_opt,OptMeasure,OptGrowth,c(ExerOriginal,ExerUpdate,Exer),factor_key=TRUE)
+ggplot(serv_opt_long, aes(x=OptGrowth,color=OptMeasure)) + stat_ecdf(geom = "step")+
+  geom_vline(xintercept =c(0.5,0.95),linetype=2)#,0.975
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptProp-5.png)<!-- -->
+
+```r
+nrow(serv_opt[serv_opt$Exer<=0.000001,])
+```
+
+```
+## [1] 18853
+```
+
+```r
+nrow(serv_opt[serv_opt$n_OptGrowth_Then_Year==0,])
+```
+
+```
+## [1] 0
+```
+
+Of the two different measures, strictly defined option growth over the original gap between base and ceiling is clearly the more conservative. The first way of measuring outcomes is to allow either measure for reaching All, but only the stricter measure of growth for reaching some. 
+
+The choice to set the maximum threshold at above 0.95 rather than simply 100% is driven by the upward curve near the end of the cumulative distribution function. Because those contracts do appear to stand apart, rounding up seems a reasonable step. Similar approaches are taken for other variables, primarily pricing, where a contract that has the vast majority of obligations under one particular type can still qualify with the cut off for vast majority at that final uptick point.
 
 
+```r
+serv_opt$b_AllOpt<-ifelse(serv_opt$Exer>0.95,1,0)
+summary(serv_opt$b_AllOpt)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  0.0000  0.3444  1.0000  1.0000
+```
+
+```r
+serv_opt$b_SomeOpt_Strict<-ifelse(serv_opt$n_OptGrowth_Then_Year>1,1,0)
+summary(serv_opt$b_SomeOpt_Strict)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  1.0000  0.6204  1.0000  1.0000
+```
+
+```r
+serv_opt_long<-tidyr::gather(serv_opt,OptMeasure,OptGrowth,c(ExerOriginal,ExerUpdate,Exer),factor_key=TRUE)
+ggplot(serv_opt_long, aes(x=OptGrowth,color=OptMeasure)) + stat_ecdf(geom = "step")+
+  geom_vline(xintercept =c(0.5,0.95),linetype=2)+facet_wrap(~b_SomeOpt_Strict)
+```
+
+![](Exercised_Option_Examination_files/figure-html/OptOutcome-1.png)<!-- -->
+The observation that around 10% of contracts that never have any strictly defined option growth. That said, for those graphs that don't meet the strict exercised option standard, it could easily be that the contract ceiling grew by more than the total options exercised did, which could be more indicative of cost growth than the positive options growth this paper seeks to focus on. 
 
 
+```r
+serv_opt$CeilGrowth<-serv_opt$OptSpaceUpdated-serv_opt$OptSpaceOriginal
+serv_opt$b_SomeOpt<-serv_opt$b_SomeOpt_Strict
+serv_opt$b_SomeOpt[serv_opt$ChangeOrderOptionModification+
+                        serv_opt$SteadyScopeOptionGrowthAlone+
+                        serv_opt$SteadyScopeOptionGrowthMixed+
+                        serv_opt$SteadyScopeOptionRescision+
+                        serv_opt$AdminOptionModification+
+                        serv_opt$OtherOptionModification>serv_opt$CeilGrowth]<-1
+summary(serv_opt$b_SomeOpt)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  1.0000  0.6915  1.0000  1.0000
+```
+
+```r
+summary(serv_opt$b_SomeOpt_Strict)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  1.0000  0.6204  1.0000  1.0000
+```
+
+```r
+serv_opt_long<-tidyr::gather(serv_opt,OptMeasure,OptGrowth,c(ExerOriginal,ExerUpdate,Exer),factor_key=TRUE)
+ggplot(serv_opt_long, aes(x=OptGrowth,color=OptMeasure)) + stat_ecdf(geom = "step")+
+  geom_vline(xintercept =c(0.5,0.95),linetype=2)+facet_wrap(~b_SomeOpt)
+```
+
+![](Exercised_Option_Examination_files/figure-html/AlternateSomeCriteria-1.png)<!-- -->
+
+```r
+if(any(serv_opt$b_SomeOpt==0 & serv_opt$Exer>=1))
+   stop("Somehow a contract that does not meet the some criteria has reach 100% exercised.")
+serv_opt$b_AllOpt[serv_opt$b_SomeOpt==0]<-0
+```
+There is now only a tiny minority of contracts (0.0023157) that meet the criteria for all options exercised without meeting the criteria for some exercised. These contracts are set as not qualify for the all criteria despite having 95% growth.
+
+
+```r
+serv_opt<-transition_variable_names_service(serv_opt)
+serv_exeropt<-dplyr::filter(serv_opt,b_SomeOpt==1)
+save(serv_opt,serv_exeropt,file="..\\data\\semi_clean\\serv_opt.rdata")
+```
