@@ -1088,6 +1088,7 @@ serv_opt$b_AllOpt[serv_opt$b_SomeOpt==0]<-0
 There is now only a tiny minority of contracts (`r nrow(serv_opt[serv_opt$b_SomeOpt==0 & serv_opt$Exer>0.95,])/nrow(serv_opt)`) that meet the criteria for all options exercised without meeting the criteria for some exercised. These contracts are set as not qualify for the all criteria despite having 95% growth.
 
 ```{r CreateDataSet}
+serv_opt<-transition_variable_names_service(serv_opt)
 serv_exeropt<-dplyr::filter(serv_opt,b_SomeOpt==1)
 save(serv_opt,serv_exeropt,file="..\\data\\semi_clean\\serv_opt.rdata")
 ```

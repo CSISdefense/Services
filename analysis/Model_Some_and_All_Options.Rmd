@@ -49,11 +49,8 @@ Expectation: Higher service complexity would make work more demanding and thus r
 Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS6 salary increases (decreases), the likelihood of cost ceiling breaches increases (decreases). We also then expect that higher average NAICS6 salaries (lower) will be correlated with ceiling breaches larger (smaller) in absolute size.
 
 ```{r Model01A}
-load(file="..//data//clean//def_sample.Rdata")
-summary_continuous_plot(serv_opt,metric="cbre","cln_US6sal")
+summary_continuous_plot(serv_opt,metric="opt","cln_US6sal")
 
-#Scatter Plot of b_AllOpt01A
-ggplot(serv_opt, aes(x=cln_US6sal, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_SomeOpt01A <- glm (data=serv_opt,
@@ -61,7 +58,7 @@ b_SomeOpt01A <- glm (data=serv_opt,
 
 
 b_AllOpt01A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_US6sal)
+                        b_AllOpt ~ cln_US6sal)
 
 
 #Plot residuals versus fitted
@@ -78,17 +75,15 @@ Expectation: The invoice rate approximates how much the government is charged an
 
 ```{r Model01B}
 
-summary_continuous_plot(serv_opt,metric="cbre","cln_PSCrate")
+summary_continuous_plot(serv_opt,metric="opt","cln_PSCrate")
 
-#Scatter Plot 
-ggplot(serv_opt, aes(x=cln_PSCrate, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_SomeOpt01B <- glm (data=serv_opt,
                  b_SomeOpt ~ cln_PSCrate, family=binomial(link="logit"))
 
 b_AllOpt01B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_PSCrate)
+                        b_AllOpt ~ cln_PSCrate)
 
 
 
@@ -116,7 +111,7 @@ b_SomeOpt01C <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt01C)
 
 b_AllOpt01C <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_US6sal +  cln_PSCrate)
+                        b_AllOpt ~ cln_US6sal +  cln_PSCrate)
 
 glmer_examine(b_AllOpt01C)
 #Plot residuals versus fitted
@@ -143,17 +138,14 @@ Expectation: Performance-based services contracting ties a portion of a contract
 
 ```{r Model02A}
 
-summary_continuous_plot(serv_opt,metric="cbre","pPBSC")
-
-#Scatter Plot 
-ggplot(serv_opt, aes(x=cp_OffPerf7, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+summary_continuous_plot(serv_opt,metric="opt","pPBSC")
 
 #Model
 b_SomeOpt02A <- glm (data=serv_opt,
                  b_SomeOpt ~ cp_OffPerf7, family=binomial(link="logit"))
 
 b_AllOpt02A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cp_OffPerf7)
+                        b_AllOpt ~ cp_OffPerf7)
 
 
 #Plot residuals versus fitted
@@ -173,17 +165,14 @@ Expectation: The increasing share of contracting office obligations for a given 
 
 ```{r Model02B}
 
-summary_continuous_plot(serv_opt,metric="cbre","cp_OffPSC7")
-
-#Scatter Plot 
-ggplot(serv_opt, aes(x=cp_OffPSC7, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+summary_continuous_plot(serv_opt,metric="opt","cp_OffPSC7")
 
 #Model
 b_SomeOpt02B <- glm (data=serv_opt,
                  b_SomeOpt ~ cp_OffPSC7, family=binomial(link="logit"))
 
 b_AllOpt02B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cp_OffPSC7)
+                        b_AllOpt ~ cp_OffPSC7)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_SomeOpt01C,b_SomeOpt02A,b_SomeOpt02B,
@@ -209,7 +198,7 @@ b_SomeOpt02C <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt02C)
 
 b_AllOpt02C <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cp_OffPerf7+cp_OffPSC7)
+                        b_AllOpt ~ cp_OffPerf7+cp_OffPSC7)
 
 glmer_examine(b_AllOpt02C)
 
@@ -247,7 +236,7 @@ b_SomeOpt02D <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt02D)
 
 b_AllOpt02D <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_US6sal + cln_PSCrate+ cp_OffPSC7)
+                        b_AllOpt ~ cln_US6sal + cln_PSCrate+ cp_OffPSC7)
 
 glmer_examine(b_AllOpt02D)
 #Plot residuals versus fitted
@@ -277,10 +266,8 @@ Expactation: As the number of past years of the relationship between the contrac
 
 ```{r Model03A}
 
-summary_discrete_plot(serv_opt,metric="cbre","cn_PairHist7")
+summary_discrete_plot(serv_opt,metric="opt","cn_PairHist7")
 
-#Scatter Plot
-ggplot(serv_opt, aes(x=cn_PairHist7, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_SomeOpt03A <- glm (data=serv_opt,
@@ -288,7 +275,7 @@ b_SomeOpt03A <- glm (data=serv_opt,
 
 
 b_AllOpt03A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cn_PairHist7)
+                        b_AllOpt ~ cn_PairHist7)
 
 
 #Plot residuals versus fitted
@@ -310,10 +297,7 @@ Expectation: As the number of contract actions a vendor has performed for an off
 
 ```{r Model03B}
 
-summary_continuous_plot(serv_opt,metric="cbre","cln_PairCA")
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=cln_PairCA, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+summary_continuous_plot(serv_opt,metric="opt","cln_PairCA")
 
 #Model
 b_SomeOpt03B <- glm (data=serv_opt,
@@ -321,7 +305,7 @@ b_SomeOpt03B <- glm (data=serv_opt,
 
 
 b_AllOpt03B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_PairCA)
+                        b_AllOpt ~ cln_PairCA)
 
 
 #Plot residuals versus fitted
@@ -348,7 +332,7 @@ b_SomeOpt03C <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt03C)
 
 b_AllOpt03C <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cn_PairHist7+cln_PairCA)
+                        b_AllOpt ~ cn_PairHist7+cln_PairCA)
 
 glmer_examine(b_AllOpt03C)
 
@@ -386,7 +370,7 @@ b_SomeOpt03D <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt03D)
 
 b_AllOpt03D <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPSC7+
                  cn_PairHist7+cln_PairCA)
 
@@ -505,19 +489,16 @@ Expectation: Initial Ceiling size positively estimates increasing probability of
 ```{r Model04A}
 
 #Likelihood Plot for unlogged ceiling
-summary_continuous_plot(serv_opt,metric="cbre","UnmodifiedCeiling_OMB20_GDP18",bins=1000)
-summary_continuous_plot(serv_opt,metric="cbre","UnmodifiedCeiling_OMB20_GDP18",bins=50,log=TRUE)
+summary_continuous_plot(serv_opt,metric="opt","UnmodifiedCeiling_OMB20_GDP18",bins=1000)
+summary_continuous_plot(serv_opt,metric="opt","UnmodifiedCeiling_OMB20_GDP18",bins=50,log=TRUE)
 
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=cl_Ceil, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_SomeOpt04A <- glm (data=serv_opt,
                  b_SomeOpt ~ cl_Ceil, family=binomial(link="logit"))
 
 b_AllOpt04A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cl_Ceil)
+                        b_AllOpt ~ cl_Ceil)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_SomeOpt03D,b_SomeOpt04A,
@@ -540,17 +521,15 @@ Expectation: Greater maximum duration will positively estimate the probability c
 freq_continuous_cbre_plot(serv_opt,"UnmodifiedDays",
                bins=1000)
 
-summary_continuous_plot(serv_opt,metric="cbre","cln_Days")
+summary_continuous_plot(serv_opt,metric="opt","cln_Days")
 
-#Scatter Plot
-ggplot(serv_opt, aes(x=cln_Days, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_SomeOpt04B <- glm (data=serv_opt,
                  b_SomeOpt ~ cln_Days, family=binomial(link="logit"))
 
 b_AllOpt04B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Days)
+                        b_AllOpt ~ cln_Days)
 
 
 #Plot residuals versus fitted
@@ -573,10 +552,7 @@ Expectation, in combination with ceiling, a high ratio means that the contract h
 (Ex post facto) Expectation, in combination with base, a higher ratio means a contract with greater scope, just as the ceiling variable includes base and all exercised options. In this case, the expected sign for terminations and ceiling breach likelihood and size. The expectations for options are the same whetehr combined with ceiling or ratio.
 
 ```{r Model04C}
-summary_continuous_plot(serv_opt,metric="cbre", "clr_Ceil2Base")
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=clr_Ceil2Base, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle("Terminations and Ratio Initial Base:Ceiling Ratio (Logged") + theme(plot.title = element_text(hjust = 0.5))
+summary_continuous_plot(serv_opt,metric="opt", "clr_Ceil2Base")
 
 #Model
 
@@ -584,7 +560,7 @@ ggplot(serv_opt, aes(x=clr_Ceil2Base, y=lb_AllOpt)) + geom_point(alpha = 0.1) + 
 #Model
 b_SomeOpt04C <- glm(data=serv_opt, b_SomeOpt ~ clr_Ceil2Base,family=binomial(link="logit"))
 
-b_AllOpt04C <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ clr_Ceil2Base)
+b_AllOpt04C <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ clr_Ceil2Base)
 
 
 #Plot Residuals vs. Fitted
@@ -606,7 +582,7 @@ b_SomeOpt04D <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt04D)
 
 b_AllOpt04D <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~cl_Ceil + cln_Days + clr_Ceil2Base)
+                        b_AllOpt ~cl_Ceil + cln_Days + clr_Ceil2Base)
 
 glmer_examine(b_AllOpt04D)
 #Plot residuals versus fitted
@@ -628,19 +604,17 @@ Days reduces in  significance and changes in sign  for  likelihood, no longer al
 ```{r Model04E}
 
 #Likelihood Plot for unlogged ceiling
-summary_continuous_plot(serv_opt,metric="cbre","UnmodifiedBase_OMB20_GDP18",bins=1000)
-summary_continuous_plot(serv_opt,metric="cbre","UnmodifiedBase_OMB20_GDP18",bins=50,log=TRUE)
+summary_continuous_plot(serv_opt,metric="opt","UnmodifiedBase_OMB20_GDP18",bins=1000)
+summary_continuous_plot(serv_opt,metric="opt","UnmodifiedBase_OMB20_GDP18",bins=50,log=TRUE)
 
 
-#Scatter Plot
-ggplot(serv_opt, aes(x=cln_Base, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_SomeOpt04E <- glm (data=serv_opt,
                  b_SomeOpt ~ cln_Base, family=binomial(link="logit"))
 
 b_AllOpt04E <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Base)
+                        b_AllOpt ~ cln_Base)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_SomeOpt03D,b_SomeOpt04A,b_SomeOpt04E,
@@ -666,7 +640,7 @@ b_SomeOpt04F <- glm (data=serv_opt,
 
 
 b_AllOpt04F <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~cln_Base + cln_Days  + clr_Ceil2Base)
+                        b_AllOpt ~cln_Base + cln_Days  + clr_Ceil2Base)
 
 
 #Plot residuals versus fitted
@@ -697,7 +671,7 @@ b_SomeOpt04G <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt04G)
 
 b_AllOpt04G <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days)
@@ -731,12 +705,8 @@ all due to the absence of alternatives. For options, there is a weak expectation
 Multioffer competition is expected to lead to more terminations, fewer and smaller ceiling breaches, abd  more options exercised for 2-4 options but fewer for 5+ as the diversity of competitors available may raise the appeal of going with a new contract rather than more options, especially if performance is below the desired level.
 
 ```{r Model05A}
-summary_discrete_plot(serv_opt,metric="cbre","Comp")
+summary_discrete_plot(serv_opt,metric="opt","Comp")
 
-
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=Comp, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_SomeOpt05A <- glm (data=serv_opt,
@@ -744,7 +714,7 @@ b_SomeOpt05A <- glm (data=serv_opt,
 
 
 b_AllOpt05A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ Comp)
+                        b_AllOpt ~ Comp)
 
 
 #Plot residuals versus fitted
@@ -778,7 +748,7 @@ glmer_examine(b_SomeOpt05B)
 #Is it safe to add pPBSC back in?
 
 b_AllOpt05B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -817,11 +787,8 @@ Ceiling breaches and excerised options are both less straightforward, are a more
 
 ```{r Model06A}
 
-summary_discrete_plot(serv_opt,metric="cbre","Veh")
+summary_discrete_plot(serv_opt,metric="opt","Veh")
 
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=Veh, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_SomeOpt06A <- glm (data=serv_opt,
@@ -829,7 +796,7 @@ b_SomeOpt06A <- glm (data=serv_opt,
 
 
 b_AllOpt06A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ Veh)
+                        b_AllOpt ~ Veh)
 
 
 #Plot residuals versus fitted
@@ -861,7 +828,7 @@ b_SomeOpt06B <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt06B)
 
 b_AllOpt06B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -914,10 +881,8 @@ serv_opt$Pricing<-factor(serv_opt$Pricing,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
 serv_opt$Pricing<-factor(serv_opt$Pricing,
                             levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-  summary_discrete_plot(serv_opt,metric="cbre","Pricing")
+  summary_discrete_plot(serv_opt,metric="opt","Pricing")
 
-#Scatter Plot
-ggplot(serv_opt, aes(x=Pricing, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -926,7 +891,7 @@ b_SomeOpt07A <- glm (data=serv_opt,
 
 
 b_AllOpt07A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ Pricing)
+                        b_AllOpt ~ Pricing)
 
 
 #Plot residuals versus fitted
@@ -959,7 +924,7 @@ b_SomeOpt07B <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt07B)
 
 b_AllOpt07B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -993,9 +958,7 @@ Expectation: Service Contract replying on crisis funds would have more likelihoo
 
 #### 08A: Crisis Funding
 ```{r Model08A}
-summary_discrete_plot(serv_opt,metric="cbre","Crisis")
-#Scatter Plot
-ggplot(serv_opt, aes(x=Crisis, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+summary_discrete_plot(serv_opt,metric="opt","Crisis")
 
 
 #Model
@@ -1004,7 +967,7 @@ b_SomeOpt08A <- glm (data=serv_opt,
 
 
 b_AllOpt08A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ Crisis)
+                        b_AllOpt ~ Crisis)
 
 
 
@@ -1039,7 +1002,7 @@ b_SomeOpt08B <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt08B)
 
 b_AllOpt08B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -1080,9 +1043,9 @@ HHI (logged, + means more consolidation)	cln_Def6HHI+	-	+	-
 Expectations are  unchanged.
 ```{r Model09A}
 #Likelihood Plot for unlogged ceiling
-summary_continuous_plot(serv_opt,metric="cbre","def6_HHI_lag1")
-summary_continuous_plot(serv_opt,metric="cbre","cln_Def6HHI")
-summary_continuous_plot(serv_opt,metric="cbre","cln_Def3HHI")
+summary_continuous_plot(serv_opt,metric="opt","def6_HHI_lag1")
+summary_continuous_plot(serv_opt,metric="opt","cln_Def6HHI")
+summary_continuous_plot(serv_opt,metric="opt","cln_Def3HHI")
 
 
 #Model
@@ -1091,7 +1054,7 @@ b_SomeOpt09A <- glm (data=serv_opt,
 
 
 b_AllOpt09A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Def6HHI)
+                        b_AllOpt ~ cln_Def6HHI)
 
 
 
@@ -1115,14 +1078,11 @@ Ratio Def. obligatons : US revenue	cln_Def6Obl+		+	-	-
 
 ```{r Model09B}
 #Likelihood Plot for unlogged ceiling
-      summary_continuous_plot(serv_opt,metric="cbre","def6_ratio_lag1")
+      summary_continuous_plot(serv_opt,metric="opt","def6_ratio_lag1")
 
-      summary_continuous_plot(serv_opt,metric="cbre","clr_Def6toUS")
+      summary_continuous_plot(serv_opt,metric="opt","clr_Def6toUS")
       
 
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=clr_Def6toUS, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
@@ -1131,7 +1091,7 @@ b_SomeOpt09B <- glm (data=serv_opt,
 
 
 b_AllOpt09B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ clr_Def6toUS)
+                        b_AllOpt ~ clr_Def6toUS)
 
 
 #Plot residuals versus fitted
@@ -1152,23 +1112,17 @@ Defense obligations (logged)	clr_Def6toUS+		-	-	+
 
 ```{r Model09C}
 #Likelihood Plot for unlogged ceiling
-      summary_continuous_plot(serv_opt,metric="cbre","def6_obl_lag1Const")
+      summary_continuous_plot(serv_opt,metric="opt","def6_obl_lag1Const")
 
-      summary_continuous_plot(serv_opt,metric="cbre","cln_Def6OblConst")
+      summary_continuous_plot(serv_opt,metric="opt","cln_Def6OblConst")
       
-
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=cln_Def6OblConst, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
-
-
 #Model
 b_SomeOpt09C <- glm (data=serv_opt,
                  b_SomeOpt ~ cln_Def6OblConst, family=binomial(link="logit"))
 
 
 b_AllOpt09C <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Def6OblConst)
+                        b_AllOpt ~ cln_Def6OblConst)
 
 
 #Plot residuals versus fitted
@@ -1198,7 +1152,7 @@ b_SomeOpt09D <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt09D)
 
 b_AllOpt09D <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst)
+                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst)
 
 glmer_examine(b_AllOpt09D)
 
@@ -1228,7 +1182,7 @@ b_SomeOpt09E <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt09E)
 
 b_AllOpt09E <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -1260,11 +1214,7 @@ HHI (logged, + means more consolidation)	cln_Def3HHI		TRUE	-	+	++
 
 ```{r Model10A}
 #Likelihood Plot for unlogged ceiling
-summary_continuous_plot(serv_opt,metric="cbre","cln_Def3HHI")
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=cln_Def3HHI, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
-
+summary_continuous_plot(serv_opt,metric="opt","cln_Def3HHI")
 
 #Model
 b_SomeOpt10A <- glm (data=serv_opt,
@@ -1272,7 +1222,7 @@ b_SomeOpt10A <- glm (data=serv_opt,
 
 
 b_AllOpt10A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Def3HHI)
+                        b_AllOpt ~ cln_Def3HHI)
 
 
 #Plot residuals versus fitted
@@ -1301,13 +1251,8 @@ Ratio Def. obligatons : US revenue	clr_Def3toUS+		-	+	+
 
 ```{r Model10B}
 #Likelihood Plot for unlogged ceiling
-summary_continuous_plot(serv_opt,metric="cbre","capped_def3_ratio_lag1")
-summary_continuous_plot(serv_opt,metric="cbre","clr_Def3toUS")
-
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=cln_Def3HHI, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
-
+summary_continuous_plot(serv_opt,metric="opt","capped_def3_ratio_lag1")
+summary_continuous_plot(serv_opt,metric="opt","clr_Def3toUS")
 
 #Model
 b_SomeOpt10B <- glm (data=serv_opt,
@@ -1315,7 +1260,7 @@ b_SomeOpt10B <- glm (data=serv_opt,
 
 
 b_AllOpt10B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ clr_Def3toUS)
+                        b_AllOpt ~ clr_Def3toUS)
 
 
 #Plot residuals versus fitted
@@ -1347,7 +1292,7 @@ b_SomeOpt10C <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt10C)
 
 b_AllOpt10C <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
                    cln_Def3HHI+clr_Def3toUS)
 glmer_examine(b_AllOpt10C)
 
@@ -1358,7 +1303,7 @@ b_SomeOpt10C2 <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt10C2)
 
 b_AllOpt10C2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Def6HHI+clr_Def6toUS+
+                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS)
 glmer_examine(b_AllOpt10C2)
 
@@ -1370,7 +1315,7 @@ b_SomeOpt10C3 <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt10C3)
 
 b_AllOpt10C3 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ clr_Def6toUS+cln_Def6OblConst+
+                        b_AllOpt ~ clr_Def6toUS+cln_Def6OblConst+
                    cln_Def3HHI+clr_Def3toUS)
 glmer_examine(b_AllOpt10C3)
 
@@ -1382,7 +1327,7 @@ b_SomeOpt10C4 <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt10C4)
 
 b_AllOpt10C4 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
                    cln_Def3HHI)
 glmer_examine(b_AllOpt10C4)
 
@@ -1394,7 +1339,7 @@ b_SomeOpt10C5 <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt10C5)
 
 b_AllOpt10C5 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Def6HHI+clr_Def6toUS+
+                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI)
 glmer_examine(b_AllOpt10C5)
 
@@ -1405,7 +1350,7 @@ b_SomeOpt10C6 <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt10C6)
 
 b_AllOpt10C6 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_Def6HHI+clr_Def6toUS+
+                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+
                    clr_Def3toUS)
 glmer_examine(b_AllOpt10C6)
 
@@ -1450,7 +1395,7 @@ b_SomeOpt10D <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt10D)
 
 b_AllOpt10D <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days +
@@ -1479,7 +1424,7 @@ b_SomeOpt10D2 <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt10D2)
 
 b_AllOpt10D2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days +
@@ -1518,10 +1463,7 @@ Expectation: Contracts of offices partnered with vendors who have larger market 
 
 ```{r Model11A}
 
-summary_continuous_plot(serv_opt,metric="cbre","cp_PairObl7")
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=cp_PairObl7, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+summary_continuous_plot(serv_opt,metric="opt","cp_PairObl7")
 
 
 #Model
@@ -1530,7 +1472,7 @@ b_SomeOpt11A <- glm (data=serv_opt,
 
 
 b_AllOpt11A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cp_PairObl7)
+                        b_AllOpt ~ cp_PairObl7)
 
 
 #Plot residuals versus fitted
@@ -1568,7 +1510,7 @@ b_SomeOpt11B <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt11B)
 
 b_AllOpt11B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days +
@@ -1604,10 +1546,7 @@ From looking at data, terminations, easier for big, less dependent. - less depen
 
 ```{r Model12A}
 
-summary_continuous_plot(serv_opt,metric="cbre","cln_OffObl7")
-
-#Scatter Plot
-ggplot(serv_opt, aes(x=cln_OffObl7, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+summary_continuous_plot(serv_opt,metric="opt","cln_OffObl7")
 
 #Model
 b_SomeOpt12A <- glm (data=serv_opt,
@@ -1615,7 +1554,7 @@ b_SomeOpt12A <- glm (data=serv_opt,
 
 
 b_AllOpt12A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_OffObl7)
+                        b_AllOpt ~ cln_OffObl7)
 
 
 
@@ -1638,17 +1577,15 @@ Expectation: If a office is focused on a smaller number of industries than it ha
 
 
 ```{r Model12B}
-summary_continuous_plot(serv_opt,metric="cbre","cln_OffFocus")
+summary_continuous_plot(serv_opt,metric="opt","cln_OffFocus")
 
-#Scatter Plot
-ggplot(serv_opt, aes(x=cln_OffFocus, y=lb_AllOpt)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 #Model
 b_SomeOpt12B <- glm (data=serv_opt,
                  b_SomeOpt ~ cln_OffFocus, family=binomial(link="logit"))
 
 b_AllOpt12B <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~ cln_OffFocus)
+                        b_AllOpt ~ cln_OffFocus)
 
 
 #Plot residuals versus fitted
@@ -1686,7 +1623,7 @@ b_SomeOpt12C <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt12C)
 
 b_AllOpt12C <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -1720,7 +1657,7 @@ b_SomeOpt12C2<- glm (data=serv_opt,
 glmer_examine(b_SomeOpt12C2)
 
 b_AllOpt12C2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+#cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -1755,7 +1692,7 @@ b_SomeOpt12C3<- glm (data=serv_opt,
 glmer_examine(b_SomeOpt12C3)
 
 b_AllOpt12C3 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        lb_AllOpt ~  cln_US6sal + 
+                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -1858,10 +1795,10 @@ b_SomeOpt_salary_pricing_15A <- glm(data=serv_opt, b_SomeOpt ~ Pricing + cl_US6_
 glmer_examine(b_SomeOpt_salary_pricing_15A)
 
 
-b_AllOpt_salary_pricing_15A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ Pricing + cl_US6_avg_sal_lag1)
+b_AllOpt_salary_pricing_15A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Pricing + cl_US6_avg_sal_lag1)
 glmer_examine(b_AllOpt_salary_pricing_15A_no_interact)
 
-b_AllOpt_salary_pricing_15A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ Pricing + cl_US6_avg_sal_lag1 + Pricing:cl_US6_avg_sal_lag1)
+b_AllOpt_salary_pricing_15A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Pricing + cl_US6_avg_sal_lag1 + Pricing:cl_US6_avg_sal_lag1)
 glmer_examine(b_AllOpt_salary_pricing_15A)
 
 
@@ -1896,7 +1833,7 @@ b_SomeOpt_salary_pricing_15B <- glm(data=serv_opt,
                  Pricing:cl_US6_avg_sal_lag1, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_salary_pricing_15B)
 
-b_AllOpt_salary_pricing_15B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_salary_pricing_15B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -1935,10 +1872,10 @@ glmer_examine(b_SomeOpt_partnership_actions_16A)
 
 #compare the models
 
-b_AllOpt_partnership_actions_16A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cp_OffPerf7 + cln_PairCA)
+b_AllOpt_partnership_actions_16A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cp_OffPerf7 + cln_PairCA)
 glmer_examine(b_AllOpt_partnership_actions_16A_no_interact)
 
-b_AllOpt_partnership_actions_16A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cp_OffPerf7 + cln_PairCA + cp_OffPerf7:cln_PairCA)
+b_AllOpt_partnership_actions_16A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cp_OffPerf7 + cln_PairCA + cp_OffPerf7:cln_PairCA)
 glmer_examine(b_AllOpt_partnership_actions_16A)
 
 
@@ -1973,7 +1910,7 @@ b_SomeOpt_partnership_actions_16B <- glm(data=serv_opt,
                  cp_OffPerf7:cln_PairCA, family=binomial(link="logit"))
 
 
-b_AllOpt_partnership_actions_16B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_partnership_actions_16B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2017,10 +1954,10 @@ glmer_examine(b_SomeOpt_partnership_share_17A_no_interact)
 b_SomeOpt_partnership_share_17A <- glm(data=serv_opt, b_SomeOpt ~ cp_OffPerf7 + cp_PairObl7 + cp_OffPerf7:cp_PairObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_partnership_share_17A)
 
-b_AllOpt_partnership_share_17A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cp_OffPerf7 + cp_PairObl7)
+b_AllOpt_partnership_share_17A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cp_OffPerf7 + cp_PairObl7)
 glmer_examine(b_AllOpt_partnership_share_17A_no_interact)
 
-b_AllOpt_partnership_share_17A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cp_OffPerf7 + cp_PairObl7 + cp_OffPerf7:cp_PairObl7)
+b_AllOpt_partnership_share_17A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cp_OffPerf7 + cp_PairObl7 + cp_OffPerf7:cp_PairObl7)
 glmer_examine(b_AllOpt_partnership_share_17A)
 
 
@@ -2073,7 +2010,7 @@ b_SomeOpt_partnership_share_17B2 <- glm(data=serv_opt,
 glmer_examine(b_SomeOpt_partnership_share_17B2)
 
 
-b_AllOpt_partnership_share_17B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_partnership_share_17B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2091,7 +2028,7 @@ b_AllOpt_partnership_share_17B <- glm(data=serv_exeropt, family=binomial(link="l
 glmer_examine(b_AllOpt_partnership_share_17B)
 
 
-b_AllOpt_partnership_share_17B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_partnership_share_17B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2141,10 +2078,10 @@ glmer_examine(b_SomeOpt17C_no_interact)
 b_SomeOpt17C <- glm(data=serv_opt, b_SomeOpt ~ cln_OffObl7 + cp_PairObl7 + cln_OffObl7:cp_PairObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt17C)
 
-b_AllOpt17C_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_OffObl7 + cp_PairObl7)
+b_AllOpt17C_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_OffObl7 + cp_PairObl7)
 glmer_examine(b_AllOpt17C_no_interact)
 
-b_AllOpt17C <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_OffObl7 + cp_PairObl7 + cln_OffObl7:cp_PairObl7)
+b_AllOpt17C <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_OffObl7 + cp_PairObl7 + cln_OffObl7:cp_PairObl7)
 glmer_examine(b_AllOpt17C)
 
 
@@ -2179,7 +2116,7 @@ b_SomeOpt17D <- glm(data=serv_opt,
 glmer_examine(b_SomeOpt17D)
 
 
-b_AllOpt17D <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt17D <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2198,7 +2135,7 @@ b_AllOpt17D <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~
 glmer_examine(b_AllOpt17D)
 
 
-b_AllOpt17D2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt17D2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2249,10 +2186,10 @@ glmer_examine(b_SomeOpt_partnership_duration_18A_no_interact)
 b_SomeOpt_partnership_duration_18A <- glm(data=serv_opt, b_SomeOpt ~ cp_OffPerf7 + cln_Days + cp_OffPerf7: cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_partnership_duration_18A)
 
-b_AllOpt_partnership_duration_18A_no_interact <- glm(data=serv_breach , lb_AllOpt ~ cp_OffPerf7 + cln_Days)
+b_AllOpt_partnership_duration_18A_no_interact <- glm(data=serv_breach , b_AllOpt ~ cp_OffPerf7 + cln_Days)
 glmer_examine(b_AllOpt_partnership_duration_18A_no_interact)
 
-b_AllOpt_partnership_duration_18A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cp_OffPerf7 + cln_Days + cp_OffPerf7: cln_Days)
+b_AllOpt_partnership_duration_18A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cp_OffPerf7 + cln_Days + cp_OffPerf7: cln_Days)
 glmer_examine(b_AllOpt_partnership_duration_18A)
 
 #Compare the models
@@ -2286,7 +2223,7 @@ b_SomeOpt_partnership_duration_18B <- glm(data=serv_opt,
                  cp_OffPerf7:cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_partnership_duration_18B)
 
-b_AllOpt_partnership_duration_18B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_partnership_duration_18B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2304,7 +2241,7 @@ b_AllOpt_partnership_duration_18B <- glm(data=serv_exeropt, family=binomial(link
                    cp_OffPerf7:cln_Days)
 glmer_examine(b_AllOpt_partnership_duration_18B)
 
-b_AllOpt_partnership_duration_18B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_partnership_duration_18B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2355,10 +2292,10 @@ glmer_examine(b_SomeOpt_history_pricing_19A_no_interact)
 b_SomeOpt_history_pricing_19A <- glm(data=serv_opt, b_SomeOpt ~ cn_PairHist7 + Pricing + cn_PairHist7:Pricing, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_history_pricing_19A)
 
-b_AllOpt_history_pricing_19A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cn_PairHist7 + Pricing)
+b_AllOpt_history_pricing_19A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cn_PairHist7 + Pricing)
 glmer_examine(b_AllOpt_history_pricing_19A_no_interact)
 
-b_AllOpt_history_pricing_19A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cn_PairHist7 + Pricing + cn_PairHist7:Pricing)
+b_AllOpt_history_pricing_19A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cn_PairHist7 + Pricing + cn_PairHist7:Pricing)
 glmer_examine(b_AllOpt_history_pricing_19A)
 
 
@@ -2395,7 +2332,7 @@ b_SomeOpt_history_pricing_19B <- glm(data=serv_opt,
                                     cn_PairHist7:Pricing, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_history_pricing_19B)
 
-b_AllOpt_history_pricing_19B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_history_pricing_19B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2413,7 +2350,7 @@ b_AllOpt_history_pricing_19B <- glm(data=serv_exeropt, family=binomial(link="log
                    cn_PairHist7:Pricing)
 glmer_examine(b_AllOpt_history_pricing_19B)
 
-b_AllOpt_history_pricing_19B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_history_pricing_19B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2462,10 +2399,10 @@ glmer_examine(b_SomeOpt_competition_NAICS66_20A_no_interact)
 b_SomeOpt_competition_NAICS66_20A <- glm(data=serv_opt, b_SomeOpt ~ Comp + cln_Def6HHI + Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_NAICS66_20A)
 
-b_AllOpt_competition_NAICS66_20A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ Comp + cln_Def6HHI)
+b_AllOpt_competition_NAICS66_20A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Comp + cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_NAICS66_20A_no_interact)
 
-b_AllOpt_competition_NAICS66_20A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ Comp + cln_Def6HHI + Comp:cln_Def6HHI)
+b_AllOpt_competition_NAICS66_20A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Comp + cln_Def6HHI + Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_NAICS66_20A)
 
 #NAICS3 Subsector
@@ -2475,10 +2412,10 @@ glmer_examine(b_SomeOpt_competition_NAICS66_20A_no_interact)
 b_SomeOpt_competition_NAICS66_20A <- glm(data=serv_opt, b_SomeOpt ~ Comp + cln_Def3HHI + Comp:cln_Def3HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_NAICS66_20A)
 
-b_AllOpt_competition_NAICS66_20A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ Comp + cln_Def3HHI)
+b_AllOpt_competition_NAICS66_20A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Comp + cln_Def3HHI)
 glmer_examine(b_AllOpt_competition_NAICS66_20A_no_interact)
 
-b_AllOpt_competition_NAICS66_20A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ Comp + cln_Def3HHI + Comp:cln_Def3HHI)
+b_AllOpt_competition_NAICS66_20A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Comp + cln_Def3HHI + Comp:cln_Def3HHI)
 glmer_examine(b_AllOpt_competition_NAICS66_20A)
 
 
@@ -2528,7 +2465,7 @@ b_SomeOpt_competition_NAICS66_20B2 <- glm(data=serv_opt,
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_NAICS66_20B2)
 
-b_AllOpt_competition_NAICS66_20B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_competition_NAICS66_20B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2546,7 +2483,7 @@ b_AllOpt_competition_NAICS66_20B <- glm(data=serv_exeropt, family=binomial(link=
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_NAICS66_20B)
 
-b_AllOpt_competition_NAICS66_20B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_competition_NAICS66_20B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2605,7 +2542,7 @@ b_SomeOpt_competition_naincs3_20B2 <- glm(data=serv_opt,
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_naincs3_20B2)
 
-b_AllOpt_competition_naincs3_20B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_competition_naincs3_20B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2623,7 +2560,7 @@ b_AllOpt_competition_naincs3_20B <- glm(data=serv_exeropt, family=binomial(link=
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_naincs3_20B)
 
-b_AllOpt_competition_naincs3_20B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_competition_naincs3_20B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2657,11 +2594,11 @@ glmer_examine(b_SomeOpt_base2ceil_ceiling_21A_no_interact)
 b_SomeOpt_base2ceil_ceiling_21A <- glm(data=serv_opt, b_SomeOpt ~ clr_Ceil2Base + cln_Base + clr_Ceil2Base:cln_Base, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_base2ceil_ceiling_21A)
 
-b_AllOpt_base2ceil_ceiling_21A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ clr_Ceil2Base + cln_Base)
+b_AllOpt_base2ceil_ceiling_21A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ clr_Ceil2Base + cln_Base)
 
 glmer_examine(b_AllOpt_base2ceil_ceiling_21A_no_interact)
 
-b_AllOpt_base2ceil_ceiling_21A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ clr_Ceil2Base + cln_Base + clr_Ceil2Base:cln_Base)
+b_AllOpt_base2ceil_ceiling_21A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ clr_Ceil2Base + cln_Base + clr_Ceil2Base:cln_Base)
 glmer_examine(b_AllOpt_base2ceil_ceiling_21A)
 
 #Compare the Models
@@ -2696,7 +2633,7 @@ b_SomeOpt_base2ceil_ceiling_21B <- glm(data=serv_opt,
 glmer_examine(b_SomeOpt_base2ceil_ceiling_21B)
 
 
-b_AllOpt_base2ceil_ceiling_21B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_base2ceil_ceiling_21B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2715,7 +2652,7 @@ b_AllOpt_base2ceil_ceiling_21B <- glm(data=serv_exeropt, family=binomial(link="l
 glmer_examine(b_AllOpt_base2ceil_ceiling_21B)
 
 
-b_AllOpt_base2ceil_ceiling_21B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_base2ceil_ceiling_21B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2758,10 +2695,10 @@ glmer_examine(b_SomeOpt_base2ceil_duration_21C_no_interact)
 b_SomeOpt_base2ceil_duration_21C <- glm(data=serv_opt, b_SomeOpt ~ clr_Ceil2Base + cln_Days + clr_Ceil2Base:cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_base2ceil_duration_21C)
 
-b_AllOpt_base2ceil_duration_21C_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ clr_Ceil2Base + cln_Days)
+b_AllOpt_base2ceil_duration_21C_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ clr_Ceil2Base + cln_Days)
 glmer_examine(b_AllOpt_base2ceil_duration_21C_no_interact)
 
-b_AllOpt_base2ceil_duration_21C <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ clr_Ceil2Base + cln_Days + clr_Ceil2Base:cln_Days)
+b_AllOpt_base2ceil_duration_21C <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ clr_Ceil2Base + cln_Days + clr_Ceil2Base:cln_Days)
 glmer_examine(b_AllOpt_base2ceil_duration_21C)
 
 ```
@@ -2791,7 +2728,7 @@ b_SomeOpt_base2ceil_duration_21D <- glm(data=serv_opt,
                    clr_Ceil2Base:cln_Base, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_base2ceil_duration_21D)
 
-b_AllOpt_base2ceil_duration_21D <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_base2ceil_duration_21D <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2809,7 +2746,7 @@ b_AllOpt_base2ceil_duration_21D <- glm(data=serv_exeropt, family=binomial(link="
                    clr_Ceil2Base:cln_Days)
 glmer_examine(b_AllOpt_base2ceil_duration_21D)
 
-b_AllOpt_base2ceil_duration_21D2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_base2ceil_duration_21D2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2855,10 +2792,10 @@ b_SomeOpt_CFTE_pricing_22A <- glm(data=serv_opt, b_SomeOpt ~ Pricing + cln_PSCra
 glmer_examine(b_SomeOpt_CFTE_pricing_22A)
 
 
-b_AllOpt_CFTE_pricing_22A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ Pricing + cln_PSCrate)
+b_AllOpt_CFTE_pricing_22A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Pricing + cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22A_no_interact)
 
-b_AllOpt_CFTE_pricing_22A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ Pricing + cln_PSCrate + Pricing:cln_PSCrate)
+b_AllOpt_CFTE_pricing_22A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Pricing + cln_PSCrate + Pricing:cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22A)
 
 
@@ -2900,7 +2837,7 @@ b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
                  Pricing:cln_PSCrate, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_CFTE_pricing_22B)
 
-b_AllOpt_CFTE_pricing_22B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_CFTE_pricing_22B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2918,7 +2855,7 @@ b_AllOpt_CFTE_pricing_22B <- glm(data=serv_exeropt, family=binomial(link="logit"
                    Pricing:cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22B)
 
-b_AllOpt_CFTE_pricing_22B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt_CFTE_pricing_22B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2968,10 +2905,10 @@ b_SomeOpt23A <- glm(data=serv_opt, b_SomeOpt ~ pOffPSC + cln_OffObl7 + pOffPSC:c
 glmer_examine(b_SomeOpt23A)
 
 
-b_AllOpt23A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ pOffPSC + cln_OffObl7)
+b_AllOpt23A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ pOffPSC + cln_OffObl7)
 glmer_examine(b_AllOpt23A_no_interact)
 
-b_AllOpt23A <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ pOffPSC + cln_OffObl7 + pOffPSC:cln_OffObl7)
+b_AllOpt23A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ pOffPSC + cln_OffObl7 + pOffPSC:cln_OffObl7)
 glmer_examine(b_AllOpt23A)
 
 
@@ -3013,7 +2950,7 @@ b_SomeOpt23B <- glm(data=serv_opt,
                    pOffPSC:cln_OffObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt23B)
 
-b_AllOpt23B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt23B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -3031,7 +2968,7 @@ b_AllOpt23B <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~
                    pOffPSC:cln_OffObl7)
 glmer_examine(b_AllOpt23B)
 
-b_AllOpt23B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), lb_AllOpt ~ cln_US6sal + 
+b_AllOpt23B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -3309,7 +3246,7 @@ if(!exists("b_SomeOpt25A")){
 
   
   
-  b_AllOpt25A <- lmer(data=serv_breach, lb_AllOpt ~ cln_US6sal + 
+  b_AllOpt25A <- lmer(data=serv_breach, b_AllOpt ~ cln_US6sal + 
                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                       cn_PairHist7+cln_PairCA+
                       cln_Base + clr_Ceil2Base + cln_Days+
@@ -3359,7 +3296,7 @@ if(file.exists("..//Output//b_AllOpt26A.rda")) load("..//Output//b_AllOpt26A.rda
 
 if(!exists("b_AllOpt26A")){
   #Create the model
-  b_AllOpt26A <- lmer(data=serv_breach, lb_AllOpt ~ cln_US6sal + 
+  b_AllOpt26A <- lmer(data=serv_breach, b_AllOpt ~ cln_US6sal + 
                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                       cn_PairHist7+cln_PairCA+
                       cln_Base + clr_Ceil2Base + cln_Days+
