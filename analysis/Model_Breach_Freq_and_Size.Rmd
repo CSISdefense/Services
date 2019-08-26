@@ -3186,39 +3186,39 @@ summary_residual_compare(b_cbre_CFTE_pricing_22B, b_cbre24A)
 
 ```
 
-####23A: Office Serv. Code Exp:Office Obligations
+####24B: Office Serv. Code Exp:Office Focus
 A large office may be able to more effectively divide its attention, limiting the downsizes of a small experience share.  The estimated outcomes are negative for options and positive for ceiling breaches and terminations because this would be expected to enhance the better performance outcomes expected for the input of cp_PSC7
 
 (Options, Ceiling, Termination)
 Interact: Office Obligations	cp_PSC7:cln_OffObl7			-	+	+
 
-```{r Model23A}
+```{r Model24B}
 #Create the models
-b_cbre23A_no_interact <- glm(data=serv_smp, b_CBre ~ pOffPSC + cl_OffVol, 
+b_cbre24B_no_interact <- glm(data=serv_smp, b_CBre ~ pOffPSC + cl_office_naics_hhi_k, 
                                              family=binomial(link="logit"))
-glmer_examine(b_cbre23A_no_interact)
+glmer_examine(b_cbre24B_no_interact)
 
-b_cbre23A <- glm(data=serv_smp, b_CBre ~ pOffPSC + cl_OffVol + pOffPSC:cl_OffVol,
+b_cbre24B <- glm(data=serv_smp, b_CBre ~ pOffPSC + cl_office_naics_hhi_k + pOffPSC:cl_office_naics_hhi_k,
                                  family=binomial(link="logit"))
-glmer_examine(b_cbre23A)
+glmer_examine(b_cbre24B)
 
 
 
 
 #compare the models
 
-stargazer::stargazer(b_cbre23A_no_interact, b_cbre23A, 
+stargazer::stargazer(b_cbre24B_no_interact, b_cbre24B, 
                      type="text", digits=2)
 
 
-summary_residual_compare(b_cbre23A_no_interact, b_cbre23A, bins=5)
+summary_residual_compare(b_cbre24B_no_interact, b_cbre24B, bins=5)
 
 ```
 
-####23B: Cumulative
-```{r Model23B}
+####24C: Cumulative
+```{r Model24C}
 #Create the model
-b_cbre23B <- glm(data=serv_smp,
+b_cbre24C <- glm(data=serv_smp,
                         b_CBre ~  cl_US6_avg_sal_lag1Const + 
                    cl_CFTE+ c_pPBSC+c_pOffPSC+
                  c_pairHist+cl_pairCA+
@@ -3238,15 +3238,15 @@ b_cbre23B <- glm(data=serv_smp,
                  c_pPBSC:cl_Days+
                    cl_Base2Ceil:cl_Base+
                  PricingUCA:cl_CFTE+
-                   pOffPSC:cl_OffVol, family=binomial(link="logit"))
-glmer_examine(b_cbre23B)
+                   pOffPSC:cl_office_naics_hhi_k, family=binomial(link="logit"))
+glmer_examine(b_cbre24C)
 
 
 
 #Compare the models
-  stargazer::stargazer(b_cbre_CFTE_pricing_22B, b_cbre23B,  n_cbre23B2, type="text", digits=2)
+  stargazer::stargazer(b_cbre_CFTE_pricing_22B, b_cbre24C, type="text", digits=2)
 
-summary_residual_compare(b_cbre_CFTE_pricing_22B, b_cbre23B)
+summary_residual_compare(b_cbre_CFTE_pricing_22B, b_cbre24C)
 
 ```
 
