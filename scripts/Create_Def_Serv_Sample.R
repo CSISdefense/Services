@@ -168,6 +168,12 @@ serv_opt<-update_sample_col_CSIScontractID(serv_opt,
 # serv_smp1m<-serv_smp1m %>% dplyr::select(-c(Ceil, qCRais))
 # serv_opt<-serv_opt %>% dplyr::select(-c(Ceil, qCRais))
 
+serv_smp<-transition_variable_names_service(serv_smp)
+serv_smp1m<-transition_variable_names_service(serv_smp1m0)
+serv_opt<-transition_variable_names_service(serv_opt)
+
+
+
 
 save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt,serv_breach)
 write.foreign(df=serv_smp,
