@@ -3307,6 +3307,55 @@ glmer_examine(b_cbre24C4)
 VIF precludes inclusion
 
 
+####24D: Office Obligations:Office Focus
+A large office may be able to more effectively divide its attention, limiting the upsides of focus. The estimated outcomes are negative for options and positive for ceiling breaches and terminations because this would be expected to enhance the better performance outcomes expected for the input of cp_PSC7
+
+(Options, Ceiling, Termination)
+Interact: Office Obligations	cp_PSC7:cln_OffObl7			-	+	+
+
+```{r Model24D}
+#Create the models
+b_cbre24D_no_interact <- glm(data=serv_smp, b_CBre ~ cl_OffVol + cl_office_naics_hhi_k, 
+                                             family=binomial(link="logit"))
+glmer_examine(b_cbre24D_no_interact)
+
+b_cbre24D <- glm(data=serv_smp, b_CBre ~ cl_OffVol + cl_office_naics_hhi_k + cl_OffVol:cl_office_naics_hhi_k,
+                                 family=binomial(link="logit"))
+glmer_examine(b_cbre24D)
+
+
+```
+VIF measures indicate multicolinearity.
+
+####24E: Cumulative
+```{r Model24E}
+#Create the model
+b_cbre24E <- glm(data=serv_smp,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 cl_office_naics_hhi_k+
+                                     c_pPBSC:cl_pairCA+
+                   c_pPBSC:c_pMarket+
+                 c_pPBSC:cl_Days+
+                   cl_Base2Ceil:cl_Base+
+                 PricingUCA:cl_CFTE+
+                   cl_OffVol:cl_office_naics_hhi_k, family=binomial(link="logit"))
+glmer_examine(b_cbre24E)
+
+
+```
+
 # Multilevel Model
 ####25A: 2019-08-20 First run, original multilevel.
 This was created while we were still using ceiling instead of base.
