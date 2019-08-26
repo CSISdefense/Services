@@ -68,7 +68,8 @@ stargazer::stargazer(b_SomeOpt01A,b_AllOpt01A,type="text",
 
 ```
 
-Individually, expectations are matched for ceiing breaches, as higher average salaries estimate a higher risk of ceiling breaches.  In our model based on ceiling breach size, we find an analogous relationship to our logit model, with higher salaries correlated with ceiling breaches of larger magnitudes.  However, a plot of the residuals of the logit model does reveal some irregularities, namely a deep valley at around 6% estimated probability, that then rises in a concave curve as estimated probability increases.
+The results are negative and significant, meeting expectations for both variables, as higher average salaries estimates a lower probability of exercised options. 
+
 
 ### 01B Invoice Rate
 Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employee who is supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood of cost ceiling breaches increases (decreases).  Likewise, we expect a higher invoice rate (lower) to be associated with ceiling breaches larger (smaller) in absolute magnitude.
@@ -96,8 +97,7 @@ b_AllOpt01B <- glm(data=serv_exeropt, family=binomial(link="logit"),
 
 ```
 
-When considered alone, expectations are matched for ceiling breaches, as higher invoice rate estimates a higher risk of ceiling breaches. Similarly, higher invoice rates are correlated with larger ceiling breaches, matching our expectations.
-
+When considered alone, expectations are matched for some and all options, as higher invoice rate estimates a significantly lower likelihood that some or all options will be exercised. 
 
 ### 01C Service Complexity
 Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), the higher risk of ceiling breaches. Also, we expect the result of combined model would be the same as individual models. Again, we expect higher levels of complexity to be correlated with larger ceiling breaches.
@@ -121,15 +121,16 @@ stargazer::stargazer(b_SomeOpt01A,b_SomeOpt01B,b_SomeOpt01C,
                        type="text",
                        digits=2)
 
-
-summary_residual_compare(b_SomeOpt01A,b_SomeOpt01C,b_SomeOpt01B,b_SomeOpt01C)
-summary_residual_compare(b_AllOpt01A,b_AllOpt01C,b_AllOpt01B,b_AllOpt01C,bins=3)
+undebug(summary_residual_compare)
+summary_residual_compare(b_SomeOpt01A,b_SomeOpt01C,b_SomeOpt01B,b_SomeOpt01C,
+                         b_AllOpt01A,b_AllOpt01C,b_AllOpt01B,b_AllOpt01C,bins=3)
 ```
 
 Both average salary and invoiced rate have a not inconsiderable VIF but one well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
 
-Both individually and pair-wise, higher average salary and invoiced rate estimate higher probability of cost ceiling breaches.  Likewise, both individually and pair-wise, higher average salary and invoiced rate are correlated with larger ceiling breaches.  The residuals for the pair-wise model are moderately irregular, and approach sinusoidal behavior.
+For the some options model, combining the two inputs leaves only the invoice rate as a significant estimator of the likelihood of some options being exercised, though that result remains in line with expections. By AIC, including salary does not improve the model.
 
+Both individually and pair-wise, higher average salary and invoiced rate estimate lower likelihood that all options will be exercised. 
 
 ## Office Capacity
 
@@ -137,7 +138,6 @@ Both individually and pair-wise, higher average salary and invoiced rate estimat
 Expectation: Performance-based services contracting ties a portion of a contractor's payment, contract extensions, or contract renewals to the achievement of specific, measurable performance standards and requirements, which encourages better contracting results. PBSC has the potential to reduce ceiling breaches, and the size of the breaches that do occur.
 
 ```{r Model02A}
-
 summary_continuous_plot(serv_opt,metric="opt","pPBSC")
 
 #Model
@@ -157,7 +157,8 @@ stargazer::stargazer(b_SomeOpt01C,b_SomeOpt02A,
 
 ```
 
-When considering PBSC alone, our logit model finds the opposite of our expected relationship: higher levels of performance-based services contracting is associated with a higher likelihood of a ceiling breach occurring. However, our ceiling breach size-based model demonstrates that higher levels of performance-based contracting are correlated with smaller ceiling breaches (meeting our expectation).  Given that the study team has more confidence in modelling ceiling breaches in dollar terms, it may be wise to disregard the logit result.
+When considering PBSC alone, the significant negative results were contrary to expectations for both some and all options.
+
 
 
 ### 02B: No.Office PSC History
@@ -183,7 +184,7 @@ stargazer::stargazer(b_SomeOpt01C,b_SomeOpt02A,b_SomeOpt02B,
 
 ```
 
-When considering number of contracting office obligations for a given service alone, we find a positive relationship between size of share of contracting office obligations for a service and the likelihood of a ceiling breach, the opposite of what was expected.  However, a negative relationship is found, as expected, between the size of the share of contracting office obligations for a service and the overall magnitude of ceiling breaches.
+When considering number of contracting office obligations for a given service alone, no result was found for some options and a significant negative relationship was found for the likelihood all options would be exercised given that some where. This is contrary to expectations.
 
 
 ### 02C: Office Capacity
@@ -205,23 +206,22 @@ glmer_examine(b_AllOpt02C)
 #Plot residuals versus fitted
 stargazer::stargazer(b_SomeOpt01C,b_SomeOpt02A,b_SomeOpt02B,b_SomeOpt02C,
                        
-                       b_AllOpt01C,b_AllOpt02A,b_AllOpt02B,
+                       type="text",
+                       digits=2)
+
+
+stargazer::stargazer(b_AllOpt01C,b_AllOpt02A,b_AllOpt02B,b_AllOpt02C,
                        type="text",
                        digits=2)
 
 
 
-summary_residual_compare(b_SomeOpt02A,b_SomeOpt02C)
-summary_residual_compare(b_SomeOpt02A,b_AllOpt02B)
+summary_residual_compare(b_SomeOpt02A,b_SomeOpt02C,
+                         b_SomeOpt02A,b_AllOpt02B)
 
 
 ```
-
-For likelihood, no high correlation is observed between PBSC and Contract Office Obligations for likelihood PSC based on the vif score. For size, VIF is a problem and Office PSC appears to be the better predictor, so using that.
-
-After combining PBSC and Contract office obligations for PSC, PBSC had a flipped relationship with ceiling breach probability that matches with expectation. The rest of results continued to fail to meet expectations.
-
-The binned residual plot for the logit model for PBSC shows a near-linear upward trend, and is thus highly abnormal.
+For the some options model, combining the two variables causes Office PSC experience to becoming significant with a positive sign, in line with expectations, while office performance-based remains significant with a negative sign, contrary to expectations. For all options, service code experience remains significant and negative, contrary to expectations, and performance-based loses significance.
 
 
 ### 02D: Cumulative  Model
@@ -236,7 +236,7 @@ b_SomeOpt02D <- glm (data=serv_opt,
 glmer_examine(b_SomeOpt02D)
 
 b_AllOpt02D <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~ cln_US6sal + cln_PSCrate+ cp_OffPSC7)
+                        b_AllOpt ~ cln_US6sal + cln_PSCrate+ cp_OffPerf7+cp_OffPSC7)
 
 glmer_examine(b_AllOpt02D)
 #Plot residuals versus fitted
@@ -248,15 +248,14 @@ stargazer::stargazer(b_SomeOpt01C,b_SomeOpt02C,b_SomeOpt02D,
 
 
 
-summary_residual_compare(b_SomeOpt02C,b_SomeOpt02D)
-summary_residual_compare(b_SomeOpt01C,b_SomeOpt02D)
+summary_residual_compare(b_SomeOpt02C,b_SomeOpt02D,
+                         b_AllOpt02C,b_AllOpt02D)
 
 ```
 
-No high correlation is observed among all of the 4 predictors (average salary, invoiced rate, PBSC and Contract Office Obligations for PSC) so far based on the vif score. When all measures for sevice complexity and office capacity are combined:
+For some options, there are some shifts in coefficient, but the signs and significance all match the two prior cumulative model, with invoice rate significantly negative and Serv. Code experience significantly positvie in line with expectations but with perform-based negative and contrary to expectations.
 
-Ceiling Breaches: All variables remain the same within each subgroup (Services Complexity and Office Capacity). Except for Contract office obligations for PSC, the results of other varibles matched with the expectation for ceiling breaches so far. For the model specified in terms of size of ceiling breach, again, all variables remain the same within each subgroup.  All variable results match with expectation for ceiling breaches so far.
-
+For all options, salary is now significantly positive and invoice rate loses significance. No variables are presently significant in line with expectations.
 
 
 ## Office-Vendor Relationship
@@ -289,10 +288,10 @@ b_AllOpt03A <- glm(data=serv_exeropt, family=binomial(link="logit"),
 
 ```
 
-When considering pair history alone, expectations were met for ceiling breaches, both in probability of a breach and the size of the breach.
+When considering pair history alone, expectations were not met by the significant negative coefficients for both p(some option) and p(all options|some option).
 
 
-### 03B: Interaction
+### 03B: Paired Actions
 Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) for that partnership.  Similarly, as the number of contract actions a vendor has performed for an office in the past year increases (decreases), the size of cost ceiling breaches should decrease (increase).
 
 ```{r Model03B}
@@ -318,7 +317,7 @@ stargazer::stargazer(b_SomeOpt02D,b_SomeOpt03A,b_SomeOpt03B,
 
 ```
 
-When considering contract actions alone, no expectations were met in the logit model. The patterns in the plots are complex, ceiling breaches has a sinusoidal or perhaps exponential relationship.  However, when switching to modeling ceiling breach size, a strong negative relationship is found, as expected.
+Contrary to expectations paired actions estimates significant negative coefficients for both p(Some Options) and p(All Options | Some Options) 
 
 ### 03C: Office-Vendor Relationship
 Expectation: 
