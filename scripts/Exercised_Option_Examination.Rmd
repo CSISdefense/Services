@@ -978,7 +978,7 @@ if(file.exists("..\\data\\semi_clean\\serv_opt.rdata")){
 
     
     
-  save(serv_opt,file="..\\data\\semi_clean\\serv_opt.rdata")
+  
 }
 
 ```
@@ -998,21 +998,24 @@ summary(serv_opt$OptSpaceUpdated)
 #OtherCeilingModification+
 summary(serv_opt$Opt)
 
-
+# colnames(serv_opt)[duplicated(colnames(serv_opt))]
+# serv_opt<-serv_opt[,-which(duplicated(colnames(serv_opt)))]
+# which(duplicated(colnames(serv_opt)))
 serv_opt$OptSpaceUpdated[serv_opt$OptSpaceOriginal>serv_opt$OptSpaceUpdated] <-
   serv_opt$OptSpaceOriginal[serv_opt$OptSpaceOriginal>serv_opt$OptSpaceUpdated]
 
-ggplot(serv_opt,aes(x=OptSpaceOriginal,y=OptSpaceUpdated))+geom_point(alpha=0.01)+scale_x_log10()+scale_y_log10()
 if(any(colnames(serv_opt)[duplicated(colnames(serv_opt))])) stop("duplicte column names")
 #This only works if there's just one duplicated name.
 # dupe<-which(colnames(serv_opt) %in% colnames(serv_opt)[duplicated(colnames(serv_opt))])
 # serv_opt<-serv_opt[,-c(dupe[2:length(dupe)])]
 
+ggplot(serv_opt,aes(x=OptSpaceOriginal,y=OptSpaceUpdated))+geom_point(alpha=0.01)+scale_x_log10()+scale_y_log10()
+
 #Proportion of options
 serv_opt$ExerOriginal<-(serv_opt$n_OptGrowth_Then_Year-1)/serv_opt$OptSpaceOriginal
 serv_opt$ExerOriginal[serv_opt$ExerOriginal>1]<-1
 summary(serv_opt$ExerOriginal)
-ggplot(data=serv_opt, aes(x=ExerOriginal))+geom_histogram(bins=100)
+ggplot(serv_opt, aes(x=ExerOriginal)) + stat_ecdf(geom = "step")
 
 
 serv_opt$ExerUpdate<-(serv_opt$ChangeOrderOptionModification+
@@ -1025,15 +1028,67 @@ serv_opt$ExerUpdate<-(serv_opt$ChangeOrderOptionModification+
 serv_opt$ExerUpdate[serv_opt$ExerUpdate>1]<-1
 serv_opt$ExerUpdate[serv_opt$ExerUpdate<0]<-0
 summary(serv_opt$ExerUpdate)
-ggplot(data=serv_opt, aes(x=ExerUpdate))+geom_histogram(bins=100)
+ggplot(serv_opt, aes(x=ExerUpdate)) + stat_ecdf(geom = "step")
+
 #Excludes serv_opt$EndingOptionModification+
     
+serv_opt$Exer<-ifelse(serv_opt$ExerUpdate>serv_opt$ExerOriginal,serv_opt$ExerUpdate,serv_opt$ExerOriginal)
+summary(serv_opt$Exer)
+ggplot(serv_opt, aes(x=Exer)) + stat_ecdf(geom = "step")
 
+serv_opt_long<-tidyr::gather(serv_opt,OptMeasure,OptGrowth,c(ExerOriginal,ExerUpdate,Exer),factor_key=TRUE)
+ggplot(serv_opt_long, aes(x=OptGrowth,color=OptMeasure)) + stat_ecdf(geom = "step")+
+  geom_vline(xintercept =c(0.5,0.95),linetype=2)#,0.975
 
-
-
-ostr(serv_opt$Exer)
 nrow(serv_opt[serv_opt$Exer<=0.000001,])
 nrow(serv_opt[serv_opt$n_OptGrowth_Then_Year==0,])
+```
 
+Of the two different measures, strictly defined option growth over the original gap between base and ceiling is clearly the more conservative. The first way of measuring outcomes is to allow either measure for reaching All, but only the stricter measure of growth for reaching some. 
+
+The choice to set the maximum threshold at above 0.95 rather than simply 100% is driven by the upward curve near the end of the cumulative distribution function. Because those contracts do appear to stand apart, rounding up seems a reasonable step. Similar approaches are taken for other variables, primarily pricing, where a contract that has the vast majority of obligations under one particular type can still qualify with the cut off for vast majority at that final uptick point.
+
+```{r OptOutcome}
+
+serv_opt$b_AllOpt<-ifelse(serv_opt$Exer>0.95,1,0)
+summary(serv_opt$b_AllOpt)
+serv_opt$b_SomeOpt_Strict<-ifelse(serv_opt$n_OptGrowth_Then_Year>1,1,0)
+summary(serv_opt$b_SomeOpt_Strict)
+
+serv_opt_long<-tidyr::gather(serv_opt,OptMeasure,OptGrowth,c(ExerOriginal,ExerUpdate,Exer),factor_key=TRUE)
+ggplot(serv_opt_long, aes(x=OptGrowth,color=OptMeasure)) + stat_ecdf(geom = "step")+
+  geom_vline(xintercept =c(0.5,0.95),linetype=2)+facet_wrap(~b_SomeOpt_Strict)
+
+
+
+```
+The observation that around 10% of contracts that never have any strictly defined option growth. That said, for those graphs that don't meet the strict exercised option standard, it could easily be that the contract ceiling grew by more than the total options exercised did, which could be more indicative of cost growth than the positive options growth this paper seeks to focus on. 
+
+```{r AlternateSomeCriteria}
+serv_opt$CeilGrowth<-serv_opt$OptSpaceUpdated-serv_opt$OptSpaceOriginal
+serv_opt$b_SomeOpt<-serv_opt$b_SomeOpt_Strict
+serv_opt$b_SomeOpt[serv_opt$ChangeOrderOptionModification+
+                        serv_opt$SteadyScopeOptionGrowthAlone+
+                        serv_opt$SteadyScopeOptionGrowthMixed+
+                        serv_opt$SteadyScopeOptionRescision+
+                        serv_opt$AdminOptionModification+
+                        serv_opt$OtherOptionModification>serv_opt$CeilGrowth]<-1
+summary(serv_opt$b_SomeOpt)
+summary(serv_opt$b_SomeOpt_Strict)
+
+serv_opt_long<-tidyr::gather(serv_opt,OptMeasure,OptGrowth,c(ExerOriginal,ExerUpdate,Exer),factor_key=TRUE)
+ggplot(serv_opt_long, aes(x=OptGrowth,color=OptMeasure)) + stat_ecdf(geom = "step")+
+  geom_vline(xintercept =c(0.5,0.95),linetype=2)+facet_wrap(~b_SomeOpt)
+
+if(any(serv_opt$b_SomeOpt==0 & serv_opt$Exer>=1))
+   stop("Somehow a contract that does not meet the some criteria has reach 100% exercised.")
+serv_opt$b_AllOpt[serv_opt$b_SomeOpt==0]<-0
+
+```
+There is now only a tiny minority of contracts (`r nrow(serv_opt[serv_opt$b_SomeOpt==0 & serv_opt$Exer>0.95,])/nrow(serv_opt)`) that meet the criteria for all options exercised without meeting the criteria for some exercised. These contracts are set as not qualify for the all criteria despite having 95% growth.
+
+```{r CreateDataSet}
+serv_opt<-transition_variable_names_service(serv_opt)
+serv_exeropt<-dplyr::filter(serv_opt,b_SomeOpt==1)
+save(serv_opt,serv_exeropt,file="..\\data\\semi_clean\\serv_opt.rdata")
 ```
