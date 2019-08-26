@@ -3203,17 +3203,8 @@ b_cbre24B <- glm(data=serv_smp, b_CBre ~ pOffPSC + cl_office_naics_hhi_k + pOffP
 glmer_examine(b_cbre24B)
 
 
-
-
-#compare the models
-
-stargazer::stargazer(b_cbre24B_no_interact, b_cbre24B, 
-                     type="text", digits=2)
-
-
-summary_residual_compare(b_cbre24B_no_interact, b_cbre24B, bins=5)
-
 ```
+VIF measures indicate multicolinearity.
 
 ####24C: Cumulative
 ```{r Model24C}
@@ -3241,14 +3232,80 @@ b_cbre24C <- glm(data=serv_smp,
                    pOffPSC:cl_office_naics_hhi_k, family=binomial(link="logit"))
 glmer_examine(b_cbre24C)
 
+b_cbre24C2 <- glm(data=serv_smp,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 cl_office_naics_hhi_k+
+                                     c_pPBSC:cl_pairCA+
+                   # c_pPBSC:c_pMarket+
+                 c_pPBSC:cl_Days+
+                   cl_Base2Ceil:cl_Base+
+                 PricingUCA:cl_CFTE+
+                   pOffPSC:cl_office_naics_hhi_k, family=binomial(link="logit"))
+glmer_examine(b_cbre24C2)
 
 
-#Compare the models
-  stargazer::stargazer(b_cbre_CFTE_pricing_22B, b_cbre24C, type="text", digits=2)
+b_cbre24C3 <- glm(data=serv_smp,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 cl_office_naics_hhi_k+
+                                     # c_pPBSC:cl_pairCA+
+                   # c_pPBSC:c_pMarket+
+                 c_pPBSC:cl_Days+
+                   cl_Base2Ceil:cl_Base+
+                 PricingUCA:cl_CFTE+
+                   pOffPSC:cl_office_naics_hhi_k, family=binomial(link="logit"))
+glmer_examine(b_cbre24C3)
 
-summary_residual_compare(b_cbre_CFTE_pricing_22B, b_cbre24C)
+
+b_cbre24C4 <- glm(data=serv_smp,
+                        b_CBre ~  cl_US6_avg_sal_lag1Const + 
+                   cl_CFTE+ c_pPBSC+c_pOffPSC+
+                 c_pairHist+cl_pairCA+
+                 cl_Base + cl_Base2Ceil + cl_Days+
+                 Comp1or5+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                 cl_def3_HHI_lag1+
+                   cl_def3_ratio_lag1+
+                 c_pMarket+
+                   cl_OffVol+ 
+                 cl_office_naics_hhi_k+
+                                     # c_pPBSC:cl_pairCA+
+                   # c_pPBSC:c_pMarket+
+                 # c_pPBSC:cl_Days+
+                   cl_Base2Ceil:cl_Base+
+                 PricingUCA:cl_CFTE+
+                   pOffPSC:cl_office_naics_hhi_k, family=binomial(link="logit"))
+glmer_examine(b_cbre24C4)
 
 ```
+VIF precludes inclusion
+
 
 # Multilevel Model
 ####25A: 2019-08-20 First run, original multilevel.
