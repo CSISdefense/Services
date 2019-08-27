@@ -1841,7 +1841,7 @@ Detailed Industry Focus unfortunately runs into VIF problems with office PBSC fo
 Office Volumne keeps its same significance and sign though pair history becomes insignificant, perhaps because offices with a great deal of volume had more history with momre vendors.
 
 ##Double checking restoration of removed inputs
-#### 12C: Cumulative Model
+#### 13A: Cumulative Model
 With PairCA removed, may be possible to bring back all of the Def3toUS
 
 ```{r Model12C}
@@ -2002,7 +2002,7 @@ b_AllOpt_salary_pricing_15B <- glm(data=serv_exeropt, family=binomial(link="logi
 glmer_examine(b_AllOpt_salary_pricing_15B)
 
 ```
-Maximum VIF greatly exceeds 2 in both cases.
+Maximum GVIF^(1/(2*Df)) greatly exceeds 2 in both cases.
 
 
 
@@ -2038,7 +2038,7 @@ summary_residual_compare(b_SomeOpt_partnership_actions_16A_no_interact, b_SomeOp
 summary_residual_compare(b_AllOpt_partnership_actions_16A_no_interact, b_AllOpt_partnership_actions_16A, bins=3)
 
 ```
-The interaction was signiicant in both cases but positive and contrary to expectations for likelihood and negative and in keeping with expectations for breach size. That said for likelihood  the introduction of the interaction does result in pairCA switching to a negative sign which is in keeping with expectations. Seems worth considering adding in both cases.
+The coefficients were negative and significant in both cases, contrary to expectations.
 ####16B: Cumulative
 ```{r Model16B}
 #Create the model
@@ -2052,7 +2052,7 @@ b_SomeOpt_partnership_actions_16B <- glm(data=serv_opt,
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
@@ -2070,26 +2070,26 @@ b_AllOpt_partnership_actions_16B <- glm(data=serv_exeropt, family=binomial(link=
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cl_office_NAICS6_hhi_kc+
+                 cln_OffFocus+
                    cp_OffPerf7:cln_PairCA)
 
 
 #Compare the models
-stargazer::stargazer(b_SomeOpt12C3, b_SomeOpt_partnership_actions_16B, 
-                     b_AllOpt12C3, b_AllOpt_partnership_actions_16B, type="text", digits=2)
+stargazer::stargazer(b_SomeOpt13A, b_SomeOpt_partnership_actions_16B, 
+                     b_AllOpt12C, b_AllOpt_partnership_actions_16B, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt12C3, b_SomeOpt_partnership_actions_16B)
-summary_residual_compare(b_AllOpt12C3, b_AllOpt_partnership_actions_16B)
+summary_residual_compare(b_SomeOpt13A, b_SomeOpt_partnership_actions_16B,
+                         b_AllOpt12C, b_AllOpt_partnership_actions_16B,bins=50)
 ```
 
-The results were similar to those of the isolated models. Doesn't seem to worsen residuals and greatly helps AIC. Adding in both cases, despite being positive contrary to expectations for b_SomeOpt.
+The results remain contrary to expectations and do little for VIF (restoring pairCA is outright raises AIC for the some model). Leaving it out.
 
-Current cumulative b_SomeOpt model: b_SomeOpt_partnership_actions_16B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_SomeOpt model: b_SomeOpt13A
+Current cumulative b_AllOpt model: b_AllOpt12C
 
 ####17A: Office Partnership:Market Vendor Share for that Office
 Performance based contracting is thought to mitigte some of the risks of vendor  lock.
@@ -2116,49 +2116,31 @@ glmer_examine(b_AllOpt_partnership_share_17A)
 stargazer::stargazer(b_SomeOpt_partnership_share_17A_no_interact, b_SomeOpt_partnership_share_17A, 
                      b_AllOpt_partnership_share_17A_no_interact, b_AllOpt_partnership_share_17A, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_partnership_share_17A_no_interact, b_SomeOpt_partnership_share_17A)
-summary_residual_compare(b_AllOpt_partnership_share_17A_no_interact, b_AllOpt_partnership_share_17A)
+summary_residual_compare(b_SomeOpt_partnership_share_17A_no_interact, b_SomeOpt_partnership_share_17A,
+                         b_AllOpt_partnership_share_17A_no_interact, b_AllOpt_partnership_share_17A,bins=50)
 ```
-Positive, contrary to expectation in both cases. No clear benefit in the residuals.
+Positive, in line with expectations although only significant at the p<0.05 level for some options.
 ####17B: Cumulative
 ```{r Model17B}
 #Create the model
 b_SomeOpt_partnership_share_17B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                 cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7, family=binomial(link="logit"))
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_partnership_share_17B)
 
-b_SomeOpt_partnership_share_17B2 <- glm(data=serv_opt,
-                        b_SomeOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
-                 cln_Base + clr_Ceil2Base + cln_Days+
-                 Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                 cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
-                   clr_Def3toUS+
-                 cp_PairObl7+
-                   cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                 #cp_OffPerf7:cln_PairCA+
-                   cp_OffPerf7:cp_PairObl7, family=binomial(link="logit"))
-glmer_examine(b_SomeOpt_partnership_share_17B2)
 
 
 b_AllOpt_partnership_share_17B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
@@ -2170,46 +2152,27 @@ b_AllOpt_partnership_share_17B <- glm(data=serv_exeropt, family=binomial(link="l
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7)
+                 cln_OffFocus+
+                   cp_OffPerf7:cp_PairObl7)
 glmer_examine(b_AllOpt_partnership_share_17B)
 
 
-b_AllOpt_partnership_share_17B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
-                 cln_Base + clr_Ceil2Base + cln_Days+
-                 Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                 cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
-                   clr_Def3toUS+
-                 cp_PairObl7+
-                   cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cp_PairObl7)
-glmer_examine(b_AllOpt_partnership_share_17B2)
 
 #Compare the models
-stargazer::stargazer(b_SomeOpt_partnership_actions_16B, b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_share_17B2,
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_share_17B2, type="text", digits=2)
+stargazer::stargazer(b_SomeOpt13A, b_SomeOpt_partnership_share_17B, 
+                     b_AllOpt12C, b_AllOpt_partnership_share_17B, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_partnership_actions_16B, b_SomeOpt_partnership_share_17B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_share_17B2)
+summary_residual_compare(b_SomeOpt13A, b_SomeOpt_partnership_share_17B,
+                         b_AllOpt12C, b_AllOpt_partnership_share_17B,bins=50)
 ```
-For likelihood, it negative in alignment with expectations, does prompt a small reduction in AIC and thus seems worth adding.
-
-For size, VIF violations preclude allowing both PBSC:pairCA and PBSC and p_Mark for likelihood. PBSC:pairCA is in line with expectations and has a lower AIC, so is clearly the one to keep.
-
+Only a small improvement in AIC but significant in both cases and in line with expectation, doesn't make VIF worse. Keeping.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_partnership_share_17B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 
 ####17C: Office Volume:Market Vendor Share for that Office
@@ -2250,7 +2213,7 @@ The interaction significantly estimated a lower likelihood of ceiling breaches, 
 b_SomeOpt17D <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -2262,7 +2225,7 @@ b_SomeOpt17D <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                 cp_OffPerf7:cln_PairCA+
+                 
                    cp_OffPerf7:cp_PairObl7+cln_OffObl7:cp_PairObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt17D)
 
@@ -2276,12 +2239,13 @@ b_AllOpt17D <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   
                    cln_OffObl7:cp_PairObl7)
 glmer_examine(b_AllOpt17D)
 
@@ -2295,33 +2259,34 @@ b_AllOpt17D2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   # 
                    cln_OffObl7:cp_PairObl7)
 glmer_examine(b_AllOpt17D2)
 
 
 #Compare the models
 stargazer::stargazer(b_SomeOpt_partnership_share_17B2, b_SomeOpt17D, b_SomeOpt17D,
-                     b_AllOpt_partnership_actions_16B, b_AllOpt17D2, type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt17D2, type="text", digits=2)
 
 
-stargazer::stargazer(b_SomeOpt_partnership_actions_16B, b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_share_17B2,
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_share_17B2, type="text", digits=2)
+stargazer::stargazer(b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_share_17B2,
+                     b_AllOpt_partnership_share_17B, b_AllOpt_partnership_share_17B2, type="text", digits=2)
 
 
-summary_residual_compare(b_SomeOpt_partnership_actions_16B, b_SomeOpt17D)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt17D2)
+summary_residual_compare(b_SomeOpt_partnership_share_17B, b_SomeOpt17D)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt17D2)
 ```
 
 Significant negative estimate of likelihood is contrary to expectation. Significant positive estimate of breach size is in line with expectations but to avoid multicollinearity requires removing cp_OffPerf7:cln_PairCA. However, the model with cp_OffPerf7:cln_PairCA has a lower AIC and is relevant  to  a study variable. Leaving this interaction out.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_partnership_share_17B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 
 ####18A: Office Partnership:Initial Contract Duration (logged)
@@ -2358,19 +2323,19 @@ The results are siginificant, negative, and align with expectations in both case
 b_SomeOpt_partnership_duration_18B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                 cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_partnership_duration_18B)
 
@@ -2383,45 +2348,47 @@ b_AllOpt_partnership_duration_18B <- glm(data=serv_exeropt, family=binomial(link
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   
                    cp_OffPerf7:cln_Days)
 glmer_examine(b_AllOpt_partnership_duration_18B)
 
 b_AllOpt_partnership_duration_18B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   # 
                    cp_OffPerf7:cln_Days)
 glmer_examine(b_AllOpt_partnership_duration_18B2)
 
 
 #Compare the models
 stargazer::stargazer(b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_duration_18B, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_duration_18B2, type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt_partnership_duration_18B2, type="text", digits=2)
 
 summary_residual_compare(b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_duration_18B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_duration_18B2)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_partnership_duration_18B2)
 ```
 For frequeny, the results are significant andin  line with expectations. For sign the results violate VIF requiring the removal of cp_OffPerf7:cln_PairCA to procede. The coeficient for the cp_OffPerf7:cln_Days in the resulting model is not significant and has a AIC notably than for the prior model. The interaction will be added for likelihood but not size.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_partnership_duration_18B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 
 ####19A: Past Years:Contract Pricing
@@ -2466,19 +2433,19 @@ For likelihood the results are negative in line with expectations hold for other
 b_SomeOpt_history_pricing_19B <- glm(data=serv_opt,
                                   b_SomeOpt ~  cln_US6sal + 
                                     cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                                    cn_PairHist7+cln_PairCA+
+                                    cn_PairHist7+#cln_PairCA+
                                     cln_Base + clr_Ceil2Base + cln_Days+
                                     Comp+
                                     Veh+
                                     Pricing+
                                     Crisis+
                                     cln_Def6HHI+clr_Def6toUS+
-                                    #cln_Def3HHI+
+                                    cln_Def3HHI+
                                     clr_Def3toUS+
                                     cp_PairObl7+
                                     cln_OffObl7+ 
-                                    #cln_OffFocus+ 
-                                    cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                                    cln_OffFocus+ 
+                                    cp_OffPerf7:cp_PairObl7+
                                     cp_OffPerf7:cln_Days+
                                     cn_PairHist7:Pricing, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_history_pricing_19B)
@@ -2492,12 +2459,13 @@ b_AllOpt_history_pricing_19B <- glm(data=serv_exeropt, family=binomial(link="log
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   
                    cn_PairHist7:Pricing)
 glmer_examine(b_AllOpt_history_pricing_19B)
 
@@ -2510,27 +2478,28 @@ b_AllOpt_history_pricing_19B2 <- glm(data=serv_exeropt, family=binomial(link="lo
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   # 
                    cn_PairHist7:Pricing)
 glmer_examine(b_AllOpt_history_pricing_19B2)
 
 
 #Compare the models
 stargazer::stargazer(b_SomeOpt_partnership_duration_18B, b_SomeOpt_history_pricing_19B,
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_history_pricing_19B2, type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt_history_pricing_19B2, type="text", digits=2)
 
 summary_residual_compare(b_SomeOpt_partnership_duration_18B, b_SomeOpt_history_pricing_19B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_history_pricing_19B2)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_history_pricing_19B2)
 ```
 For likelihood the results are insignificant and in line with expectations for other cost based but are otherwise not significant at the 0.05 level or contrary to expectations. Leaving it out. For breach size, VIF exceeded 2 for the initial model requiring consideration without the other  interaction in place. c_PBSC and cln_PairCA has the advantage of having both base variables e significant and a lower AIC. The residuals are smaller for past years:pricing but show more of a sinusodial pattern. Leaving this out for size as well.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_partnership_duration_18B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 
 ####20A: Competition:NAICS6 Detailed Industry (Level 6)
@@ -2579,19 +2548,19 @@ The interaction models consistently exceed VIF with both NAICS66 and NAICS3 HHI
 b_SomeOpt_competition_NAICS66_20B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+ 
+                                  cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_NAICS66_20B)
@@ -2606,31 +2575,33 @@ b_SomeOpt_competition_NAICS66_20B2 <- glm(data=serv_opt,
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  # cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+ 
+                                  # cp_OffPerf7:cp_PairObl7+
                  # cp_OffPerf7:cln_Days+
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_NAICS66_20B2)
 
 b_AllOpt_competition_NAICS66_20B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_NAICS66_20B)
 
@@ -2643,12 +2614,12 @@ b_AllOpt_competition_NAICS66_20B2 <- glm(data=serv_exeropt, family=binomial(link
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                   # 
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_NAICS66_20B2)
 
@@ -2656,19 +2627,19 @@ glmer_examine(b_AllOpt_competition_NAICS66_20B2)
 b_SomeOpt_competition_naincs3_20B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+ 
+                                  cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_naincs3_20B)
@@ -2683,31 +2654,31 @@ b_SomeOpt_competition_naincs3_20B2 <- glm(data=serv_opt,
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  # cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+ 
+                                  # cp_OffPerf7:cp_PairObl7+
                  # cp_OffPerf7:cln_Days+
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_naincs3_20B2)
 
 b_AllOpt_competition_naincs3_20B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                   
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_naincs3_20B)
 
@@ -2720,12 +2691,12 @@ b_AllOpt_competition_naincs3_20B2 <- glm(data=serv_exeropt, family=binomial(link
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                   # 
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_naincs3_20B2)
 
@@ -2766,19 +2737,19 @@ THe results are not significant and worsen the AIC. This seems unlikely to be in
 b_SomeOpt_base2ceil_ceiling_21B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+ 
+                                  cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_base2ceil_ceiling_21B)
@@ -2793,11 +2764,12 @@ b_AllOpt_base2ceil_ceiling_21B <- glm(data=serv_exeropt, family=binomial(link="l
                    Pricing+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
-                   #cln_Def3HHI+
+                   cln_Def3HHI+
                    clr_Def3toUS+
                    cp_PairObl7+
                    cln_OffObl7+
-                   # cln_OffFocus+
+                   cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
                    cp_OffPerf7:cln_PairCA + 
                    clr_Ceil2Base:cln_Base)
 glmer_examine(b_AllOpt_base2ceil_ceiling_21B)
@@ -2812,28 +2784,29 @@ b_AllOpt_base2ceil_ceiling_21B2 <- glm(data=serv_exeropt, family=binomial(link="
                    Pricing+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
-                   #cln_Def3HHI+
+                   cln_Def3HHI+
                    clr_Def3toUS+
                    cp_PairObl7+
                    cln_OffObl7+
-                   # cln_OffFocus+
+                   cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
                    # cp_OffPerf7:cln_PairCA + 
                    clr_Ceil2Base:cln_Base)
 glmer_examine(b_AllOpt_base2ceil_ceiling_21B2)
 
 #Compare the models
 stargazer::stargazer(b_SomeOpt_partnership_duration_18B, b_SomeOpt_base2ceil_ceiling_21B, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_base2ceil_ceiling_21B2,  type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt_base2ceil_ceiling_21B2,  type="text", digits=2)
 
 summary_residual_compare(b_SomeOpt_partnership_duration_18B, b_SomeOpt_base2ceil_ceiling_21B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_base2ceil_ceiling_21B2)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_base2ceil_ceiling_21B2)
 ```
 The results are significant and positive, in line with expectations, in both cases. For breach size the residuals are perhaps lower magnitude residuals for the new model, although the significance and magnitude of the interaction coeffficient coefficient as well as the AIC are all better for the _pPBSC:cln_PairCA model. 
 
 Adding for likelihood but leaving out for size, though it's a borderline judgment.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 ####21C: Available Options:Initial Contract Duration (logged)
 increase the extend of options exercised as it means continuing a contract rather than including additional features. Option years may also provide more options for cost controls. and reduce ceiling breaches.
@@ -2861,19 +2834,19 @@ VIF exceeds 2 for both models.
 b_SomeOpt_base2ceil_duration_21D <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+ 
+                                  cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Days+
                    clr_Ceil2Base:cln_Base, family=binomial(link="logit"))
@@ -2888,45 +2861,46 @@ b_AllOpt_base2ceil_duration_21D <- glm(data=serv_exeropt, family=binomial(link="
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                   
                    clr_Ceil2Base:cln_Days)
 glmer_examine(b_AllOpt_base2ceil_duration_21D)
 
 b_AllOpt_base2ceil_duration_21D2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   # 
                    clr_Ceil2Base:cln_Days)
 glmer_examine(b_AllOpt_base2ceil_duration_21D2)
 
 
 #Compare the models
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt_base2ceil_duration_21D, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_base2ceil_duration_21D2, type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt_base2ceil_duration_21D2, type="text", digits=2)
 
 summary_residual_compare(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt_base2ceil_duration_21D)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_base2ceil_duration_21D2)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_base2ceil_duration_21D2)
 ```
 In neither case is the new variable significant nor does it reduce VIF. Leaving it out.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 
 ####22A: CFTE (logged):Contract Pricing
@@ -2969,19 +2943,19 @@ summary_residual_compare(b_AllOpt_CFTE_pricing_22A_no_interact, b_AllOpt_CFTE_pr
 b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                     cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+ 
+                                     
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -2997,12 +2971,12 @@ b_AllOpt_CFTE_pricing_22B <- glm(data=serv_exeropt, family=binomial(link="logit"
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                   cp_OffPerf7:cln_PairCA+
-                 #cln_OffFocus+
+                   
+                 cln_OffFocus+
                    Pricing:cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22B)
 
@@ -3015,21 +2989,22 @@ b_AllOpt_CFTE_pricing_22B2 <- glm(data=serv_exeropt, family=binomial(link="logit
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                   # cp_OffPerf7:cln_PairCA+
-                 #cln_OffFocus+
+                   # 
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
                    Pricing:cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22B2)
 
 #Compare the models
   stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt_CFTE_pricing_22B, 
-                       b_AllOpt_partnership_actions_16B, b_AllOpt_CFTE_pricing_22B2, type="text", digits=2)
+                       b_AllOpt_partnership_share_17B, b_AllOpt_CFTE_pricing_22B2, type="text", digits=2)
 
 summary_residual_compare(b_SomeOpt12C3, b_SomeOpt_CFTE_pricing_22B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_CFTE_pricing_22B)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_CFTE_pricing_22B)
 
 ```
 For likelihood, the coefficient for other cost-base and combination or other are negative and significant as expected. The coefficient for Incentive is significant quite large and positive while the coefficient for other fixed price is significantly positive and substantial, in both cases contrary to expectation
@@ -3037,7 +3012,7 @@ For likelihood, the coefficient for other cost-base and combination or other are
 For size, VIF again precludes multiple interactions. c_PBSC:cp_PairObl7 more closely aligns with expectations and has a lower AIC, making keeping it an easy choice.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_22B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 ####23A: Office Serv. Code Exp:Office Obligations
 A large office may be able to more effectively divide its attention, limiting the downsizes of a small experience share.  The estimated outcomes are negative for options and positive for ceiling breaches and terminations because this would be expected to enhance the better performance outcomes expected for the input of cp_PSC7
@@ -3081,19 +3056,19 @@ Results were significant and negative, counter to expectations for breach likeli
 b_SomeOpt23B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                     cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+ 
+                                     
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3110,12 +3085,12 @@ b_AllOpt23B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                   cp_OffPerf7:cln_PairCA+
-                 #cln_OffFocus+
+                   
+                 cln_OffFocus+
                    pOffPSC:cln_OffObl7)
 glmer_examine(b_AllOpt23B)
 
@@ -3128,27 +3103,28 @@ b_AllOpt23B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                   # cp_OffPerf7:cln_PairCA+
-                 #cln_OffFocus+
+                   # 
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
                    pOffPSC:cln_OffObl7)
 glmer_examine(b_AllOpt23B2)
 
 #Compare the models
   stargazer::stargazer(b_SomeOpt_CFTE_pricing_22B, b_SomeOpt23B, 
-                       b_AllOpt_partnership_actions_16B, b_AllOpt23B2, type="text", digits=2)
+                       b_AllOpt_partnership_share_17B, b_AllOpt23B2, type="text", digits=2)
 
 summary_residual_compare(b_SomeOpt_CFTE_pricing_22B, b_SomeOpt23B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt22B)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt22B)
 
 ```
 Remains negative and contrary to expectation for likelihood. Positive and in line with expectation for ceiling breach size, but would require removing a prior interaction to avoid multicollienarity and c_pPSC:cl:PairCAis associated with a lower AIC. Leaving it out.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_22B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 
 ####24A: Restoring cln_Def3HHI and cln_OffFocus
@@ -3157,7 +3133,7 @@ Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
 b_SomeOpt24A <- b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3169,7 +3145,7 @@ b_SomeOpt24A <- b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     cp_OffPerf7:cln_PairCA+
+                                     
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3211,7 +3187,7 @@ VIF measures indicate multicolinearity.
 b_SomeOpt24C <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3223,7 +3199,7 @@ b_SomeOpt24C <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     cp_OffPerf7:cln_PairCA+
+                                     
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3234,7 +3210,7 @@ glmer_examine(b_SomeOpt24C)
 b_SomeOpt24C2 <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3246,7 +3222,7 @@ b_SomeOpt24C2 <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     cp_OffPerf7:cln_PairCA+
+                                     
                    # cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3258,7 +3234,7 @@ glmer_examine(b_SomeOpt24C2)
 b_SomeOpt24C3 <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3270,7 +3246,7 @@ b_SomeOpt24C3 <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     # cp_OffPerf7:cln_PairCA+
+                                     # 
                    # cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3282,7 +3258,7 @@ glmer_examine(b_SomeOpt24C3)
 b_SomeOpt24C4 <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3294,7 +3270,7 @@ b_SomeOpt24C4 <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     # cp_OffPerf7:cln_PairCA+
+                                     # 
                    # cp_OffPerf7:cp_PairObl7+
                  # cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3332,7 +3308,7 @@ VIF measures indicate multicolinearity.
 b_SomeOpt24E <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3344,7 +3320,7 @@ b_SomeOpt24E <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     cp_OffPerf7:cln_PairCA+
+                                     
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3364,7 +3340,7 @@ Significant and nagative, contrary to expectation, leaving out.
 This was created while we were still using ceiling instead of base.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 ```{r CBre25A}
 if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
@@ -3373,19 +3349,19 @@ if(!exists("b_SomeOpt25A")){
 #Create the model
   b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal + 
                        cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
+                       cn_PairHist7+#cln_PairCA+
                        cln_Base + clr_Ceil2Base + cln_Days+
                        Comp+
                        Veh+
                        Pricing+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
+                       cln_Def3HHI+
                        clr_Def3toUS+
                        cp_PairObl7+
                        cln_OffObl7+ 
-                       #cln_OffFocus+ 
-                       cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                       cln_OffFocus+ 
+                       cp_OffPerf7:cp_PairObl7+
                        cp_OffPerf7:cln_Days+
                        clr_Ceil2Base:cln_Base+
                        (1 | NAICS3/NAICS6/ServArea)+  
@@ -3406,12 +3382,13 @@ if(!exists("b_SomeOpt25A")){
                       Pricing+
                       Crisis+
                       cln_Def6HHI+clr_Def6toUS+
-                      #cln_Def3HHI+
+                      cln_Def3HHI+
                       clr_Def3toUS+
                       cp_PairObl7+
                       cln_OffObl7+ 
-                      #cl_office_NAICS6_hhi_kc+
-                      cp_OffPerf7:cln_PairCA+
+                      cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                      
                       (1 | NAICS3/NAICS6/ServArea)+  
                       (1 | Agency/Office) +
                       (1 | Place)+ 
@@ -3427,253 +3404,8 @@ glmer_examine(b_AllOpt25A,display = TRUE)
 
 
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt25A, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt25A, type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt25A, type="text", digits=2)
 
 
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
-```
-Both models  failed to converge after a 100000 evaluations but the boolean model took a lot longer which, combined with multiple interactions and study variables losing significance, suggests that perhaps the  interactions should  be trimmed back.
-
-
-####26A: 2019-08-21 For size, swapping from p_PBSC to PairCA and base:basetoceiling ratio
-
-Dropping PBSC:pairCA for both models. For likelihood it's contrary to expectation and for size the base variables are no longer significant. 
-
-Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B; b_SomeOpt25A
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B; b_AllOpt25A
-
-```{r Term26A}
-if(file.exists("..//Output//b_AllOpt26A.rda")) load("..//Output//b_AllOpt26A.rda")
-
-if(!exists("b_AllOpt26A")){
-  #Create the model
-  b_AllOpt26A <- lmer(data=serv_breach, b_AllOpt ~ cln_US6sal + 
-                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                      cn_PairHist7+cln_PairCA+
-                      cln_Base + clr_Ceil2Base + cln_Days+
-                      Comp+
-                      Veh+
-                      Pricing+
-                      Crisis+
-                      cln_Def6HHI+clr_Def6toUS+
-                      #cln_Def3HHI+
-                      clr_Def3toUS+
-                      cp_PairObl7+
-                      cln_OffObl7+ 
-                      #cl_office_NAICS6_hhi_kc+
-                      # cp_OffPerf7:cln_PairCA+
-                      clr_Ceil2Base:cln_Base+
-                      (1 | NAICS3/NAICS6/ServArea)+  
-                      (1 | Agency/Office) +
-                      (1 | Place)+ 
-                      (1 | StartFY),
-                    verbose=TRUE)
-  save(b_AllOpt26A,file="..\\output\\b_AllOpt26A.rda")
-}
-#Compare the models
-glmer_examine(b_AllOpt26A,display = TRUE)
-
-
-
-stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt25A, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt25A, type="text", digits=2)
-
-
-summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
-```
-
-
-####27A: 2019-08-22 CFTE:Pricing
-Dropping cp_OffPerf7:cp_PairObl7 and cp_OffPerf7:cp_PairObl7 as they were not significant in 2A. Adding Pricing:cln_PSCrate as a realized that it is another way to consider Pricing:AverageSalary that turns out to avoid VIF problems in the likelihood of breach model. 
-
-Current cumulative b_SomeOpt model: b_SomeOpt_CFTE_pricing_22B, b_SomeOpt25A
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B, b_AllOpt25A
-
-```{r Term27A}
-if(file.exists("..//Output//b_SomeOpt27A.rda")) load("..//Output//b_SomeOpt27A.rda")
-
-if(!exists("b_SomeOpt27A")){
-  #Create the model
-  b_SomeOpt27A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal + 
-                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
-                       cln_Base + clr_Ceil2Base + cln_Days+
-                       Comp+
-                       Veh+
-                       Pricing+
-                       Crisis+
-                       cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
-                       clr_Def3toUS+
-                       cp_PairObl7+
-                       cln_OffObl7+ 
-                       #cln_OffFocus+ 
-                       cp_OffPerf7:cln_PairCA+#cp_OffPerf7:cp_PairObl7+
-                       cp_OffPerf7:cln_Days+
-                       Pricing:cln_PSCrate+
-                       #clr_Ceil2Base:cln_Base+
-                       
-                       (1 | NAICS3/NAICS6/ServArea)+  
-                       (1 | Agency/Office) +
-                       (1 | Place)+ 
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  save(b_SomeOpt27A,file="..\\output\\b_SomeOpt27A.rda")
-}
-
-glmer_examine(b_SomeOpt27A,display = TRUE)
-
-stargazer::stargazer(b_SomeOpt_CFTE_pricing_22B, b_SomeOpt25A, b_SomeOpt27A, type="text", digits=2)
-
-
-summary_residual_compare(b_SomeOpt_CFTE_pricing_22B, b_SomeOpt27A, b_SomeOpt25A, b_SomeOpt27A,bins=100)
-
-```
-AIC is a  bit lower but the results, when significant, are not in line with expectation. Leaving out CFTE:PPricing.
-
-
-####28A: 2019-08-22 Just PBSC and pairCA/Days
-
-Trimming down to interactions that are present in n_CBRre (pPBSC:cln_PairCA) or significant and in line with expectations (pPBSC:Days)
-
-
-Dropping PBSC:pairCA for both models. For frequency it's contrary to expectation and for size the base variables are no longer significant. Also dropping  cp_OffPerf7:c_pMarketand for frequency, which is not siginifcant. Keeping base:ratio despite lack of significance because of switching to it for size.
-This was created while we were still using ceiling instead of base.
-
-Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B; b_SomeOpt25A
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B; b_AllOpt25A
-
-```{r b_SomeOpt28A}
-if(file.exists("..//Output//b_SomeOpt28AB.rda")) load("..//Output//b_SomeOpt28AB.rda")
-
-if(!exists("b_SomeOpt28B")){
-  #Create the model
-  b_SomeOpt28A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
-                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
-                       cln_Base + clr_Ceil2Base + cln_Days+
-                       Comp+
-                       Veh+
-                       Pricing+
-                       Crisis+
-                       cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
-                       clr_Def3toUS+
-                       cp_PairObl7+
-                       cln_OffObl7+
-                       #cln_OffFocus+
-                       cp_OffPerf7:cln_PairCA+
-                       #cp_OffPerf7:cp_PairObl7+
-                       cp_OffPerf7:cln_Days+
-                       # clr_Ceil2Base:cln_Base+
-                       (1 | NAICS3/NAICS6/ServArea)+
-                       (1 | Agency/Office) +
-                       (1 | Place)+
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  
-  b_SomeOpt28B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
-                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
-                       cln_Base + clr_Ceil2Base + cln_Days+
-                       Comp+
-                       Veh+
-                       Pricing+
-                       Crisis+
-                       cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
-                       clr_Def3toUS+
-                       cp_PairObl7+
-                       cln_OffObl7+
-                       #cln_OffFocus+
-                       cp_OffPerf7:cln_PairCA+
-                       #cp_OffPerf7:cp_PairObl7+
-                       cp_OffPerf7:cln_Days+
-                       # clr_Ceil2Base:cln_Base+
-                       (1 | NAICS3/NAICS6/ServArea)+
-                       (1 | Agency/Office) +
-                       (1 | Place)+
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  save(b_SomeOpt28A,b_SomeOpt28B,file="..\\output\\b_SomeOpt28AB.rda")
-}
-
-#Compare the models
-glmer_examine(b_SomeOpt28B,display = TRUE)
-
-stargazer::stargazer(b_SomeOpt25A, b_SomeOpt28A, b_SomeOpt28B, type="text", digits=2)
-
-summary_residual_compare( b_SomeOpt25A, b_SomeOpt28A,b_SomeOpt25A,b_SomeOpt28B,bins=100)
-```
-
-####29A: 2019-08-22 Restoring cln_Def3HHI and cln_OffFocus
-
-
-```{r b_SomeOpt29A}
-if(file.exists("..//Output//b_SomeOpt29AB.rda")) load("..//Output//b_SomeOpt29AB.rda")
-
-if(!exists("b_SomeOpt29B")){
-  #Create the model
-  b_SomeOpt29A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
-                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
-                       cln_Base + clr_Ceil2Base + cln_Days+
-                       Comp+
-                       Veh+
-                       Pricing+
-                       Crisis+
-                       cln_Def6HHI+clr_Def6toUS+
-                       cln_Def3HHI+
-                       clr_Def3toUS+
-                       cp_PairObl7+
-                       cln_OffObl7+
-                       cln_OffFocus+
-                       cp_OffPerf7:cln_PairCA+
-                       #cp_OffPerf7:cp_PairObl7+
-                       cp_OffPerf7:cln_Days+
-                       # clr_Ceil2Base:cln_Base+
-                       (1 | NAICS3/NAICS6/ServArea)+
-                       (1 | Agency/Office) +
-                       (1 | Place)+
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  save(b_SomeOpt29A,file="..\\output\\b_SomeOpt29A.rda")
-  
-  b_SomeOpt29B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
-                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
-                       cln_Base + clr_Ceil2Base + cln_Days+
-                       Comp+
-                       Veh+
-                       Pricing+
-                       Crisis+
-                       cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
-                       clr_Def3toUS+
-                       cp_PairObl7+
-                       cln_OffObl7+
-                       #cln_OffFocus+
-                       cp_OffPerf7:cln_PairCA+
-                       #cp_OffPerf7:cp_PairObl7+
-                       cp_OffPerf7:cln_Days+
-                       # clr_Ceil2Base:cln_Base+
-                       (1 | NAICS3/NAICS6/ServArea)+
-                       (1 | Agency/Office) +
-                       (1 | Place)+
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  save(b_SomeOpt29A,b_SomeOpt29B,file="..\\output\\b_SomeOpt29AB.rda")
-}
-
-#Compare the models
-glmer_examine(b_SomeOpt29B,display = TRUE)
-
-stargazer::stargazer(b_SomeOpt25A, b_SomeOpt28A, b_SomeOpt29A, type="text", digits=2)
-
-summary_residual_compare( b_SomeOpt25A, b_SomeOptA,b_SomeOpt25A,b_SomeOptB,bins=100)
 ```
