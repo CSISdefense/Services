@@ -3494,30 +3494,30 @@ if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
 
 if(!exists("b_SomeOpt25A")){
 #Create the model
-  # b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal + 
-  #                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-  #                      cn_PairHist7+#cln_PairCA+
-  #                      cln_Base + clr_Ceil2Base + cln_Days+
-  #                      Comp+
-  #                      Veh+
-  #                      Pricing+
-  #                      Crisis+
-  #                      cln_Def6HHI+clr_Def6toUS+
-  #                      cln_Def3HHI+
-  #                      clr_Def3toUS+
-  #                      cp_PairObl7+
-  #                      cln_OffObl7+ 
-  #                      cln_OffFocus+ 
-  #                      cp_OffPerf7:cp_PairObl7+
-  #                      cp_OffPerf7:cln_Days+
-  #                      clr_Ceil2Base:cln_Base+
-  #                      (1 | NAICS3/NAICS6/ServArea)+  
-  #                      (1 | Agency/Office) +
-  #                      (1 | Place)+ 
-  #                      (1 | StartFY),
-  #                    family=binomial(link="logit"),
-  #                    verbose=TRUE)
-
+  b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                       cn_PairHist7+#cln_PairCA+
+                       cln_Base + clr_Ceil2Base + cln_Days+
+                       Comp+
+                       Veh+
+                       Pricing+
+                       Crisis+
+                       cln_Def6HHI+clr_Def6toUS+
+                       cln_Def3HHI+
+                       clr_Def3toUS+
+                       cp_PairObl7+
+                       cln_OffObl7+
+                       cln_OffFocus+
+                       cp_OffPerf7:cp_PairObl7+
+                       cp_OffPerf7:cln_Days+
+                       clr_Ceil2Base:cln_Base+
+                       (1 | NAICS3/NAICS6/ServArea)+
+                       (1 | Agency/Office) +
+                       (1 | Place)+
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
+  save(b_AllOpt25A, file = "..\\output\\b_AllOpt25A.rda")
   
   
   b_AllOpt25A <- glmer(data=serv_breach, b_AllOpt ~ cln_US6sal + 
@@ -3544,7 +3544,6 @@ if(!exists("b_SomeOpt25A")){
                       (1 | StartFY),
                       family=binomial(link="logit"),
                       verbose=TRUE)
-  save(b_AllOpt25A, file = "..\\output\\b_AllOpt25A.rda")
   
   save(b_SomeOpt25A,b_AllOpt25A,file="..\\output\\CBre25A.rda")
 }
