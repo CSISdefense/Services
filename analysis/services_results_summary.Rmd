@@ -37,10 +37,10 @@ note.text.size<-1.40
 ```
 
 
-Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start..
+Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start.
 
 
-First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
+First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from FPDS.
 
 
 ```{r ReadInData, echo = TRUE}
@@ -97,63 +97,63 @@ stargazer::stargazer(p_Opt_12C,type="text",
 ### Ceiling Breach
 
 ```{r Model-CBre}
-if(file.exists("..//Output//b_CBre28AB.rda")) load("..//Output//b_CBre28AB.rda")
-
-if(!exists("b_CBre28B")){
-   b_CBre28A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const +
-                       cl_CFTE+ c_pPBSC+c_pOffPSC+
-                       c_pairHist+cl_pairCA+
-                       cl_Base + cl_Base2Ceil + cl_Days+
-                       Comp1or5+
-                       Veh+
-                       PricingUCA+
-                       Crisis+
-                       cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                       #cl_def3_HHI_lag1+
-                       cl_def3_ratio_lag1+
-                       c_pMarket+
-                       cl_OffVol+
-                       #cl_office_naics_hhi_k+
-                       c_pPBSC:cl_pairCA+
-                       #c_pPBSC:c_pMarket+
-                       c_pPBSC:cl_Days+
-                       # cl_Base2Ceil:cl_Base+
-                       (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+
-                       (1 | Agency/Office) +
-                       (1 | PlaceCountryISO3)+
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  
-  b_CBre28B <- glmer(data=serv_smp1m, b_CBre ~  cl_US6_avg_sal_lag1Const +
-                       cl_CFTE+ c_pPBSC+c_pOffPSC+
-                       c_pairHist+cl_pairCA+
-                       cl_Base + cl_Base2Ceil + cl_Days+
-                       Comp1or5+
-                       Veh+
-                       PricingUCA+
-                       Crisis+
-                       cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                       #cl_def3_HHI_lag1+
-                       cl_def3_ratio_lag1+
-                       c_pMarket+
-                       cl_OffVol+
-                       #cl_office_naics_hhi_k+
-                       c_pPBSC:cl_pairCA+
-                       #c_pPBSC:c_pMarket+
-                       c_pPBSC:cl_Days+
-                       # cl_Base2Ceil:cl_Base+
-                       (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+
-                       (1 | Agency/Office) +
-                       (1 | PlaceCountryISO3)+
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  save(b_CBre28A,b_CBre28B,file="..\\output\\b_CBre28AB.rda")
-  
-}
-glmer_examine(b_CBre28B)
-glmer_examine(n_CBre25A)
+# if(file.exists("..//Output//b_CBre28AB.rda")) load("..//Output//b_CBre28AB.rda")
+# 
+# if(!exists("b_CBre28B")){
+#    b_CBre28A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const +
+#                        cl_CFTE+ c_pPBSC+c_pOffPSC+
+#                        c_pairHist+cl_pairCA+
+#                        cl_Base + cl_Base2Ceil + cl_Days+
+#                        Comp1or5+
+#                        Veh+
+#                        PricingUCA+
+#                        Crisis+
+#                        cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+#                        #cl_def3_HHI_lag1+
+#                        cl_def3_ratio_lag1+
+#                        c_pMarket+
+#                        cl_OffVol+
+#                        #cl_office_naics_hhi_k+
+#                        c_pPBSC:cl_pairCA+
+#                        #c_pPBSC:c_pMarket+
+#                        c_pPBSC:cl_Days+
+#                        # cl_Base2Ceil:cl_Base+
+#                        (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+
+#                        (1 | Agency/Office) +
+#                        (1 | PlaceCountryISO3)+
+#                        (1 | StartFY),
+#                      family=binomial(link="logit"),
+#                      verbose=TRUE)
+#   
+#   b_CBre28B <- glmer(data=serv_smp1m, b_CBre ~  cl_US6_avg_sal_lag1Const +
+#                        cl_CFTE+ c_pPBSC+c_pOffPSC+
+#                        c_pairHist+cl_pairCA+
+#                        cl_Base + cl_Base2Ceil + cl_Days+
+#                        Comp1or5+
+#                        Veh+
+#                        PricingUCA+
+#                        Crisis+
+#                        cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+#                        #cl_def3_HHI_lag1+
+#                        cl_def3_ratio_lag1+
+#                        c_pMarket+
+#                        cl_OffVol+
+#                        #cl_office_naics_hhi_k+
+#                        c_pPBSC:cl_pairCA+
+#                        #c_pPBSC:c_pMarket+
+#                        c_pPBSC:cl_Days+
+#                        # cl_Base2Ceil:cl_Base+
+#                        (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+
+#                        (1 | Agency/Office) +
+#                        (1 | PlaceCountryISO3)+
+#                        (1 | StartFY),
+#                      family=binomial(link="logit"),
+#                      verbose=TRUE)
+#   save(b_CBre28A,b_CBre28B,file="..\\output\\b_CBre28AB.rda")
+#   
+# }
+# glmer_examine(b_CBre28B)
+# glmer_examine(n_CBre25A)
 
 # if(!exists("b_CBre28B_restart")){
 #   pars<-get_pars(b_CBre25A)
@@ -187,9 +187,13 @@ glmer_examine(n_CBre25A)
 # glmer_examine(b_CBre25A.restart,display=TRUE)
 # odds_ratio(b_CBre25A.restart,"b_CBre25A")
 
-```
-"Model failed to converge with max|grad| = 0.00750942 (tol = 0.001, component 1)"
+load("..//Output//b_SomeOpt25A.rda")
+load("..//Output//b_AllOpt25A.rda")
+glmer_examine(b_SomeOpt25A)
+glmer_examine(b_AllOpt25A)
 
+```
+"Model failed to converge with max|grad| = 0.00135328 (tol = 0.001, component 1)"" - AllOpt25A
 
 
 ### Termination
@@ -450,19 +454,16 @@ dotplot(ranef(term25A, condVar = T), strip = T, scales=list(relation='free'))$NA
 
 ```{r Residuals, fig.width=7.5 , fig.height=8.5}
 # debug(binned_fitted_versus_residuals)
-
-(
   terminations_residual<-gridExtra::grid.arrange(
     binned_fitted_versus_residuals(b_CBre28B,bins=50)+
       labs(title="Ceiling Breach Binned Actuals",caption=NULL,
            x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)")
     )
-)
 ceiling_breach_residual<-gridExtra::grid.arrange(
     residuals_plot(b_CBre28B, bins=50)+labs(title="Ceiling Breach Binned Residual Plot"),
     binned_fitted_versus_residuals(term25A,bins=50)+
       labs(title="Termination Binned Actuals Plot",caption=NULL,
-           x="Estimated Pr(Termination)",y="Actual Pr(Termination)"))
+           x="Estimated Pr(Termination)",y="Actual Pr(Termination)")
 )
 
 options_residual<-gridExtra::grid.arrange(
@@ -472,8 +473,8 @@ options_residual<-gridExtra::grid.arrange(
            caption=NULL,
            x="Estimated % Exercised Option Growth",y="Actual % Exercised Option Growth"),
     residuals_plot(p_Opt_12C, bins=50)+labs(title="Exercised Options Binned Residuals Plot")
-    ,ncol=2)
-)
+    ,ncol=2
+  )
 
 ggsave(residual_logit,file="..//output//residual_logit.png",width=7.5, height=8.5)
 ggsave(residual_logit,file="..//output//residual_logit.png",width=7.5, height=8.5)
