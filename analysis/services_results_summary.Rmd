@@ -503,6 +503,44 @@ texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C),file="..//Output//some_options_
 ```
 
 
+### All Service Complexity
+```{r CeilingResults}
+
+  stargazer::stargazer(#p_Opt_12C,
+                       b_CBre28B,n_CBre25A,term25B,
+                       single.row = TRUE,
+                # custom.model.name=c("Breach Frequency (Logit)","Breach Size for Breached Contracts (Regression"),
+                stars=c(0.1,0.05,0.01,0.001),
+                       type="text",
+                       digits=2)
+
+
+texreg::htmlreg(list(b_CBre28B,n_CBre25A),file="..//Output//ceiling_breaches.html",
+                single.row = TRUE,
+                custom.model.name=c("Likelihood\n(Logit)","Size Given Breach\n(Regression)"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              # "Services Complexity" = 2:3,
+                              # "Office Capacity" =4:5,
+                              # "Past Relationship"=6:7,
+                  "Services Complexity"=2:7,
+                              "Contract Characteristics"=8:26,
+                                                "NAICS/Office Characteristics" =27:31,
+
+                              # "NAICS Characteristics" =27:29,
+                              # "Office Characteristics" =30:31,
+                              "Interactions"=32:33
+                              ),
+                custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 8: Ceiling Breaches",
+                caption.above=TRUE)
+
+
+
+```
+
 ## Odds Ratios
 
 ### Exercised Options
