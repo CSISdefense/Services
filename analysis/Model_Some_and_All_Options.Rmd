@@ -3505,10 +3505,8 @@ if(!exists("b_SomeOpt25A")){
                        cln_OffObl7+
                        cln_OffFocus+
                        cp_OffPerf7:cp_PairObl7+
-                       cp_OffObl7:cp_PairObl7+
-                       cn_PairHist7:Pricing + 
-                       clr_Ceil2Base:cln_Base + 
-                       pOffPSC:cln_OffObl7 + 
+                       cp_OffPerf7:cln_Days+
+                       clr_Ceil2Base:cln_Base+
                        (1 | NAICS3/NAICS6/ServArea)+
                        (1 | Agency/Office) +
                        (1 | Place)+
@@ -3543,7 +3541,7 @@ if(!exists("b_SomeOpt25A")){
                       family=binomial(link="logit"),
                       verbose=TRUE)
   
-  save(b_SomeOpt25A,b_AllOpt25A,file="..\\output\\Opt25A.rda")
+  save(b_AllOpt25A,file="..\\output\\b_AllOpt25A.rda")
 }
 
 #Compare the models
@@ -3565,7 +3563,7 @@ summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 
 ```{r Opt25B}
 
-b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                        cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                        cn_PairHist7+cln_PairCA+
                        cln_Base + clr_Ceil2Base + cln_Days+
@@ -3580,10 +3578,9 @@ b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                        cln_OffObl7+
                        cln_OffFocus+
                        cp_OffPerf7:cp_PairObl7+
-                       cp_OffObl7:cp_PairObl7+
-                       cn_PairHist7:Pricing + 
-                       clr_Ceil2Base:cln_Base + 
-                       pOffPSC:cln_OffObl7 + 
+                       cp_OffPerf7:cln_Days+
+                       clr_Ceil2Base:cln_Base+
+                       Pricing:cln_PSCrate+
                        (1 | NAICS3/NAICS6/ServArea)+
                        (1 | Agency/Office) +
                        (1 | Place)+
@@ -3617,5 +3614,64 @@ b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                       (1 | StartFY),
                       family=binomial(link="logit"),
                       verbose=TRUE)
-save(b_AllOpt25B, file="..\Output\b_AllOpt25B.rda")
+save(b_SomeOpt25B, b_AllOpt25B, file="..\Output\Opt25B.rda")
+```
+
+####25C: 2019-08-29 - Modified SomeOpt and AllOpt models to more accurately reflect variable trimming in prior sections.
+
+```{r Opt25B}
+#Note, does not include cln_Days
+b_SomeOpt25C <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                       cn_PairHist7+cln_PairCA+
+                       cln_Base + clr_Ceil2Base + #cln_Days+
+                       Comp+
+                       Veh+
+                       Pricing+
+                       Crisis+
+                       cln_Def6HHI+clr_Def6toUS+
+                       cln_Def3HHI+
+                       clr_Def3toUS+
+                       cp_PairObl7+
+                       cln_OffObl7+
+                       cln_OffFocus+
+                       cp_OffPerf7:cp_PairObl7 +
+                       cln_OffObl7:cp_PairObl7 + 
+                       cn_PairHist7:Pricing + 
+                       clr_Ceil2Base:cln_Base + 
+                       pOffPSC:cln_OffObl7 + 
+                       (1 | NAICS3/NAICS6/ServArea)+
+                       (1 | Agency/Office) +
+                       (1 | Place)+
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
+  save(b_SomeOpt25C, file="..\\Output\\b_SomeOpt25C.rda")
+  
+b_SomeOpt25Cv2 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                       cn_PairHist7+cln_PairCA+
+                       cln_Base + clr_Ceil2Base + cln_Days+
+                       Comp+
+                       Veh+
+                       Pricing+
+                       Crisis+
+                       cln_Def6HHI+clr_Def6toUS+
+                       cln_Def3HHI+
+                       clr_Def3toUS+
+                       cp_PairObl7+
+                       cln_OffObl7+
+                       cln_OffFocus+
+                       cp_OffPerf7:cp_PairObl7 +
+                       cln_OffObl7:cp_PairObl7 + 
+                       cn_PairHist7:Pricing + 
+                       clr_Ceil2Base:cln_Base + 
+                       pOffPSC:cln_OffObl7 + 
+                       (1 | NAICS3/NAICS6/ServArea)+
+                       (1 | Agency/Office) +
+                       (1 | Place)+
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
+save(b_SomeOpt25Bv2, file="..\Output\b_SomeOpt25Cv2.rda")
 ```
