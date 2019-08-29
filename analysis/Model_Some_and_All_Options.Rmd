@@ -2536,7 +2536,7 @@ stargazer::stargazer(b_SomeOpt_partnership_duration_18B, b_SomeOpt_history_prici
 summary_residual_compare(b_SomeOpt_partnership_duration_18B, b_SomeOpt_history_pricing_19B, bins = 50)
 summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_history_pricing_19B, bins = 50)
 ```
-SomeOpt: Expectations met for incentive pricing interaction ad combination pricing interaction
+SomeOpt: Expectations met for incentive pricing interaction and combination pricing interaction
 AllOpt: Expectations are not met for any interactions
 
 Current cumulative b_SomeOpt model: b_SomeOpt_history_pricing_19B
@@ -3144,7 +3144,6 @@ b_SomeOpt23B <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+ 
-                                     
                    cp_OffPerf7:cp_PairObl7+
                  cn_PairHist7:Pricing + 
                    clr_Ceil2Base:cln_Base+
@@ -3542,7 +3541,7 @@ if(!exists("b_SomeOpt25A")){
                       family=binomial(link="logit"),
                       verbose=TRUE)
   
-  save(b_SomeOpt25A,b_AllOpt25A,file="..\\output\\Opt25A.rda")
+  save(b_AllOpt25A,file="..\\output\\b_AllOpt25A.rda")
 }
 
 #Compare the models
@@ -3616,4 +3615,63 @@ b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                       family=binomial(link="logit"),
                       verbose=TRUE)
 save(b_SomeOpt25B, b_AllOpt25B, file="..\Output\Opt25B.rda")
+```
+
+####25C: 2019-08-29 - Modified SomeOpt and AllOpt models to more accurately reflect variable trimming in prior sections.
+
+```{r Opt25B}
+#Note, does not include cln_Days
+b_SomeOpt25C <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                       cn_PairHist7+cln_PairCA+
+                       cln_Base + clr_Ceil2Base + #cln_Days+
+                       Comp+
+                       Veh+
+                       Pricing+
+                       Crisis+
+                       cln_Def6HHI+clr_Def6toUS+
+                       cln_Def3HHI+
+                       clr_Def3toUS+
+                       cp_PairObl7+
+                       cln_OffObl7+
+                       cln_OffFocus+
+                       cp_OffPerf7:cp_PairObl7 +
+                       cln_OffObl7:cp_PairObl7 + 
+                       cn_PairHist7:Pricing + 
+                       clr_Ceil2Base:cln_Base + 
+                       pOffPSC:cln_OffObl7 + 
+                       (1 | NAICS3/NAICS6/ServArea)+
+                       (1 | Agency/Office) +
+                       (1 | Place)+
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
+  save(b_SomeOpt25C, file="..\\Output\\b_SomeOpt25C.rda")
+  
+b_SomeOpt25Cv2 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                       cn_PairHist7+cln_PairCA+
+                       cln_Base + clr_Ceil2Base + cln_Days+
+                       Comp+
+                       Veh+
+                       Pricing+
+                       Crisis+
+                       cln_Def6HHI+clr_Def6toUS+
+                       cln_Def3HHI+
+                       clr_Def3toUS+
+                       cp_PairObl7+
+                       cln_OffObl7+
+                       cln_OffFocus+
+                       cp_OffPerf7:cp_PairObl7 +
+                       cln_OffObl7:cp_PairObl7 + 
+                       cn_PairHist7:Pricing + 
+                       clr_Ceil2Base:cln_Base + 
+                       pOffPSC:cln_OffObl7 + 
+                       (1 | NAICS3/NAICS6/ServArea)+
+                       (1 | Agency/Office) +
+                       (1 | Place)+
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
+save(b_SomeOpt25Bv2, file="..\Output\b_SomeOpt25Cv2.rda")
 ```
