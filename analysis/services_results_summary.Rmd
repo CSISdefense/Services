@@ -21,7 +21,7 @@ library(readr)
 library(texreg)
 library(reshape2)
 library(tidyverse)
-source("C:/Users/JGraham/Documents/CSIS/Vendor/Scripts/DIIGstat.r")
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
 
 axis.text.size<-10
 strip.text.size<-10
@@ -114,6 +114,7 @@ glmer_examine(b_SomeOpt25C)
 
 ```{r Model-CBre}
 if(file.exists("..//Output//b_CBre28AB.rda")) load("..//Output//b_CBre28AB.rda")
+if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
 
 if(!exists("b_CBre28B")){
    b_CBre28A <- glmer(data=serv_smp, b_CBre ~  cl_US6_avg_sal_lag1Const +
@@ -170,7 +171,7 @@ if(!exists("b_CBre28B")){
 }
 glmer_examine(b_CBre28B)
 
-if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
+
 
 if(!exists("n_CBre25A")){
     
@@ -358,8 +359,9 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25A),file="..//Output//all_var_m
 
 ```
 ## Tables for Final Paper
+### Results by Dependent Variable
 
-### Ceiling Breach
+#### Ceiling Breach
 ```{r CeilingResults}
 
   stargazer::stargazer(#p_Opt_12C,
@@ -397,7 +399,7 @@ texreg::htmlreg(list(b_CBre28B,n_CBre25A),file="..//Output//ceiling_breaches.htm
 
 ```
 
-### Terminations
+#### Terminations
 
 ```{r AllVariableSummary}
 
@@ -434,7 +436,7 @@ texreg::htmlreg(list(term25B),file="..//Output//terminations.html",
 
 ```
 
-### Exercised Options
+#### Exercised Options
 ```{r OptionsTableGeneration}
 stargazer::stargazer(b_SomeOpt25A, b_AllOpt25A,
                        single.row = TRUE,
@@ -502,39 +504,121 @@ texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C),file="..//Output//some_options_
                 caption.above=TRUE)
 ```
 
-
-### All Service Complexity
+### Discussion by Study Variable
+#### Service Complexity
 ```{r CeilingResults}
 
-  stargazer::stargazer(#p_Opt_12C,
-                       b_CBre28B,n_CBre25A,term25B,
-                       single.row = TRUE,
-                # custom.model.name=c("Breach Frequency (Logit)","Breach Size for Breached Contracts (Regression"),
-                stars=c(0.1,0.05,0.01,0.001),
-                       type="text",
-                       digits=2)
+complex_coef<-all_coef_list[c(grep("cln_US6sal",names(all_coef_list)),
+                              grep("cl_US6_avg_sal_lag1Const",names(all_coef_list)),
+                              grep("cl_CFTE",names(all_coef_list)),
+                              grep("cln_PSCrate",names(all_coef_list))
+                              )]
+                              
 
-
-texreg::htmlreg(list(b_CBre28B,n_CBre25A),file="..//Output//ceiling_breaches.html",
+texreg::htmlreg(list(b_CBre28B,n_CBre25A,term25B),file="..//Output//service_complexity.html",
                 single.row = TRUE,
-                custom.model.name=c("Likelihood\n(Logit)","Size Given Breach\n(Regression)"),
+                custom.model.name=c("Ceiling Breach\nLikelihood\n(Logit)",
+                                    "Ceiling Breach\nSize Given Breach\n(Regression)",
+                                    "Termination\n(Logit)"),
                 stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              # "Services Complexity" = 2:3,
-                              # "Office Capacity" =4:5,
-                              # "Past Relationship"=6:7,
-                  "Services Complexity"=2:7,
-                              "Contract Characteristics"=8:26,
-                                                "NAICS/Office Characteristics" =27:31,
-
-                              # "NAICS Characteristics" =27:29,
-                              # "Office Characteristics" =30:31,
-                              "Interactions"=32:33
-                              ),
-                custom.coef.map=all_coef_list,
+                # groups = list(
+                #               "Services Complexity" = 1:2,
+                #               # "Office Capacity" =4:5,
+                #               # "Past Relationship"=6:7,
+                #   # "Services Complexity"=2:7,
+                #               # "Contract Characteristics"=8:26,
+                #                                 # "NAICS/Office Characteristics" =27:31,
+                # 
+                #               # "NAICS Characteristics" =27:29,
+                #               # "Office Characteristics" =30:31,
+                #               "Interactions"=3:4
+                #               ),
+                custom.coef.map=complex_coef,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 8: Ceiling Breaches",
+                caption="Table 9: Ceiling Breaches",
+                caption.above=TRUE)
+
+
+
+```
+
+
+#### Office Capacity
+```{r CeilingResults}
+
+
+office_coef<-all_coef_list[sort(c(grep("c_pPBSC",names(all_coef_list)),
+                              grep("cp_OffPerf7",names(all_coef_list)),
+                              grep("c_pOffPSC",names(all_coef_list)),
+                              grep("cp_OffPSC7",names(all_coef_list))
+                              ))]
+                              
+
+texreg::htmlreg(list(b_CBre28B,n_CBre25A,term25B),file="..//Output//office_capacity.html",
+                single.row = TRUE,
+                custom.model.name=c("Ceiling Breach\nLikelihood\n(Logit)",
+                                    "Ceiling Breach\nSize Given Breach\n(Regression)",
+                                    "Termination\n(Logit)"),
+                stars=c(0.1,0.05,0.01,0.001),
+                # groups = list(
+                #               "Services Complexity" = 1:2,
+                #               # "Office Capacity" =4:5,
+                #               # "Past Relationship"=6:7,
+                #   # "Services Complexity"=2:7,
+                #               # "Contract Characteristics"=8:26,
+                #                                 # "NAICS/Office Characteristics" =27:31,
+                # 
+                #               # "NAICS Characteristics" =27:29,
+                #               # "Office Characteristics" =30:31,
+                #               "Interactions"=3:4
+                #               ),
+                custom.coef.map=office_coef,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 10: Office Capacity",
+                caption.above=TRUE)
+
+
+
+```
+
+
+
+#### Partner History
+```{r CeilingResults}
+
+all_coef_list
+
+pair_coef<-all_coef_list[sort(c(grep("c_pairHist",names(all_coef_list)),
+                              grep("cn_PairHist7",names(all_coef_list)),
+                              grep("cl_pairCA",names(all_coef_list)),
+                              grep("cln_PairCA",names(all_coef_list))
+                              ))]
+                              
+
+texreg::htmlreg(list(b_CBre28B,n_CBre25A,term25B),file="..//Output//pair_history.html",
+                single.row = TRUE,
+                custom.model.name=c("Ceiling Breach\nLikelihood\n(Logit)",
+                                    "Ceiling Breach\nSize Given Breach\n(Regression)",
+                                    "Termination\n(Logit)"),
+                stars=c(0.1,0.05,0.01,0.001),
+                # groups = list(
+                #               "Services Complexity" = 1:2,
+                #               # "Office Capacity" =4:5,
+                #               # "Past Relationship"=6:7,
+                #   # "Services Complexity"=2:7,
+                #               # "Contract Characteristics"=8:26,
+                #                                 # "NAICS/Office Characteristics" =27:31,
+                # 
+                #               # "NAICS Characteristics" =27:29,
+                #               # "Office Characteristics" =30:31,
+                #               "Interactions"=3:4
+                #               ),
+                custom.coef.map=pair_coef,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 11: Past Relationship",
                 caption.above=TRUE)
 
 
