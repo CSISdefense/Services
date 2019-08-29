@@ -1949,7 +1949,7 @@ SomeOpt:
   (3) Deeper office-vendor relationship variables - Only paired years included in model, meets expectations
   
 So, to be clear, at this point:
-In AllOpt model, cp_OffPSC7 has been dropped from the model.  In SomeOpt model, both cp_OffPSC7 and cln_PairCA have been dropped.
+In AllOpt model, cp_OffPSC7 has been dropped from the model (later added back).  In SomeOpt model, both cp_OffPSC7 and cln_PairCA have been dropped.
 
 ####15A: Average U.S. Salaries (logged):Contract Pricing
 Cost-based and incentive contract types may do a  better job at handling complex contracts.
@@ -2106,7 +2106,7 @@ summary_residual_compare(b_SomeOpt13A, b_SomeOpt_partnership_actions_16B,
                          b_AllOpt12C, b_AllOpt_partnership_actions_16B,bins=50)
 ```
 
-The results remain contrary to expectations and do little for VIF (restoring pairCA is outright raises AIC for the some model). Leaving it out.
+The results remain contrary to expectations and do little for VIF (restoring pairCA also outright raises AIC for the some model). Leaving it out.
 
 Current cumulative b_SomeOpt model: b_SomeOpt13A
 Current cumulative b_AllOpt model: b_AllOpt12C
@@ -3261,7 +3261,7 @@ glmer_examine(b_AllOpt24B)
 stargazer::stargazer(b_AllOpt24B, type = "text", digits = 2)
 
 ```
-VIF measures indicate multicolinearity for SomeOpt model.  Requires checking of cumulative model specification for AllOpt, where it is accepted.  Expectations met for AllOpt model.
+VIF measures indicate multicolinearity for SomeOpt model, and so not included.  Requires checking of cumulative model specification for AllOpt, where it is accepted.  Expectations met for AllOpt model.
 
 
 ####24C: Cumulative
@@ -3486,9 +3486,6 @@ AllOpt: b_AllOpt24C
 ####25A: 2019-08-20 First run, original multilevel.
 This was created while we were still using ceiling instead of base.
 
-Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
-
 ```{r CBre25A}
 if(file.exists("..//Output//Opt25A.rda")) load("..//Output//Opt25A.rda")
 
@@ -3520,7 +3517,7 @@ if(!exists("b_SomeOpt25A")){
   save(b_SomeOpt25A, file = "..\\output\\b_SomeOpt25A.rda")
   
   
-  b_AllOpt25A <- glmer(data=serv_breach, b_AllOpt ~ cln_US6sal + 
+  b_AllOpt25A <- glmer(data=serv_exeropt, b_AllOpt ~ cln_US6sal + 
                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                       cn_PairHist7+cln_PairCA+
                       cln_Base + clr_Ceil2Base + cln_Days+
@@ -3557,5 +3554,65 @@ stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt25A,
                      b_AllOpt_partnership_share_17B, b_AllOpt25A, type="text", digits=2)
 
 
+stargazer::stargazer(b_AllOpt25A, type = "text", digits = 2)
+
+
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
+```
+
+####25B: 2019-08-28 - Modified SomeOpt and AllOpt models for multilevel model run (attempting to leverage GVIF declines in multilevel model in 25A).
+
+```{r Opt25B}
+
+b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                       cn_PairHist7+cln_PairCA+
+                       cln_Base + clr_Ceil2Base + cln_Days+
+                       Comp+
+                       Veh+
+                       Pricing+
+                       Crisis+
+                       cln_Def6HHI+clr_Def6toUS+
+                       cln_Def3HHI+
+                       clr_Def3toUS+
+                       cp_PairObl7+
+                       cln_OffObl7+
+                       cln_OffFocus+
+                       cp_OffPerf7:cp_PairObl7+
+                       cp_OffPerf7:cln_Days+
+                       clr_Ceil2Base:cln_Base+
+                      Pricing:cln_PSCrate+
+                       (1 | NAICS3/NAICS6/ServArea)+
+                       (1 | Agency/Office) +
+                       (1 | Place)+
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
+  save(b_SomeOpt25B, file="..\\Output\\b_SomeOpt25B.rda")
+  
+  b_AllOpt25B <- glmer(data=serv_exeropt, b_AllOpt ~ cln_US6sal + 
+                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                      cn_PairHist7+cln_PairCA+
+                      cln_Base + clr_Ceil2Base + cln_Days+
+                      Comp+
+                      Veh+
+                      Pricing+
+                      Crisis+
+                      cln_Def6HHI+clr_Def6toUS+
+                      cln_Def3HHI+
+                      clr_Def3toUS+
+                      cp_PairObl7+
+                      cln_OffObl7+ 
+                      cln_OffFocus+
+                      cp_OffPerf7:cp_PairObl7+
+                      cp_OffPerf7:cln_PairCA +
+                      pOffPSC:cln_OffObl7 + 
+                      pOffPSC:cln_OffFocus + 
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                      family=binomial(link="logit"),
+                      verbose=TRUE)
+save(b_SomeOpt25B, b_AllOpt25B, file="..\Output\Opt25B.rda")
 ```

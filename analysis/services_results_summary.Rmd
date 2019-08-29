@@ -21,7 +21,7 @@ library(readr)
 library(texreg)
 library(reshape2)
 library(tidyverse)
-source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+source("C:/Users/JGraham/Documents/CSIS/Vendor/Scripts/DIIGstat.r")
 
 axis.text.size<-10
 strip.text.size<-10
@@ -37,10 +37,10 @@ note.text.size<-1.40
 ```
 
 
-Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start..
+Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start.
 
 
-First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
+First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from FPDS.
 
 
 ```{r ReadInData, echo = TRUE}
@@ -57,31 +57,31 @@ None at present.
 ### Exercised Options
 Note that because we use the complete dataset for exercised options, there's no 1 million entry variant.
 ```{r Model-OptGrowth}
-if(file.exists("..//Output//p_Opt_12C.rdata")) load("..//Output//p_Opt_12C.rdata")
-
-
-if(!exists("p_Opt_12C")){
-  p_Opt_12C <- glm (data=serv_opt,
-                    lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
-                      cl_CFTE+ c_pPBSC+c_pOffPSC+
-                      c_pairHist+cl_pairCA +
-                      cl_Ceil + capped_cl_Days+
-                      Comp1or5+
-                      Veh+
-                      PricingUCA+
-                      Crisis+
-                      cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                      cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                      c_pMarket+
-                      cl_OffVol+cl_office_naics_hhi_k #,
-                    # verbose=1
-                    )
-  glmer_examine(p_Opt_12C)
-  save(p_Opt_12C,file="..//Output//p_Opt_12C.rdata")
-}
-
-stargazer::stargazer(p_Opt_12C,type="text",
-                     digits=2)
+# if(file.exists("..//Output//p_Opt_12C.rdata")) load("..//Output//p_Opt_12C.rdata")
+# 
+# 
+# if(!exists("p_Opt_12C")){
+#   p_Opt_12C <- glm (data=serv_opt,
+#                     lp_OptGrowth ~  cl_US6_avg_sal_lag1Const + 
+#                       cl_CFTE+ c_pPBSC+c_pOffPSC+
+#                       c_pairHist+cl_pairCA +
+#                       cl_Ceil + capped_cl_Days+
+#                       Comp1or5+
+#                       Veh+
+#                       PricingUCA+
+#                       Crisis+
+#                       cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+#                       cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+#                       c_pMarket+
+#                       cl_OffVol+cl_office_naics_hhi_k #,
+#                     # verbose=1
+#                     )
+#   glmer_examine(p_Opt_12C)
+#   save(p_Opt_12C,file="..//Output//p_Opt_12C.rdata")
+# }
+# 
+# stargazer::stargazer(p_Opt_12C,type="text",
+#                      digits=2)
 
 #Considering 
 # write.csv(exp(summary(p_Opt_12C)$coefficients[,1])-1,file="../Output/exp_p_Opt_12C.csv")
@@ -90,6 +90,13 @@ stargazer::stargazer(p_Opt_12C,type="text",
 glmer_examine(p_Opt_12C,display=TRUE)
 stargazer::stargazer(p_Opt_12C,type="text",
                        digits=2)
+
+load("..//Output//b_SomeOpt25A.rda")
+load("..//Output//b_AllOpt25A.rda")
+glmer_examine(b_SomeOpt25A)
+glmer_examine(b_AllOpt25A)
+
+stargazer::stargazer(b_SomeOpt25A, b_AllOpt25A, type = "text", digits = 2)
 
 ```
 
@@ -124,7 +131,7 @@ if(!exists("b_CBre28B")){
                        (1 | StartFY),
                      family=binomial(link="logit"),
                      verbose=TRUE)
-  
+
   b_CBre28B <- glmer(data=serv_smp1m, b_CBre ~  cl_US6_avg_sal_lag1Const +
                        cl_CFTE+ c_pPBSC+c_pOffPSC+
                        c_pairHist+cl_pairCA+
@@ -150,9 +157,39 @@ if(!exists("b_CBre28B")){
                      family=binomial(link="logit"),
                      verbose=TRUE)
   save(b_CBre28A,b_CBre28B,file="..\\output\\b_CBre28AB.rda")
-  
+
 }
 glmer_examine(b_CBre28B)
+
+if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
+
+if(!exists("n_CBre25A")){
+    
+  n_CBre25A <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
+                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                      cn_PairHist7+cln_PairCA+
+                      cln_Base + clr_Ceil2Base + cln_Days+
+                      Comp+
+                      Veh+
+                      Pricing+
+                      Crisis+
+                      cln_Def6HHI+clr_Def6toUS+
+                      #cln_Def3HHI+
+                      clr_Def3toUS+
+                      cp_PairObl7+
+                      cln_OffObl7+ 
+                      #cl_office_NAICS6_hhi_kc+
+                      cp_OffPerf7:cln_PairCA+
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                    verbose=TRUE)
+  
+  save(n_CBre25A,file="..\\output\\n_CBre25A.rda")
+}
+
+
 glmer_examine(n_CBre25A)
 
 # if(!exists("b_CBre28B_restart")){
@@ -188,8 +225,7 @@ glmer_examine(n_CBre25A)
 # odds_ratio(b_CBre25A.restart,"b_CBre25A")
 
 ```
-"Model failed to converge with max|grad| = 0.00750942 (tol = 0.001, component 1)"
-
+"Model failed to converge with max|grad| = 0.00135328 (tol = 0.001, component 1)"" - AllOpt25A
 
 
 ### Termination
@@ -262,11 +298,11 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25A),file="..//Output//study_var
                 single.row = TRUE,
                 custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
                 stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7
-                              ),
+                #groups = list(
+                 #             "Services Complexity" = 2:3,
+                  #            "Office Capacity" =4:5,
+                   #           "Past Relationship"=6:7
+                    #          ),
                 custom.coef.map=study_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
@@ -314,6 +350,7 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25A),file="..//Output//all_var_m
 ```
 ## Tables for Final Paper
 
+### Exercised Options
 
 ### Ceiling Breach
 ```{r CeilingResults}
@@ -390,21 +427,57 @@ texreg::htmlreg(list(term25B),file="..//Output//terminations.html",
 
 ```
 
+### Exercised Options
+```{r OptionsTableGeneration}
+stargazer::stargazer(b_SomeOpt25A, b_AllOpt25A,
+                       single.row = TRUE,
+                custom.model.name=c("Exercised Options"),
+                stars=c(0.1,0.05,0.01,0.001),
+                       type="text",
+                       digits=2)
+
+
+texreg::htmlreg(list(b_SomeOpt25A, b_AllOpt25A),file="..//Output//options.html",
+                single.row = TRUE,
+                custom.model.name=c("Some Options Exercised", "All Options Exercised"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                               "Services Complexity" = 2:3,
+                               "Office Capacity" =4:5,
+                               "Past Relationship"=6:7,
+                               "Contract Characteristics"=8:26,
+                               "NAICS Characteristics" =27:30,
+                               "Office Characteristics" =31:33,
+                               "Interactions"=34:39
+                              ),
+                custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 6: Exercised Options",
+                caption.above=TRUE)
+```
+
 
 ## Odds Ratios
-
-
 
 ### Exercised Options
 ```{r Odds-Opt}
 
 
-comp.or<-odds_ratio(b_CBre28B,"b_CBre28B","Both","Both")
-write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio.csv",row.names=FALSE)
-get_icc(b_CBre28B)
+# comp.or<-odds_ratio(b_CBre28B,"b_CBre28B","Both","Both")
+# write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//ceiling_breach_study_odds_ratio.csv",row.names=FALSE)
+# get_icc(b_CBre28B)
+# 
+# #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
+# gridExtra::grid.arrange(dotplot(ranef(b_CBre28B, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+#              nrow=1)
+
+comp.or<-odds_ratio(b_SomeOpt25A,"b_SomeOpt25A","Both","Both")
+write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//some_exer_opt_study_odds_ratio.csv",row.names=FALSE)
+get_icc(b_SomeOpt25A)
 
 #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
-gridExtra::grid.arrange(dotplot(ranef(b_CBre28B, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+gridExtra::grid.arrange(dotplot(ranef(b_SomeOpt25A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
              nrow=1)
 
 
@@ -449,21 +522,31 @@ dotplot(ranef(term25A, condVar = T), strip = T, scales=list(relation='free'))$NA
 
 
 ```{r Residuals, fig.width=7.5 , fig.height=8.5}
-# debug(binned_fitted_versus_residuals)
 
 (
   terminations_residual<-gridExtra::grid.arrange(
-    binned_fitted_versus_residuals(b_CBre28B,bins=50)+
+    binned_fitted_versus_residuals(term25B,bins=50)+
       labs(title="Ceiling Breach Binned Actuals",caption=NULL,
-           x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)")
+           x="Estimated Pr(Terminations)",y="Actual Pr(Terminations)"),
+    residuals_plot(term25B, bins=50)+labs(title="Terminations Binned Residual Plot")
     )
 )
-ceiling_breach_residual<-gridExtra::grid.arrange(
+
+
+(
+  ceiling_breach_residual<-gridExtra::grid.arrange(
+    binned_fitted_versus_residuals(b_CBre28B,bins=50)+
+      labs(title="Ceiling Breach Binned Actuals",caption=NULL,
+           x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
     residuals_plot(b_CBre28B, bins=50)+labs(title="Ceiling Breach Binned Residual Plot"),
-    binned_fitted_versus_residuals(term25A,bins=50)+
+    binned_fitted_versus_residuals(n_CBre25A,bins=50)+
       labs(title="Termination Binned Actuals Plot",caption=NULL,
-           x="Estimated Pr(Termination)",y="Actual Pr(Termination)"))
+           x="Estimated Size of Breach when Breach Occurs",y="Actual Average Size of Breach when Breach Occurs"),
+    residuals_plot(n_CBre25A, bins=50)+labs(title="Ceiling Binned Residual Plot")
+  )
 )
+
+
 
 options_residual<-gridExtra::grid.arrange(
     residuals_plot(term25A, bins=50)+labs(title="Termination Residuals Plot"),
@@ -473,7 +556,7 @@ options_residual<-gridExtra::grid.arrange(
            x="Estimated % Exercised Option Growth",y="Actual % Exercised Option Growth"),
     residuals_plot(p_Opt_12C, bins=50)+labs(title="Exercised Options Binned Residuals Plot")
     ,ncol=2)
-)
+
 
 ggsave(residual_logit,file="..//output//residual_logit.png",width=7.5, height=8.5)
 ggsave(residual_logit,file="..//output//residual_logit.png",width=7.5, height=8.5)
