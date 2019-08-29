@@ -3588,7 +3588,7 @@ b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                        (1 | StartFY),
                      family=binomial(link="logit"),
                      verbose=TRUE)
-  
+  save(b_SomeOpt25B, file="..\\Output\\b_SomeOpt25B.rda")
   
   b_AllOpt25B <- glmer(data=serv_exeropt, b_AllOpt ~ cln_US6sal + 
                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
@@ -3614,5 +3614,5 @@ b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                       (1 | StartFY),
                       family=binomial(link="logit"),
                       verbose=TRUE)
-save(b_AllOpt25B,file="..\\Output\\b_AllOpt25B.rdata")
+save(b_SomeOpt25B, b_AllOpt25B, file="..\Output\Opt25B.rda")
 ```
