@@ -100,10 +100,13 @@ stargazer::stargazer(b_SomeOpt25A, b_AllOpt25A, type = "text", digits = 2)
 
 #Load experimental Some+All Opt Models
 load("..//Output//b_SomeOpt25B.rda")
-load("..//Output//b_AllOpt25B.rdata")
+load("..//Output//b_AllOpt25B.rda")
 glmer_examine(b_SomeOpt25B)
 glmer_examine(b_AllOpt25B)
 
+
+load("..//Output/b_SomeOpt25C.rda")
+glmer_examine(b_SomeOpt25C)
 ```
 
 
@@ -356,8 +359,6 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25A),file="..//Output//all_var_m
 ```
 ## Tables for Final Paper
 
-### Exercised Options
-
 ### Ceiling Breach
 ```{r CeilingResults}
 
@@ -461,8 +462,84 @@ texreg::htmlreg(list(b_SomeOpt25A, b_AllOpt25A),file="..//Output//options.html",
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 6: Exercised Options",
                 caption.above=TRUE)
+
+texreg::htmlreg(list(b_AllOpt25A, b_AllOpt25B),file="..//Output//all_options_comp.html",
+                single.row = TRUE,
+                custom.model.name=c("AO 25A", "AO 25B"),
+                stars=c(0.1,0.05,0.01,0.001),
+                # groups = list(
+                #                "Services Complexity" = 2:3,
+                #                "Office Capacity" =4:5,
+                #                "Past Relationship"=6:7,
+                #                "Contract Characteristics"=8:26,
+                #                "NAICS Characteristics" =27:30,
+                #                "Office Characteristics" =31:33,
+                #                "Interactions"=34:39
+                #               ),
+                # custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 6: Exercised Options",
+                caption.above=TRUE)
+
+texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C),file="..//Output//some_options_comp.html",
+                single.row = TRUE,
+                custom.model.name=c("AO 25A", "AO 25B"),
+                stars=c(0.1,0.05,0.01,0.001),
+                # groups = list(
+                #                "Services Complexity" = 2:3,
+                #                "Office Capacity" =4:5,
+                #                "Past Relationship"=6:7,
+                #                "Contract Characteristics"=8:26,
+                #                "NAICS Characteristics" =27:30,
+                #                "Office Characteristics" =31:33,
+                #                "Interactions"=34:39
+                #               ),
+                # custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 6: Exercised Options",
+                caption.above=TRUE)
 ```
 
+
+### All Service Complexity
+```{r CeilingResults}
+
+  stargazer::stargazer(#p_Opt_12C,
+                       b_CBre28B,n_CBre25A,term25B,
+                       single.row = TRUE,
+                # custom.model.name=c("Breach Frequency (Logit)","Breach Size for Breached Contracts (Regression"),
+                stars=c(0.1,0.05,0.01,0.001),
+                       type="text",
+                       digits=2)
+
+
+texreg::htmlreg(list(b_CBre28B,n_CBre25A),file="..//Output//ceiling_breaches.html",
+                single.row = TRUE,
+                custom.model.name=c("Likelihood\n(Logit)","Size Given Breach\n(Regression)"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                              # "Services Complexity" = 2:3,
+                              # "Office Capacity" =4:5,
+                              # "Past Relationship"=6:7,
+                  "Services Complexity"=2:7,
+                              "Contract Characteristics"=8:26,
+                                                "NAICS/Office Characteristics" =27:31,
+
+                              # "NAICS Characteristics" =27:29,
+                              # "Office Characteristics" =30:31,
+                              "Interactions"=32:33
+                              ),
+                custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 8: Ceiling Breaches",
+                caption.above=TRUE)
+
+
+
+```
 
 ## Odds Ratios
 
