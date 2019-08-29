@@ -22,7 +22,7 @@ library(dplyr)
 library(Hmisc)
 library(stargazer)
 library(optimx)
-source("C:/Users/JGraham/Documents/CSIS/Vendor/Scripts/DIIGstat.r")
+# source("C:/Users/JGraham/Documents/CSIS/Vendor/Scripts/DIIGstat.r")
 
 axis.text.size<-10
 strip.text.size<-10

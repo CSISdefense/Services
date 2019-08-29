@@ -3573,7 +3573,7 @@ if(!exists("b_CBre29B")){
                        clr_Def3toUS+
                        cp_PairObl7+
                        cln_OffObl7+
-                       #cln_OffFocus+
+                       cln_OffFocus+
                        cp_OffPerf7:cln_PairCA+
                        #cp_OffPerf7:cp_PairObl7+
                        cp_OffPerf7:cln_Days+
@@ -3590,7 +3590,7 @@ if(!exists("b_CBre29B")){
 #Compare the models
 glmer_examine(b_CBre29B,display = TRUE)
 
-stargazer::stargazer(b_CBre25A, b_CBre28A, b_CBre29A, type="text", digits=2)
+stargazer::stargazer(b_CBre28A, b_CBre29A, b_CBre28B, b_CBre29B, type="text", digits=2)
 
-summary_residual_compare( b_CBre25A, b_CBreA,b_CBre25A,b_CBreB,bins=100)
+summary_residual_compare( b_CBre28A, b_CBre29A,b_CBre28B,b_CBre29B,bins=100)
 ```
