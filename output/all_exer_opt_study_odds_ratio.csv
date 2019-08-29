@@ -1,0 +1,5 @@
+"Output","Variable","Odds Ratio","Lower Bound","Upper Bound"
+"All Options Exercised Likelihood","Log(Det. Ind. Salary)",1.08,0.96,1.2
+"All Options Exercised Likelihood","Office Perf.-Based %",1.08,0.98,1.19
+"All Options Exercised Likelihood","Paired Years",1.15,1.09,1.21
+"All Options Exercised Likelihood","Log(Paired Actions)",0.82,0.75,0.9

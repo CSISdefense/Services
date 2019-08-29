@@ -3581,7 +3581,7 @@ b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                        cp_OffPerf7:cp_PairObl7+
                        cp_OffPerf7:cln_Days+
                        clr_Ceil2Base:cln_Base+
-                      Pricing:cln_PSCrate+
+                       Pricing:cln_PSCrate+
                        (1 | NAICS3/NAICS6/ServArea)+
                        (1 | Agency/Office) +
                        (1 | Place)+
@@ -3608,6 +3608,7 @@ b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                       cp_OffPerf7:cln_PairCA +
                       pOffPSC:cln_OffObl7 + 
                       pOffPSC:cln_OffFocus + 
+                      Pricing:cln_PSCrate+
                       (1 | NAICS3/NAICS6/ServArea)+  
                       (1 | Agency/Office) +
                       (1 | Place)+ 

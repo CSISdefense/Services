@@ -87,9 +87,9 @@ Note that because we use the complete dataset for exercised options, there's no 
 # write.csv(exp(summary(p_Opt_12C)$coefficients[,1])-1,file="../Output/exp_p_Opt_12C.csv")
 # p_Opt_12C_exp<-log_analysis(p_Opt_12C)
 
-glmer_examine(p_Opt_12C,display=TRUE)
-stargazer::stargazer(p_Opt_12C,type="text",
-                       digits=2)
+# glmer_examine(p_Opt_12C,display=TRUE)
+# stargazer::stargazer(p_Opt_12C,type="text",
+#                        digits=2)
 
 load("..//Output//b_SomeOpt25A.rda")
 load("..//Output//b_AllOpt25A.rda")
@@ -97,6 +97,12 @@ glmer_examine(b_SomeOpt25A)
 glmer_examine(b_AllOpt25A)
 
 stargazer::stargazer(b_SomeOpt25A, b_AllOpt25A, type = "text", digits = 2)
+
+#Load experimental Some+All Opt Models
+load("..//Output//b_SomeOpt25B.rda")
+load("..//Output//b_AllOpt25B.rdata")
+glmer_examine(b_SomeOpt25B)
+glmer_examine(b_AllOpt25B)
 
 ```
 
@@ -472,14 +478,17 @@ texreg::htmlreg(list(b_SomeOpt25A, b_AllOpt25A),file="..//Output//options.html",
 # gridExtra::grid.arrange(dotplot(ranef(b_CBre28B, condVar = T), strip = T, scales=list(relation='free'))$Agency,
 #              nrow=1)
 
-comp.or<-odds_ratio(b_SomeOpt25A,"b_SomeOpt25A","Both","Both")
-write.csv(get_study_variables_odds_ratio(comp.or),file="..//output//some_exer_opt_study_odds_ratio.csv",row.names=FALSE)
+comp.or<-odds_ratio(b_SomeOpt25A,"b_SomeOpt25A",output = "Some Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
+write.csv(get_study_variables_odds_ratio(comp.or, study = "services"),file="..//output//some_exer_opt_study_odds_ratio.csv",row.names=FALSE)
 get_icc(b_SomeOpt25A)
 
-#https://www.lcampanelli.org/mixed-effects-modeling-lme4/
-gridExtra::grid.arrange(dotplot(ranef(b_SomeOpt25A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
-             nrow=1)
+# #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
+# gridExtra::grid.arrange(dotplot(ranef(b_SomeOpt25A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
+#              nrow=1)
 
+comp.or<-odds_ratio(b_AllOpt25A,"b_AllOpt25A",output = "All Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
+write.csv(get_study_variables_odds_ratio(comp.or, study = "services"),file="..//output//all_exer_opt_study_odds_ratio.csv",row.names=FALSE)
+get_icc(b_AllOpt25A)
 
 ```
 
