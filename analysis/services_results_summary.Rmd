@@ -160,6 +160,36 @@ if(!exists("b_CBre28B")){
 
 }
 glmer_examine(b_CBre28B)
+
+if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
+
+if(!exists("n_CBre25A")){
+    
+  n_CBre25A <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
+                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                      cn_PairHist7+cln_PairCA+
+                      cln_Base + clr_Ceil2Base + cln_Days+
+                      Comp+
+                      Veh+
+                      Pricing+
+                      Crisis+
+                      cln_Def6HHI+clr_Def6toUS+
+                      #cln_Def3HHI+
+                      clr_Def3toUS+
+                      cp_PairObl7+
+                      cln_OffObl7+ 
+                      #cl_office_NAICS6_hhi_kc+
+                      cp_OffPerf7:cln_PairCA+
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                    verbose=TRUE)
+  
+  save(n_CBre25A,file="..\\output\\n_CBre25A.rda")
+}
+
+
 glmer_examine(n_CBre25A)
 
 # if(!exists("b_CBre28B_restart")){
@@ -320,6 +350,7 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25A),file="..//Output//all_var_m
 ```
 ## Tables for Final Paper
 
+### Exercised Options
 
 ### Ceiling Breach
 ```{r CeilingResults}
@@ -429,8 +460,6 @@ texreg::htmlreg(list(b_SomeOpt25A, b_AllOpt25A),file="..//Output//options.html",
 
 ## Odds Ratios
 
-
-
 ### Exercised Options
 ```{r Odds-Opt}
 
@@ -493,18 +522,31 @@ dotplot(ranef(term25A, condVar = T), strip = T, scales=list(relation='free'))$NA
 
 
 ```{r Residuals, fig.width=7.5 , fig.height=8.5}
-# debug(binned_fitted_versus_residuals)
+
+(
   terminations_residual<-gridExtra::grid.arrange(
+    binned_fitted_versus_residuals(term25B,bins=50)+
+      labs(title="Ceiling Breach Binned Actuals",caption=NULL,
+           x="Estimated Pr(Terminations)",y="Actual Pr(Terminations)"),
+    residuals_plot(term25B, bins=50)+labs(title="Terminations Binned Residual Plot")
+    )
+)
+
+
+(
+  ceiling_breach_residual<-gridExtra::grid.arrange(
     binned_fitted_versus_residuals(b_CBre28B,bins=50)+
       labs(title="Ceiling Breach Binned Actuals",caption=NULL,
-           x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)")
-    )
-ceiling_breach_residual<-gridExtra::grid.arrange(
+           x="Estimated Pr(Ceiling Breach)",y="Actual Pr(Ceiling Breach)"),
     residuals_plot(b_CBre28B, bins=50)+labs(title="Ceiling Breach Binned Residual Plot"),
-    binned_fitted_versus_residuals(term25A,bins=50)+
+    binned_fitted_versus_residuals(n_CBre25A,bins=50)+
       labs(title="Termination Binned Actuals Plot",caption=NULL,
-           x="Estimated Pr(Termination)",y="Actual Pr(Termination)")
+           x="Estimated Size of Breach when Breach Occurs",y="Actual Average Size of Breach when Breach Occurs"),
+    residuals_plot(n_CBre25A, bins=50)+labs(title="Ceiling Binned Residual Plot")
+  )
 )
+
+
 
 options_residual<-gridExtra::grid.arrange(
     residuals_plot(term25A, bins=50)+labs(title="Termination Residuals Plot"),
@@ -513,8 +555,8 @@ options_residual<-gridExtra::grid.arrange(
            caption=NULL,
            x="Estimated % Exercised Option Growth",y="Actual % Exercised Option Growth"),
     residuals_plot(p_Opt_12C, bins=50)+labs(title="Exercised Options Binned Residuals Plot")
-    ,ncol=2
-  )
+    ,ncol=2)
+
 
 ggsave(residual_logit,file="..//output//residual_logit.png",width=7.5, height=8.5)
 ggsave(residual_logit,file="..//output//residual_logit.png",width=7.5, height=8.5)

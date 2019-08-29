@@ -3393,13 +3393,12 @@ glmer_examine(n_CBre26A,display = TRUE)
 
 
 
-stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A, 
-                     n_cbre_partnership_actions_16B, n_CBre25A, type="text", digits=2)
+stargazer::stargazer(n_cbre_partnership_actions_16B, n_CBre25A,n_CBre26A, type="text", digits=2)
 
 
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ```
-
+The n_CBre25A model has a lower AIC and BIC and removing the interaction did not restore the significance to the p_PBSC or cl_Pair. Sticking wih 25A.
 
 ####27A: 2019-08-22 CFTE:Pricing
 Dropping cp_OffPerf7:cp_PairObl7 and cp_OffPerf7:cp_PairObl7 as they were not significant in 2A. Adding Pricing:cln_PSCrate as a realized that it is another way to consider Pricing:AverageSalary that turns out to avoid VIF problems in the likelihood of breach model. 
