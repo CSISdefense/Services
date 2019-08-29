@@ -3564,7 +3564,7 @@ summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 
 ```{r Opt25B}
 
-b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                        cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                        cn_PairHist7+cln_PairCA+
                        cln_Base + clr_Ceil2Base + cln_Days+
@@ -3590,7 +3590,7 @@ b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                      verbose=TRUE)
   
   
-  b_AllOpt25A <- glmer(data=serv_exeropt, b_AllOpt ~ cln_US6sal + 
+  b_AllOpt25B <- glmer(data=serv_exeropt, b_AllOpt ~ cln_US6sal + 
                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                       cn_PairHist7+cln_PairCA+
                       cln_Base + clr_Ceil2Base + cln_Days+
@@ -3614,5 +3614,5 @@ b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                       (1 | StartFY),
                       family=binomial(link="logit"),
                       verbose=TRUE)
-
+save(b_AllOpt25B,file="..\\Output\\b_AllOpt25B.rdata")
 ```
