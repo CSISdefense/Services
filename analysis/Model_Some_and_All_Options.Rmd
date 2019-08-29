@@ -3674,4 +3674,32 @@ b_SomeOpt25Cv2 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                      family=binomial(link="logit"),
                      verbose=TRUE)
 save(b_SomeOpt25Bv2, file="..\Output\b_SomeOpt25Cv2.rda")
+
+b_SomeOpt25Cv3 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                       cn_PairHist7+cln_PairCA+
+                       cln_Base + clr_Ceil2Base + cln_Days+
+                       Comp+
+                       Veh+
+                       Pricing+
+                       Crisis+
+                       cln_Def6HHI+clr_Def6toUS+
+                       cln_Def3HHI+
+                       clr_Def3toUS+
+                       cp_PairObl7+
+                       cln_OffObl7+
+                       cln_OffFocus+
+                       cp_OffPerf7:cp_PairObl7 +
+                       cln_OffObl7:cp_PairObl7 + 
+                       cn_PairHist7:Pricing + 
+                       cp_OffPerf7:cln_PairCA +
+                       clr_Ceil2Base:cln_Base + 
+                       pOffPSC:cln_OffObl7 + 
+                       (1 | NAICS3/NAICS6/ServArea)+
+                       (1 | Agency/Office) +
+                       (1 | Place)+
+                       (1 | StartFY),
+                       family=binomial(link="logit"),
+                       verbose=TRUE)
+save(b_SomeOpt25Cv3, file="..\Output\b_SomeOpt25Cv3.rda")
 ```

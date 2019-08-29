@@ -105,8 +105,10 @@ glmer_examine(b_SomeOpt25B)
 glmer_examine(b_AllOpt25B)
 
 
-load("..//Output/b_SomeOpt25C.rda")
+load("..//Output//b_SomeOpt25C.rda")
 glmer_examine(b_SomeOpt25C)
+load("..//Output//b_SomeOpt25Cv2.rda")
+glmer_examine(b_SomeOpt25Cv2)
 ```
 
 
@@ -482,9 +484,9 @@ texreg::htmlreg(list(b_AllOpt25A, b_AllOpt25B),file="..//Output//all_options_com
                 caption="Table 6: Exercised Options",
                 caption.above=TRUE)
 
-texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C),file="..//Output//some_options_comp.html",
+texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt25Cv2),file="..//Output//some_options_comp.html",
                 single.row = TRUE,
-                custom.model.name=c("AO 25A", "AO 25B"),
+                custom.model.name=c("SO 25A", "SO 25C", "SO 25Cv2"),
                 stars=c(0.1,0.05,0.01,0.001),
                 # groups = list(
                 #                "Services Complexity" = 2:3,
@@ -500,6 +502,28 @@ texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C),file="..//Output//some_options_
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 6: Exercised Options",
                 caption.above=TRUE)
+
+#Chart for report:
+texreg::htmlreg(list(b_SomeOpt25Cv2, b_AllOpt25A),file="..//Output//options.html",
+                single.row = TRUE,
+                custom.model.name=c("Some Options Exercised Model", "All Options Exercised Model"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                               "Services Complexity" = 2:3,
+                               "Office Capacity" =4:5,
+                               "Past Relationship"=6:7,
+                               "Contract Characteristics"=8:26,
+                               "NAICS Characteristics" =27:30,
+                               "Office Characteristics" =31:33,
+                               "Interactions"=34:45
+                              ),
+                custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 6: Exercised Options",
+                caption.above=TRUE)
+
+
 ```
 
 
@@ -517,9 +541,9 @@ texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C),file="..//Output//some_options_
 # gridExtra::grid.arrange(dotplot(ranef(b_CBre28B, condVar = T), strip = T, scales=list(relation='free'))$Agency,
 #              nrow=1)
 
-comp.or<-odds_ratio(b_SomeOpt25A,"b_SomeOpt25A",output = "Some Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
+comp.or<-odds_ratio(b_SomeOpt25Cv2,"b_SomeOpt25Cv2",output = "Some Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
 write.csv(get_study_variables_odds_ratio(comp.or, study = "services"),file="..//output//some_exer_opt_study_odds_ratio.csv",row.names=FALSE)
-get_icc(b_SomeOpt25A)
+get_icc(b_SomeOpt25Cv2)
 
 # #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
 # gridExtra::grid.arrange(dotplot(ranef(b_SomeOpt25A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
