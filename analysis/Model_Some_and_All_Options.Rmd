@@ -22,7 +22,7 @@ library(dplyr)
 library(Hmisc)
 library(stargazer)
 library(optimx)
-source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+source("C:/Users/JGraham/Documents/CSIS/Vendor/Scripts/DIIGstat.r")
 
 axis.text.size<-10
 strip.text.size<-10
@@ -38,15 +38,15 @@ load(file="..//data//semi_clean//serv_opt.rdata")
 
 ```
 
-Two models are employed throughout, one looking at the probability of some options being exercised  and the other looking at all (or at least 95%) options being exercised in dollar terms.  This approach was taken to avoid clustering at zero and one problems. The second model only includes as a sample those contracts with some options exercised. using transactions where a breach occurs, while the probabiliyt-based model is calculated on the full dataset.
+Two models are employed throughout, one looking at the probability of some options being exercised  and the other looking at all (or at least 95%) options being exercised in dollar terms.  This approach was taken to avoid clustering at zero and one problems. The second model only includes as a sample those contracts with some options exercised, while the first model is calculated on the full dataset.
 
 #Study Variables
 
 ##Services Complexity
-Expectation: Higher service complexity would make work more demanding and thus raises the risks of negative contracting outcomes, namely the likelihood of cost ceiling breaches and terminations increases and the likelihood exercised options decreases.
+Expectation: Higher service complexity would make work more demanding and thus raises the risks of negative contracting outcomes, namely the likelihood exercised options decreases.
 
 ### 01A NAICS6 Salary
-Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS6 salary increases (decreases), the likelihood of cost ceiling breaches increases (decreases). We also then expect that higher average NAICS6 salaries (lower) will be correlated with ceiling breaches larger (smaller) in absolute size.
+Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS6 salary increases, we expect likelihood of both some options being exercised and all options being exercised to decrease.
 
 ```{r Model01A}
 summary_continuous_plot(serv_opt,metric="opt","cln_US6sal")
@@ -67,12 +67,11 @@ stargazer::stargazer(b_SomeOpt01A,b_AllOpt01A,type="text",
 
 
 ```
-
-The results are negative and significant, meeting expectations for both variables, as higher average salaries estimates a lower probability of exercised options. 
+Expectations are met.
 
 
 ### 01B Invoice Rate
-Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employee who is supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases (decreases), the likelihood of cost ceiling breaches increases (decreases).  Likewise, we expect a higher invoice rate (lower) to be associated with ceiling breaches larger (smaller) in absolute magnitude.
+Expectation: The invoice rate approximates how much the government is charged annually for each comparable full-time employee who is supporting the service contracts. A higher invoice rate indicates a more complex service. As invoice rate increases, we expect likelihood of both some options being exercised and all options being exercised to decrease.
 
 ```{r Model01B}
 
@@ -97,10 +96,10 @@ b_AllOpt01B <- glm(data=serv_exeropt, family=binomial(link="logit"),
 
 ```
 
-When considered alone, expectations are matched for some and all options, as higher invoice rate estimates a significantly lower likelihood that some or all options will be exercised. 
+Expectations met.
 
 ### 01C Service Complexity
-Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), the higher risk of ceiling breaches. Also, we expect the result of combined model would be the same as individual models. Again, we expect higher levels of complexity to be correlated with larger ceiling breaches.
+Expectation: Collectively, the higher average salary and invoice rate (more complexity is indicated), we expect the likelihood of both some options being exercised and all options being exercised to decrease.
 
  
 ```{r Model01C}
@@ -122,20 +121,16 @@ stargazer::stargazer(b_SomeOpt01A,b_SomeOpt01B,b_SomeOpt01C,
                        digits=2)
 
 undebug(summary_residual_compare)
-summary_residual_compare(b_SomeOpt01A,b_SomeOpt01C,b_SomeOpt01B,b_SomeOpt01C,
-                         b_AllOpt01A,b_AllOpt01C,b_AllOpt01B,b_AllOpt01C,bins=3)
+summary_residual_compare(b_SomeOpt01A,b_SomeOpt01C,b_SomeOpt01B, bins=3)
+summary_residual_compare(b_AllOpt01A, b_AllOpt01C, b_AllOpt01B, bins=3)
 ```
 
-Both average salary and invoiced rate have a not inconsiderable VIF but one well within bounds, suggesting that the variance of the estimated coefficients is not evidently inflated and none of them are highly correlated with each other. 
-
-For the some options model, combining the two inputs leaves only the invoice rate as a significant estimator of the likelihood of some options being exercised, though that result remains in line with expections. By AIC, including salary does not improve the model.
-
-Both individually and pair-wise, higher average salary and invoiced rate estimate lower likelihood that all options will be exercised. 
+Expectations are met for all variables, except for average salary in the model of some options being exercised, which is no longer statistically significant.
 
 ## Office Capacity
 
 ### 02A: Performance Based Services
-Expectation: Performance-based services contracting ties a portion of a contractor's payment, contract extensions, or contract renewals to the achievement of specific, measurable performance standards and requirements, which encourages better contracting results. PBSC has the potential to reduce ceiling breaches, and the size of the breaches that do occur.
+Expectation: Performance-based services contracting ties a portion of a contractor's payment, contract extensions, or contract renewals to the achievement of specific, measurable performance standards and requirements, which encourages better contracting results. As percent PBSC increases, we expect likelihood of both some options being exercised and all options being exercised to increase.
 
 ```{r Model02A}
 summary_continuous_plot(serv_opt,metric="opt","pPBSC")
@@ -157,12 +152,11 @@ stargazer::stargazer(b_SomeOpt01C,b_SomeOpt02A,
 
 ```
 
-When considering PBSC alone, the significant negative results were contrary to expectations for both some and all options.
-
+Expectations are not met - percent PBSC has a statistically significant, strongly negative, effect in both models.
 
 
 ### 02B: No.Office PSC History
-Expectation: The increasing share of contracting office obligations for a given service indicates high capcaity in that area, lower likelihood of cost ceiling breaches are expected to be observed. Similarly, we expect the overall magnitude of ceiling breaches to be decreasing as the share of contracting office oglibations for a given service increases.
+Expectation: The increasing share of contracting office obligations for a given service indicates high capcaity in that area, so we expect the likelihood of both some options being exercised and all options being exercised to increase.
 
 ```{r Model02B}
 
@@ -184,18 +178,18 @@ stargazer::stargazer(b_SomeOpt01C,b_SomeOpt02A,b_SomeOpt02B,
 
 ```
 
-When considering number of contracting office obligations for a given service alone, no result was found for some options and a significant negative relationship was found for the likelihood all options would be exercised given that some where. This is contrary to expectations.
+Expectations are not met.  In the SomeOpt model, cp_OffPSC7 has a non-statistically negative effect, while in the AllOpt model, it has a very strong negative, statistically significant, effect.
 
 
 ### 02C: Office Capacity
-Expectation: Collectively, the larger share of PBSC and contracting office obligations for a given service, the less risk of ceiling breaches there would be. Also we expect the results of combined model would be the same as two individual models above. Similarly, we expect that, as the collective share of PBSC and contracting office obligations for a given service increase jointly, the magnitude of associated ceiling breaches declines.
+Expectation: Collectively, the larger share of PBSC and contracting office obligations for a given service, we expect the likelihood of both some options being exercised and all options being exercised to increase.
 
 ```{r Model02C}
 
 
 #Model
-b_SomeOpt02C <- glm (data=serv_opt,
-                 b_SomeOpt ~ cp_OffPerf7+cp_OffPSC7, family=binomial(link="logit"))
+b_SomeOpt02C <- glm (data=serv_opt, family=binomial(link="logit"),
+                 b_SomeOpt ~ cp_OffPerf7+cp_OffPSC7)
 glmer_examine(b_SomeOpt02C)
 
 b_AllOpt02C <- glm(data=serv_exeropt, family=binomial(link="logit"),
@@ -205,7 +199,6 @@ glmer_examine(b_AllOpt02C)
 
 #Plot residuals versus fitted
 stargazer::stargazer(b_SomeOpt01C,b_SomeOpt02A,b_SomeOpt02B,b_SomeOpt02C,
-                       
                        type="text",
                        digits=2)
 
@@ -216,16 +209,17 @@ stargazer::stargazer(b_AllOpt01C,b_AllOpt02A,b_AllOpt02B,b_AllOpt02C,
 
 
 
-summary_residual_compare(b_SomeOpt02A,b_SomeOpt02C,
-                         b_SomeOpt02A,b_AllOpt02B)
+summary_residual_compare(b_SomeOpt02A,b_SomeOpt02C,b_SomeOpt02A,b_AllOpt02B)
 
 
 ```
-For the some options model, combining the two variables causes Office PSC experience to becoming significant with a positive sign, in line with expectations, while office performance-based remains significant with a negative sign, contrary to expectations. For all options, service code experience remains significant and negative, contrary to expectations, and performance-based loses significance.
+For the SomeOpt model, the residual plot is wonky (smooth downward concave curve), so we may want to show some concern about the validity of the given result.  For the SomeOpt model, some expectations are now met when these variables are specified together - percent PBSC still has a statistically significant negative effect, but cp_OffPSC7 now flips to statistically significant and positive, as initially expected.
+
+For the AllOpt model, expectations are uniformly violated, though percent PBSC is no longer statistically significant (still negative though), and cp_OffPSC7 remains statistically significant and strongly negative.
 
 
 ### 02D: Cumulative  Model
-Expectation: When all the four variables are combined into one model, same expectations are applied as individual ones. Per service complexity indicator increase, higher risk of ceiling breaches expected. Per office capacity indicator increase, lower risk of ceiling breaches expected.  Again, per service complexity indicator increase, larger ceiling breaches in size expected; per office capacity indicator increase, smaller ceiling breaches in size expected.
+Expectation: When all the four variables are combined into one model, same expectations are applied as individual ones. Per service complexity indicator increase, we expect the likelihood of both some options being exercised and all options being exercised to decrease. Per office capacity indicator increase, we expect the likelihood of both some options being exercised and all options being exercised to increase.
 
 ```{r Model02D}
 
@@ -252,16 +246,15 @@ summary_residual_compare(b_SomeOpt02C,b_SomeOpt02D,
                          b_AllOpt02C,b_AllOpt02D)
 
 ```
+In the SomeOpt model, all expectations are violated except for cp_OffPSC7, which is positive and statistically significant, as expected.  All other variables display negative relationships, though only the invoice rate and percent PBSC are statistically significant as well.
 
-For some options, there are some shifts in coefficient, but the signs and significance all match the two prior cumulative model, with invoice rate significantly negative and Serv. Code experience significantly positvie in line with expectations but with perform-based negative and contrary to expectations.
-
-For all options, salary is now significantly positive and invoice rate loses significance. No variables are presently significant in line with expectations.
+In the AllOpt model, all expecatations are violated except for average salary, which now displays a positive and statistically significant relationship, as originally expected.  All other variables display negative relationships, though the invoice rate's effect is no longer statistically significant.  The effect of cp_OffPSC7 is particularly strong in magnitude (and is negative + stat. sig.).
 
 
 ## Office-Vendor Relationship
 
 ### 03A: Pair History
-Expactation: As the number of past years of the relationship between the contracting office or the contractors with a single transaction in a given fiscal year enough to qualify, namely, pair history increases (decreases), the likelihood of cost ceiling breaches for that partnership decreases (increases).  Similarly, as the length of the pair history increases (decreases). the size of cost ceiling breaches is expected to decrease (increase).
+Expactation: As the number of past years of the relationship between the contracting office or the contractors with a single transaction in a given fiscal year enough to qualify, namely, pair history increases, we expect the likelihood of both some options being exercised and all options being exercised to increase.
 
 ```{r Model03A}
 
@@ -287,12 +280,11 @@ b_AllOpt03A <- glm(data=serv_exeropt, family=binomial(link="logit"),
 
 
 ```
-
-When considering pair history alone, expectations were not met by the significant negative coefficients for both p(some option) and p(all options|some option).
+Expectations are violated in both models.
 
 
 ### 03B: Paired Actions
-Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), the likelihood of cost ceiling breaches and terminations decreases (increases) for that partnership.  Similarly, as the number of contract actions a vendor has performed for an office in the past year increases (decreases), the size of cost ceiling breaches should decrease (increase).
+Expectation: As the number of contract actions a vendor has performed for an office in the past year increases (decreases), we expect the likelihood of both some options being exercised and all options being exercised to increase.
 
 ```{r Model03B}
 
@@ -317,11 +309,11 @@ stargazer::stargazer(b_SomeOpt02D,b_SomeOpt03A,b_SomeOpt03B,
 
 ```
 
-Contrary to expectations paired actions estimates significant negative coefficients for both p(Some Options) and p(All Options | Some Options) 
+Expectations are violated in both models.  Moreover, redisual plot for AllOpt model is questioanble (downward sloping straight line), and so we might want to question the validity of the result for this model.
 
 ### 03C: Office-Vendor Relationship
 Expectation: 
-The importance of partnership, trust, and handling difficult problems and uncertainty together naturally lead into the last characteristic: the relationship between the contractor and buyer. The higher level of interaction provides the more opportunity to build a deeper relationship, the likelihood of a cost ceiling breach increases as pair history and pair contract actions rises. Moreover, a higher level of interaction should decrease the size of associated ceiling breaches. Also we expect the result of combined model would be the same as individual models above.
+The importance of partnership, trust, and handling difficult problems and uncertainty together naturally lead into the last characteristic: the relationship between the contractor and buyer. The higher level of interaction provides the more opportunity to build a deeper relationship, we expect the likelihood of both some options being exercised and all options being exercised to increase.
 
 ```{r Model03C}
 
@@ -349,15 +341,15 @@ summary_residual_compare(b_AllOpt03A,b_AllOpt03C,b_AllOpt03B,b_AllOpt03C)
 
 ```
 
-When combining pair history and contract actions, magnitude of relationships with dependent variables incraesed.  However, the results of the combined model were the same as previous individual models: i.e. the contract options relationship expectation (more contract actions in the past, lower probability of breach) was not met, but again, the expectation for pair history (longer pair history, lower probability of breach) was met.  However, when specifying the model in terms of ceiling breach size, the results of the combined model are quite different. Again, as above, we actually do find the strong negative relationship that we expected for past contract actions, which actually increases in magnitude in the combined model.  Moreover, in the combined magnitude-based model, pair history also displays a statistically significant negative relationship with the size of correlated ceiling breaches, as expected, and as above.
+Expectations are now partially me tin both models.  In both the SomeOpt and AllOpt model, pair history flips to displaying a positive, stat. sig. effect.  However, contract actions pair history remains negative and statistically significant.  In the AllOpt model case, it is very strongly negative.
 
 
 ### 03D: Cumulative  Model
 
 Expectation: Under each subgroup, the predictors are expected to have similar impacts on dependent variables individually and cumulatively:
-1. Higher Services Complexity: Higher likelihood of cost ceiling breaches
-2. Larger Office Capacity: Lower likelihood of cost ceiling breaches
-3. Deeper Office-Vendor Relationship: Lower likelihood of cost ceiling breaches
+1. Higher Services Complexity: we expect the likelihood of both some options being exercised and all options being exercised to decrease
+2. Larger Office Capacity: we expect the likelihood of both some options being exercised and all options being exercised to increase
+3. Deeper Office-Vendor Relationship: we expect the likelihood of both some options being exercised and all options being exercised to increase
 
 ```{r Model03D}
 
@@ -366,14 +358,36 @@ b_SomeOpt03D <- glm (data=serv_opt,
                  b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA, family=binomial(link="logit"))
+b_SomeOpt03Dv2 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+
+                 cn_PairHist7+cln_PairCA, family=binomial(link="logit"))
+b_SomeOpt03Dv3 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt03D)
+glmer_examine(b_SomeOpt03Dv2)
+glmer_examine(b_SomeOpt03Dv3)
+stargazer::stargazer(b_SomeOpt03Dv2, b_SomeOpt03Dv3, type = "text", digits = 2)
 
 b_AllOpt03D <- glm(data=serv_exeropt, family=binomial(link="logit"),
                         b_AllOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPSC7+
+                   cln_PSCrate+ cp_OffPerf7 + cp_OffPSC7+
                  cn_PairHist7+cln_PairCA)
+b_AllOpt03Dv2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
+                        b_AllOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7 + 
+                 cn_PairHist7+cln_PairCA)
+b_AllOpt03Dv3 <- glm(data=serv_exeropt, family=binomial(link="logit"),
+                        b_AllOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7 + cp_OffPSC7+
+                 cn_PairHist7)
 
 glmer_examine(b_AllOpt03D)
+glmer_examine(b_AllOpt03Dv2)
+glmer_examine(b_AllOpt03Dv3)
+stargazer::stargazer(b_AllOpt03Dv2, b_AllOpt03Dv3, type = "text", digits = 2)
 
 #Plot residuals versus fitted   
 
@@ -387,26 +401,17 @@ summary_residual_compare(b_SomeOpt03C,b_SomeOpt03D,b_SomeOpt02D,b_SomeOpt03D)
 summary_residual_compare(b_AllOpt03C,b_AllOpt03D,b_AllOpt02D,b_AllOpt03D)
 
 ```
-None of the predictors has high level of correlation (vif over 1.7) with each other. 
+In both models, cln_PairCA (contract actions pair history) has an unacceptably high VIF: 2.31 in the SomeOpt model, and 2.18 in the AllOpt model.
 
-Significance and sign are unchanged for the  service complexity and office capacity variales. For office-vendor relationship pairCA now estimates a lower frequence of ceiling breaches. For the breach size model, the magnitude of the relationship for pair history and pair CA both dropped but remained significant, though for pair history the result is still contrary to expectations.
+For SomeOpt, we then create a new model including cln_PairCA, but dropping the variable with the second highest VIF score in the initial b_SomeOpt03D model, cp_OffPSC7.  In this model, b_SomeOpt03Dv2, all VIF scores are acceptable.  Similarly, we create another model, b_SomeOpt03Dv3, which includes all varibles except cln_PairCA, which again features acceptable VIF scores.  However, the AIC score of b_SomeOpt03Dv2 is lower than that of the model which does not include cln_PairCA, so we select b_SomeOpt03Dv2 as our operative model, and discuss the results here (i.e. we drop cp_OffPSC7 to avoid multicollinearity).  Results:
+  (1) Higher service complexity variables - only invoice rate matches expectations, while average salary displays a positive and statistically significant effect.
+  (2) Office capacity variables - percent PBSC does not meet expectations, as it shows a statistically significant, negative relationship.
+  (3) Deeper office-vendor relationship variables - only pair history meets expectations, as contract actions pair history displays a statistically significant, strongly negative relationship.
 
-The residuals show that 
-
-In the cumulative model, per dependent variable and independent variable:
-
-1. Ceiling breaches:
-   A. Service Complexity:
-      The relationship with average salary gained significance in line with expectation.
-      The result for both average salary and invoice rate matched with expectation.
-      
-   B. Office Capacity: 
-      The relationship with PBSC matched with expectation but with less magnitude.
-      The result for office obligations did not match with expectation.
-     
-   C. Office-Vendor Relationship:
-      The result for pair history matched with expectation 
-      The relationship with contract actions reverse and now align with expectations.
+A similar procedure is adopted for AllOpt, where again cp_OffPSC7 is dropped in model v2, whereas model v3 is a full specification not including cln_PairCA.  In both models, VIF scores are acceptable following drops, and again, model v2 displays a lower AIC score than model v3, and is so retained for our analysis.  Results:
+  (1) Higher service complexity variables - no expectations met.  Average salary demonstrates a positive, stat. sig. effect.
+  (2) Office capacity variables - percent PBSC does not meet expectations, as it shows a statistically significant, negative relationship.
+  (3) Deeper office-vendor relationship variables - only pair history meets expectations, as contract actions pair history displays a statistically significant, negative relationship.
 
 ## Study Variables Alone
 
@@ -435,11 +440,11 @@ texreg::htmlreg(list(b_SomeOpt01A,b_SomeOpt01B,b_SomeOpt02A,b_SomeOpt02B,b_SomeO
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7
-                              ),
+                #groups = list(
+                #              "Services Complexity" = 2:3,
+                #              "Office Capacity" =4:5,
+                #              "Past Relationship"=6:7
+                #              ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
@@ -459,11 +464,11 @@ texreg::htmlreg(list(b_AllOpt01A,b_AllOpt01B,b_AllOpt02A,b_AllOpt02B,b_AllOpt03A
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7
-                              ),
+                #groups = list(
+                #              "Services Complexity" = 2:3,
+                #              "Office Capacity" =4:5,
+                #              "Past Relationship"=6:7
+                #              ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
@@ -482,7 +487,7 @@ texreg::htmlreg(list(b_AllOpt01A,b_AllOpt01B,b_AllOpt02A,b_AllOpt02B,b_AllOpt03A
 ###Scope Variables
 #### 04A: Cost Ceiling
 
-Expectation: Initial Ceiling size positively estimates increasing probability of ceiling breaches and terminations and negatively estimates the option growth. Terminations and ceiling breaches simply comes down to large being associated with higher risk, while for option growth size imply makes it harder to grow proportionally.
+Expectation: Initial Ceiling size positively estimates the probability of some options being exercised, while it should negatively estimate all otpions exercised.  Reasoning for this is straightforward: a higher initical ceiling indicates more options to be exercised/anticipated at contract start, which provides some indication that at least one option will be exercised, but equally means it is less likely for them all to be exercised purely for size reasons. 
 
 
 ```{r Model04A}
@@ -507,13 +512,12 @@ stargazer::stargazer(b_SomeOpt03D,b_SomeOpt04A,
                        digits=2)
 
 ```
-
-Contract ceiling has a significant relationship with ceiling breach likelihood and size, though the residuals show a possible non-linear patterns. The relationship is strong in both cases but remarkably for breach size the AIC is lower than for all of the prior variales together. Both likelihood and size show some sign of sinusoidal patterns. 
+Expectations are met only for the SomeOpt model, as initial ceiling size displays a stat. sig., positive relationship in both models (violated expectations for the AllOpt model).  However, residual plot is wonky for AllOpt model (it appears quasi-sinusoidal), indicating we should be concerned about the validity of the AllOpt result.
 
 
 #### 04B: Maximum Duration
 
-Expectation: Greater maximum duration will positively estimate the probability ceiling of  breaches and terminations. Greater growth for options is also expected, because year-on-year options may be more of a default, though the scatter plot seems to go the other way.
+Expectation: greater maximum duration is expected to positively estimate both b_SomeOpt and b_AllOpt.
 
 ```{r Model04B}
 #Likelihood Plot for max duration
@@ -540,16 +544,12 @@ stargazer::stargazer(b_SomeOpt03D,b_SomeOpt04A,b_SomeOpt04B,
 
 ```
 
-All expections were upheld and although the relationship is not as strong as it is for contract ceiling. The regressions are scattered but do not show as clear indications of any patterns.
+Expectations only met for SomeOpt model.  AllOpt model displays a very slightly negative relationship, but it is not statistically significant.
 
-####04C: Ratio Initial Base : Ceiling Ratio (Logged)
-
-
-Expectation, in combination with ceiling, a high ratio means that the contract has more room for adjustment and incentives without radical steps. So higher ratio of total ceiling to base are expected to be associated with a lower likelihood of termination, lower likelihood and size of ceiling breach. For exercised options, a higher ratio would is expected to make it more likely that some options are exercised but less likely that all options are exercised.
+####04C: Ratio Initial Ceiling : Base Ratio (Logged)
 
 
-(Ex post facto) Expectation, in combination with base, a higher ratio means a contract with greater scope, just as the ceiling variable includes base and all exercised options. In this case, the expected sign for terminations and ceiling breach likelihood and size. The expectations for options are the same whetehr combined with ceiling or ratio.
-
+Expectation, in combination with ceiling, a high ratio means that the contract has more room for adjustment and incentives without radical steps. For exercised options, a higher ratio is expected to make it more likely that some options are exercised but less likely that all options are exercised.
 ```{r Model04C}
 summary_continuous_plot(serv_opt,metric="opt", "clr_Ceil2Base")
 
@@ -569,7 +569,7 @@ stargazer::stargazer(b_SomeOpt04A,b_SomeOpt04B,b_SomeOpt04C,
 
 
 ```
-Expectations are not upheld as high ratios are significantly associated with both more frequent and largely ceiling breaches. Though in both cases, the magnitude is notably lower than the magnitude for the other inputs.
+Expectations are met.
 
 #### 04D: Ceiling-Days-Ratio
 
@@ -596,10 +596,12 @@ stargazer::stargazer(b_AllOpt04A,b_AllOpt04B,b_AllOpt04C,b_AllOpt04D,
 summary_residual_compare(b_SomeOpt04A,b_SomeOpt04D,b_SomeOpt04B,b_SomeOpt04D)
 summary_residual_compare(b_AllOpt04A,b_AllOpt04D,b_AllOpt04B,b_AllOpt04D)
 ```
-Days reduces in  significance and changes in sign  for  likelihood, no longer aligning with expectations, and reduces in magnitude for size. For both frequence and size, ratio of base to ceiling swaps signs and now aligns with expectations.
+SomeOpt: Expectations met.
+AllOpt: Some expectations met.  Ceiling to base ratio displays the expected negative, stat. significant, relationship.  However, initial ceiling size displays a postive, statistically significant effect (though only at the 10% level), and maximum contract length displays a statistically significant negative effect, both of which violate expectations.
 
 #### 04E: Base
-
+Expectation: higher base estimates a higher probability of b_SomeOpt, as larger projects have more momentum.
+We weakly expect a higher base to estimate a lower probability of b_AllOpt.
 ```{r Model04E}
 
 #Likelihood Plot for unlogged ceiling
@@ -627,7 +629,7 @@ summary_residual_compare(b_AllOpt04A,b_AllOpt04E)
 
 
 ```
-Base has the expected positive relationship with both the frequeny and size of ceiling reach. In both cases the coefficient is significat, has a high magnitude, and is comparable with ceiling. According to AIC, for likelihood, base is a slightly bebtter estimator but for size, ceiling is the etter predictor.
+Expectations are met for b_SomeOpt, but not for b_AllOpt.
 
 #### 04F: Base-Days-Ratio
 
@@ -654,8 +656,8 @@ stargazer::stargazer(b_SomeOpt04D,b_SomeOpt04E,b_SomeOpt04F,
 summary_residual_compare(b_SomeOpt04A,b_SomeOpt04F,b_SomeOpt04B,b_SomeOpt04F)
 summary_residual_compare(b_AllOpt04A,b_AllOpt04F,b_AllOpt04B,b_AllOpt04F)
 ```
-DaysChanges in a s imilar manner as the combination  with ceiling. For base to ceiling, the  sign is different based onw whether base or ceiling are included, which in retrospect makes sense with expectations updated accordingly. (This is not ideal, but ultimately the original ceiling expectation being positive is comparable to thinking that that the combination of base and ratio should also be positive. When combined with ceiling, we already are account for the total size of the ceiling, so ratio just tells us what proportion are options. Ultimately base plus ratio seems more straightforward to explain so using that.)
-
+SomeOpt: Expectations met for days, ceiling to base ratio, and base itself.
+AllOpt: Expectations not met for all variables.
 
 #### 04G: Cumulative  Model
 
@@ -667,11 +669,24 @@ b_SomeOpt04G <- glm (data=serv_opt,
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA +
                    cln_Base + clr_Ceil2Base + cln_Days, family=binomial(link="logit"))
+b_SomeOpt04Gv2 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+
+                 cn_PairHist7+cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days, family=binomial(link="logit"))
+b_SomeOpt04Gv3 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7 +
+                   cln_Base + clr_Ceil2Base + cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt04G)
+glmer_examine(b_SomeOpt04Gv2)
+glmer_examine(b_SomeOpt04Gv3)
+stargazer::stargazer(b_SomeOpt04Gv2, b_SomeOpt04Gv3, type = "text", digits = 2)
 
 b_AllOpt04G <- glm(data=serv_exeropt, family=binomial(link="logit"),
                         b_AllOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPSC7+
+                   cln_PSCrate+ cp_OffPerf7 + cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days)
 
@@ -687,21 +702,28 @@ stargazer::stargazer(b_SomeOpt03D,b_SomeOpt04F,b_SomeOpt04G,
 
 
 summary_residual_compare(b_SomeOpt03D,b_SomeOpt04G)
-summary_residual_compare(b_SomeOpt03D,b_SomeOpt04G)
+summary_residual_compare(b_AllOpt03D,b_AllOpt04G)
 
 
 ```
-Salary no longer matches expectations for ceiling breach likelihood. Pair history becomes significant for size, but contrary to expectations estimates larger breaches. Likewise pair contract actions changes signs contrary to expectation though only achieves significance at the 0.1 level.
-
-For the frequenc model, days switches back and is again significant and in line with expectation.
+AllOpt: VIF score and residual plot acceptable.  Results:
+  (1) Higher service complexity variables - invoice rate displays a negative, stat. sig., relationship, meeting expectations..  Average salary demonstrates a positive, stat. sig. effect.
+  (2) Office capacity variables - neither variable meets expectations (though percent PBSC's negative effect is now no longer statistically significant).
+  (3) Deeper office-vendor relationship variables - only pair history meets expectations, as contract actions pair history displays a statistically significant, negative relationship.
+  (4) Control variables - No variables meet expectations
+  
+SomeOpt: VIF score of cln_PairCA unnaceptably high.  Two alternative models are created, b_SomeOpt04Gv2 and v3.  Model v2 drops cp_OffPSC7, the IV with the second highest VIF in model b_SomeOpt04.  Model v3 is a full specification without cln_PairCA.  VIF levels are acceptable for all variables in both model v2 and model v3.  AIC is lower for model v2, and so is selected for our analysis (i.e. we do our analysis with a model that drops cp_OffPSC7 and retains cln_PairCA).  Results:
+  (1) Higher service complexity variables - expectations met for both variables
+  (2) Office capacity variables - Percent PBSC does not meet expectations, as it displays a statiscally significant, negative relationship.
+  (3) Deeper office-vendor relationship variables - only pair history meets expectations, as contract actions pair history displays a statistically significant, negative relationship.
+  (4) Control variables - All variables meet expectations.
 
 
 ### Competition
 #### 05A: No Competition / 1 / 2-4 / 5+ Offers
-No competition (baseline) and single offer competition  is expected to reduce willingness to terminate and increase likelihood and size of terminations
-all due to the absence of alternatives. For options, there is a weak expectation of fewer options exercised. 
+No competition (baseline) and single offer competition  is expected to estimate lower probabilities for both b_SomeOpt and b_AllOpt.
 
-Multioffer competition is expected to lead to more terminations, fewer and smaller ceiling breaches, abd  more options exercised for 2-4 options but fewer for 5+ as the diversity of competitors available may raise the appeal of going with a new contract rather than more options, especially if performance is below the desired level.
+Multioffer competition is expected to lead to a higher probability of both b_SomeOpt and b_AllOpt for 2-4 options, but the opposite (i.e. lower probabilities for both) for 5+ as the diversity of competitors available may raise the appeal of going with a new contract rather than more options, especially if performance is below the desired level.
 
 ```{r Model05A}
 summary_discrete_plot(serv_opt,metric="opt","Comp")
@@ -727,9 +749,9 @@ stargazer::stargazer(b_SomeOpt04G,b_SomeOpt05A,
 
 
 ```
-Expectations were completely unmet for ceiling breach likelihood, as while the results are all significant, only single offer competition is associated with a lower likelihood of ceiling breaches and as the number of offers in the categories grows, so to  does the likelihood of ceiling breaches. Thus is not true for ceilinng breach size. Multi-offer and single  offer competition both estimate smaller ceiling breaches, with competition with 2-4 offers having the most notable affect. 
-
-. For terminations, expectations were met for 2-4 offers and 5+ offers, but not for 1 offer. For ceiling breaches expectations were met for 1 offer, but not for 2-4 or 5+.
+Expectations met for 1 offer binary.
+Expectations not met for 2-4 offer binary - displays a statistically significant, negative relationship in both models.
+Expectations met for 5+ offer binary (displays a stat. significant, negative relationship in both models).
 
 #### 05B: Cumulative  Model
 
@@ -742,7 +764,23 @@ b_SomeOpt05B <- glm (data=serv_opt,
                  cn_PairHist7+cln_PairCA +
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp, family=binomial(link="logit"))
+b_SomeOpt05Bv2 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+
+                 cn_PairHist7+cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp, family=binomial(link="logit"))
+b_SomeOpt05Bv3 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7 +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt05B)
+glmer_examine(b_SomeOpt05Bv2)
+glmer_examine(b_SomeOpt05Bv3)
+
+stargazer::stargazer(b_SomeOpt05Bv2, b_SomeOpt05Bv3, type = "text", digits = 2)
 
 #Is it safe to add pPBSC back in?
 
@@ -769,19 +807,26 @@ summary_residual_compare(b_AllOpt04G,b_AllOpt05B)
 
 
 ```
-Double checked if it was now safe to add pPBSC back in, and it is. Minimal effect on study variables otherwise, though pair CA is now significant for contract size, but in the opposite direction as expected.
+AllOpt: VIF acceptable, residual plots acceptable.  Results:
+  (1) Higher service complexity variables - invoice rate displays a negative, stat. sig., relationship, meeting expectations.  Average salary does not meet expectations.
+  (2) Office capacity variables - neither variable meets expectations (though percent PBSC's negative effect is still not statistically significant).
+  (3) Deeper office-vendor relationship variables - only pair history meets expectations, as contract actions pair history displays a statistically significant, negative relationship.
+  (4) Control variables (base, ceiling to base ratio, maximum contract length) - No variables meet expectations
+  (5) Number of offers variables - only Comp5+ offers meets expectations, the two other competition binaries do not have statistically significant effects.
+  
+SomeOpt: VIF of cln_PairCA unnaceptable.  Two alternative models are created, b_SomeOpt04Gv2 and v3.  Model v2 drops cp_OffPSC7, the IV with the second highest VIF in model b_SomeOpt04.  Model v3 is a full specification without cln_PairCA.  VIF levels are acceptable for all variables in both model v2 and model v3.  AIC is lower for model v2, and so is selected for our analysis.  Results:
+  (1) Higher service complexity variables - expectations met for both variables
+  (2) Office capacity variables - Percent PBSC does not meet expectations, as it displays a statiscally significant, negative relationship.
+  (3) Deeper office-vendor relationship variables - only pair history meets expectations, as contract actions pair history displays a statistically significant, negative relationship.
+  (4) Control variables (base, ceiling to base ratio, maximum contract length) - All variables meet expectations.
+  (5) Number of offers variables - Comp1 offer and Comp5+ offer meet expectations.  Comp2-4 offers does not, as it displays a statistically significant, negative relationship.
 
-The ceiling  breach likelihood model largely follows the competition a lone model, but for ceiling breach size, the magnitude of the results decrease for multioffer competition buut the results for single offer competition now are significantly positive and  in line with expectation.
-
-For the likelihood model, ratio of base to ceiling is no longer significant at the  0.05 level, though it remains significant for breach size.
 
 ### Contract Vehicle
 
 #### 06A: Def/Pur; S-IDC; M-IDC; FSS-GWAC; BPA-BOA.
 
-Expectation: Indefinite delivery vehicles, means that the government has an existing relationship with the vendor and administration is easier. The downside is that the government may be locked into the vendor, although exit does not necessarily require outright termination, instead the government may simply cease to use a vehicle. Taken together, across the board the four categories of vehicles are expected to  negatively estimate the probability of termination. 
-
-Ceiling breaches and excerised options are both less straightforward, are a more complex topic though the study expects a negative relationship as all forms of IDVs make it easier to use a new task order and thus may both reduce the need to exercise options and may allow new work to flow into a different contract rather than prompting a breach.
+Expectation: Indefinite delivery vehicles, means that the government has an existing relationship with the vendor and administration is easier. The downside is that the government may be locked into the vendor. Excerised options not straightforward to puzzle through, but we expect a negative relationship as all forms of IDVs make it easier to use a new task order and thus may both reduce the need to exercise options and may allow new work to flow into a different contract rather than prompting a breach.
 
 
 ```{r Model06A}
@@ -811,6 +856,10 @@ stargazer::stargazer(b_SomeOpt05B,b_SomeOpt06A,
 ```
 For ceiling breaches, IDCs, particularly multiaward IDCs, had a greater likelihood of  ceiling breaches contrary to expecations. For size the results were similarly mixed, with single award IDCS and BPA/BOAs estimating smaller  breaches in line with expetations and Mutiple Award and FSS/GWAC estimated larger breaches, contrary to expectation.
 
+SomeOpt: VehS-IDC and VehBPA/BOA meet expectations.  Multiple award IDCs and FSS/GWAC vehicles both violate expectations, demonstrating statistically significant, positive relationships.
+
+AllOpt: VehS-IDC, VehM-IDC, and VehBPA/BOA meet expectations.  FSS/GWAC vehicles do not meet expectations, but the positive effect they display is not statistically significant.
+
 
 #### 06B: Cumulative  Model
 
@@ -824,7 +873,14 @@ b_SomeOpt06B <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh, family=binomial(link="logit"))
+b_SomeOpt06Bv2 <- glm (data=serv_opt,
+                 b_SomeOpt ~ 
+                   cln_PSCrate+ cp_OffPerf7+
+                 cn_PairHist7 + clr_Ceil2Base + cln_Days+
+                   Comp+
+                   Veh, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt06B)
+glmer_examine(b_SomeOpt06Bv2)
 
 b_AllOpt06B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                         b_AllOpt ~  cln_US6sal + 
@@ -833,8 +889,15 @@ b_AllOpt06B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh)
-
+b_AllOpt06Bv2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
+                        b_AllOpt ~   
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh)
 glmer_examine(b_AllOpt06B)
+glmer_examine(b_AllOpt06Bv2) #Fine with cln_US6sal and cln_PairCA dropped
 
 #Plot residuals versus fitted   
 
@@ -844,26 +907,24 @@ stargazer::stargazer(b_SomeOpt05B,b_SomeOpt06A,b_SomeOpt06B,
                        digits=2)
 
 
-summary_residual_compare(b_SomeOpt05B,b_SomeOpt06B)
-summary_residual_compare(b_AllOpt05B,b_AllOpt06B)
+summary_residual_compare(b_SomeOpt05B,b_SomeOpt06B,bins=50)
+summary_residual_compare(b_AllOpt05B,b_AllOpt06B,bins=50)
 
 
 ```
-Expectations for vehicle are now upheld for both ceiling breaches likelihood, but the results are now acrsoss theboard contrary to expectations for breach size. Ceilng breaches appear to be  less common for all types of indefinite vehicles butwhen they do occur the breach size is larger. 
+[Deprecated] VIF score of vehicle in both models is unnaceptably large.  In order to reduce this to an acceptable level, a number of study variables would have to be dropped from the model, which the team found to be unacceptable.  Thus, vehicle is not included as a control in our cumulative model. [/Deprecated]
 
-Fitted versus actual seems to get off course with fitted values  above 0.1. For size the results look more as expected  in the scatter plot but do show a sinusodial pattern in the binend residuals.
-
-For controls, the relationship between days and likelihood gains significance in the expected direction. Single offer competition reduces its significance with breach size.
+The above was a mistake - rescaled GVIF is acceptable, and vehicle will be included as a control in our model - though at some points in the next several sections, it will not be, as a holdover from its prior removal.
 
 ### Type of Contract
 
 The next step adds a measure for whether the contract was cost-based or fixed-price. 
 
-Expectation Prior CSIS research has found that fixed-price contracts estimate a higher probability of terminations but did not find a notable relationship for ceiling breaches.
+Expectation - prior CSIS research has found that fixed-price contracts estimate a higher probability of terminations but did not find a notable relationship for ceiling breaches.
 
 #### 07A: FFP / Other FP / Incentive / T&M/FP:LOE;LH / Other CB / Combination
 
-Firm-fixed price contracting is expected to be associated with a high rate of options exercised, more ceiling breaches, and a strong expectation of greater levels of termination.
+Firm-fixed price contracting is expected to be associated with a higher rate of options exercised, under both model specifications.
 
 (Options, breach, termination)
 Firm-Fixed Price (base)				+	+	++
@@ -902,10 +963,18 @@ stargazer::stargazer(b_SomeOpt06B,b_SomeOpt07A,
 
 
 ```
+For firm-fixed priced contracts, expectations are not met for both models (statistically significant negative relationship, where a positive relationship was expected).
 
-For likelihood, other fixed price, other cost based and aligned with expecations that they would reduce likelihood. Combination and other is significant and aligned with expectations that it would increase likelihood. 
+For time and materials/labour hours/FP:LoE, expectations are not met (statistically significant positive relationship displayed) for both models.
 
-For contract size, the  baseline of  FFP unexpectedly is not associated with larger  breaches, tough this may be explained by the prevelance of small FFP contracts. T&M/LH/FFLOE, UCA, and  Combination and  other are all significant and in line with expectations of larger breaches. The remainig vriables are significant but contrary to expectations.
+For incentive-based contracts, expectations are met for both models.
+
+For other cost-based pricing, expectations are not met for both models.
+
+For undefinitized contract award-pricing, expectations are not met for both models, though a non-statistically significant negative relationship is displayed for the AllOpt model.
+
+For combination-based pricing, expectations are not met for both models.
+
 
 #### 07B: Cumulative  Model
 
@@ -918,9 +987,24 @@ b_SomeOpt07B <- glm (data=serv_opt,
                  cn_PairHist7+cln_PairCA +
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
-                   Veh+
+                   Pricing, family=binomial(link="logit"))
+b_SomeOpt07Bv2 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+
+                 cn_PairHist7+cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp+
+                   Pricing, family=binomial(link="logit"))
+b_SomeOpt07Bv3 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp+
                    Pricing, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt07B)
+glmer_examine(b_SomeOpt07Bv2)
+glmer_examine(b_SomeOpt07Bv3)
 
 b_AllOpt07B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                         b_AllOpt ~  cln_US6sal + 
@@ -928,33 +1012,43 @@ b_AllOpt07B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
-                   Veh+
                    Pricing)
 
 glmer_examine(b_AllOpt07B)
 
 #Plot residuals versus fitted   
 
-stargazer::stargazer(b_SomeOpt06B,b_SomeOpt07A,b_SomeOpt07B,
+stargazer::stargazer(b_SomeOpt06B,b_SomeOpt07A,b_SomeOpt07Bv3,
                        
                        b_AllOpt06B,b_AllOpt07A,b_AllOpt07B,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(b_SomeOpt06B,b_SomeOpt07B)
-summary_residual_compare(b_AllOpt06B,b_AllOpt07B,bins=3)
+summary_residual_compare(b_SomeOpt06B,b_SomeOpt07Bv3,bins=50)
+summary_residual_compare(b_AllOpt06B,b_AllOpt07B,bins=50)
 
 ```
 
-Incentive contracts are no longer significantly associated with a greater likelihood of ceiling breaches, though they are still associated with a greater size. Other fixed price is now assoicated with smaller ceiling breaches. Surprisingly UCA and Combination and  Other  are now associated with less frequent ceiling breaches,  though only with a p-value of <=0.1 in the case of UCA. Both are still associated with larger breaches.
+AllOpt: VIF scores acceptable, residual plots within tolerance.  Results:
+  (1) Higher service complexity variables - invoice rate displays a negative, stat. sig., relationship, meeting expectations.  Average salary does not meet expectations.
+  (2) Office capacity variables - neither variable meets expectations (though percent PBSC's negative effect is only significant at the 5% level).
+  (3) Deeper office-vendor relationship variables - only pair history meets expectations, as contract actions pair history displays a statistically significant, negative relationship.
+  (4) Control variables (base, ceiling to base ratio, maximum contract length) - No variables meet expectations (and cln_Ceil2Base and cln_Days display statistically significant negative effects)
+  (5) Number of offers variables - only Comp5+ offers meets expectations, while comp2-4 offers displays a statistically significant negative effect, the opposite of what was expected.
+  (6) Pricing - For incentive-based contracts, expectations were met. They were not met for any other pricing variable - i.e.: For firm-fixed priced contracts, expectations were not met.  For time and materials/labour hours/FP:LoE, expectations are not met. For other cost-based pricing, expectations were not met.  For undefinitized contract award-pricing, expectations were not met.
 
-The binned residuals remain od for the likelihood plot but show less of pattern for likelihood size.
+SomeOpt: VIF score for cln_PairCA unacceptable.  Given that vehicle cannot be included as a control in this model, this document will assume that cln_PairCA is always going to have a multi-collinearity problem.  Following from the results of the analysis done when this problem has occurred in previous sections, we drop cp_OffPSC7 in b_SomeOpt07Bv2.  However, the VIF of cln_PairCA is still unacceptable.  In order to bring it within tolerance, we would have to drop a second study variable from our model, which, given that cln_PairCA violates our expectations and we were borderline between keeping it and retaining it when we only had to drop one explanatory variable, indicates that we should instead drop cln_PairCA.  This is done in b_SomeOptBv3, and will be done for the rest of the cumulative model specifications in this document for the b_SomeOpt models.  VIF is thus fine, residauls are slightly wonky, but tolerable, and so results:
+  (1) Higher service complexity variables - expectations met for both variables
+  (2) Office capacity variables - Only cp_OffPSC7 meets expectations.
+  (3) Deeper office-vendor relationship variables -  pair history meets expectations (only variable in this category now)
+  (4) Control variables (base, ceiling to base ratio, maximum contract length) - All variables meet expectations.
+  (5) Number of offers variables - Comp1 offer and Comp5+ offer meet expectations.  Comp2-4 offers does not, as it displays a statistically significant, negative relationship.
+  (6) Pricing - For incentive-based contracts, expectations were met. They were not met for any other pricing variable - i.e.: For firm-fixed priced contracts, expectations were not met.  For time and materials/labour hours/FP:LoE, expectations are not met. For other cost-based pricing, expectations were not met.  For undefinitized contract award-pricing, expectations were not met.
 
 
 ### Crisis Dataset
-Expectation: Service Contract replying on crisis funds would have more likelihood of cost-ceiling breaches and exercised options but fewer terminations.  
-
+Expectation: Service Contract replying on crisis funds would have more likelihood of b_SomeOpt, but a lower likelihood of b_AllOpt.
 #### 08A: Crisis Funding
 ```{r Model08A}
 summary_discrete_plot(serv_opt,metric="opt","Crisis")
@@ -971,17 +1065,12 @@ b_AllOpt08A <- glm(data=serv_exeropt, family=binomial(link="logit"),
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_SomeOpt07B,b_SomeOpt08A,
-                       
-                       b_AllOpt07B,b_AllOpt08A,
-                       type="text",
-                       digits=2)
-
+#stargazer::stargazer(b_SomeOpt07B,b_SomeOpt08A,b_AllOpt07B,b_AllOpt08A,type="text",digits=2)
+stargazer::stargazer(b_SomeOpt08A, b_AllOpt08A, type = "text", digits = 2)
 
 ```
-
-For ceiling breach likelihood ARRA and Disaster results were in keeping with expcetations but OCO results were not. For ceiling breach size, al results are significant and in line with expectation that crisis contracts face a risk of larger ceiling breaches, though the magnitude is greater for ARRA and Disaster in line with the likelihood results.
-
+SomeOpt: No expectations met
+AllOpt: CrsisiDis and CrisisOCO both meet expectations, though CrisisDIS is only statistically significant at the 10% level.
 
 
 #### 08B: Cumulative  Model
@@ -992,10 +1081,9 @@ For ceiling breach likelihood ARRA and Disaster results were in keeping with exp
 b_SomeOpt08B <- glm (data=serv_opt,
                  b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA +
+                 cn_PairHist7 +
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
-                   Veh+
                    Pricing+
                    Crisis, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt08B)
@@ -1006,10 +1094,18 @@ b_AllOpt08B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
-                   Veh+
+                   Pricing+
+                   Crisis)
+b_AllOpt08Bv2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
+                        b_AllOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
                    Pricing+
                    Crisis)
 glmer_examine(b_AllOpt08B)
+glmer_examine(b_AllOpt08Bv2)
 
 #Plot residuals versus fitted   
 
@@ -1017,18 +1113,30 @@ glmer_examine(b_AllOpt08B)
 
 stargazer::stargazer(b_SomeOpt07B,b_SomeOpt08A,b_SomeOpt08B,
                        
-                       b_AllOpt07B,b_AllOpt08A,b_AllOpt08B,
+                       b_AllOpt07B,b_AllOpt08A,b_AllOpt08Bv2,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_SomeOpt07B,b_SomeOpt08B)
-summary_residual_compare(b_AllOpt07B,b_AllOpt08B)
+summary_residual_compare(b_SomeOpt07B,b_SomeOpt08B,bins=50)
+summary_residual_compare(b_AllOpt07B,b_AllOpt08B,bins=50)
 
 ```
+AllOpt - at this point, cln_PairCA has an unacceptably high VIF.  Given the borderline nature of deciding to drop cln_PairCA vs cp_OffPSC7, I decide to drop cln_PairCA to stay in sync with the SomeOpt model.  This will be done for all future model specifications of the AllOpt model, and is done here as b_AllOpt08Bv2.  Residuals are acceptable, as are the VIF scores of this new model.  Results:
+  (1) Higher service complexity variables - invoice rate displays a negative, stat. sig., relationship, meeting expectations.  Average salary does not meet expectations.
+  (2) Office capacity variables - neither variable meets expectations (though percent PBSC's negative effect is only significant at the 5% level).
+  (3) Deeper office-vendor relationship variables - pair history does not meet expectations.
+  (4) Control variables (base, ceiling to base ratio, maximum contract length) - No variables meet expectations (and cln_Ceil2Base and cln_Days display statistically significant negative effects)
+  (5) Number of offers variables - only Comp5+ offers meets expectations, while comp2-4 offers displays a statistically significant negative effect, the opposite of what was expected.
+  (6) Pricing - For incentive-based contracts, expectations were met. They were not met for any other pricing variable - i.e.: For firm-fixed priced contracts, expectations were not met.  For time and materials/labour hours/FP:LoE, expectations are not met. For other cost-based pricing, expectations were not met.  For undefinitized contract award-pricing, expectations were not met.
+  (7) Crisis funding -  CrsisiDis and CrisisOCO both meet expectations, though CrisisDIS is only statistically significant at the 10% level. 
 
-After inclusion of crisis, llittle changes for study variables. ARRA is no longer associated with larger breaches, thouh Disasters and OCO still are. Likelihood coefficients for crisis are unchanged. There are some changes in vehicle coefficients for size, with BPA/BOA losing significance and M-IDC gaining it.
-
-The residuals grew more extreme and patterned.
+SomeOpt - Residuals are borderline, but acceptable.  VIF scores are well within tolerance.  Results:
+  (1) Higher service complexity variables - expectations met for both variables
+  (2) Office capacity variables - Only cp_OffPSC7 meets expectations.
+  (3) Deeper office-vendor relationship variables -  pair history meets expectations (only variable in this category now)
+  (4) Control variables (base, ceiling to base ratio, maximum contract length) - All variables meet expectations.
+  (5) Number of offers variables - Only Comp5+ meets expectations.  Comp2-4 displays a statistically significant, negative relationship, opposite of expectations.
+  (6) Pricing - Expectations only met for PricingUCA, and effect only statistically significant at the 10% level.  Expectations not met for any other pricing variable.
 
 ## Industrial Sector
 
@@ -1039,7 +1147,7 @@ The residuals grew more extreme and patterned.
 HHI (logged, + means more consolidation)	cln_Def6HHI+	-	+	-
 
 
-Expectations are  unchanged.
+Expectation: higher HHI means more consolidation, and thus is more likely to be associated with bad contracting outcomes.  In turn, higher HHI should be associated with lower b_SomeOpt and b_AllOpt.
 ```{r Model09A}
 #Likelihood Plot for unlogged ceiling
 summary_continuous_plot(serv_opt,metric="opt","def6_HHI_lag1")
@@ -1058,19 +1166,15 @@ b_AllOpt09A <- glm(data=serv_exeropt, family=binomial(link="logit"),
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_SomeOpt08B,b_SomeOpt09A,
-                       
-                       b_AllOpt08B,b_AllOpt09A,
-                       type="text",
-                       digits=2)
-
+#stargazer::stargazer(b_SomeOpt08B,b_SomeOpt09A,b_AllOpt08B,b_AllOpt09A,type="text",digits=2)
+stargazer::stargazer(b_SomeOpt09A,b_AllOpt09A,type="text",digits=2)
 
 ```
 
-Expected direction for ceiling breach fequency but not magnitude.
+Expectations met.
 
 #### Model 09B: Defense to Overall ratio
-The higher the ratio of defense obligations to reciepts in the overall economy, the DoD holds a monosopy over a sector. Given the challenges of monosopy, the a higher ratio estimates a greater  risk of ceiling breaches.
+The higher the ratio of defense obligations to reciepts in the overall economy, the DoD holds a greater degree of monosopy over a sector. Given the challenges of monosopy, the a higher ratio estimates a higher probability of b_SomeOpt and b_AllOpt.
 
 (Options, breach, termination)
 Ratio Def. obligatons : US revenue	cln_Def6Obl+		+	-	-
@@ -1094,46 +1198,41 @@ b_AllOpt09B <- glm(data=serv_exeropt, family=binomial(link="logit"),
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_SomeOpt08B,b_SomeOpt09A,b_SomeOpt09B,
-                       
-                       b_AllOpt08B,b_AllOpt09A,b_AllOpt09B,
-                       type="text",
-                       digits=2)
+#stargazer::stargazer(b_SomeOpt08B,b_SomeOpt09A,b_SomeOpt09B,b_AllOpt08B,b_AllOpt09A,b_AllOpt09B,type="text", digits=2)
+stargazer::stargazer(b_SomeOpt09A,b_SomeOpt09B,b_AllOpt09A,b_AllOpt09B,type="text", digits=2)
 
 
 
 ```
-Breach size results were significant and a higher ratio was associated with an increase is size as expected. For breach likelihood the results were not significant and had a small magnitude.
+Expectations met for AllOpt, but not for SomeOpt, where clr_Def6toUS has a statistically significant, negative effect.
 
 #### Model 09C: Defense Obligations
 (Options, breach, termination)
 Defense obligations (logged)	clr_Def6toUS+		-	-	+
-
+Expectation: Higher logged defense obligations estimates lower probabilities for both b_SomeOpt and b_AllOpt.
 ```{r Model09C}
 #Likelihood Plot for unlogged ceiling
       summary_continuous_plot(serv_opt,metric="opt","def6_obl_lag1Const")
 
-      summary_continuous_plot(serv_opt,metric="opt","cln_Def6OblConst")
-      
+      summary_continuous_plot(serv_opt,metric="opt","cln_Def6Obl")
+
 #Model
 b_SomeOpt09C <- glm (data=serv_opt,
-                 b_SomeOpt ~ cln_Def6OblConst, family=binomial(link="logit"))
+                 b_SomeOpt ~ cln_Def6Obl, family=binomial(link="logit"))
 
 
 b_AllOpt09C <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~ cln_Def6OblConst)
+                        b_AllOpt ~ cln_Def6Obl)
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_SomeOpt09A,b_SomeOpt09B,b_SomeOpt09C,
-                       
-                       b_AllOpt09A,b_AllOpt09B,b_AllOpt09C,
-                       type="text",
-                       digits=2)
+
+stargazer::stargazer(b_SomeOpt09A,b_SomeOpt09B,b_SomeOpt09C, b_AllOpt09A,b_AllOpt09B,b_AllOpt09C,type="text",digits=2)
+
 
 ```
 
-Contrary to expectation. for ceiling breach frequecny and size.
+Expectations upheld for all options but not some.
 
 #### Model 09D: NAICS6 6 Combined
 Consolidation at less and more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS6 levels, e.g. power plants, rather than more specific NAICS6 levels, like solar vs. coal. As a result, consolidation for more granular NAICS6 codes should estimate higher rates of ceiling breaches compared to less granular NAICS6 code.
@@ -1146,21 +1245,28 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 #Model
 b_SomeOpt09D <- glm (data=serv_opt,
-                 b_SomeOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst
+                 b_SomeOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl
                  , family=binomial(link="logit"))
 glmer_examine(b_SomeOpt09D)
 
 b_AllOpt09D <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst)
+                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl)
+
 
 glmer_examine(b_AllOpt09D)
+
+stargazer::stargazer(b_SomeOpt09A,b_SomeOpt09B,b_SomeOpt09C,b_SomeOpt09D,
+                     type="text",digits=2)
+stargazer::stargazer(b_AllOpt09A,b_AllOpt09B,b_AllOpt09C,b_AllOpt09D,
+                                                                type="text",digits=2)
+
 
 summary_residual_compare(b_SomeOpt09D, bins=10)
 summary_residual_compare(b_AllOpt09D,bins=10)
 ```
-The hypothesis is upheld. Deviance is a little lower and residuals a little higher than the prior forms of consolidation for the level 3 model.  For the level 6 model, deviance is reduced some in both cases.
 
-Ratio at either level is no longer in line with expectations for ceiling breaches.
+For some options, HHI6 and Def6toUS expectations are upheld, but def6obl are not
+For all options, HHI6 and def6 obl expectations are upheld, but def6tous are not.
 
 #### Model 09E: Cumulative Model
 Consolidation at less and more granular levels may have different effects. Efficiencies are often used to describe sectors, like utilities, with high barriers to entry. Many of these aspects seem like they would already be captured at less granular NAICS6 levels, e.g. power plants, rather than more specific NAICS6 levels, like solar vs. coal. As a result, consolidation for more granular NAICS6 codes should estimate higher rates of ceiling breaches compared to less granular NAICS6 code.
@@ -1177,7 +1283,7 @@ b_SomeOpt09E <- glm (data=serv_opt,
                    Veh+
                    Pricing+
                    Crisis+
-                   cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst, family=binomial(link="logit"))
+                   cln_Def6HHI+clr_Def6toUS+cln_Def6Obl, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt09E)
 
 b_AllOpt09E <- glm(data=serv_exeropt, family=binomial(link="logit"),
@@ -1189,7 +1295,7 @@ b_AllOpt09E <- glm(data=serv_exeropt, family=binomial(link="logit"),
                    Veh+
                    Pricing+
                    Crisis+
-                 cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst)
+                 cln_Def6HHI+clr_Def6toUS+cln_Def6Obl)
 
 glmer_examine(b_AllOpt09E)
 
@@ -1200,11 +1306,19 @@ stargazer::stargazer(b_SomeOpt08B,b_SomeOpt09D,b_SomeOpt09E,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_SomeOpt08B,b_SomeOpt09E)
-summary_residual_compare(b_SomeOpt08B,b_SomeOpt09E)
+summary_residual_compare(b_SomeOpt08B,b_SomeOpt09E,bins=50)
+summary_residual_compare(b_SomeOpt08B,b_SomeOpt09E,bins=50)
 ```
+N.B.: Vehicle is now included in model specification
+SomeOpt:
+Def6HHI - Swapped sign and is now more significant (at 5% level) - opposite of expectations.
+Def6toUS - Lost significance
+Def6Obl - Lost significance
 
-Detailed Industry HHI is no longer significant for likelihood or size. Detailed Industry Ratio is now significant but now is associated with less frequent breaches, contrary to expectation. Detailed Industry Ratio remains in  ine with expectation tough with a smaller magnitude.
+AllOpt:
+Def6HHI - Negative and significant (thought at 10% level), meets expectations
+Def6toUS - Positive and significant - meets expectations
+Def6Obl - Positive and significant - Opposite of expectations
 
 ### Level 3
 #### Model 10A: cln_Def3HHI
@@ -1239,9 +1353,7 @@ summary_residual_compare(b_AllOpt09A,b_AllOpt10A, skip_vif =  TRUE)
 
 ```
 
-The results for subsector HHI is contrary to expectation on Ceiling breach likelihood and size.
-
-Level 3 HHI seems to slightly out perform level 6.
+The results for subsector HHI is contrary to expectation for some options but in line with expectations for all options.
 
 
 #### Model 10B: Defense to Overall ratio
@@ -1274,7 +1386,7 @@ summary_residual_compare(b_SomeOpt09B,b_SomeOpt10B)
 summary_residual_compare(b_AllOpt09B,b_AllOpt10B)
 ```
 
-Expectations were in lined with ceiling breach likelihood and size.
+The results were significantly positive in both cases, though unfortunately contrary to expectations.
 
 
 #### Model 10C: NAICS6 6 and NAICS6 3
@@ -1286,12 +1398,12 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 #Model
 b_SomeOpt10C <- glm (data=serv_opt,
-                 b_SomeOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                 b_SomeOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI+clr_Def3toUS, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt10C)
 
 b_AllOpt10C <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI+clr_Def3toUS)
 glmer_examine(b_AllOpt10C)
 
@@ -1309,24 +1421,24 @@ glmer_examine(b_AllOpt10C2)
 #No HHI6
 
 b_SomeOpt10C3 <- glm (data=serv_opt,
-                 b_SomeOpt ~ clr_Def6toUS+cln_Def6OblConst+
+                 b_SomeOpt ~ clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI+clr_Def3toUS, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt10C3)
 
 b_AllOpt10C3 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~ clr_Def6toUS+cln_Def6OblConst+
+                        b_AllOpt ~ clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI+clr_Def3toUS)
 glmer_examine(b_AllOpt10C3)
 
 
 #Model no ratio 3
 b_SomeOpt10C4 <- glm (data=serv_opt,
-                 b_SomeOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                 b_SomeOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt10C4)
 
 b_AllOpt10C4 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                        b_AllOpt ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI)
 glmer_examine(b_AllOpt10C4)
 
@@ -1342,7 +1454,7 @@ b_AllOpt10C5 <- glm(data=serv_exeropt, family=binomial(link="logit"),
                    cln_Def3HHI)
 glmer_examine(b_AllOpt10C5)
 
-#No Obl or defense ratio
+#No Obl or detailed industry ratio
 b_SomeOpt10C6 <- glm (data=serv_opt,
                  b_SomeOpt ~ cln_Def6HHI+clr_Def6toUS+
                    clr_Def3toUS, family=binomial(link="logit"))
@@ -1355,23 +1467,23 @@ glmer_examine(b_AllOpt10C6)
 
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_SomeOpt09D,b_SomeOpt10A,b_SomeOpt10B,b_SomeOpt10C3,b_SomeOpt10C4,b_SomeOpt10C5,b_SomeOpt10C6,
+stargazer::stargazer(b_SomeOpt09D,b_SomeOpt10A,b_SomeOpt10B,b_SomeOpt10C4,b_SomeOpt10C5,b_SomeOpt10C6,
                        type="text",
                        digits=2)
 
-stargazer::stargazer(b_AllOpt09D,b_AllOpt10A,b_AllOpt10B,b_AllOpt10C3,b_AllOpt10C4,b_AllOpt10C5,b_AllOpt10C6,
+stargazer::stargazer(b_AllOpt09D,#b_AllOpt10A,b_AllOpt10B,
+                     b_AllOpt10C2,b_AllOpt10C3,b_AllOpt10C4,b_AllOpt10C5,b_AllOpt10C6,
                        type="text",
                        digits=2)
 
 
-summary_residual_compare(b_SomeOpt10C3,b_SomeOpt10C4,b_SomeOpt10C5,b_SomeOpt10C6,bins=10)
+summary_residual_compare(b_SomeOpt09D,b_SomeOpt10C4,b_SomeOpt10C5,b_SomeOpt10C6,bins=10)
 summary_residual_compare(b_AllOpt10C3,b_AllOpt10C4,b_AllOpt10C5,b_AllOpt10C6,bins=10)
 ```
 
-VIF is becoming a problem, prompting removal of detailed industry oligations, which is captured  in part by detailed industry ratio and the more on point measure of DoD experience, office volume. Unfortunately, this was not sufficient to lower VIFs below two, so defense ratio 3 was also removed.
-
-Continuing with no detailed industry defense obligtions or subsector HHI for the time being.
-
+VIF is becoming a problem, prompting removal of detailed industry oligations for all options, which is captured in part by detailed industry ratio and the more on point measure of DoD experience, office volume. Unfortunately, For some options this was not sufficient to lower VIFs for all options, so defense ratio 3 was also removed.
+b_SomeOpt10C5
+b_AllOpt10C2
 
 #### Model 10D: Cumulative Model
 .
@@ -1389,8 +1501,9 @@ b_SomeOpt10D <- glm (data=serv_opt,
                    Veh+
                    Pricing+
                    Crisis+
-                   cln_Def6HHI+clr_Def6toUS+cln_Def3HHI+
-                   clr_Def3toUS, family=binomial(link="logit"))
+                   cln_Def6HHI+clr_Def6toUS+#clr_Def6Obl+
+                   cln_Def3HHI,#+clr_Def3toUS, 
+                 family=binomial(link="logit"))
 glmer_examine(b_SomeOpt10D)
 
 b_AllOpt10D <- glm(data=serv_exeropt, family=binomial(link="logit"),
@@ -1408,56 +1521,27 @@ glmer_examine(b_AllOpt10D)
 
 
 
-#Model
-b_SomeOpt10D2 <- glm (data=serv_opt,
-                 b_SomeOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA +
-                   cln_Base + clr_Ceil2Base + cln_Days +
-                   Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                   cln_Def6HHI+clr_Def6toUS+#cln_Def3HHI+
-                   clr_Def3toUS, family=binomial(link="logit"))
-glmer_examine(b_SomeOpt10D2)
-
-b_AllOpt10D2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
-                 cln_Base + clr_Ceil2Base + cln_Days +
-                 Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                 cln_Def6HHI+clr_Def6toUS+#cln_Def3HHI+
-                   clr_Def3toUS)
-glmer_examine(b_AllOpt10D2)
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_SomeOpt09E,b_SomeOpt10C6,b_SomeOpt10D,b_SomeOpt10D2,
-                       type="text",
-                       digits=2)
-                     
-stargazer::stargazer(b_AllOpt09E,b_AllOpt10C6,b_AllOpt10D,b_AllOpt10D2,
+stargazer::stargazer(b_SomeOpt09E,b_SomeOpt10C5,b_SomeOpt10D,
+                     b_AllOpt09E,b_AllOpt10C2,b_AllOpt10D,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_SomeOpt09E,b_SomeOpt10D)
-summary_residual_compare(b_SomeOpt09E,b_SomeOpt10D)
+summary_residual_compare(b_SomeOpt09E,b_SomeOpt10D,bins=50)
+summary_residual_compare(b_SomeOpt09E,b_SomeOpt10D,bins=50)
 ```
-For the breach size model, not adding HHI6 helps keep VIF below the 1.8 mark, with the exception of officePSC and also has a lower  AIC than the model that includid obligations const but not ratio. 
+For some Def6flips signs though remains significant and Def3HHI remains positive, both contrary to exxpectation.
 
-
-For likelihood, both ratio variables are contrary to expectation, but signifiant. Detailed industry HHI is not significant.
-For size, Detailed  industry HHI has lost significance, bubt  both ratio variables retain it. 
-
+For optall def6HHI and def6toUS lose significance. Def3HHI remains negative, in line with expectaitons while def3toUS is still positive and significant.
 ## Office 
 ### Office and Vendor-Office Pair
 
 #### Model 11A: Vendor Market Share
-Expectation: Contracts of offices partnered with vendors who have larger market shares would be more likely to experience cost ceiling (++) breaches and exercised options, but less likely to have terminations.
+Expectation: Contracts of offices partnered with vendors who have larger market shares would be more likely to experience cost ceiling (++) breaches and some exercised options, but less likely to have terminations and all options. The lrelative lock on the market means that we expect some options will be exercised and there's more of a risk of some breach, but outright termination would be hard on the office. Nonetheless, while there are advantages to using the same contract for the office, a more locked vendor may be less likely to have the competitive drive win all options.
+
+SomeOpt: +
+AllOpt: -
 
 
 ```{r Model11A}
@@ -1484,7 +1568,7 @@ stargazer::stargazer(b_SomeOpt11A,
 
 ```
 
-Contrary to expetations for both likelihood and size.
+Contrary to expectations for some options, but in line with expectations for all options.
 
 #### Model 11B: Cumulative Model
 
@@ -1502,11 +1586,11 @@ b_SomeOpt11B <- glm (data=serv_opt,
                    Veh+
                    Pricing+
                    Crisis+
-                   cln_Def6HHI+clr_Def6toUS+
-                   #cln_Def3HHI+
-                     clr_Def3toUS+
+                   cln_Def6HHI+clr_Def6toUS+#clr_Def6Obl+
+                   cln_Def3HHI+#clr_Def3toUS, 
                    cp_PairObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt11B)
+
 
 b_AllOpt11B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                         b_AllOpt ~  cln_US6sal + 
@@ -1517,24 +1601,27 @@ b_AllOpt11B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                    Veh+
                    Pricing+
                    Crisis+
-                 cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def6HHI+clr_Def6toUS+cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7)
 
 glmer_examine(b_AllOpt11B)
 
+
 #Plot residuals versus fitted
-stargazer::stargazer(b_SomeOpt10D2,b_SomeOpt11A,b_SomeOpt11B,
+stargazer::stargazer(b_SomeOpt10D,b_SomeOpt11A,b_SomeOpt11B,
                      
-                     b_AllOpt10D2,b_AllOpt11A,b_AllOpt11B,
+                     b_AllOpt10D,b_AllOpt11A,b_AllOpt11B,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_SomeOpt10D2,b_SomeOpt11B)
-summary_residual_compare(b_AllOpt10D2,b_AllOpt11B)
+summary_residual_compare(b_SomeOpt10D,b_SomeOpt11B,bins=50)
+summary_residual_compare(b_AllOpt10D,b_AllOpt11B,bins=50)
 ```
-Expectations are now upheld with market estimating larger ceiling breaches, although for likelihood, the magnitude increased in the opposite of the  expected direction.
+Contrary to expectations for some exercised, but in line with expectation for all.
+
+Note that pairCA vf is getting awfully high.
+
 ### Other Office Characteristics
 #### 12A: Past Office Volume (dollars)
 
@@ -1542,6 +1629,7 @@ Expectation: Contracting offices previously had more contract volume in dollars 
 (Option, Breach, Termination)
 Past Office Volume $s	cln_OffObl7		+	-	+
 From looking at data, terminations, easier for big, less dependent. - less dependenct
+For options, easier for higher volume offices, though with a drop off for the largest offices.
 
 ```{r Model12A}
 
@@ -1566,8 +1654,7 @@ stargazer::stargazer(b_SomeOpt12A,
 
 
 ```
-When considering past office volume alone, the relationship was as expected with cost-ceiling breaches likelihood but contrary to expectation for breach size.
-
+While expectations were not strong, for some, they were positive and significant and in line line with 
 
 
 #### 12B: Detailed Industry Focus
@@ -1595,8 +1682,7 @@ stargazer::stargazer(b_SomeOpt12B,
                        digits=2)
 
 ```
-
-When using hhi calculated based on contracting office number of contarcts: results were contrary to expectations for likelihood but in line with expectations for size to expectations for size.
+Contrary to expectations the result was negative and significant in both cases, though in alighnment with the scatter plots of the upper end of the date.
 
 #### 12C: Cumulative Model
 
@@ -1615,11 +1701,116 @@ b_SomeOpt12C <- glm (data=serv_opt,
                    Pricing+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
-                   #cln_Def3HHI+
-                     clr_Def3toUS+
+                   cln_Def3HHI+
+                     # clr_Def3toUS+
                    cp_PairObl7+
                    cln_OffObl7+cln_OffFocus , family=binomial(link="logit"))
 glmer_examine(b_SomeOpt12C)
+
+b_SomeOpt12C2 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal +
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                   cln_Def6HHI+clr_Def6toUS+
+                   # cln_Def3HHI+
+                     clr_Def3toUS+
+                   cp_PairObl7+
+                   cln_OffObl7+cln_OffFocus , family=binomial(link="logit"))
+glmer_examine(b_SomeOpt12C2)
+
+
+b_SomeOpt12C3 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal +
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                   cln_Def6HHI+clr_Def6toUS+
+                   # cln_Def3HHI+
+                     # clr_Def3toUS+
+                   cp_PairObl7+
+                   cln_OffObl7+cln_OffFocus , family=binomial(link="logit"))
+glmer_examine(b_SomeOpt12C3)
+
+b_SomeOpt12C4 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                   cln_Def6HHI+clr_Def6toUS+
+                   cln_Def3HHI+
+                     # clr_Def3toUS+
+                   cp_PairObl7+
+                   # cln_OffObl7+
+                   cln_OffFocus , family=binomial(link="logit"))
+glmer_examine(b_SomeOpt12C4)
+
+
+b_SomeOpt12C4 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                   cln_Def6HHI+clr_Def6toUS+
+                   cln_Def3HHI+
+                     # clr_Def3toUS+
+                   cp_PairObl7+
+                   # cln_OffObl7+
+                   cln_OffFocus , family=binomial(link="logit"))
+glmer_examine(b_SomeOpt12C4)
+
+b_SomeOpt12C5 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                   cln_Def6HHI+clr_Def6toUS+
+                   cln_Def3HHI+
+                     # clr_Def3toUS+
+                   cp_PairObl7+
+                    cln_OffObl7#+
+                   #cln_OffFocus 
+                   , family=binomial(link="logit"))
+glmer_examine(b_SomeOpt12C5)
+
+
+b_SomeOpt12C6 <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+#cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                   cln_Def6HHI+clr_Def6toUS+
+                   cln_Def3HHI+
+                     # clr_Def3toUS+
+                   cp_PairObl7+
+                    cln_OffObl7+
+                   cln_OffFocus
+                   , family=binomial(link="logit"))
+glmer_examine(b_SomeOpt12C6)
 
 b_AllOpt12C <- glm(data=serv_exeropt, family=binomial(link="logit"),
                         b_AllOpt ~  cln_US6sal + 
@@ -1631,98 +1822,66 @@ b_AllOpt12C <- glm(data=serv_exeropt, family=binomial(link="logit"),
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
-                   cln_OffObl7+cln_OffFocus)
+                   cln_OffObl7+cln_OffFocus
+                 )
 
 glmer_examine(b_AllOpt12C)
 
-#Model
-b_SomeOpt12C2<- glm (data=serv_opt,
-                 b_SomeOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+#cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA +
-                   cln_Base + clr_Ceil2Base + cln_Days+
-                   Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                   cln_Def6HHI+clr_Def6toUS+
-                   #cln_Def3HHI+
-                     clr_Def3toUS+
-                   cp_PairObl7+
-                   cln_OffObl7+cln_OffFocus , family=binomial(link="logit"))
-glmer_examine(b_SomeOpt12C2)
-
-b_AllOpt12C2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+#cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
-                 cln_Base + clr_Ceil2Base + cln_Days+
-                 Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                 cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
-                   clr_Def3toUS+
-                 cp_PairObl7+
-                   cln_OffObl7+cln_OffFocus)
-
-glmer_examine(b_AllOpt12C2)
-
-#Model
-b_SomeOpt12C3<- glm (data=serv_opt,
-                 b_SomeOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA +
-                   cln_Base + clr_Ceil2Base + cln_Days+
-                   Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                   cln_Def6HHI+clr_Def6toUS+
-                   #cln_Def3HHI+
-                     clr_Def3toUS+
-                   cp_PairObl7+
-                   cln_OffObl7#+cln_OffFocus 
-                 , family=binomial(link="logit"))
-glmer_examine(b_SomeOpt12C3)
-
-b_AllOpt12C3 <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
-                 cln_Base + clr_Ceil2Base + cln_Days+
-                 Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                 cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
-                   clr_Def3toUS+
-                 cp_PairObl7+
-                   cln_OffObl7#+cln_OffFocus
-                   )
-
-glmer_examine(b_AllOpt12C3)
 
 #Plot residuals versus fitted
-stargazer::stargazer(b_SomeOpt11B,b_SomeOpt12A,b_SomeOpt12B,b_SomeOpt12C2,b_SomeOpt12C3,
+stargazer::stargazer(b_SomeOpt11B,b_SomeOpt12A,b_SomeOpt12B,b_SomeOpt12C5,b_SomeOpt12C6,
                        type="text",
                        digits=2)
                      
-stargazer::stargazer(b_AllOpt11B,b_AllOpt12A,b_AllOpt12B,b_AllOpt12C2,b_AllOpt12C3,
+stargazer::stargazer(b_AllOpt11B,b_AllOpt12A,b_AllOpt12B,b_AllOpt12C,
                        type="text",
                        digits=2)
 
-summary_residual_compare(b_SomeOpt11B,b_SomeOpt12C)
-summary_residual_compare(b_AllOpt11B,b_AllOpt12C)
+summary_residual_compare(b_SomeOpt11B,b_SomeOpt12C5,b_SomeOpt11B,b_SomeOpt12C6,bins=50)
+summary_residual_compare(b_AllOpt11B,b_AllOpt12C,bins=50)
 ```
 Detailed Industry Focus unfortunately runs into VIF problems with office PBSC for the breach size model. Keeping office focus in the breach size model  does not always align with expectations, but is  significant, is a study variable and has a lower AIC, so keeping it.
 
-Office Volumne keeps its same significance and sign though pair history becomes insignificant, perhaps because offices with a great deal of volume had more history with momre vendors.
+Office Volume keeps its same significance and sign though pair history becomes insignificant, perhaps because offices with a great deal of volume had more history with more vendors.
+
+##Double checking restoration of removed inputs
+#### 13A: Cumulative Model
+With PairCA removed, may be possible to bring back all of the Def3toUS
+
+```{r Model12C}
+#Likelihood Plot for unlogged ceiling
+
+
+#Model
+b_SomeOpt13A <- glm (data=serv_opt,
+                 b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+#cln_PairCA +
+                   cln_Base + clr_Ceil2Base + cln_Days+
+                   Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                   cln_Def6HHI+clr_Def6toUS+
+                   cln_Def3HHI+
+                     clr_Def3toUS+
+                   cp_PairObl7+
+                   cln_OffObl7+cln_OffFocus , family=binomial(link="logit"))
+glmer_examine(b_SomeOpt13A)
+
+stargazer::stargazer(b_SomeOpt12C6,b_SomeOpt13A,
+                       type="text",
+                       digits=2)
+                     
+
+summary_residual_compare(b_SomeOpt12C6,b_SomeOpt13A,bins=50)
+
+```
+Once PairCA has been removed there's no real reason to leave out clr_Def3toUS, so restoring it to the model.
+
 
 ## Pre-Multilevel Model Summary
 
@@ -1730,21 +1889,21 @@ Office Volumne keeps its same significance and sign though pair history becomes 
 
 
 #Binary Ceiling Breaches
-  stargazer::stargazer(b_SomeOpt01A,b_SomeOpt01B,b_SomeOpt02A,b_SomeOpt02B,b_SomeOpt03A,b_SomeOpt03B,b_SomeOpt03D,b_SomeOpt12C,
+  stargazer::stargazer(b_SomeOpt01A,b_SomeOpt01B,b_SomeOpt02A,b_SomeOpt02B,b_SomeOpt03A,b_SomeOpt03B,b_SomeOpt03D,b_SomeOpt13A,
                        type="text",
                        digits=2)
 
 
 
-texreg::htmlreg(list(b_SomeOpt01A,b_SomeOpt01B,b_SomeOpt02A,b_SomeOpt02B,b_SomeOpt03A,b_SomeOpt03B,b_SomeOpt03D,b_SomeOpt12C3),file="..//Output//b_SomeOptmodel_lvl1.html",
+texreg::htmlreg(list(b_SomeOpt01A,b_SomeOpt01B,b_SomeOpt02A,b_SomeOpt02B,b_SomeOpt03A,b_SomeOpt03B,b_SomeOpt03D,b_SomeOpt13A),file="..//Output//b_SomeOptmodel_lvl1.html",
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7
-                              ),
+                # groups = list(
+                #               "Services Complexity" = 2:3,
+                #               "Office Capacity" =4:5,
+                #               "Past Relationship"=6:7
+                #               ),
                 custom.coef.map=study_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
@@ -1753,20 +1912,20 @@ texreg::htmlreg(list(b_SomeOpt01A,b_SomeOpt01B,b_SomeOpt02A,b_SomeOpt02B,b_SomeO
 
 
 #Absolute Size Ceiling Breaches
-stargazer::stargazer(b_AllOpt01A,b_AllOpt01B,b_AllOpt02A,b_AllOpt02B,b_AllOpt03A,b_AllOpt03B,b_AllOpt03D,b_AllOpt12C3,
+stargazer::stargazer(b_AllOpt01A,b_AllOpt01B,b_AllOpt02A,b_AllOpt02B,b_AllOpt03A,b_AllOpt03B,b_AllOpt03D,b_AllOpt12C,
                        type="text",
                        digits=2)
 
 
-texreg::htmlreg(list(b_AllOpt01A,b_AllOpt01B,b_AllOpt02A,b_AllOpt02B,b_AllOpt03A,b_AllOpt03B,b_AllOpt03D,b_AllOpt12C3),file="..//Output//b_AllOptmodel_lvl1.html",
+texreg::htmlreg(list(b_AllOpt01A,b_AllOpt01B,b_AllOpt02A,b_AllOpt02B,b_AllOpt03A,b_AllOpt03B,b_AllOpt03D,b_AllOpt12C),file="..//Output//b_AllOptmodel_lvl1.html",
                 single.row = TRUE,
                 # custom.model.name=c("Ceiling Breaches"),
                 stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7
-                              ),
+                #groups = list(
+                #              "Services Complexity" = 2:3,
+                #              "Office Capacity" =4:5,
+                #              "Past Relationship"=6:7
+                #              ),
                 custom.coef.map=study_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
@@ -1778,7 +1937,19 @@ texreg::htmlreg(list(b_AllOpt01A,b_AllOpt01B,b_AllOpt02A,b_AllOpt02B,b_AllOpt03A
 
 
 ```
-
+As a brief summary for study variables:
+AllOpt:
+  (1) Higher service complexity variables - Both variables meet expectations, though average salary is only statistically significant at the 5% level
+  (2) Office capacity variables - Only percent office PBSC is in the model - negative, statistically significant relationship, the opposite of expectations
+  (3) Deeper office-vendor relationship variables - Only paired years meets expectations; paired year contract actions does not, displaying a negative, statistically significant relationship
+  
+SomeOpt:
+  (1) Higher service complexity variables - Only invoice rate meets expectations
+  (2) Office capacity variables - Only percent office PBSC is in the model - negative, statistically significant relationship, the opposite of expectations
+  (3) Deeper office-vendor relationship variables - Only paired years included in model, meets expectations
+  
+So, to be clear, at this point:
+In AllOpt model, cp_OffPSC7 has been dropped from the model (later added back).  In SomeOpt model, both cp_OffPSC7 and cln_PairCA have been dropped.
 
 ####15A: Average U.S. Salaries (logged):Contract Pricing
 Cost-based and incentive contract types may do a  better job at handling complex contracts.
@@ -1810,25 +1981,25 @@ summary_residual_compare(b_SomeOpt_salary_pricing_15A_no_interact, b_SomeOpt_sal
 summary_residual_compare(b_AllOpt_salary_pricing_15A_no_interact, b_AllOpt_salary_pricing_15A, bins=5)
 
 ```
-For likelihood expectations are only partially hold, predominately for other cost based and combination or other. For size, expectations are widely upheld, except UCA contracts which are a special case of cost absed. 
+Expectations hold for incentive for some contracts, though not for other cost based. That said, for both models, incentive loses significance in the original input, and thus even with a large AIC reduction it may not be worth it.
 ####15B: Cumulative
 ```{r Model15B}
 #Create the model
 b_SomeOpt_salary_pricing_15B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
+                 cln_OffFocus+
                  Pricing:cl_US6_avg_sal_lag1, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_salary_pricing_15B)
 
@@ -1841,16 +2012,16 @@ b_AllOpt_salary_pricing_15B <- glm(data=serv_exeropt, family=binomial(link="logi
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
+                 cln_OffFocus+
                    Pricing:cl_US6_avg_sal_lag1)
 glmer_examine(b_AllOpt_salary_pricing_15B)
 
 ```
-Maximum VIF greatly exceeds 2 in both cases.
+Maximum GVIF^(1/(2*Df)) greatly exceeds 2 in both cases.
 
 
 
@@ -1886,7 +2057,8 @@ summary_residual_compare(b_SomeOpt_partnership_actions_16A_no_interact, b_SomeOp
 summary_residual_compare(b_AllOpt_partnership_actions_16A_no_interact, b_AllOpt_partnership_actions_16A, bins=3)
 
 ```
-The interaction was signiicant in both cases but positive and contrary to expectations for likelihood and negative and in keeping with expectations for breach size. That said for likelihood  the introduction of the interaction does result in pairCA switching to a negative sign which is in keeping with expectations. Seems worth considering adding in both cases.
+The coefficients were negative and significant in both cases, contrary to expectations.
+
 ####16B: Cumulative
 ```{r Model16B}
 #Create the model
@@ -1900,7 +2072,7 @@ b_SomeOpt_partnership_actions_16B <- glm(data=serv_opt,
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
@@ -1918,26 +2090,26 @@ b_AllOpt_partnership_actions_16B <- glm(data=serv_exeropt, family=binomial(link=
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cl_office_NAICS6_hhi_kc+
+                 cln_OffFocus+
                    cp_OffPerf7:cln_PairCA)
 
 
 #Compare the models
-stargazer::stargazer(b_SomeOpt12C3, b_SomeOpt_partnership_actions_16B, 
-                     b_AllOpt12C3, b_AllOpt_partnership_actions_16B, type="text", digits=2)
+stargazer::stargazer(b_SomeOpt13A, b_SomeOpt_partnership_actions_16B, 
+                     b_AllOpt12C, b_AllOpt_partnership_actions_16B, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt12C3, b_SomeOpt_partnership_actions_16B)
-summary_residual_compare(b_AllOpt12C3, b_AllOpt_partnership_actions_16B)
+summary_residual_compare(b_SomeOpt13A, b_SomeOpt_partnership_actions_16B,
+                         b_AllOpt12C, b_AllOpt_partnership_actions_16B,bins=50)
 ```
 
-The results were similar to those of the isolated models. Doesn't seem to worsen residuals and greatly helps AIC. Adding in both cases, despite being positive contrary to expectations for b_SomeOpt.
+The results remain contrary to expectations and do little for VIF (restoring pairCA also outright raises AIC for the some model). Leaving it out.
 
-Current cumulative b_SomeOpt model: b_SomeOpt_partnership_actions_16B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_SomeOpt model: b_SomeOpt13A
+Current cumulative b_AllOpt model: b_AllOpt12C
 
 ####17A: Office Partnership:Market Vendor Share for that Office
 Performance based contracting is thought to mitigte some of the risks of vendor  lock.
@@ -1964,49 +2136,32 @@ glmer_examine(b_AllOpt_partnership_share_17A)
 stargazer::stargazer(b_SomeOpt_partnership_share_17A_no_interact, b_SomeOpt_partnership_share_17A, 
                      b_AllOpt_partnership_share_17A_no_interact, b_AllOpt_partnership_share_17A, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_partnership_share_17A_no_interact, b_SomeOpt_partnership_share_17A)
-summary_residual_compare(b_AllOpt_partnership_share_17A_no_interact, b_AllOpt_partnership_share_17A)
+summary_residual_compare(b_SomeOpt_partnership_share_17A_no_interact, b_SomeOpt_partnership_share_17A,
+                         b_AllOpt_partnership_share_17A_no_interact, b_AllOpt_partnership_share_17A,bins=50)
 ```
-Positive, contrary to expectation in both cases. No clear benefit in the residuals.
+Positive, in line with expectations although only significant at the p<0.05 level for some options.
+
 ####17B: Cumulative
 ```{r Model17B}
 #Create the model
 b_SomeOpt_partnership_share_17B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                 cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7, family=binomial(link="logit"))
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_partnership_share_17B)
 
-b_SomeOpt_partnership_share_17B2 <- glm(data=serv_opt,
-                        b_SomeOpt ~  cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
-                 cln_Base + clr_Ceil2Base + cln_Days+
-                 Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                 cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
-                   clr_Def3toUS+
-                 cp_PairObl7+
-                   cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                 #cp_OffPerf7:cln_PairCA+
-                   cp_OffPerf7:cp_PairObl7, family=binomial(link="logit"))
-glmer_examine(b_SomeOpt_partnership_share_17B2)
 
 
 b_AllOpt_partnership_share_17B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
@@ -2018,50 +2173,31 @@ b_AllOpt_partnership_share_17B <- glm(data=serv_exeropt, family=binomial(link="l
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7)
+                 cln_OffFocus+
+                   cp_OffPerf7:cp_PairObl7)
 glmer_examine(b_AllOpt_partnership_share_17B)
 
 
-b_AllOpt_partnership_share_17B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
-                 cln_Base + clr_Ceil2Base + cln_Days+
-                 Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                 cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
-                   clr_Def3toUS+
-                 cp_PairObl7+
-                   cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cp_PairObl7)
-glmer_examine(b_AllOpt_partnership_share_17B2)
 
 #Compare the models
-stargazer::stargazer(b_SomeOpt_partnership_actions_16B, b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_share_17B2,
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_share_17B2, type="text", digits=2)
+stargazer::stargazer(b_SomeOpt13A, b_SomeOpt_partnership_share_17B, 
+                     b_AllOpt12C, b_AllOpt_partnership_share_17B, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_partnership_actions_16B, b_SomeOpt_partnership_share_17B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_share_17B2)
+summary_residual_compare(b_SomeOpt13A, b_SomeOpt_partnership_share_17B,
+                         b_AllOpt12C, b_AllOpt_partnership_share_17B,bins=50)
 ```
-For likelihood, it negative in alignment with expectations, does prompt a small reduction in AIC and thus seems worth adding.
-
-For size, VIF violations preclude allowing both PBSC:pairCA and PBSC and p_Mark for likelihood. PBSC:pairCA is in line with expectations and has a lower AIC, so is clearly the one to keep.
-
+Only a small improvement in AIC but significant in both cases and in line with expectation, doesn't make VIF worse. Keeping.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_partnership_share_17B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_partnership_share_17B
 
 
 ####17C: Office Volume:Market Vendor Share for that Office
-A small office heavily reliant on a single vendor may just be practical consolidation of contract. For a large office, said primacy is more noteworthy and may indicate vendor lock-in. In keeping with p_Market as a whole this may mean more options exercised and fewer terminations  given the absence of other choices. However, a greater likelihood of ceiling breaches and a greater size of ceiling breaches is the expected donside.
+A small office heavily reliant on a single vendor may just be practical consolidation of contract. For a large office, said primacy is more noteworthy and may indicate vendor lock-in. In keeping with p_Market as a whole this may mean more options exercised both in the SomeOpt and AllOpt models for lock-in reasons.  cp_OffObl7 is expected to have a positive relationship with both SomeOpt and AllOpt, while cp_PairObl7 is expected to have a positive relationship with SomeOpt and a negative relationship with AllOpt.
 
 (option,breach,termination)
 Interact: Office Volume cln_OffObl7: cp_PairObl7		+	+	-
@@ -2089,16 +2225,20 @@ stargazer::stargazer(b_SomeOpt17C_no_interact, b_SomeOpt17C,
                      b_AllOpt17C_no_interact, b_AllOpt17C, type="text", digits=2)
 
 summary_residual_compare(b_SomeOpt17C_no_interact, b_SomeOpt17C)
-summary_residual_compare(b_AllOpt17C_no_interact, b_AllOpt17C)
+summary_residual_compare(b_AllOpt17C_no_interact, b_AllOpt17C, bins = 50)
 ```
-The interaction significantly estimated a lower likelihood of ceiling breaches, contrary to expectation. However for size the interaction estimated significantly larger breaches with 
+SomeOpt:
+In model w/ no interactions, only cln_OffObl7 meets expectations.  In model with interactions, both cln_OffObl7 and the interaction term meet expectations.
+AllOpt: cp_PairObl7 meets expectations in model with and without interactions.  No other variable meets expectations in either model.
+
+
 ####17D: Cumulative
 ```{r Model17D}
 #Create the model
 b_SomeOpt17D <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -2110,7 +2250,7 @@ b_SomeOpt17D <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                 cp_OffPerf7:cln_PairCA+
+                 
                    cp_OffPerf7:cp_PairObl7+cln_OffObl7:cp_PairObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt17D)
 
@@ -2124,12 +2264,13 @@ b_AllOpt17D <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   
                    cln_OffObl7:cp_PairObl7)
 glmer_examine(b_AllOpt17D)
 
@@ -2143,33 +2284,38 @@ b_AllOpt17D2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   # 
                    cln_OffObl7:cp_PairObl7)
 glmer_examine(b_AllOpt17D2)
 
 
 #Compare the models
-stargazer::stargazer(b_SomeOpt_partnership_share_17B2, b_SomeOpt17D, b_SomeOpt17D,
-                     b_AllOpt_partnership_actions_16B, b_AllOpt17D2, type="text", digits=2)
+stargazer::stargazer(b_SomeOpt_partnership_share_17B, b_SomeOpt17D, b_SomeOpt17D,
+                     b_AllOpt_partnership_share_17B, b_AllOpt17D2, type="text", digits=2)
 
 
-stargazer::stargazer(b_SomeOpt_partnership_actions_16B, b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_share_17B2,
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_share_17B2, type="text", digits=2)
+stargazer::stargazer(b_SomeOpt_partnership_share_17B, 
+                     b_AllOpt_partnership_share_17B, type="text", digits=2)
+
+stargazer::stargazer(b_SomeOpt17D, 
+                     b_AllOpt17D, type="text", digits=2)
 
 
-summary_residual_compare(b_SomeOpt_partnership_actions_16B, b_SomeOpt17D)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt17D2)
+summary_residual_compare(b_SomeOpt_partnership_share_17B, b_SomeOpt17D, bins = 50)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt17D2, bins = 50)
 ```
+SomeOpt: cln_OffObl7, cln_OffFocus, cp_OffPerf7:cp_PairObl7, cp_PairObl7:cln_OffObl7 all meet expectations
+AllOpt: cp_PairObl7, cln_OffFocus, and both interactions meet expectations.
 
-Significant negative estimate of likelihood is contrary to expectation. Significant positive estimate of breach size is in line with expectations but to avoid multicollinearity requires removing cp_OffPerf7:cln_PairCA. However, the model with cp_OffPerf7:cln_PairCA has a lower AIC and is relevant  to  a study variable. Leaving this interaction out.
 
-Current cumulative b_SomeOpt model: b_SomeOpt_partnership_share_17B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_SomeOpt model: b_SomeOpt17D
+Current cumulative b_AllOpt model: b_AllOpt17D
 
 
 ####18A: Office Partnership:Initial Contract Duration (logged)
@@ -2185,7 +2331,7 @@ glmer_examine(b_SomeOpt_partnership_duration_18A_no_interact)
 b_SomeOpt_partnership_duration_18A <- glm(data=serv_opt, b_SomeOpt ~ cp_OffPerf7 + cln_Days + cp_OffPerf7: cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_partnership_duration_18A)
 
-b_AllOpt_partnership_duration_18A_no_interact <- glm(data=serv_breach , b_AllOpt ~ cp_OffPerf7 + cln_Days)
+b_AllOpt_partnership_duration_18A_no_interact <- glm(data=serv_exeropt , b_AllOpt ~ cp_OffPerf7 + cln_Days)
 glmer_examine(b_AllOpt_partnership_duration_18A_no_interact)
 
 b_AllOpt_partnership_duration_18A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cp_OffPerf7 + cln_Days + cp_OffPerf7: cln_Days)
@@ -2199,26 +2345,30 @@ stargazer::stargazer(b_SomeOpt_partnership_duration_18A_no_interact, b_SomeOpt_p
 summary_residual_compare(b_SomeOpt_partnership_duration_18A_no_interact, b_SomeOpt_partnership_duration_18A)
 summary_residual_compare(b_AllOpt_partnership_duration_18A_no_interact, b_AllOpt_partnership_duration_18A)
 ```
-The results are siginificant, negative, and align with expectations in both cases.  The maginitude of the coeefficient and reduction in AIC is notably larger for likelihood than for size, but both seem worth considering.
+VIF for b_AllOpt_partnership_duration_18A is very elevated, but correct GVIF in the next section is acceptable, so will retain this interaction for now.
+
+SomeOpt: Interaction is the opposite of expectations.
+AllOpt: Interaction meets expectations
+
 ####18B: Cumulative
 ```{r Model18B}
 #Create the model
 b_SomeOpt_partnership_duration_18B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                 cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_partnership_duration_18B)
 
@@ -2231,45 +2381,48 @@ b_AllOpt_partnership_duration_18B <- glm(data=serv_exeropt, family=binomial(link
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   
                    cp_OffPerf7:cln_Days)
 glmer_examine(b_AllOpt_partnership_duration_18B)
 
 b_AllOpt_partnership_duration_18B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   # 
                    cp_OffPerf7:cln_Days)
 glmer_examine(b_AllOpt_partnership_duration_18B2)
 
 
 #Compare the models
 stargazer::stargazer(b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_duration_18B, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_duration_18B2, type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt_partnership_duration_18B2, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_duration_18B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_partnership_duration_18B2)
+summary_residual_compare(b_SomeOpt_partnership_share_17B, b_SomeOpt_partnership_duration_18B, bins = 50)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_partnership_duration_18B2, bins = 50)
 ```
-For frequeny, the results are significant andin  line with expectations. For sign the results violate VIF requiring the removal of cp_OffPerf7:cln_PairCA to procede. The coeficient for the cp_OffPerf7:cln_Days in the resulting model is not significant and has a AIC notably than for the prior model. The interaction will be added for likelihood but not size.
+In both models, interaction terms lose their significance.  Residuals for b_SomeOpt model are edigng towards intolerable, and since the interaction isn't significant in either model specification, dropping it.
 
-Current cumulative b_SomeOpt model: b_SomeOpt_partnership_duration_18B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+
+Current cumulative b_SomeOpt model: b_SomeOpt17D
+Current cumulative b_AllOpt model: b_AllOpt17D
 
 
 ####19A: Past Years:Contract Pricing
@@ -2307,27 +2460,33 @@ summary_residual_compare(b_SomeOpt_history_pricing_19A_no_interact, b_SomeOpt_hi
 summary_residual_compare(b_AllOpt_history_pricing_19A_no_interact, b_AllOpt_history_pricing_19A)
 
 ```
-For likelihood the results are negative in line with expectations hold for other CA and combination or other but not for incentive. For size the results are largely out of line with expectations at all.
+Again, VIF scores elevated in AllOpt model, but fall into acceptable tolerances when considering scaled GVIFs in the next section, so are tolerated here.
+
+SomeOpt: Expectations met for incentive-based cotnract, other cost-based contracts, and undefinitized contract awards.
+
+AllOpt: Expectations met for Other cost-based contracts and undefinitized contract awards.
+
+
 ####19B: Cumulative
 ```{r Model19B}
 #Create the model
 b_SomeOpt_history_pricing_19B <- glm(data=serv_opt,
                                   b_SomeOpt ~  cln_US6sal + 
                                     cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                                    cn_PairHist7+cln_PairCA+
+                                    cn_PairHist7+#cln_PairCA+
                                     cln_Base + clr_Ceil2Base + cln_Days+
                                     Comp+
                                     Veh+
                                     Pricing+
                                     Crisis+
                                     cln_Def6HHI+clr_Def6toUS+
-                                    #cln_Def3HHI+
+                                    cln_Def3HHI+
                                     clr_Def3toUS+
                                     cp_PairObl7+
                                     cln_OffObl7+ 
-                                    #cln_OffFocus+ 
-                                    cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
-                                    cp_OffPerf7:cln_Days+
+                                    cln_OffFocus+ 
+                                    cp_OffPerf7:cp_PairObl7+
+                                    #cp_OffPerf7:cln_Days+
                                     cn_PairHist7:Pricing, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_history_pricing_19B)
 
@@ -2340,12 +2499,13 @@ b_AllOpt_history_pricing_19B <- glm(data=serv_exeropt, family=binomial(link="log
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   
                    cn_PairHist7:Pricing)
 glmer_examine(b_AllOpt_history_pricing_19B)
 
@@ -2358,27 +2518,29 @@ b_AllOpt_history_pricing_19B2 <- glm(data=serv_exeropt, family=binomial(link="lo
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   # 
                    cn_PairHist7:Pricing)
 glmer_examine(b_AllOpt_history_pricing_19B2)
 
 
 #Compare the models
 stargazer::stargazer(b_SomeOpt_partnership_duration_18B, b_SomeOpt_history_pricing_19B,
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_history_pricing_19B2, type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt_history_pricing_19B, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_partnership_duration_18B, b_SomeOpt_history_pricing_19B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_history_pricing_19B2)
+summary_residual_compare(b_SomeOpt_partnership_duration_18B, b_SomeOpt_history_pricing_19B, bins = 50)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_history_pricing_19B, bins = 50)
 ```
-For likelihood the results are insignificant and in line with expectations for other cost based but are otherwise not significant at the 0.05 level or contrary to expectations. Leaving it out. For breach size, VIF exceeded 2 for the initial model requiring consideration without the other  interaction in place. c_PBSC and cln_PairCA has the advantage of having both base variables e significant and a lower AIC. The residuals are smaller for past years:pricing but show more of a sinusodial pattern. Leaving this out for size as well.
+SomeOpt: Expectations met for incentive pricing interaction ad combination pricing interaction
+AllOpt: Expectations are not met for any interactions
 
-Current cumulative b_SomeOpt model: b_SomeOpt_partnership_duration_18B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_SomeOpt model: b_SomeOpt_history_pricing_19B
+Current cumulative b_AllOpt model: b_AllOpt_history_pricing_19B
 
 
 ####20A: Competition:NAICS6 Detailed Industry (Level 6)
@@ -2427,19 +2589,19 @@ The interaction models consistently exceed VIF with both NAICS66 and NAICS3 HHI
 b_SomeOpt_competition_NAICS66_20B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+ 
+                                  cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_NAICS66_20B)
@@ -2454,31 +2616,33 @@ b_SomeOpt_competition_NAICS66_20B2 <- glm(data=serv_opt,
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  # cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+ 
+                                  # cp_OffPerf7:cp_PairObl7+
                  # cp_OffPerf7:cln_Days+
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_NAICS66_20B2)
 
 b_AllOpt_competition_NAICS66_20B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_NAICS66_20B)
 
@@ -2491,12 +2655,12 @@ b_AllOpt_competition_NAICS66_20B2 <- glm(data=serv_exeropt, family=binomial(link
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                   # 
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_NAICS66_20B2)
 
@@ -2504,19 +2668,19 @@ glmer_examine(b_AllOpt_competition_NAICS66_20B2)
 b_SomeOpt_competition_naincs3_20B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+ 
+                                  cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_naincs3_20B)
@@ -2531,31 +2695,31 @@ b_SomeOpt_competition_naincs3_20B2 <- glm(data=serv_opt,
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  # cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                 cln_OffFocus+ 
+                                  # cp_OffPerf7:cp_PairObl7+
                  # cp_OffPerf7:cln_Days+
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_naincs3_20B2)
 
 b_AllOpt_competition_naincs3_20B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                   
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_naincs3_20B)
 
@@ -2568,22 +2732,23 @@ b_AllOpt_competition_naincs3_20B2 <- glm(data=serv_exeropt, family=binomial(link
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                   # 
                    Comp:cln_Def6HHI)
 glmer_examine(b_AllOpt_competition_naincs3_20B2)
 
 ```
-For all HHI6 and HHI3 models, VIF is exceeded even with removal of other interaction terms.
+For all HHI6 and HHI3 models, scaled GVIF is exceeded even with removal of other interaction terms.  Thus, this interaction is not included in our model specification.
 
 ####21A: Ratio Initial Base to Ceiling Ratio (logged):Initial Contract Ceiling (logged)
-This interaction approximates has a role similar to that of contract ceiling, although due to centering and logging it isn't equivalent. Thus in essence it covers the dollars rather than merely the proportion available for options. More option  space gives more flexibility to the government and may lessen the need for ceiling breaches and terminations. Likewise, this interaction provides something like the dollar size of available  options, so naturally it can be associated with a greater spending.
+This interaction approximates has a role similar to that of contract ceiling, although due to centering and logging it isn't equivalent. Thus in essence it covers the dollars rather than merely the proportion available for options. More option  space gives more flexibility to the government and may lessen the need for ceiling breaches and terminations. Likewise, this interaction provides something like the dollar size of available  options, so naturally it can be associated with greater spending.
 (Options, Breach, Terminations)
 Initial Contract Ceiling (logged)	clr_Ceil2Base:cln_Base		TRUE	++	-	-
+Expectation - interaction is positively related to b_SomeOpt and negatively related to b_AllOpt.
 
 ```{r Model21A}
 #Create the models
@@ -2604,30 +2769,34 @@ glmer_examine(b_AllOpt_base2ceil_ceiling_21A)
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21A_no_interact, b_SomeOpt_base2ceil_ceiling_21A, 
                      b_AllOpt_base2ceil_ceiling_21A_no_interact, b_AllOpt_base2ceil_ceiling_21A, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_base2ceil_ceiling_21A_no_interact, b_SomeOpt_base2ceil_ceiling_21A)
-summary_residual_compare(b_AllOpt_base2ceil_ceiling_21A_no_interact, b_AllOpt_base2ceil_ceiling_21A)
+summary_residual_compare(b_SomeOpt_base2ceil_ceiling_21A_no_interact, b_SomeOpt_base2ceil_ceiling_21A, bins = 50)
+summary_residual_compare(b_AllOpt_base2ceil_ceiling_21A_no_interact, b_AllOpt_base2ceil_ceiling_21A, bins = 50)
 ```
-THe results are not significant and worsen the AIC. This seems unlikely to be included.
+SomeOpt: Expectation met
+AllOpt: Expectation not met
+
+
 ####21B: Cumulative
 ```{r Model21B}
 #Create the model
 b_SomeOpt_base2ceil_ceiling_21B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
-                 cp_OffPerf7:cln_Days+
+                 cln_OffFocus+ 
+                cp_OffPerf7:cp_PairObl7+
+                 #cp_OffPerf7:cln_Days+
+                  cn_PairHist7:Pricing +
                    clr_Ceil2Base:cln_Base, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_base2ceil_ceiling_21B)
 
@@ -2641,17 +2810,19 @@ b_AllOpt_base2ceil_ceiling_21B <- glm(data=serv_exeropt, family=binomial(link="l
                    Pricing+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
-                   #cln_Def3HHI+
+                   cln_Def3HHI+
                    clr_Def3toUS+
                    cp_PairObl7+
                    cln_OffObl7+
-                   # cln_OffFocus+
+                   cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
                    cp_OffPerf7:cln_PairCA + 
+                   cn_PairHist7:Pricing + 
                    clr_Ceil2Base:cln_Base)
 glmer_examine(b_AllOpt_base2ceil_ceiling_21B)
 
 
-b_AllOpt_base2ceil_ceiling_21B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
+b_AllOpt_base2ceil_ceiling_21Bv2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -2660,33 +2831,57 @@ b_AllOpt_base2ceil_ceiling_21B2 <- glm(data=serv_exeropt, family=binomial(link="
                    Pricing+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
-                   #cln_Def3HHI+
+                   cln_Def3HHI+
                    clr_Def3toUS+
                    cp_PairObl7+
                    cln_OffObl7+
-                   # cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA + 
-                   clr_Ceil2Base:cln_Base)
-glmer_examine(b_AllOpt_base2ceil_ceiling_21B2)
+                   cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   cp_OffPerf7:cln_PairCA + 
+                   cn_PairHist7:Pricing)
+glmer_examine(b_AllOpt_base2ceil_ceiling_21Bv2)
+
+b_AllOpt_base2ceil_ceiling_21Bv3 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+cln_PairCA+
+                 clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                   cln_Def6HHI+clr_Def6toUS+
+                   cln_Def3HHI+
+                   clr_Def3toUS+
+                   cp_PairObl7+
+                   cln_OffObl7+
+                   cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   cp_OffPerf7:cln_PairCA + 
+                   cn_PairHist7:Pricing + 
+                 clr_Ceil2Base:cln_Base)
+glmer_examine(b_AllOpt_base2ceil_ceiling_21Bv3)
 
 #Compare the models
 stargazer::stargazer(b_SomeOpt_partnership_duration_18B, b_SomeOpt_base2ceil_ceiling_21B, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_base2ceil_ceiling_21B2,  type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt_base2ceil_ceiling_21B2,  type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_partnership_duration_18B, b_SomeOpt_base2ceil_ceiling_21B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_base2ceil_ceiling_21B2)
+stargazer::stargazer(b_AllOpt_base2ceil_ceiling_21Bv2, b_AllOpt_base2ceil_ceiling_21Bv3, type = "text", digits = 2)
+
+summary_residual_compare(b_SomeOpt_partnership_duration_18B, b_SomeOpt_base2ceil_ceiling_21B, bins = 50)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_base2ceil_ceiling_21B2, bins = 50)
+summary_residual_compare(b_AllOpt_base2ceil_ceiling_21Bv2, b_AllOpt_base2ceil_ceiling_21Bv3, bins = 50)
 ```
-The results are significant and positive, in line with expectations, in both cases. For breach size the residuals are perhaps lower magnitude residuals for the new model, although the significance and magnitude of the interaction coeffficient coefficient as well as the AIC are all better for the _pPBSC:cln_PairCA model. 
-
-Adding for likelihood but leaving out for size, though it's a borderline judgment.
+SomeOpt: Expectation met
+AllOpt: Scaled GVIF above threshold for cln_Base and cln_Base:clr_Ceil2Base.  Two alternative models set-up: model v2, which drops cln_base:clr_Ceil2Base and model v3, which drops cln_Base. Scaled VIF acceptable in both models.  Residuals borderline acceptable, more worrying in model v3.  Given that base meets expectations, and the interaction term does not, and the slight edge model v2 has in residuals, we choose to retain model v2 (i.e. drop the interaction term), despite v3 having a marginally lower AIC (also because not a great idea to include an interaction term without including one of its component variables).
 
 Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_base2ceil_ceiling_21Bv2
 
 ####21C: Available Options:Initial Contract Duration (logged)
 increase the extend of options exercised as it means continuing a contract rather than including additional features. Option years may also provide more options for cost controls. and reduce ceiling breaches.
 (Options, Ceiling Breach, Terminations)
 ++	-	-
+Expectation: Pos. relationship with SomeOpt, negative relationship with AllOpt.
 ```{r Model21C}
 b_SomeOpt_base2ceil_duration_21C_no_interact <- glm(data=serv_opt, b_SomeOpt ~ clr_Ceil2Base + cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_base2ceil_duration_21C_no_interact)
@@ -2700,8 +2895,12 @@ glmer_examine(b_AllOpt_base2ceil_duration_21C_no_interact)
 b_AllOpt_base2ceil_duration_21C <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ clr_Ceil2Base + cln_Days + clr_Ceil2Base:cln_Days)
 glmer_examine(b_AllOpt_base2ceil_duration_21C)
 
+stargazer::stargazer(b_SomeOpt_base2ceil_duration_21C_no_interact, b_SomeOpt_base2ceil_duration_21C, type = "text", digits = 2)
+
 ```
-VIF exceeds 2 for both models.
+VIF exceeds acceptable threshold for AllOpt.  Worryingly high for SomeOpt, but not above reject threshold since brought down to tolerable levels in cumulative model (>2 requires check in cumulative, >3 is an instant rejection).
+
+Matches expectations in SomeOpt model.
 
 ####21D: Cumulative
 ```{r Model21D}
@@ -2709,20 +2908,19 @@ VIF exceeds 2 for both models.
 b_SomeOpt_base2ceil_duration_21D <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                  cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
-                 cp_OffPerf7:cln_Days+
+                 cln_OffFocus+ 
+                   cp_OffPerf7:cp_PairObl7+
                    clr_Ceil2Base:cln_Days+
                    clr_Ceil2Base:cln_Base, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_base2ceil_duration_21D)
@@ -2736,49 +2934,51 @@ b_AllOpt_base2ceil_duration_21D <- glm(data=serv_exeropt, family=binomial(link="
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   cp_OffPerf7:cln_PairCA+
-                   clr_Ceil2Base:cln_Days)
+                 cln_OffFocus+
+                   cp_OffPerf7:cp_PairObl7 +
+                cp_OffPerf7:cln_PairCA + 
+                   cn_PairHist7:Pricing)
 glmer_examine(b_AllOpt_base2ceil_duration_21D)
 
 b_AllOpt_base2ceil_duration_21D2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+
-                   # cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
+                   # 
                    clr_Ceil2Base:cln_Days)
 glmer_examine(b_AllOpt_base2ceil_duration_21D2)
 
 
 #Compare the models
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt_base2ceil_duration_21D, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt_base2ceil_duration_21D2, type="text", digits=2)
+                     b_AllOpt_base2ceil_ceiling_21Bv2, b_AllOpt_base2ceil_duration_21D, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt_base2ceil_duration_21D)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_base2ceil_duration_21D2)
+summary_residual_compare(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt_base2ceil_duration_21D, bins = 50)
+summary_residual_compare(b_AllOpt_base2ceil_ceiling_21Bv2, b_AllOpt_base2ceil_duration_21D)
 ```
-In neither case is the new variable significant nor does it reduce VIF. Leaving it out.
+Not included in AllOpt model.  Statistically significant and disagrees with expectations in SomeOpt model.  Raises VIF.  Choose not to include.
 
 Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_AllOpt model: b_AllOpt_base2ceil_ceiling_21Bv2
 
 
 ####22A: CFTE (logged):Contract Pricing
-Cost-based and incentive contract types may do a  better job at handling complex contracts.
+Cost-based and incentive contract types may do a better job at handling complex contracts.
 
 ```{r Model22A}
 #Create the models
@@ -2810,6 +3010,7 @@ summary_residual_compare(b_SomeOpt_CFTE_pricing_22A_no_interact, b_SomeOpt_CFTE_
 summary_residual_compare(b_AllOpt_CFTE_pricing_22A_no_interact, b_AllOpt_CFTE_pricing_22A, bins=3)
 
 ```
+GVIF above acceptable threshold in both models - will not include.
 
 ####22B: Cumulative
 ```{r Model22B}
@@ -2817,19 +3018,19 @@ summary_residual_compare(b_AllOpt_CFTE_pricing_22A_no_interact, b_AllOpt_CFTE_pr
 b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                     cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+ 
+                                     
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -2845,12 +3046,12 @@ b_AllOpt_CFTE_pricing_22B <- glm(data=serv_exeropt, family=binomial(link="logit"
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                   cp_OffPerf7:cln_PairCA+
-                 #cln_OffFocus+
+                   
+                 cln_OffFocus+
                    Pricing:cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22B)
 
@@ -2863,32 +3064,31 @@ b_AllOpt_CFTE_pricing_22B2 <- glm(data=serv_exeropt, family=binomial(link="logit
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                   # cp_OffPerf7:cln_PairCA+
-                 #cln_OffFocus+
+                   # 
+                 cln_OffFocus+
+                 cp_OffPerf7:cp_PairObl7+
                    Pricing:cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22B2)
 
 #Compare the models
   stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt_CFTE_pricing_22B, 
-                       b_AllOpt_partnership_actions_16B, b_AllOpt_CFTE_pricing_22B2, type="text", digits=2)
+                       b_AllOpt_partnership_share_17B, b_AllOpt_CFTE_pricing_22B2, type="text", digits=2)
 
 summary_residual_compare(b_SomeOpt12C3, b_SomeOpt_CFTE_pricing_22B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt_CFTE_pricing_22B)
+summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_CFTE_pricing_22B)
 
 ```
-For likelihood, the coefficient for other cost-base and combination or other are negative and significant as expected. The coefficient for Incentive is significant quite large and positive while the coefficient for other fixed price is significantly positive and substantial, in both cases contrary to expectation
+VIF precludes inclusion.
 
-For size, VIF again precludes multiple interactions. c_PBSC:cp_PairObl7 more closely aligns with expectations and has a lower AIC, making keeping it an easy choice.
-
-Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_22B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
+Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B
+Current cumulative b_AllOpt model: b_AllOpt_base2ceil_ceiling_21Bv2
 
 ####23A: Office Serv. Code Exp:Office Obligations
-A large office may be able to more effectively divide its attention, limiting the downsizes of a small experience share.  The estimated outcomes are negative for options and positive for ceiling breaches and terminations because this would be expected to enhance the better performance outcomes expected for the input of cp_PSC7
+A large office may be able to more effectively divide its attention, limiting the downsides of a small experience share.  The estimated outcomes are negative for options and positive for ceiling breaches and terminations because this would be expected to enhance the better performance outcomes expected for the input of cp_PSC7
 
 (Options, Ceiling, Termination)
 Interact: Office Obligations	cp_PSC7:cln_OffObl7			-	+	+
@@ -2922,88 +3122,36 @@ summary_residual_compare(b_SomeOpt23A_no_interact, b_SomeOpt23A, bins=5)
 summary_residual_compare(b_AllOpt23A_no_interact, b_AllOpt23A, bins=3)
 
 ```
-Results were significant and negative, counter to expectations for breach likelihood. For size the results were significant and positive, in line with expectations, and did make a greater reduction in AIC>
+GVIF for AllOpt model is above 2, triggering a review of the cumulative model.  Scaled GVIF in cumulative model is acceptable, so we retain the interaction here.  Interaction is strongly negative and statistically significant, as expected.
+
+GVIF for SomeOpt model acceptable.  Interaction does not meet expectation.
+
 ####23B: Cumulative
 ```{r Model23B}
 #Create the model
 b_SomeOpt23B <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
                    Pricing+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
+                 cln_Def3HHI+
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cln_OffFocus+ 
-                                     cp_OffPerf7:cln_PairCA+
+                 cln_OffFocus+ 
+                                     
                    cp_OffPerf7:cp_PairObl7+
-                 cp_OffPerf7:cln_Days+
+                 cn_PairHist7:Pricing + 
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate+
                    pOffPSC:cln_OffObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt23B)
 
 b_AllOpt23B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
-                 cln_Base + clr_Ceil2Base + cln_Days+
-                 Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                 cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
-                   clr_Def3toUS+
-                 cp_PairObl7+
-                   cln_OffObl7+ 
-                   cp_OffPerf7:cln_PairCA+
-                 #cln_OffFocus+
-                   pOffPSC:cln_OffObl7)
-glmer_examine(b_AllOpt23B)
-
-b_AllOpt23B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
-                 cln_Base + clr_Ceil2Base + cln_Days+
-                 Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                 cln_Def6HHI+clr_Def6toUS+
-                 #cln_Def3HHI+
-                   clr_Def3toUS+
-                 cp_PairObl7+
-                   cln_OffObl7+ 
-                   # cp_OffPerf7:cln_PairCA+
-                 #cln_OffFocus+
-                   pOffPSC:cln_OffObl7)
-glmer_examine(b_AllOpt23B2)
-
-#Compare the models
-  stargazer::stargazer(b_SomeOpt_CFTE_pricing_22B, b_SomeOpt23B, 
-                       b_AllOpt_partnership_actions_16B, b_AllOpt23B2, type="text", digits=2)
-
-summary_residual_compare(b_SomeOpt_CFTE_pricing_22B, b_SomeOpt23B)
-summary_residual_compare(b_AllOpt_partnership_actions_16B, b_AllOpt22B)
-
-```
-Remains negative and contrary to expectation for likelihood. Positive and in line with expectation for ceiling breach size, but would require removing a prior interaction to avoid multicollienarity and c_pPSC:cl:PairCAis associated with a lower AIC. Leaving it out.
-
-Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_22B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
-
-
-####24A: Restoring cln_Def3HHI and cln_OffFocus
-```{r Model24A}
-#Create the model
-b_SomeOpt24A <- b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
-                        b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -3017,11 +3165,64 @@ b_SomeOpt24A <- b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     cp_OffPerf7:cln_PairCA+
+                   cp_OffPerf7:cp_PairObl7 + 
+                    cp_OffPerf7:cln_PairCA + 
+                   pOffPSC:cln_OffObl7)
+glmer_examine(b_AllOpt23B)
+
+# b_AllOpt23B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
+#                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+#                  cn_PairHist7+cln_PairCA+
+#                  cln_Base + clr_Ceil2Base + cln_Days+
+#                  Comp+
+#                    Veh+
+#                    Pricing+
+#                    Crisis+
+#                  cln_Def6HHI+clr_Def6toUS+
+#                  cln_Def3HHI+
+#                    clr_Def3toUS+
+#                  cp_PairObl7+
+#                    cln_OffObl7+ 
+#                    # 
+#                  cln_OffFocus+
+#                  cp_OffPerf7:cp_PairObl7+
+#                    pOffPSC:cln_OffObl7)
+# glmer_examine(b_AllOpt23B2)
+
+#Compare the models
+  stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt23B, 
+                       b_AllOpt_base2ceil_ceiling_21Bv2, b_AllOpt23B, type="text", digits=2)
+
+summary_residual_compare(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt23B, bins = 50)
+summary_residual_compare(b_AllOpt_base2ceil_ceiling_21Bv2, b_AllOpt23B, bins = 50)
+
+```
+For SomeOpt, interaction violates expectations.  For AllOpt, interaction meets expectations.
+
+Current cumulative b_SomeOpt model: b_SomeOpt23B
+Current cumulative b_AllOpt model: b_AllOpt23B
+
+####24A: Restoring cln_Def3HHI and cln_OffFocus
+```{r Model24A}
+#Create the model
+b_SomeOpt24A <- b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
+                        b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+#cln_PairCA+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                 cln_Def6HHI+clr_Def6toUS+
+                 cln_Def3HHI+
+                   clr_Def3toUS+
+                 cp_PairObl7+
+                   cln_OffObl7+ 
+                 cln_OffFocus+
                    cp_OffPerf7:cp_PairObl7+
-                 cp_OffPerf7:cln_Days+
-                   clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate
+                   cn_PairHist7:Pricing + 
+                   clr_Ceil2Base:cln_Base
   , family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24A)
 
@@ -3032,6 +3233,7 @@ glmer_examine(b_SomeOpt24A)
 summary_residual_compare(b_SomeOpt_CFTE_pricing_22B, b_SomeOpt24A)
 
 ```
+Ignored, because both models already include in these variables.
 
 ####24B: Office Serv. Code Exp:Office Focus
 A large office may be able to more effectively divide its attention, limiting the downsizes of a small experience share.  The estimated outcomes are negative for options and positive for ceiling breaches and terminations because this would be expected to enhance the better performance outcomes expected for the input of cp_PSC7
@@ -3049,9 +3251,18 @@ b_SomeOpt24B <- glm(data=serv_opt, b_SomeOpt ~ pOffPSC + cln_OffFocus + pOffPSC:
                                  family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24B)
 
+b_AllOpt24B_no_interact <- glm(data=serv_exeropt, b_AllOpt ~ pOffPSC + cln_OffFocus, 
+                                             family=binomial(link="logit"))
+glmer_examine(b_AllOpt24B_no_interact)
+
+b_AllOpt24B <- glm(data=serv_exeropt, b_AllOpt ~ pOffPSC + cln_OffFocus + pOffPSC:cln_OffFocus, family = binomial(link = "logit"))
+glmer_examine(b_AllOpt24B)
+
+stargazer::stargazer(b_AllOpt24B, type = "text", digits = 2)
 
 ```
-VIF measures indicate multicolinearity.
+VIF measures indicate multicolinearity for SomeOpt model, and so not included.  Requires checking of cumulative model specification for AllOpt, where it is accepted.  Expectations met for AllOpt model.
+
 
 ####24C: Cumulative
 ```{r Model24C}
@@ -3059,7 +3270,7 @@ VIF measures indicate multicolinearity.
 b_SomeOpt24C <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3071,7 +3282,7 @@ b_SomeOpt24C <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     cp_OffPerf7:cln_PairCA+
+                                     
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3082,7 +3293,7 @@ glmer_examine(b_SomeOpt24C)
 b_SomeOpt24C2 <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3094,7 +3305,7 @@ b_SomeOpt24C2 <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     cp_OffPerf7:cln_PairCA+
+                                     
                    # cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3106,7 +3317,7 @@ glmer_examine(b_SomeOpt24C2)
 b_SomeOpt24C3 <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3118,7 +3329,7 @@ b_SomeOpt24C3 <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     # cp_OffPerf7:cln_PairCA+
+                                     # 
                    # cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3129,6 +3340,29 @@ glmer_examine(b_SomeOpt24C3)
 
 b_SomeOpt24C4 <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+#cln_PairCA+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                 cln_Def6HHI+clr_Def6toUS+
+                 cln_Def3HHI+
+                   clr_Def3toUS+
+                 cp_PairObl7+
+                   cln_OffObl7+ 
+                 cln_OffFocus+
+                                     # 
+                   # cp_OffPerf7:cp_PairObl7+
+                 # cp_OffPerf7:cln_Days+
+                   clr_Ceil2Base:cln_Base+
+                 Pricing:cln_PSCrate+
+                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
+glmer_examine(b_SomeOpt24C4)
+
+#AllOpt
+b_AllOpt24C <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
@@ -3142,17 +3376,21 @@ b_SomeOpt24C4 <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     # cp_OffPerf7:cln_PairCA+
-                   # cp_OffPerf7:cp_PairObl7+
-                 # cp_OffPerf7:cln_Days+
-                   clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
-glmer_examine(b_SomeOpt24C4)
-
+                   cp_OffPerf7:cp_PairObl7 + 
+                  cp_OffPerf7:cln_PairCA + 
+                    cp_OffPerf7:cln_PairCA + 
+                   pOffPSC:cln_OffObl7 +
+                   pOffPSC:cln_OffFocus)
+glmer_examine(b_AllOpt24C)
+stargazer::stargazer(b_AllOpt23B, b_AllOpt24C, type = "text", digits = 2)
+summary_residual_compare(b_AllOpt23B, b_AllOpt24C, bins = 50)
 ```
-VIF precludes inclusion
+VIF precludes inclusion for SomeOpt.
 
+Included for AllOpt - expectations met.
+
+Current cumulative b_SomeOpt model: b_SomeOpt23B
+Current cumulative b_AllOpt model: b_AllOpt24C
 
 ####24D: Office Obligations:Office Focus
 A large office may be able to more effectively divide its attention, limiting the upsides of focus. The estimated outcomes are negative for options and positive for ceiling breaches and terminations because this would be expected to enhance the better performance outcomes expected for the input of cp_PSC7
@@ -3168,11 +3406,17 @@ glmer_examine(b_SomeOpt24D_no_interact)
 
 b_SomeOpt24D <- glm(data=serv_opt, b_SomeOpt ~ cln_OffObl7 + cln_OffFocus + cln_OffObl7:cln_OffFocus,
                                  family=binomial(link="logit"))
-glmer_examine(b_SomeOpt24D)
 
+b_AllOpt24D <- glm(data=serv_exeropt, b_AllOpt ~ cln_OffObl7 + cln_OffFocus + cln_OffObl7:cln_OffFocus, family=binomial(link="logit"))
+
+glmer_examine(b_SomeOpt24D)
+glmer_examine(b_AllOpt24D)
+
+stargazer::stargazer(b_SomeOpt24D, b_AllOpt24D, type = "text", digits = 2)
+summary_residual_compare(b_SomeOpt23B, bins = 50)
 
 ```
-VIF measures indicate multicolinearity.
+Expectations met for both models.
 
 ####24E: Cumulative
 ```{r Model24E}
@@ -3180,7 +3424,7 @@ VIF measures indicate multicolinearity.
 b_SomeOpt24E <- glm(data=serv_opt,
                         b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA+
+                 cn_PairHist7+#cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
@@ -3192,7 +3436,7 @@ b_SomeOpt24E <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                                     cp_OffPerf7:cln_PairCA+
+                                     
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
@@ -3200,52 +3444,80 @@ b_SomeOpt24E <- glm(data=serv_opt,
                    cln_OffObl7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24E)
 
-#Compare the models
-  stargazer::stargazer(b_SomeOpt24A, b_SomeOpt24E, type="text", digits=2)
+b_AllOpt24E <- glm(data=serv_exeropt,
+                        b_AllOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+#cln_PairCA+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                 cln_Def6HHI+clr_Def6toUS+
+                 cln_Def3HHI+
+                   clr_Def3toUS+
+                 cp_PairObl7+
+                   cln_OffObl7+ 
+                 cln_OffFocus+
+                                     
+                   cp_OffPerf7:cp_PairObl7+
+                 cp_OffPerf7:cln_Days+
+                   clr_Ceil2Base:cln_Base+
+                 Pricing:cln_PSCrate+
+                   cln_OffObl7:cln_OffFocus, family=binomial(link="logit"))
+glmer_examine(b_AllOpt24E)
 
-summary_residual_compare(b_SomeOpt24A, b_SomeOpt24E)
+#Compare the models
+  stargazer::stargazer(b_SomeOpt23B, b_SomeOpt24E, type="text", digits=2)
+  stargazer::stargazer(b_AllOpt24C, b_AllOpt24E, type = "text", digits=2)
+
+summary_residual_compare(b_SomeOpt23B, b_SomeOpt24E)
+summary_residual_compare(b_AllOpt24C, b_AllOpt24E)
 
 ```
-Significant and nagative, contrary to expectation, leaving out.
+SomeOpt - insignificant, and raises AIC  Leaving out.
+AllOpt - inclusion pushes VIF above acceptable levels.  Given inclusion raises AIC, opt not to include.
+
+Final pre-multilevel run model selections are:
+SomeOpt: b_SomeOpt23B
+AllOpt: b_AllOpt24C
+
 # Multilevel Model
 ####25A: 2019-08-20 First run, original multilevel.
 This was created while we were still using ceiling instead of base.
-
-Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B
 
 ```{r CBre25A}
 if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
 
 if(!exists("b_SomeOpt25A")){
 #Create the model
-  b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal + 
+  b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                        cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
+                       cn_PairHist7+#cln_PairCA+
                        cln_Base + clr_Ceil2Base + cln_Days+
                        Comp+
                        Veh+
                        Pricing+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
+                       cln_Def3HHI+
                        clr_Def3toUS+
                        cp_PairObl7+
-                       cln_OffObl7+ 
-                       #cln_OffFocus+ 
-                       cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
+                       cln_OffObl7+
+                       cln_OffFocus+
+                       cp_OffPerf7:cp_PairObl7+
                        cp_OffPerf7:cln_Days+
                        clr_Ceil2Base:cln_Base+
-                       (1 | NAICS3/NAICS6/ServArea)+  
+                       (1 | NAICS3/NAICS6/ServArea)+
                        (1 | Agency/Office) +
-                       (1 | Place)+ 
+                       (1 | Place)+
                        (1 | StartFY),
                      family=binomial(link="logit"),
                      verbose=TRUE)
-
+  save(b_AllOpt25A, file = "..\\output\\b_AllOpt25A.rda")
   
   
-  b_AllOpt25A <- lmer(data=serv_breach, b_AllOpt ~ cln_US6sal + 
+  b_AllOpt25A <- glmer(data=serv_exeropt, b_AllOpt ~ cln_US6sal + 
                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                       cn_PairHist7+cln_PairCA+
                       cln_Base + clr_Ceil2Base + cln_Days+
@@ -3254,17 +3526,21 @@ if(!exists("b_SomeOpt25A")){
                       Pricing+
                       Crisis+
                       cln_Def6HHI+clr_Def6toUS+
-                      #cln_Def3HHI+
+                      cln_Def3HHI+
                       clr_Def3toUS+
                       cp_PairObl7+
                       cln_OffObl7+ 
-                      #cl_office_NAICS6_hhi_kc+
-                      cp_OffPerf7:cln_PairCA+
+                      cln_OffFocus+
+                      cp_OffPerf7:cp_PairObl7+
+                      cp_OffPerf7:cln_PairCA +
+                      pOffPSC:cln_OffObl7 + 
+                      pOffPSC:cln_OffFocus + 
                       (1 | NAICS3/NAICS6/ServArea)+  
                       (1 | Agency/Office) +
                       (1 | Place)+ 
                       (1 | StartFY),
-                    verbose=TRUE)
+                      family=binomial(link="logit"),
+                      verbose=TRUE)
   
   save(b_SomeOpt25A,b_AllOpt25A,file="..\\output\\CBre25A.rda")
 }
@@ -3275,197 +3551,20 @@ glmer_examine(b_AllOpt25A,display = TRUE)
 
 
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt25A, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt25A, type="text", digits=2)
+                     b_AllOpt_partnership_share_17B, b_AllOpt25A, type="text", digits=2)
 
 
-summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
-```
-Both models  failed to converge after a 100000 evaluations but the boolean model took a lot longer which, combined with multiple interactions and study variables losing significance, suggests that perhaps the  interactions should  be trimmed back.
-
-
-####26A: 2019-08-21 For size, swapping from p_PBSC to PairCA and base:basetoceiling ratio
-
-Dropping PBSC:pairCA for both models. For likelihood it's contrary to expectation and for size the base variables are no longer significant. 
-
-Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B; b_SomeOpt25A
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B; b_AllOpt25A
-
-```{r Term26A}
-if(file.exists("..//Output//b_AllOpt26A.rda")) load("..//Output//b_AllOpt26A.rda")
-
-if(!exists("b_AllOpt26A")){
-  #Create the model
-  b_AllOpt26A <- lmer(data=serv_breach, b_AllOpt ~ cln_US6sal + 
-                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                      cn_PairHist7+cln_PairCA+
-                      cln_Base + clr_Ceil2Base + cln_Days+
-                      Comp+
-                      Veh+
-                      Pricing+
-                      Crisis+
-                      cln_Def6HHI+clr_Def6toUS+
-                      #cln_Def3HHI+
-                      clr_Def3toUS+
-                      cp_PairObl7+
-                      cln_OffObl7+ 
-                      #cl_office_NAICS6_hhi_kc+
-                      # cp_OffPerf7:cln_PairCA+
-                      clr_Ceil2Base:cln_Base+
-                      (1 | NAICS3/NAICS6/ServArea)+  
-                      (1 | Agency/Office) +
-                      (1 | Place)+ 
-                      (1 | StartFY),
-                    verbose=TRUE)
-  save(b_AllOpt26A,file="..\\output\\b_AllOpt26A.rda")
-}
-#Compare the models
-glmer_examine(b_AllOpt26A,display = TRUE)
-
-
-
-stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt25A, 
-                     b_AllOpt_partnership_actions_16B, b_AllOpt25A, type="text", digits=2)
+stargazer::stargazer(b_AllOpt25A, type = "text", digits = 2)
 
 
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ```
 
+####25B: 2019-08-28 - Modified SomeOpt and AllOpt models for multilevel model run (attempting to leverage GVIF declines in multilevel model in 25A).
 
-####27A: 2019-08-22 CFTE:Pricing
-Dropping cp_OffPerf7:cp_PairObl7 and cp_OffPerf7:cp_PairObl7 as they were not significant in 2A. Adding Pricing:cln_PSCrate as a realized that it is another way to consider Pricing:AverageSalary that turns out to avoid VIF problems in the likelihood of breach model. 
+```{r Opt25B}
 
-Current cumulative b_SomeOpt model: b_SomeOpt_CFTE_pricing_22B, b_SomeOpt25A
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B, b_AllOpt25A
-
-```{r Term27A}
-if(file.exists("..//Output//b_SomeOpt27A.rda")) load("..//Output//b_SomeOpt27A.rda")
-
-if(!exists("b_SomeOpt27A")){
-  #Create the model
-  b_SomeOpt27A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal + 
-                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
-                       cln_Base + clr_Ceil2Base + cln_Days+
-                       Comp+
-                       Veh+
-                       Pricing+
-                       Crisis+
-                       cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
-                       clr_Def3toUS+
-                       cp_PairObl7+
-                       cln_OffObl7+ 
-                       #cln_OffFocus+ 
-                       cp_OffPerf7:cln_PairCA+#cp_OffPerf7:cp_PairObl7+
-                       cp_OffPerf7:cln_Days+
-                       Pricing:cln_PSCrate+
-                       #clr_Ceil2Base:cln_Base+
-                       
-                       (1 | NAICS3/NAICS6/ServArea)+  
-                       (1 | Agency/Office) +
-                       (1 | Place)+ 
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  save(b_SomeOpt27A,file="..\\output\\b_SomeOpt27A.rda")
-}
-
-glmer_examine(b_SomeOpt27A,display = TRUE)
-
-stargazer::stargazer(b_SomeOpt_CFTE_pricing_22B, b_SomeOpt25A, b_SomeOpt27A, type="text", digits=2)
-
-
-summary_residual_compare(b_SomeOpt_CFTE_pricing_22B, b_SomeOpt27A, b_SomeOpt25A, b_SomeOpt27A,bins=100)
-
-```
-AIC is a  bit lower but the results, when significant, are not in line with expectation. Leaving out CFTE:PPricing.
-
-
-####28A: 2019-08-22 Just PBSC and pairCA/Days
-
-Trimming down to interactions that are present in n_CBRre (pPBSC:cln_PairCA) or significant and in line with expectations (pPBSC:Days)
-
-
-Dropping PBSC:pairCA for both models. For frequency it's contrary to expectation and for size the base variables are no longer significant. Also dropping  cp_OffPerf7:c_pMarketand for frequency, which is not siginifcant. Keeping base:ratio despite lack of significance because of switching to it for size.
-This was created while we were still using ceiling instead of base.
-
-Current cumulative b_SomeOpt model: b_SomeOpt_base2ceil_ceiling_21B; b_SomeOpt25A
-Current cumulative b_AllOpt model: b_AllOpt_partnership_actions_16B; b_AllOpt25A
-
-```{r b_SomeOpt28A}
-if(file.exists("..//Output//b_SomeOpt28AB.rda")) load("..//Output//b_SomeOpt28AB.rda")
-
-if(!exists("b_SomeOpt28B")){
-  #Create the model
-  b_SomeOpt28A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
-                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
-                       cln_Base + clr_Ceil2Base + cln_Days+
-                       Comp+
-                       Veh+
-                       Pricing+
-                       Crisis+
-                       cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
-                       clr_Def3toUS+
-                       cp_PairObl7+
-                       cln_OffObl7+
-                       #cln_OffFocus+
-                       cp_OffPerf7:cln_PairCA+
-                       #cp_OffPerf7:cp_PairObl7+
-                       cp_OffPerf7:cln_Days+
-                       # clr_Ceil2Base:cln_Base+
-                       (1 | NAICS3/NAICS6/ServArea)+
-                       (1 | Agency/Office) +
-                       (1 | Place)+
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  
-  b_SomeOpt28B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
-                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
-                       cln_Base + clr_Ceil2Base + cln_Days+
-                       Comp+
-                       Veh+
-                       Pricing+
-                       Crisis+
-                       cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
-                       clr_Def3toUS+
-                       cp_PairObl7+
-                       cln_OffObl7+
-                       #cln_OffFocus+
-                       cp_OffPerf7:cln_PairCA+
-                       #cp_OffPerf7:cp_PairObl7+
-                       cp_OffPerf7:cln_Days+
-                       # clr_Ceil2Base:cln_Base+
-                       (1 | NAICS3/NAICS6/ServArea)+
-                       (1 | Agency/Office) +
-                       (1 | Place)+
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  save(b_SomeOpt28A,b_SomeOpt28B,file="..\\output\\b_SomeOpt28AB.rda")
-}
-
-#Compare the models
-glmer_examine(b_SomeOpt28B,display = TRUE)
-
-stargazer::stargazer(b_SomeOpt25A, b_SomeOpt28A, b_SomeOpt28B, type="text", digits=2)
-
-summary_residual_compare( b_SomeOpt25A, b_SomeOpt28A,b_SomeOpt25A,b_SomeOpt28B,bins=100)
-```
-
-####29A: 2019-08-22 Restoring cln_Def3HHI and cln_OffFocus
-
-
-```{r b_SomeOpt29A}
-if(file.exists("..//Output//b_SomeOpt29AB.rda")) load("..//Output//b_SomeOpt29AB.rda")
-
-if(!exists("b_SomeOpt29B")){
-  #Create the model
-  b_SomeOpt29A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+b_SomeOpt25A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                        cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                        cn_PairHist7+cln_PairCA+
                        cln_Base + clr_Ceil2Base + cln_Days+
@@ -3479,49 +3578,41 @@ if(!exists("b_SomeOpt29B")){
                        cp_PairObl7+
                        cln_OffObl7+
                        cln_OffFocus+
-                       cp_OffPerf7:cln_PairCA+
-                       #cp_OffPerf7:cp_PairObl7+
+                       cp_OffPerf7:cp_PairObl7+
                        cp_OffPerf7:cln_Days+
-                       # clr_Ceil2Base:cln_Base+
+                       clr_Ceil2Base:cln_Base+
+                      Pricing:cln_PSCrate+
                        (1 | NAICS3/NAICS6/ServArea)+
                        (1 | Agency/Office) +
                        (1 | Place)+
                        (1 | StartFY),
                      family=binomial(link="logit"),
                      verbose=TRUE)
-  save(b_SomeOpt29A,file="..\\output\\b_SomeOpt29A.rda")
   
-  b_SomeOpt29B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
-                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                       cn_PairHist7+cln_PairCA+
-                       cln_Base + clr_Ceil2Base + cln_Days+
-                       Comp+
-                       Veh+
-                       Pricing+
-                       Crisis+
-                       cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
-                       clr_Def3toUS+
-                       cp_PairObl7+
-                       cln_OffObl7+
-                       #cln_OffFocus+
-                       cp_OffPerf7:cln_PairCA+
-                       #cp_OffPerf7:cp_PairObl7+
-                       cp_OffPerf7:cln_Days+
-                       # clr_Ceil2Base:cln_Base+
-                       (1 | NAICS3/NAICS6/ServArea)+
-                       (1 | Agency/Office) +
-                       (1 | Place)+
-                       (1 | StartFY),
-                     family=binomial(link="logit"),
-                     verbose=TRUE)
-  save(b_SomeOpt29A,b_SomeOpt29B,file="..\\output\\b_SomeOpt29AB.rda")
-}
+  
+  b_AllOpt25A <- glmer(data=serv_exeropt, b_AllOpt ~ cln_US6sal + 
+                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                      cn_PairHist7+cln_PairCA+
+                      cln_Base + clr_Ceil2Base + cln_Days+
+                      Comp+
+                      Veh+
+                      Pricing+
+                      Crisis+
+                      cln_Def6HHI+clr_Def6toUS+
+                      cln_Def3HHI+
+                      clr_Def3toUS+
+                      cp_PairObl7+
+                      cln_OffObl7+ 
+                      cln_OffFocus+
+                      cp_OffPerf7:cp_PairObl7+
+                      cp_OffPerf7:cln_PairCA +
+                      pOffPSC:cln_OffObl7 + 
+                      pOffPSC:cln_OffFocus + 
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                      family=binomial(link="logit"),
+                      verbose=TRUE)
 
-#Compare the models
-glmer_examine(b_SomeOpt29B,display = TRUE)
-
-stargazer::stargazer(b_SomeOpt25A, b_SomeOpt28A, b_SomeOpt29A, type="text", digits=2)
-
-summary_residual_compare( b_SomeOpt25A, b_SomeOptA,b_SomeOpt25A,b_SomeOptB,bins=100)
 ```
