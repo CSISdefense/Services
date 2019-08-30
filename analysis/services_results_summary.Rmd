@@ -613,9 +613,11 @@ office_coef<-all_coef_list[sort(c(grep("c_pPBSC",names(all_coef_list)),
                               ))]
                               
 
-texreg::htmlreg(list(b_CBre28B,n_CBre25A,term25B),file="..//Output//office_capacity.html",
+texreg::htmlreg(list(b_SomeOpt25Cv2,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),file="..//Output//office_capacity.html",
                 single.row = TRUE,
-                custom.model.name=c("Ceiling Breach\nLikelihood\n(Logit)",
+                custom.model.name=c("Some Options\nExercised\n(Logit)",
+                                    "All Options\nExercised\n(Logit)",
+                                    "Ceiling Breach\nLikelihood\n(Logit)",
                                     "Ceiling Breach\nSize Given Breach\n(Regression)",
                                     "Termination\n(Logit)"),
                 stars=c(0.1,0.05,0.01,0.001),
