@@ -3558,6 +3558,26 @@ stargazer::stargazer(b_AllOpt25A, type = "text", digits = 2)
 stargazer::stargazer(b_SomeOpt25A, b_AllOpt25A, type = "text", digits = 2)
 
 summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
+
+# texreg::htmlreg(list(b_SomeOpt25A, b_AllOpt25A),file="..//Output//options_25A.html",
+#                 single.row = TRUE,
+#                 custom.model.name=c("Some Options Exercised", "All Options Exercised"),
+#                 stars=c(0.1,0.05,0.01,0.001),
+#                 groups = list(
+#                                "Services Complexity" = 2:3,
+#                                "Office Capacity" =4:5,
+#                                "Past Relationship"=6:7,
+#                                "Contract Characteristics"=8:26,
+#                                "NAICS Characteristics" =27:30,
+#                                "Office Characteristics" =31:33,
+#                                "Interactions"=34:39
+#                               ),
+#                 custom.coef.map=all_coef_list,
+#                 bold=0.05,
+#                 custom.note="%stars. Numerical inputs are rescaled.",
+#                 caption="Table 6: Exercised Options",
+#                 caption.above=TRUE)
+
 ```
 
 ####25B: 2019-08-28 - Modified SomeOpt and AllOpt models for multilevel model run (attempting to leverage GVIF declines in multilevel model in 25A).
@@ -3619,8 +3639,31 @@ if(!exist("b_SomeOpt25B")){
   save(b_SomeOpt25B, b_AllOpt25B, file="..\Output\Opt25B.rda")
 }
 
+
+
+
 #Load experimental Some+All Opt Models
 glmer_examine(b_AllOpt25B)
+stargazer::stargazer(b_AllOpt25A, b_AllOpt25A, type = "text", digits = 2)
+# 
+# texreg::htmlreg(list(b_AllOpt25A, b_AllOpt25B),file="..//Output//all_options_comp.html",
+#                 single.row = TRUE,
+#                 custom.model.name=c("AO 25A", "AO 25B"),
+#                 stars=c(0.1,0.05,0.01,0.001),
+#                 # groups = list(
+#                 #                "Services Complexity" = 2:3,
+#                 #                "Office Capacity" =4:5,
+#                 #                "Past Relationship"=6:7,
+#                 #                "Contract Characteristics"=8:26,
+#                 #                "NAICS Characteristics" =27:30,
+#                 #                "Office Characteristics" =31:33,
+#                 #                "Interactions"=34:39
+#                 #               ),
+#                 # custom.coef.map=all_coef_list,
+#                 bold=0.05,
+#                 custom.note="%stars. Numerical inputs are rescaled.",
+#                 caption="Table 6: Exercised Options",
+#                 caption.above=TRUE)
 
 ```
 
@@ -3727,5 +3770,38 @@ if(!exist("b_SomeOpt25Cv3")){
                           family=binomial(link="logit"),
                           verbose=TRUE)
   save(b_SomeOpt25Cv3, file="..\\Output\\b_SomeOpt25Cv3.rda")
+  
+  
+  
+
+# texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt25Cv3),file="..//Output//some_options_comp.html",
+#                 single.row = TRUE,
+#                 custom.model.name=c("SO 25A", "SO 25C", "SO 25Cv2"),
+#                 stars=c(0.1,0.05,0.01,0.001),
+#                 # groups = list(
+#                 #                "Services Complexity" = 2:3,
+#                 #                "Office Capacity" =4:5,
+#                 #                "Past Relationship"=6:7,
+#                 #                "Contract Characteristics"=8:26,
+#                 #                "NAICS Characteristics" =27:30,
+#                 #                "Office Characteristics" =31:33,
+#                 #                "Interactions"=34:39
+#                 #               ),
+#                 # custom.coef.map=all_coef_list,
+#                 bold=0.05,
+#                 custom.note="%stars. Numerical inputs are rescaled.",
+#                 caption="Table 6: Exercised Options",
+#                 caption.above=TRUE)
+# 
+# texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt25Cv3, b_SomeOpt25Cv3),file="..//Output//some_options_comp.html",
+#                 single.row = TRUE,
+#                 custom.model.name=c("SO 25A", "SO 25C", "SO 25Cv2", "SO 25Cv3"),
+#                 stars=c(0.1,0.05,0.01,0.001),
+#                 bold=0.05,
+#                 custom.note="%stars. Numerical inputs are rescaled.",
+#                 caption="Table 6: Exercised Options",
+#                 caption.above=TRUE)
+# 
+
 }
 ```

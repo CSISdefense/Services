@@ -406,91 +406,30 @@ stargazer::stargazer(b_SomeOpt25Cv3, b_AllOpt25A,
                        digits=2)
 
 #Chart for report:
+
 texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt25A),file="..//Output//options.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options Exercised Model", "All Options Exercised Model"),
                 stars=c(0.1,0.05,0.01,0.001),
                 groups = list(
-                               "Services Complexity" = 2:3,
-                               "Office Capacity" =4:5,
-                               "Past Relationship"=6:7,
-                               "Contract Characteristics"=8:26,
-                               "NAICS Characteristics" =27:30,
-                               "Office Characteristics" =31:33,
-                               "Interactions"=34:45
-                              ),
+                  "Study Variables" = 2:7,
+                  # "Services Complexity" = 2:3,
+                  # "Office Capacity" =4:5,
+                  # "Past Relationship"=6:7,
+                  # "Past Relationship"=6:7,
+                  "Contract Characteristics"=8:26,
+                  "NAICS/Office Characteristics" =27:33,
+                  # "NAICS Characteristics" =27:30,
+                  # "Office Characteristics" =31:33,
+                  "Interactions"=34:45
+                ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 6: Exercised Options",
                 caption.above=TRUE)
 
-#To be transfered to Model_Some_and_All_Options file
-texreg::htmlreg(list(b_SomeOpt25A, b_AllOpt25A),file="..//Output//options.html",
-                single.row = TRUE,
-                custom.model.name=c("Some Options Exercised", "All Options Exercised"),
-                stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                               "Services Complexity" = 2:3,
-                               "Office Capacity" =4:5,
-                               "Past Relationship"=6:7,
-                               "Contract Characteristics"=8:26,
-                               "NAICS Characteristics" =27:30,
-                               "Office Characteristics" =31:33,
-                               "Interactions"=34:39
-                              ),
-                custom.coef.map=all_coef_list,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 6: Exercised Options",
-                caption.above=TRUE)
 
-texreg::htmlreg(list(b_AllOpt25A, b_AllOpt25B),file="..//Output//all_options_comp.html",
-                single.row = TRUE,
-                custom.model.name=c("AO 25A", "AO 25B"),
-                stars=c(0.1,0.05,0.01,0.001),
-                # groups = list(
-                #                "Services Complexity" = 2:3,
-                #                "Office Capacity" =4:5,
-                #                "Past Relationship"=6:7,
-                #                "Contract Characteristics"=8:26,
-                #                "NAICS Characteristics" =27:30,
-                #                "Office Characteristics" =31:33,
-                #                "Interactions"=34:39
-                #               ),
-                # custom.coef.map=all_coef_list,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 6: Exercised Options",
-                caption.above=TRUE)
-
-texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt25Cv3),file="..//Output//some_options_comp.html",
-                single.row = TRUE,
-                custom.model.name=c("SO 25A", "SO 25C", "SO 25Cv2"),
-                stars=c(0.1,0.05,0.01,0.001),
-                # groups = list(
-                #                "Services Complexity" = 2:3,
-                #                "Office Capacity" =4:5,
-                #                "Past Relationship"=6:7,
-                #                "Contract Characteristics"=8:26,
-                #                "NAICS Characteristics" =27:30,
-                #                "Office Characteristics" =31:33,
-                #                "Interactions"=34:39
-                #               ),
-                # custom.coef.map=all_coef_list,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 6: Exercised Options",
-                caption.above=TRUE)
-
-texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt25Cv3, b_SomeOpt25Cv3),file="..//Output//some_options_comp.html",
-                single.row = TRUE,
-                custom.model.name=c("SO 25A", "SO 25C", "SO 25Cv2", "SO 25Cv3"),
-                stars=c(0.1,0.05,0.01,0.001),
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 6: Exercised Options",
-                caption.above=TRUE)
 
 ```
 
@@ -511,15 +450,12 @@ texreg::htmlreg(list(b_CBre28B,n_CBre25A),file="..//Output//ceiling_breaches.htm
                 custom.model.name=c("Likelihood\n(Logit)","Size Given Breach\n(Regression)"),
                 stars=c(0.1,0.05,0.01,0.001),
                 groups = list(
+                                                "Study Variables" = 2:7,
                               # "Services Complexity" = 2:3,
                               # "Office Capacity" =4:5,
                               # "Past Relationship"=6:7,
-                  "Services Complexity"=2:7,
                               "Contract Characteristics"=8:26,
                                                 "NAICS/Office Characteristics" =27:31,
-
-                              # "NAICS Characteristics" =27:29,
-                              # "Office Characteristics" =30:31,
                               "Interactions"=32:33
                               ),
                 custom.coef.map=all_coef_list,
@@ -551,9 +487,7 @@ texreg::htmlreg(list(term25B),file="..//Output//terminations.html",
                 custom.model.name=c("Termination"),
                 stars=c(0.1,0.05,0.01,0.001),
                 groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7,
+                              "Study Variables" = 2:7,
                               "Contract Characteristics"=8:26,
                               "NAICS Characteristics" =27:30,
                               "Office Characteristics" =31:33,
@@ -671,7 +605,9 @@ pair_coef<-all_coef_list[sort(c(grep("c_pairHist",names(all_coef_list)),
 texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),
                 file="..//Output//pair_history.html",
                 single.row = TRUE,
-                custom.model.name=c("Ceiling Breach\nLikelihood\n(Logit)",
+                custom.model.name=c("Some Options\nExercised\n(Logit)",
+                                    "All Options\nExercised\n(Logit)",
+                                    "Ceiling Breach\nLikelihood\n(Logit)",
                                     "Ceiling Breach\nSize Given Breach\n(Regression)",
                                     "Termination\n(Logit)"),
                 stars=c(0.1,0.05,0.01,0.001),
