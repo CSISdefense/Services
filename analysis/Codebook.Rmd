@@ -8,6 +8,7 @@ date: "Thursday, July 11, 2017"
 ---
 
 # Setup
+First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
 ```{r Libraries, echo = FALSE}
 library(csis360)
 library(ggplot2)
@@ -21,6 +22,7 @@ library(texreg)
 library(reshape2)
 library(tidyverse)
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
 
 
 axis.text.size<-10
@@ -33,7 +35,7 @@ geom.text.size<-12
 main.text.size<-1
 note.text.size<-1.40
 
-
+load("../data/clean/transformed_def_serv.Rdata")
 ```
 
 
@@ -42,12 +44,12 @@ Contracts are classified using a mix of numerical and categorical variables. Whi
 
 
 ## Load Data
-First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
+
 
 
 ```{r ReadInData, echo = TRUE}
 
-load("../data/clean/transformed_def_serv.Rdata")
+
 
 ```
 
@@ -165,8 +167,12 @@ summary(def_serv$pMarket)
 #### Number of  Paired Years
 ```{r PairCount}
 
-freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
+freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
 freq_continuous_plot(def_serv,"l_CA",bins=50)
+
+
+centered_description(def_serv$office_entity_paircount_7year,"number of years")
+
 
 ```
 
@@ -175,7 +181,7 @@ freq_continuous_plot(def_serv,"l_CA",bins=50)
 
 freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
 freq_continuous_plot(def_serv,"l_CA",bins=50)
-
+centered_log_description(def_serv$office_entity_numberofactions_1year,"number of actions")
 ```
 
 ## Controls

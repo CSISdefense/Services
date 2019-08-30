@@ -624,7 +624,8 @@ office_coef<-all_coef_list[sort(c(grep("c_pPBSC",names(all_coef_list)),
                               ))]
                               
 
-texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),file="..//Output//office_capacity.html",
+texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),
+                file="..//Output//office_capacity.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options\nExercised\n(Logit)",
                                     "All Options\nExercised\n(Logit)",
@@ -659,7 +660,6 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),fil
 #### Partner History
 ```{r CeilingResults}
 
-all_coef_list
 
 pair_coef<-all_coef_list[sort(c(grep("c_pairHist",names(all_coef_list)),
                               grep("cn_PairHist7",names(all_coef_list)),
@@ -668,7 +668,8 @@ pair_coef<-all_coef_list[sort(c(grep("c_pairHist",names(all_coef_list)),
                               ))]
                               
 
-texreg::htmlreg(list(b_CBre28B,n_CBre25A,term25B),file="..//Output//pair_history.html",
+texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),
+                file="..//Output//pair_history.html",
                 single.row = TRUE,
                 custom.model.name=c("Ceiling Breach\nLikelihood\n(Logit)",
                                     "Ceiling Breach\nSize Given Breach\n(Regression)",
