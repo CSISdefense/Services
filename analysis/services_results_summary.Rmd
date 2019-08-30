@@ -21,7 +21,7 @@ library(readr)
 library(texreg)
 library(reshape2)
 library(tidyverse)
-source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+source("C:/Users/JGraham/Documents/CSIS/Vendor/Scripts/DIIGstat.r")
 
 axis.text.size<-10
 strip.text.size<-10
@@ -89,40 +89,40 @@ if(!exists("p_Opt_12C")){
 
 glmer_examine(p_Opt_12C)
 
-
-if(file.exists("..//Output//b_SomeOpt25Cv2.rda")) load("..//Output//b_SomeOpt25Cv2.rda")
-
-if(!exists("b_SomeOpt25Cv3")){
-  #Create the model
-  
-  b_SomeOpt25Cv3 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
-                            cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                            cn_PairHist7+cln_PairCA+
-                            cln_Base + clr_Ceil2Base + cln_Days+
-                            Comp+
-                            Veh+
-                            Pricing+
-                            Crisis+
-                            cln_Def6HHI+clr_Def6toUS+
-                            cln_Def3HHI+
-                            clr_Def3toUS+
-                            cp_PairObl7+
-                            cln_OffObl7+
-                            cln_OffFocus+
-                            cp_OffPerf7:cp_PairObl7 +
-                            cln_OffObl7:cp_PairObl7 + 
-                            cn_PairHist7:Pricing + 
-                            cp_OffPerf7:cln_PairCA +
-                            clr_Ceil2Base:cln_Base + 
-                            pOffPSC:cln_OffObl7 + 
-                            (1 | NAICS3/NAICS6/ServArea)+
-                            (1 | Agency/Office) +
-                            (1 | Place)+
-                            (1 | StartFY),
-                          family=binomial(link="logit"),
-                          verbose=TRUE)
-  save(b_SomeOpt25Cv3, file="..\Output\b_SomeOpt25Cv3.rda")
-}
+# Deprecated
+# if(file.exists("..//Output//b_SomeOpt25Cv2.rda")) load("..//Output//b_SomeOpt25Cv2.rda")
+# 
+# if(!exists("b_SomeOpt25Cv3")){
+#   #Create the model
+#   
+#   b_SomeOpt25Cv3 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+#                             cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+#                             cn_PairHist7+cln_PairCA+
+#                             cln_Base + clr_Ceil2Base + cln_Days+
+#                             Comp+
+#                             Veh+
+#                             Pricing+
+#                             Crisis+
+#                             cln_Def6HHI+clr_Def6toUS+
+#                             cln_Def3HHI+
+#                             clr_Def3toUS+
+#                             cp_PairObl7+
+#                             cln_OffObl7+
+#                             cln_OffFocus+
+#                             cp_OffPerf7:cp_PairObl7 +
+#                             cln_OffObl7:cp_PairObl7 + 
+#                             cn_PairHist7:Pricing + 
+#                             cp_OffPerf7:cln_PairCA +
+#                             clr_Ceil2Base:cln_Base + 
+#                             pOffPSC:cln_OffObl7 + 
+#                             (1 | NAICS3/NAICS6/ServArea)+
+#                             (1 | Agency/Office) +
+#                             (1 | Place)+
+#                             (1 | StartFY),
+#                           family=binomial(link="logit"),
+#                           verbose=TRUE)
+#   save(b_SomeOpt25Cv3, file="..\Output\b_SomeOpt25Cv3.rda")
+# }
 
 glmer_examine(b_SomeOpt25Cv3)
 
@@ -167,8 +167,8 @@ glmer_examine(b_AllOpt25A)
 # stargazer::stargazer(p_Opt_12C,type="text",
 #                        digits=2)
 
-
-
+load("..//output//b_SomeOpt25Cv3.rda")
+glmer_examine(b_SomeOpt25Cv3)
 ```
 
 
@@ -395,14 +395,36 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25A),file="..//Output//all_var_m
 
 #### Exercised Options
 ```{r OptionsTableGeneration}
-stargazer::stargazer(b_SomeOpt25A, b_AllOpt25A,
+#MODELS - b_SomeOpt25Cv3; b_AllOpt25A
+
+stargazer::stargazer(b_SomeOpt25Cv3, b_AllOpt25A,
                        single.row = TRUE,
                 custom.model.name=c("Exercised Options"),
                 stars=c(0.1,0.05,0.01,0.001),
                        type="text",
                        digits=2)
 
+#Chart for report:
+texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt25A),file="..//Output//options.html",
+                single.row = TRUE,
+                custom.model.name=c("Some Options Exercised Model", "All Options Exercised Model"),
+                stars=c(0.1,0.05,0.01,0.001),
+                groups = list(
+                               "Services Complexity" = 2:3,
+                               "Office Capacity" =4:5,
+                               "Past Relationship"=6:7,
+                               "Contract Characteristics"=8:26,
+                               "NAICS Characteristics" =27:30,
+                               "Office Characteristics" =31:33,
+                               "Interactions"=34:45
+                              ),
+                custom.coef.map=all_coef_list,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 6: Exercised Options",
+                caption.above=TRUE)
 
+#To be transfered to Model_Some_and_All_Options file
 texreg::htmlreg(list(b_SomeOpt25A, b_AllOpt25A),file="..//Output//options.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options Exercised", "All Options Exercised"),
@@ -460,26 +482,14 @@ texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt25Cv2),file="..//Outpu
                 caption="Table 6: Exercised Options",
                 caption.above=TRUE)
 
-#Chart for report:
-texreg::htmlreg(list(b_SomeOpt25Cv2, b_AllOpt25A),file="..//Output//options.html",
+texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt25Cv2, b_SomeOpt25Cv3),file="..//Output//some_options_comp.html",
                 single.row = TRUE,
-                custom.model.name=c("Some Options Exercised Model", "All Options Exercised Model"),
+                custom.model.name=c("SO 25A", "SO 25C", "SO 25Cv2", "SO 25Cv3"),
                 stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                               "Services Complexity" = 2:3,
-                               "Office Capacity" =4:5,
-                               "Past Relationship"=6:7,
-                               "Contract Characteristics"=8:26,
-                               "NAICS Characteristics" =27:30,
-                               "Office Characteristics" =31:33,
-                               "Interactions"=34:45
-                              ),
-                custom.coef.map=all_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 6: Exercised Options",
                 caption.above=TRUE)
-
 
 ```
 
@@ -699,9 +709,9 @@ texreg::htmlreg(list(b_CBre28B,n_CBre25A,term25B),file="..//Output//pair_history
 # gridExtra::grid.arrange(dotplot(ranef(b_CBre28B, condVar = T), strip = T, scales=list(relation='free'))$Agency,
 #              nrow=1)
 
-comp.or<-odds_ratio(b_SomeOpt25Cv2,"b_SomeOpt25Cv2",output = "Some Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
+comp.or<-odds_ratio(b_SomeOpt25Cv3,"b_SomeOpt25Cv3",output = "Some Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
 write.csv(get_study_variables_odds_ratio(comp.or, study = "services"),file="..//output//some_exer_opt_study_odds_ratio.csv",row.names=FALSE)
-get_icc(b_SomeOpt25Cv2)
+get_icc(b_SomeOpt25Cv3)
 
 # #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
 # gridExtra::grid.arrange(dotplot(ranef(b_SomeOpt25A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
