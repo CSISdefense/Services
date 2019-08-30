@@ -111,9 +111,9 @@ if(!exists("b_SomeOpt25Cv3")){
                             cln_OffObl7+
                             cln_OffFocus+
                             cp_OffPerf7:cp_PairObl7 +
-                            cln_OffObl7:cp_PairObl7 +
-                            cn_PairHist7:Pricing +
                             cp_OffPerf7:cln_PairCA +
+                            cn_PairHist7:Pricing +
+                            cp_PairObl7:cln_OffObl7 +
                             clr_Ceil2Base:cln_Base +
                             pOffPSC:cln_OffObl7 +
                             (1 | NAICS3/NAICS6/ServArea)+
@@ -554,6 +554,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),fil
 office_coef<-all_coef_list[sort(c(grep("c_pPBSC",names(all_coef_list)),
                               grep("cp_OffPerf7",names(all_coef_list)),
                               grep("c_pOffPSC",names(all_coef_list)),
+                              grep("pOffPSC",names(all_coef_list)),
                               grep("cp_OffPSC7",names(all_coef_list))
                               ))]
                               
