@@ -391,10 +391,9 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25A),file="..//Output//all_var_m
 
 
 ```
-## Tables for Final Paper
-### Results by Dependent Variable
+## Results by Dependent Variable
 
-#### Exercised Options
+### Exercised Options
 ```{r OptionsTableGeneration}
 #MODELS - b_SomeOpt25Cv3; b_AllOpt25A
 
@@ -433,7 +432,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt25A),file="..//Output//options.html
 
 ```
 
-#### Ceiling Breach
+### Ceiling Breach
 ```{r CeilingResults}
 
   stargazer::stargazer(#p_Opt_12C,
@@ -468,7 +467,7 @@ texreg::htmlreg(list(b_CBre28B,n_CBre25A),file="..//Output//ceiling_breaches.htm
 
 ```
 
-#### Terminations
+### Terminations
 
 ```{r AllVariableSummary}
 
@@ -505,134 +504,6 @@ texreg::htmlreg(list(term25B),file="..//Output//terminations.html",
 
 
 
-### Discussion by Study Variable
-#### Service Complexity
-```{r CeilingResults}
-
-complex_coef<-all_coef_list[c(grep("cln_US6sal",names(all_coef_list)),
-                              grep("cl_US6_avg_sal_lag1Const",names(all_coef_list)),
-                              grep("cl_CFTE",names(all_coef_list)),
-                              grep("cln_PSCrate",names(all_coef_list))
-                              )]
-                              
-
-texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),file="..//Output//service_complexity.html",
-                single.row = TRUE,
-                custom.model.name=c("Some Options\nExercised\n(Logit)",
-                                    "All Options\nExercised\n(Logit)",
-                                    "Ceiling Breach\nLikelihood\n(Logit)",
-                                    "Ceiling Breach\nSize Given Breach\n(Regression)",
-                                    "Termination\n(Logit)"),
-                stars=c(0.1,0.05,0.01,0.001),
-                # groups = list(
-                #               "Services Complexity" = 1:2,
-                #               # "Office Capacity" =4:5,
-                #               # "Past Relationship"=6:7,
-                #   # "Services Complexity"=2:7,
-                #               # "Contract Characteristics"=8:26,
-                #                                 # "NAICS/Office Characteristics" =27:31,
-                # 
-                #               # "NAICS Characteristics" =27:29,
-                #               # "Office Characteristics" =30:31,
-                #               "Interactions"=3:4
-                #               ),
-                custom.coef.map=complex_coef,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 9: Ceiling Breaches",
-                caption.above=TRUE)
-
-
-
-```
-
-
-#### Office Capacity
-```{r CeilingResults}
-
-
-office_coef<-all_coef_list[sort(c(grep("c_pPBSC",names(all_coef_list)),
-                              grep("cp_OffPerf7",names(all_coef_list)),
-                              grep("c_pOffPSC",names(all_coef_list)),
-                              grep("pOffPSC",names(all_coef_list)),
-                              grep("cp_OffPSC7",names(all_coef_list))
-                              ))]
-                              
-
-texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),
-                file="..//Output//office_capacity.html",
-                single.row = TRUE,
-                custom.model.name=c("Some Options\nExercised\n(Logit)",
-                                    "All Options\nExercised\n(Logit)",
-                                    "Ceiling Breach\nLikelihood\n(Logit)",
-                                    "Ceiling Breach\nSize Given Breach\n(Regression)",
-                                    "Termination\n(Logit)"),
-                stars=c(0.1,0.05,0.01,0.001),
-                # groups = list(
-                #               "Services Complexity" = 1:2,
-                #               # "Office Capacity" =4:5,
-                #               # "Past Relationship"=6:7,
-                #   # "Services Complexity"=2:7,
-                #               # "Contract Characteristics"=8:26,
-                #                                 # "NAICS/Office Characteristics" =27:31,
-                # 
-                #               # "NAICS Characteristics" =27:29,
-                #               # "Office Characteristics" =30:31,
-                #               "Interactions"=3:4
-                #               ),
-                custom.coef.map=office_coef,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 10: Office Capacity",
-                caption.above=TRUE)
-
-
-
-```
-
-
-
-#### Partner History
-```{r CeilingResults}
-
-
-pair_coef<-all_coef_list[sort(c(grep("c_pairHist",names(all_coef_list)),
-                              grep("cn_PairHist7",names(all_coef_list)),
-                              grep("cl_pairCA",names(all_coef_list)),
-                              grep("cln_PairCA",names(all_coef_list))
-                              ))]
-                              
-
-texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),
-                file="..//Output//pair_history.html",
-                single.row = TRUE,
-                custom.model.name=c("Some Options\nExercised\n(Logit)",
-                                    "All Options\nExercised\n(Logit)",
-                                    "Ceiling Breach\nLikelihood\n(Logit)",
-                                    "Ceiling Breach\nSize Given Breach\n(Regression)",
-                                    "Termination\n(Logit)"),
-                stars=c(0.1,0.05,0.01,0.001),
-                # groups = list(
-                #               "Services Complexity" = 1:2,
-                #               # "Office Capacity" =4:5,
-                #               # "Past Relationship"=6:7,
-                #   # "Services Complexity"=2:7,
-                #               # "Contract Characteristics"=8:26,
-                #                                 # "NAICS/Office Characteristics" =27:31,
-                # 
-                #               # "NAICS Characteristics" =27:29,
-                #               # "Office Characteristics" =30:31,
-                #               "Interactions"=3:4
-                #               ),
-                custom.coef.map=pair_coef,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 11: Past Relationship",
-                caption.above=TRUE)
-
-
-
-```
 
 ## Odds Ratios
 
@@ -693,6 +564,136 @@ gridExtra::grid.arrange(dotplot(ranef(term25A, condVar = T), strip = T, scales=l
              nrow=1)
 dotplot(ranef(term25A, condVar = T), strip = T, scales=list(relation='free'))$NAICS3
  
+
+```
+
+
+## Discussion by Study Variable
+### Service Complexity
+```{r CeilingResults}
+
+complex_coef<-all_coef_list[c(grep("cln_US6sal",names(all_coef_list)),
+                              grep("cl_US6_avg_sal_lag1Const",names(all_coef_list)),
+                              grep("cl_CFTE",names(all_coef_list)),
+                              grep("cln_PSCrate",names(all_coef_list))
+                              )]
+                              
+
+texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),file="..//Output//service_complexity.html",
+                single.row = TRUE,
+                custom.model.name=c("Some Options\nExercised\n(Logit)",
+                                    "All Options\nExercised\n(Logit)",
+                                    "Ceiling Breach\nLikelihood\n(Logit)",
+                                    "Ceiling Breach\nSize Given Breach\n(Regression)",
+                                    "Termination\n(Logit)"),
+                stars=c(0.1,0.05,0.01,0.001),
+                # groups = list(
+                #               "Services Complexity" = 1:2,
+                #               # "Office Capacity" =4:5,
+                #               # "Past Relationship"=6:7,
+                #   # "Services Complexity"=2:7,
+                #               # "Contract Characteristics"=8:26,
+                #                                 # "NAICS/Office Characteristics" =27:31,
+                # 
+                #               # "NAICS Characteristics" =27:29,
+                #               # "Office Characteristics" =30:31,
+                #               "Interactions"=3:4
+                #               ),
+                custom.coef.map=complex_coef,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 9: Ceiling Breaches",
+                caption.above=TRUE)
+
+
+
+```
+
+
+### Office Capacity
+```{r CeilingResults}
+
+
+office_coef<-all_coef_list[sort(unique(c(grep("c_pPBSC",names(all_coef_list)),
+                              grep("cp_OffPerf7",names(all_coef_list)),
+                              grep("c_pOffPSC",names(all_coef_list)),
+                              grep("pOffPSC",names(all_coef_list)),
+                              grep("cp_OffPSC7",names(all_coef_list))
+                              )))]
+                              
+
+texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),
+                file="..//Output//office_capacity.html",
+                single.row = TRUE,
+                custom.model.name=c("Some Options\nExercised\n(Logit)",
+                                    "All Options\nExercised\n(Logit)",
+                                    "Ceiling Breach\nLikelihood\n(Logit)",
+                                    "Ceiling Breach\nSize Given Breach\n(Regression)",
+                                    "Termination\n(Logit)"),
+                stars=c(0.1,0.05,0.01,0.001),
+                # groups = list(
+                #               "Services Complexity" = 1:2,
+                #               # "Office Capacity" =4:5,
+                #               # "Past Relationship"=6:7,
+                #   # "Services Complexity"=2:7,
+                #               # "Contract Characteristics"=8:26,
+                #                                 # "NAICS/Office Characteristics" =27:31,
+                # 
+                #               # "NAICS Characteristics" =27:29,
+                #               # "Office Characteristics" =30:31,
+                #               "Interactions"=3:4
+                #               ),
+                custom.coef.map=office_coef,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 10: Office Capacity",
+                caption.above=TRUE)
+
+
+
+```
+
+
+
+### Partner History
+```{r CeilingResults}
+
+
+pair_coef<-all_coef_list[sort(c(grep("c_pairHist",names(all_coef_list)),
+                              grep("cn_PairHist7",names(all_coef_list)),
+                              grep("cl_pairCA",names(all_coef_list)),
+                              grep("cln_PairCA",names(all_coef_list))
+                              ))]
+                              
+
+texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt25A,b_CBre28B,n_CBre25A,term25B),
+                file="..//Output//pair_history.html",
+                single.row = TRUE,
+                custom.model.name=c("Some Options\nExercised\n(Logit)",
+                                    "All Options\nExercised\n(Logit)",
+                                    "Ceiling Breach\nLikelihood\n(Logit)",
+                                    "Ceiling Breach\nSize Given Breach\n(Regression)",
+                                    "Termination\n(Logit)"),
+                stars=c(0.1,0.05,0.01,0.001),
+                # groups = list(
+                #               "Services Complexity" = 1:2,
+                #               # "Office Capacity" =4:5,
+                #               # "Past Relationship"=6:7,
+                #   # "Services Complexity"=2:7,
+                #               # "Contract Characteristics"=8:26,
+                #                                 # "NAICS/Office Characteristics" =27:31,
+                # 
+                #               # "NAICS Characteristics" =27:29,
+                #               # "Office Characteristics" =30:31,
+                #               "Interactions"=3:4
+                #               ),
+                custom.coef.map=pair_coef,
+                bold=0.05,
+                custom.note="%stars. Numerical inputs are rescaled.",
+                caption="Table 11: Past Relationship",
+                caption.above=TRUE)
+
+
 
 ```
 
