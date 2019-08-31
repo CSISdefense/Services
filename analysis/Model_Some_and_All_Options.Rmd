@@ -160,7 +160,8 @@ Expectation: The increasing share of contracting office obligations for a given 
 
 ```{r Model02B}
 
-summary_continuous_plot(serv_opt,metric="opt","cp_OffPSC7")
+summary_continuous_plot(serv_opt,metric="opt","office_psc_obligatedamount_7year",bins=100)
+summary_continuous_plot(serv_opt,metric="opt","office_psc_obligatedamount_7year",bins=100,log=TRUE)
 
 #Model
 b_SomeOpt02B <- glm (data=serv_opt,
@@ -3006,8 +3007,8 @@ stargazer::stargazer(b_SomeOpt_CFTE_pricing_22A_no_interact, b_SomeOpt_CFTE_pric
 stargazer::stargazer(b_AllOpt_salary_pricing_15A_no_interact, b_AllOpt_salary_pricing_15A, 
                      b_AllOpt_CFTE_pricing_22A_no_interact, b_AllOpt_CFTE_pricing_22A, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_CFTE_pricing_22A_no_interact, b_SomeOpt_CFTE_pricing_22A, bins=5)
-summary_residual_compare(b_AllOpt_CFTE_pricing_22A_no_interact, b_AllOpt_CFTE_pricing_22A, bins=3)
+summary_residual_compare(b_SomeOpt_CFTE_pricing_22A_no_interact, b_SomeOpt_CFTE_pricing_22A, 
+                         b_AllOpt_CFTE_pricing_22A_no_interact, b_AllOpt_CFTE_pricing_22A, bins=3)
 
 ```
 GVIF above acceptable threshold in both models - will not include.
@@ -3094,20 +3095,22 @@ A large office may be able to more effectively divide its attention, limiting th
 Interact: Office Obligations	cp_PSC7:cln_OffObl7			-	+	+
 
 ```{r Model23A}
+summary_double_continuous(serv_opt,"cp_OffPSC7","cln_OffObl7",metric="opt")
+
 #Create the models
-b_SomeOpt23A_no_interact <- glm(data=serv_opt, b_SomeOpt ~ pOffPSC + cln_OffObl7, 
+b_SomeOpt23A_no_interact <- glm(data=serv_opt, b_SomeOpt ~ cp_OffPSC7 + cln_OffObl7, 
                                              family=binomial(link="logit"))
 glmer_examine(b_SomeOpt23A_no_interact)
 
-b_SomeOpt23A <- glm(data=serv_opt, b_SomeOpt ~ pOffPSC + cln_OffObl7 + pOffPSC:cln_OffObl7,
+b_SomeOpt23A <- glm(data=serv_opt, b_SomeOpt ~ cp_OffPSC7 + cln_OffObl7 + cp_OffPSC7:cln_OffObl7,
                                  family=binomial(link="logit"))
 glmer_examine(b_SomeOpt23A)
 
 
-b_AllOpt23A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ pOffPSC + cln_OffObl7)
+b_AllOpt23A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cp_OffPSC7 + cln_OffObl7)
 glmer_examine(b_AllOpt23A_no_interact)
 
-b_AllOpt23A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ pOffPSC + cln_OffObl7 + pOffPSC:cln_OffObl7)
+b_AllOpt23A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cp_OffPSC7 + cln_OffObl7 + cp_OffPSC7:cln_OffObl7)
 glmer_examine(b_AllOpt23A)
 
 
@@ -3147,7 +3150,7 @@ b_SomeOpt23B <- glm(data=serv_opt,
                    cp_OffPerf7:cp_PairObl7+
                  cn_PairHist7:Pricing + 
                    clr_Ceil2Base:cln_Base+
-                   pOffPSC:cln_OffObl7, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt23B)
 
 b_AllOpt23B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
@@ -3166,7 +3169,7 @@ b_AllOpt23B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                  cln_OffFocus+
                    cp_OffPerf7:cp_PairObl7 + 
                     cp_OffPerf7:cln_PairCA + 
-                   pOffPSC:cln_OffObl7)
+                   cp_OffPSC7:cln_OffObl7)
 glmer_examine(b_AllOpt23B)
 
 # b_AllOpt23B2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
@@ -3185,7 +3188,7 @@ glmer_examine(b_AllOpt23B)
 #                    # 
 #                  cln_OffFocus+
 #                  cp_OffPerf7:cp_PairObl7+
-#                    pOffPSC:cln_OffObl7)
+#                    cp_OffPSC7:cln_OffObl7)
 # glmer_examine(b_AllOpt23B2)
 
 #Compare the models
@@ -3242,19 +3245,19 @@ Interact: Office Obligations	cp_PSC7:cln_OffObl7			-	+	+
 
 ```{r Model24B}
 #Create the models
-b_SomeOpt24B_no_interact <- glm(data=serv_opt, b_SomeOpt ~ pOffPSC + cln_OffFocus, 
+b_SomeOpt24B_no_interact <- glm(data=serv_opt, b_SomeOpt ~ cp_OffPSC7 + cln_OffFocus, 
                                              family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24B_no_interact)
 
-b_SomeOpt24B <- glm(data=serv_opt, b_SomeOpt ~ pOffPSC + cln_OffFocus + pOffPSC:cln_OffFocus,
+b_SomeOpt24B <- glm(data=serv_opt, b_SomeOpt ~ cp_OffPSC7 + cln_OffFocus + cp_OffPSC7:cln_OffFocus,
                                  family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24B)
 
-b_AllOpt24B_no_interact <- glm(data=serv_exeropt, b_AllOpt ~ pOffPSC + cln_OffFocus, 
+b_AllOpt24B_no_interact <- glm(data=serv_exeropt, b_AllOpt ~ cp_OffPSC7 + cln_OffFocus, 
                                              family=binomial(link="logit"))
 glmer_examine(b_AllOpt24B_no_interact)
 
-b_AllOpt24B <- glm(data=serv_exeropt, b_AllOpt ~ pOffPSC + cln_OffFocus + pOffPSC:cln_OffFocus, family = binomial(link = "logit"))
+b_AllOpt24B <- glm(data=serv_exeropt, b_AllOpt ~ cp_OffPSC7 + cln_OffFocus + cp_OffPSC7:cln_OffFocus, family = binomial(link = "logit"))
 glmer_examine(b_AllOpt24B)
 
 stargazer::stargazer(b_AllOpt24B, type = "text", digits = 2)
@@ -3286,7 +3289,7 @@ b_SomeOpt24C <- glm(data=serv_opt,
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
                  Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24C)
 
 b_SomeOpt24C2 <- glm(data=serv_opt,
@@ -3309,7 +3312,7 @@ b_SomeOpt24C2 <- glm(data=serv_opt,
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
                  Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24C2)
 
 
@@ -3333,7 +3336,7 @@ b_SomeOpt24C3 <- glm(data=serv_opt,
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
                  Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24C3)
 
 
@@ -3357,7 +3360,7 @@ b_SomeOpt24C4 <- glm(data=serv_opt,
                  # cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
                  Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24C4)
 
 #AllOpt
@@ -3378,8 +3381,8 @@ b_AllOpt24C <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                    cp_OffPerf7:cp_PairObl7 + 
                   cp_OffPerf7:cln_PairCA + 
                     cp_OffPerf7:cln_PairCA + 
-                   pOffPSC:cln_OffObl7 +
-                   pOffPSC:cln_OffFocus)
+                   cp_OffPSC7:cln_OffObl7 +
+                   cp_OffPSC7:cln_OffFocus)
 glmer_examine(b_AllOpt24C)
 stargazer::stargazer(b_AllOpt23B, b_AllOpt24C, type = "text", digits = 2)
 summary_residual_compare(b_AllOpt23B, b_AllOpt24C, bins = 50)
@@ -3513,8 +3516,6 @@ if(!exists("b_SomeOpt25A")){
                        (1 | StartFY),
                      family=binomial(link="logit"),
                      verbose=TRUE)
-  save(b_SomeOpt25A, file = "..\\output\\b_SomeOpt25A.rda")
-  
   
   b_AllOpt25A <- glmer(data=serv_exeropt, b_AllOpt ~ cln_US6sal + 
                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
@@ -3532,8 +3533,8 @@ if(!exists("b_SomeOpt25A")){
                       cln_OffFocus+
                       cp_OffPerf7:cp_PairObl7+
                       cp_OffPerf7:cln_PairCA +
-                      pOffPSC:cln_OffObl7 + 
-                      pOffPSC:cln_OffFocus + 
+                      cp_OffPSC7:cln_OffObl7 + 
+                      cp_OffPSC7:cln_OffFocus + 
                       (1 | NAICS3/NAICS6/ServArea)+  
                       (1 | Agency/Office) +
                       (1 | Place)+ 
@@ -3541,7 +3542,7 @@ if(!exists("b_SomeOpt25A")){
                       family=binomial(link="logit"),
                       verbose=TRUE)
   
-  save(b_AllOpt25A,file="..\\output\\b_AllOpt25A.rda")
+  save(b_SomeOpt25A,b_AllOpt25A,file="..\\output\\Opt25A.rda")
 }
 
 #Compare the models
@@ -3557,7 +3558,10 @@ stargazer::stargazer(b_AllOpt25A, type = "text", digits = 2)
 
 stargazer::stargazer(b_SomeOpt25A, b_AllOpt25A, type = "text", digits = 2)
 
-summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
+summary_residual_compare(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt25A, 
+                     b_AllOpt_partnership_share_17B, b_AllOpt25A, bins=100)
+
+
 
 # texreg::htmlreg(list(b_SomeOpt25A, b_AllOpt25A),file="..//Output//options_25A.html",
 #                 single.row = TRUE,
@@ -3583,6 +3587,9 @@ summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ####25B: 2019-08-28 - Modified SomeOpt and AllOpt models for multilevel model run (attempting to leverage GVIF declines in multilevel model in 25A).
 
 ```{r Opt25B}
+if(file.exists("..//Output//Opt25B.rda")) load("..//Output//Opt25B.rda")
+if(file.exists("..//Output//b_SomeOpt25B.rda")) load("..//Output//b_SomeOpt25B.rda")
+if(file.exists("..//Output//b_AllOpt25B.rda")) load("..//Output//b_AllOpt25B.rda")
 
 if(!exist("b_SomeOpt25B")){
   b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
@@ -3609,7 +3616,7 @@ if(!exist("b_SomeOpt25B")){
                           (1 | StartFY),
                         family=binomial(link="logit"),
                         verbose=TRUE)
-  save(b_SomeOpt25B, file="..\\Output\\b_SomeOpt25B.rda")
+  
   
   b_AllOpt25B <- glmer(data=serv_exeropt, b_AllOpt ~ cln_US6sal + 
                          cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
@@ -3627,8 +3634,8 @@ if(!exist("b_SomeOpt25B")){
                          cln_OffFocus+
                          cp_OffPerf7:cp_PairObl7+
                          cp_OffPerf7:cln_PairCA +
-                         pOffPSC:cln_OffObl7 + 
-                         pOffPSC:cln_OffFocus + 
+                         cp_OffPSC7:cln_OffObl7 + 
+                         cp_OffPSC7:cln_OffFocus + 
                          Pricing:cln_PSCrate+
                          (1 | NAICS3/NAICS6/ServArea)+  
                          (1 | Agency/Office) +
@@ -3644,7 +3651,8 @@ if(!exist("b_SomeOpt25B")){
 
 #Load experimental Some+All Opt Models
 glmer_examine(b_AllOpt25B)
-stargazer::stargazer(b_AllOpt25A, b_AllOpt25A, type = "text", digits = 2)
+stargazer::stargazer(b_SomeOpt25A, b_SomeOpt25B, 
+                     b_AllOpt25A, b_AllOpt25B, type = "text", digits = 2)
 # 
 # texreg::htmlreg(list(b_AllOpt25A, b_AllOpt25B),file="..//Output//all_options_comp.html",
 #                 single.row = TRUE,
@@ -3664,18 +3672,24 @@ stargazer::stargazer(b_AllOpt25A, b_AllOpt25A, type = "text", digits = 2)
 #                 custom.note="%stars. Numerical inputs are rescaled.",
 #                 caption="Table 6: Exercised Options",
 #                 caption.above=TRUE)
+summary_residual_compare(b_SomeOpt25A, b_SomeOpt25B, 
+                     b_AllOpt25A, b_AllOpt25B, bins=100)
+
 
 ```
+BIC rises with the introduction  of the PSCrate / pricing variable. There is some support in the all options model, but the strange contradiction in  direction between incentive and cost-base contracts and the huge coefficient for pricing  UCA  suggests that something not well understood  is happening here. Residuals are also definitely showing more of a pattern for some options.
 
-####25C: 2019-08-29 - Modified SomeOpt and AllOpt models to more accurately reflect variable trimming in prior sections.
+Leaving it out.
 
-```{r Opt25B}
+####25C: 2019-08-29 - Modified SomeOpt models to more accurately reflect variable trimming in prior sections.
+
+```{r SomeOpt25C}
 
 if(file.exists("..//Output//b_SomeOpt25C.rda")) load("..//Output//b_SomeOpt25C.rda")
 
 
 #Note, does not include cln_Days
-if(!exist("b_SomeOpt25C")){
+if(!exists("b_SomeOpt25C")){
   b_SomeOpt25C <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                           cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                           cn_PairHist7+cln_PairCA+
@@ -3694,7 +3708,7 @@ if(!exist("b_SomeOpt25C")){
                           cln_OffObl7:cp_PairObl7 + 
                           cn_PairHist7:Pricing + 
                           clr_Ceil2Base:cln_Base + 
-                          pOffPSC:cln_OffObl7 + 
+                          cp_OffPSC7:cln_OffObl7 + 
                           (1 | NAICS3/NAICS6/ServArea)+
                           (1 | Agency/Office) +
                           (1 | Place)+
@@ -3705,11 +3719,21 @@ if(!exist("b_SomeOpt25C")){
 }
 
 glmer_examine(b_SomeOpt25C)
+stargazer::stargazer(b_SomeOpt25A, b_SomeOpt25C, type = "text", digits = 2)
+
+summary_residual_compare(b_SomeOpt25A, b_SomeOpt25C, bins=100)
+
+```
+AIC and BIC both rise, thoough residuals seem to be a bit more contracted in 25C. Dropping days appears to have been costly.
+
+####25C2: 2019-08-29 - Modified SomeOpt models to more accurately reflect variable trimming in prior sections.
+
+```{r SomeOpt25C2}
 
 if(file.exists("..//Output//b_SomeOpt25Cv2.rda")) load("..//Output//b_SomeOpt25Cv2.rda")
 
 
-if(!exist("b_SomeOpt25Cv2")){
+if(!exists("b_SomeOpt25Cv2")){
   b_SomeOpt25Cv2 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                             cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                             cn_PairHist7+cln_PairCA+
@@ -3728,21 +3752,31 @@ if(!exist("b_SomeOpt25Cv2")){
                             cln_OffObl7:cp_PairObl7 + 
                             cn_PairHist7:Pricing + 
                             clr_Ceil2Base:cln_Base + 
-                            pOffPSC:cln_OffObl7 + 
+                            cp_OffPSC7:cln_OffObl7 + 
                             (1 | NAICS3/NAICS6/ServArea)+
                             (1 | Agency/Office) +
                             (1 | Place)+
                             (1 | StartFY),
                           family=binomial(link="logit"),
                           verbose=TRUE)
-  save(b_SomeOpt25Bv2, file="..\Output\b_SomeOpt25Cv2.rda")
+  save(b_SomeOpt25Bv2, file="..\\Output\\b_SomeOpt25Cv2.rda")
 }
 
 glmer_examine(b_SomeOpt25Cv2)
+stargazer::stargazer(b_SomeOpt25A, b_SomeOpt25Cv2, type = "text", digits = 2)
 
-if(file.exists("..//Output//b_SomeOpt25Cv3"))  load("..//Output//b_SomeOpt25Cv3")
+summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv2, bins=100)
 
-if(!exist("b_SomeOpt25Cv3")){
+
+```
+AIC lower, BIC higher, residuals comparable. 
+
+####25C3: 2019-08-29 - Modified SomeOpt models to more accurately reflect variable trimming in prior sections.
+
+```{r SomeOpt25C3}
+if(file.exists("..//Output//b_SomeOpt25Cv3.rda"))  load("..//Output//b_SomeOpt25Cv3.rda")
+
+if(!exists("b_SomeOpt25Cv3")){
   b_SomeOpt25Cv3 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                             cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                             cn_PairHist7+cln_PairCA+
@@ -3762,7 +3796,7 @@ if(!exist("b_SomeOpt25Cv3")){
                             cn_PairHist7:Pricing + 
                             cp_OffPerf7:cln_PairCA +
                             clr_Ceil2Base:cln_Base + 
-                            pOffPSC:cln_OffObl7 + 
+                            cp_OffPSC7:cln_OffObl7 + 
                             (1 | NAICS3/NAICS6/ServArea)+
                             (1 | Agency/Office) +
                             (1 | Place)+
@@ -3771,7 +3805,7 @@ if(!exist("b_SomeOpt25Cv3")){
                           verbose=TRUE)
   save(b_SomeOpt25Cv3, file="..\\Output\\b_SomeOpt25Cv3.rda")
   
-  
+}
   
 
 # texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt25Cv3),file="..//Output//some_options_comp.html",
@@ -3803,5 +3837,13 @@ if(!exist("b_SomeOpt25Cv3")){
 #                 caption.above=TRUE)
 # 
 
-}
+glmer_examine(b_SomeOpt25Cv3)
+
+stargazer::stargazer(b_SomeOpt25A, b_SomeOpt25Cv2,
+                     b_SomeOpt25Cv3, type = "text", digits = 2)
+
+summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
+                     b_SomeOpt25Cv2,b_SomeOpt25Cv3, bins=100)
+
+
 ```
