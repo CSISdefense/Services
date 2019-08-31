@@ -2362,6 +2362,7 @@ b_SomeOpt_partnership_duration_18B <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+
                  cp_OffPerf7:cp_PairObl7+
+                   cln_OffObl7:cp_PairObl7+
                  cp_OffPerf7:cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_partnership_duration_18B)
 
@@ -2476,6 +2477,7 @@ b_SomeOpt_history_pricing_19B <- glm(data=serv_opt,
                                     cln_OffObl7+ 
                                     cln_OffFocus+ 
                                     cp_OffPerf7:cp_PairObl7+
+                                    cln_OffObl7:cp_PairObl7+
                                     cp_OffPerf7:cln_Days+
                                     cn_PairHist7:Pricing, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_history_pricing_19B)
@@ -2573,6 +2575,7 @@ b_SomeOpt_competition_NAICS66_20B <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+ 
                                   cp_OffPerf7:cp_PairObl7+
+                   cln_OffObl7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    Comp:cln_Def6HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_NAICS66_20B)
@@ -2614,6 +2617,7 @@ b_SomeOpt_competition_naincs3_20B <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+ 
                                   cp_OffPerf7:cp_PairObl7+
+                   cln_OffObl7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    Comp:cln_Def3HHI, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_competition_naincs3_20B)
@@ -2710,6 +2714,7 @@ b_SomeOpt_base2ceil_ceiling_21B <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+ 
                 cp_OffPerf7:cp_PairObl7+
+                  cln_OffObl7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                   cn_PairHist7:Pricing +
                    clr_Ceil2Base:cln_Base, family=binomial(link="logit"))
@@ -2791,6 +2796,7 @@ b_SomeOpt_base2ceil_duration_21D <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7+
+                   cln_OffObl7:cp_PairObl7+
                    cp_OffPerf7:cln_Days+ 
                    cn_PairHist7:Pricing +
                    clr_Ceil2Base:cln_Base+
@@ -3016,6 +3022,7 @@ b_SomeOpt23B <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7+
+                   cln_OffObl7:cp_PairObl7+
                  cn_PairHist7:Pricing + 
                    clr_Ceil2Base:cln_Base+
                    cp_OffPSC7:cln_OffObl7, family=binomial(link="logit"))
@@ -3828,7 +3835,7 @@ if(!exists("b_SomeOpt26A")){
 glmer_examine(b_SomeOpt25Cv3)
 
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv2,
-                     b_SomeOpt25Cv3, type = "text", digits = 2)
+                     b_SomeOpt25Cv3, b_SomeOpt26A,type = "text", digits = 2)
 
 summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
                      b_SomeOpt25Cv2,b_SomeOpt25Cv3, bins=100)
