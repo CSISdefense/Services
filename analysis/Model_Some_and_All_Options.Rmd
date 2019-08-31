@@ -3425,11 +3425,8 @@ if(!exists("b_SomeOpt25A")){
 glmer_examine(b_AllOpt25A,display = TRUE)
 
 
-stargazer::stargazer(b_SomeOpt24E, b_SomeOpt25A, 
-                     b_AllOpt24E, b_AllOpt25A, type="text", digits=2)
-
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt25A, 
-                     b_AllOpt_CFTE_pricing_22B, b_AllOpt25A, type="text", digits=2)
+                     b_AllOpt24E, b_AllOpt25A, type="text", digits=2)
 
 
 stargazer::stargazer(b_AllOpt25A, type = "text", digits = 2)
@@ -3717,11 +3714,124 @@ if(!exists("b_SomeOpt25Cv3")){
 
 glmer_examine(b_SomeOpt25Cv3)
 
-stargazer::stargazer(b_SomeOpt25A, b_SomeOpt25Cv2,
+stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv2,
                      b_SomeOpt25Cv3, type = "text", digits = 2)
 
 summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
                      b_SomeOpt25Cv2,b_SomeOpt25Cv3, bins=100)
+
+
+
+```
+
+
+
+####26A: 2019-08-31 - Rerun with updated interactions after pOffPSC->clp_OffPSC fix
+
+```{r SomeOpt26A}
+if(file.exists("..//Output//b_SomeOpt26A.rda"))  load("..//Output//b_SomeOpt26A.rda")
+
+if(!exists("b_SomeOpt26A")){
+  b_SomeOpt26A <- glmer(data=serv_opt,
+                        b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+#cln_PairCA+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                 cln_Def6HHI+clr_Def6toUS+
+                 cln_Def3HHI+
+                   clr_Def3toUS+
+                 cp_PairObl7+
+                   cln_OffObl7+ 
+                 cln_OffFocus+ 
+                cp_OffPerf7:cp_PairObl7+
+                 cp_OffPerf7:cln_Days+
+                  cn_PairHist7:Pricing +
+                   clr_Ceil2Base:cln_Base+
+                            (1 | NAICS3/NAICS6/ServArea)+
+                            (1 | Agency/Office) +
+                            (1 | Place)+
+                            (1 | StartFY),
+                          family=binomial(link="logit"),
+                          verbose=TRUE)
+  save(b_SomeOpt26A, file="..\\Output\\b_SomeOpt26A.rda")
+  
+  
+  
+  
+  b_AllOpt26A <- glmer(     b_AllOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+cln_PairCA+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                 cln_Def6HHI+clr_Def6toUS+
+                 cln_Def3HHI+
+                   clr_Def3toUS+
+                 cp_PairObl7+
+                   cln_OffObl7+ 
+                 cln_OffFocus+
+                   cp_OffPerf7:cp_PairObl7 + 
+                  # cp_OffPerf7:cln_PairCA + 
+                   cp_OffPSC7:cln_OffFocus+
+                   
+                   Pricing:cln_PSCrate+
+                      # cp_OffPerf7:cln_Days+
+                 # Pricing:cln_PSCrate+
+                   cln_OffObl7:cln_OffFocus+
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                      family=binomial(link="logit"),
+                      verbose=TRUE)
+  
+  save(b_AllOpt26A,file="..\\output\\b_AllOpt26A.rda")
+}
+  
+
+# texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt26A),file="..//Output//some_options_comp.html",
+#                 single.row = TRUE,
+#                 custom.model.name=c("SO 25A", "SO 25C", "SO 25Cv2"),
+#                 stars=c(0.1,0.05,0.01,0.001),
+#                 # groups = list(
+#                 #                "Services Complexity" = 2:3,
+#                 #                "Office Capacity" =4:5,
+#                 #                "Past Relationship"=6:7,
+#                 #                "Contract Characteristics"=8:26,
+#                 #                "NAICS Characteristics" =27:30,
+#                 #                "Office Characteristics" =31:33,
+#                 #                "Interactions"=34:39
+#                 #               ),
+#                 # custom.coef.map=all_coef_list,
+#                 bold=0.05,
+#                 custom.note="%stars. Numerical inputs are rescaled.",
+#                 caption="Table 6: Exercised Options",
+#                 caption.above=TRUE)
+# 
+# texreg::htmlreg(list(b_SomeOpt25A, b_SomeOpt25C, b_SomeOpt25Cv3, b_SomeOpt25Cv3),file="..//Output//some_options_comp.html",
+#                 single.row = TRUE,
+#                 custom.model.name=c("SO 25A", "SO 25C", "SO 25Cv2", "SO 25Cv3"),
+#                 stars=c(0.1,0.05,0.01,0.001),
+#                 bold=0.05,
+#                 custom.note="%stars. Numerical inputs are rescaled.",
+#                 caption="Table 6: Exercised Options",
+#                 caption.above=TRUE)
+# 
+
+glmer_examine(b_SomeOpt25Cv3)
+
+stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv2,
+                     b_SomeOpt25Cv3, type = "text", digits = 2)
+
+summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
+                     b_SomeOpt25Cv2,b_SomeOpt25Cv3, bins=100)
+
 
 
 ```
