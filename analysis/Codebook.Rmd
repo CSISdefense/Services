@@ -153,8 +153,13 @@ freq_continuous_plot(def_serv,"l_pPBSC",bins=50) #No real point, stick with PBSC
 ```{r OffPSC}
 
 
-freq_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=100)
-freq_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=100, log=TRUE)  #No real point here either
+summary_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=100)
+summary_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=100, log=TRUE)  #No real point here either
+
+summary(def_serv$office_psc_obligatedamount_7year==0)
+summary(def_serv$pOffPSC==0)
+summary(def_serv$office_psc_obligatedamount_7year)
+summary(def_serv$pOffPSC)
 
 summary(def_serv$pMarket)
 

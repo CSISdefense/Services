@@ -3762,7 +3762,8 @@ if(!exists("b_SomeOpt26A")){
   
   
   
-  b_AllOpt26A <- glmer(     b_AllOpt ~  cln_US6sal + 
+  b_AllOpt26A <- glmer(data=serv_opt,
+                       b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
