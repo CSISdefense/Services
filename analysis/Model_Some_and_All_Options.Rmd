@@ -3737,6 +3737,7 @@ summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
 
 ```{r SomeOpt26A}
 if(file.exists("..//Output//b_SomeOpt26A.rda"))  load("..//Output//b_SomeOpt26A.rda")
+if(file.exists("..//Output//b_AllOpt26A.rda"))  load("..//Output//b_AllOpt26A.rda")
 
 if(!exists("b_SomeOpt26A")){
   b_SomeOpt26A <- glmer(data=serv_opt,
@@ -3837,8 +3838,11 @@ glmer_examine(b_SomeOpt25Cv3)
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv2,
                      b_SomeOpt25Cv3, b_SomeOpt26A,type = "text", digits = 2)
 
-summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
-                     b_SomeOpt25Cv2,b_SomeOpt25Cv3, bins=100)
+# stargazer::stargazer(b_AllOpt25A,b_AllOpt26A,type = "text", digits = 2)
+
+summary_residual_compare(b_SomeOpt25Cv3,b_SomeOpt26A,
+                         # b_AllOpt25A,b_AllOpt26A,
+                         bins=100)
 
 
 
