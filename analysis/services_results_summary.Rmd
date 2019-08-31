@@ -437,7 +437,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt25A),file="..//Output//options.html
 ```{r CeilingResults}
 
   stargazer::stargazer(#p_Opt_12C,
-                       b_CBre28B,n_CBre25A,
+                       b_CBre28B,b_CBre29B,n_CBre25A,
                        single.row = TRUE,
                 custom.model.name=c("Breach Frequency (Logit)","Breach Size for Breached Contracts (Regression"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -445,9 +445,9 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt25A),file="..//Output//options.html
                        digits=2)
 
 
-texreg::htmlreg(list(b_CBre28B,n_CBre25A),file="..//Output//ceiling_breaches.html",
+texreg::htmlreg(list(b_CBre28B,b_CBre29B,n_CBre25A),file="..//Output//ceiling_breaches.html",
                 single.row = TRUE,
-                custom.model.name=c("Likelihood\n(Logit)","Size Given Breach\n(Regression)"),
+                custom.model.name=c("Likelihood\n(Logit)","Likelihood\n(Logit)","Size Given Breach\n(Regression)"),
                 stars=c(0.1,0.05,0.01,0.001),
                 groups = list(
                                                 "Study Variables" = 2:7,
