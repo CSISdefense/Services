@@ -58,7 +58,7 @@ main.text.size<-1
 note.text.size<-1.40
 
 load("../data/clean/transformed_def_serv.Rdata")
-
+def_serv<-transition_variable_names_service(def_serv)
 
 ```
 
@@ -93,7 +93,7 @@ length(unique(def_serv$Place))
 summary(def_serv$UnmodifiedBase_OMB20_GDP18)
 
 freq_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50)
-freq_continuous_plot(def_serv,"l_base",bins=50)
+freq_continuous_plot(def_serv,"l_Base",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"lp_OptGrowth",bins=50)
 
@@ -114,7 +114,7 @@ statsummary_discrete("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexerc
 ### Ceiling Breaches
 
 * b_CBre is a binary variable that has a value of 1 for any contracts that have experienced a partial or complete termination, 0 otherwise. (`r summary(def_serv$b_CBre);
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$b_CBre==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_CBre==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
 NA_stats(def_serv,"b_CBre")`)
 
 ```{r vargraphs: b_CBre}
@@ -139,7 +139,7 @@ These four categories and the "Close Out" category are used to mark a contract a
 
 NA_stats(def_serv,"b_Term")
 * b_Term is a binary variable that has a value of 1 for any contracts that have experienced a partial or complete termination, 0 otherwise. (`r summary(def_serv$b_Term);
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$b_Term==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)`
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_Term==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)`
 
 
 ```{r vargraphs: b_Term}
@@ -185,11 +185,15 @@ grouped_barplot("Comp",def_serv)
 ```
 
 ### Service Complexity 
-#### CFTE
-```{r CFTE}
+
+#### Detailed Industry Salary
+#### Service Code Invoice Rate
+```{r InvoiceRate}
 summary(def_serv$l_CFTE)
 freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50)
 freq_continuous_plot(def_serv,"l_CFTE",bins=50)
+
+statsummary_continuous(c("US6_avg_sal_lag1Const","CFTE_Rate_1year"), def_serv)
 ```
 
 
@@ -231,7 +235,10 @@ freq_continuous_plot(def_serv,"l_CA",bins=50)
 
 
 centered_description(def_serv$office_entity_paircount_7year,"number of years")
-
+summary(def_serv$pPBSC)
+summary(def_serv$pOffPSC)
+summary(def_serv$office_entity_paircount_7year)
+statsummary_continuous(c("pPBSC","pOffPSC","office_entity_paircount_7year"), def_serv,log=FALSE)
 
 ```
 
@@ -241,6 +248,8 @@ centered_description(def_serv$office_entity_paircount_7year,"number of years")
 freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
 freq_continuous_plot(def_serv,"l_CA",bins=50)
 centered_log_description(def_serv$office_entity_numberofactions_1year,"number of actions")
+def_serv$office_entity_numberofactions_1year_plus1<-def_serv$office_entity_numberofactions_1year+1
+statsummary_continuous(c("office_entity_numberofactions_1year_plus1"), def_serv)
 ```
 
 ## Controls
@@ -252,9 +261,9 @@ centered_log_description(def_serv$office_entity_numberofactions_1year,"number of
 NA_stats(def_serv,"Comp") `
 * n_Comp is a binary variable based on competition. It has a value of 0 for uncompeted contracts and a value of 1 for competition, regardless of number of offers. `r  summary(def_serv$EffComp);
 NA_stats(def_serv,"EffComp")
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="No Comp."],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="1 Offer"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="2+ Offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)`
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$EffComp=="No Comp."],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$EffComp=="1 Offer"],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$EffComp=="2+ Offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)`
 )
 * CompOffr is a dummy variable based on competition and the number of offers. It's baseline value is No Competition, sole-source contracts, which are intentionally not assigned a dummy to avoid multicollinearity. 
 
@@ -262,11 +271,11 @@ sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="2+ Offers"],na.rm=
 summary(def_serv$CompOffr);
 debug(NA_stats)
 NA_stats(def_serv,"CompOffr")
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="No Competition"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="1 offer"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="2 offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="3-4 offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$CompOffr=="5+ offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$CompOffr=="No Competition"],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$CompOffr=="1 offer"],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$CompOffr=="2 offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$CompOffr=="3-4 offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$CompOffr=="5+ offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
 
 length(def_serv$CompOffr[def_serv$CompOffr=="No Competition" & !is.na(def_serv$CompOffr)])/nrow(def_serv)
 length(def_serv$CompOffr[def_serv$CompOffr=="1 offer"& !is.na(def_serv$CompOffr)])/nrow(def_serv)
@@ -349,9 +358,9 @@ statsummary_discrete("Veh", def_serv)
 ### Pricing Fee
 * n_Fixed is a numeric variable based on contract pricing. It has a value of 0 for cost-based, 0.5 or "combination or other", 1 for any fixed price (excluding fixed-price level of effort which is classified as cost-based). (`r summary(def_serv$n_Fixed);
 NA_stats(def_serv,"n_Fixed")
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$n_Fixed==0],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$n_Fixed==0.5],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$n_Fixed==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$n_Fixed==0],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$n_Fixed==0.5],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$n_Fixed==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
 nrow(def_serv[def_serv$n_Fixed==0,])/nrow(def_serv)
 nrow(def_serv[def_serv$n_Fixed==0.5,])/nrow(def_serv)
 nrow(def_serv[def_serv$n_Fixed==1,])/nrow(def_serv)
@@ -370,11 +379,11 @@ NA_stats(def_serv,"PricingFee")
 `)
 NA_stats(def_serv,"n_Incent")`)
 * b_UCA is a binary variable with a value of 1 for contracts/task orders that begin as letter contracts or undefinitized contract awards (UCA) and a value of 0 otherwise. `r summary(def_serv$b_UCA);
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$b_UCA==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_UCA==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
 length(def_serv$b_UCA[def_serv$b_UCA==1 & !is.na(def_serv$b_UCA)])/nrow(def_serv)
 NA_stats(def_serv,"b_UCA")`
 * b_Intl is a binary variable with a value of 1 for contracts/task orders with any transactions performed internationally and a value of 0 otherwise. `r summary(def_serv$b_Intl);
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$b_Intl==1],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_Intl==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
 NA_stats(def_serv,"b_Intl")`
 * NAICS6 is a factor reporting the top North American Industrial Classification Code of each contract. 
 `r summary(def_serv$NAICS6);
@@ -459,15 +468,15 @@ Frequency_Plot3
 memory.limit(56000)
 Office_Freq <- def_serv %>% group_by(Office,ContractingOfficeName) %>% summarise(
   Count_Freq=length(CSIScontractID),
-  Action_Obligation.OMB20_GDP18=sum(Action_Obligation.OMB20_GDP18)
+  Action_Obligation_OMB20_GDP18=sum(Action_Obligation_OMB20_GDP18)
 )
   
   # Office_Freq <- Office_Freq[order(-Office_Freq$Freq),]
 # Office_Freq_TOP20 <- Office_Freq[1:20,]   #Get top 20 NAICS6 has largest frequency count
 Office_Freq$Percent_Freq <- round(Office_Freq$Count_Freq/
                                    sum(Office_Freq$Count_Freq),4)*100
-Office_Freq$Percent_Obli <- round(Office_Freq$Action_Obligation.OMB20_GDP18/
-                                         sum(Office_Freq$Action_Obligation.OMB20_GDP18),4)*100
+Office_Freq$Percent_Obli <- round(Office_Freq$Action_Obligation_OMB20_GDP18/
+                                         sum(Office_Freq$Action_Obligation_OMB20_GDP18),4)*100
 
 colnames(Office_Freq)[colnames(Office_Freq)=="Office"] <- "OfficeID"
 colnames(Office_Freq)[colnames(Office_Freq)=="ContractingOfficeName"] <- "OfficeName"
@@ -539,7 +548,7 @@ Agency_Freq <- left_join(Agency_Freq, Agency_Lookup, by = "Agency")
 #Add obligation percent information to data frame
 Percent_Obli <- c()
 for (i in Agency_Freq$Agency) {
-  Percent_Obligation <- round(sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$Agency == i], na.rm = TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18, na.rm = TRUE),5)
+  Percent_Obligation <- round(sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$Agency == i], na.rm = TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18, na.rm = TRUE),5)
   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
 }
 Agency_Freq$Agency_Description <- as.character(Agency_Freq$Agency_Description)
@@ -631,7 +640,7 @@ NAICS2_Freq$Percent_Freq <- round(NAICS2_Freq$Freq/sum(NAICS2_Freq$Freq),4)*100
 colnames(NAICS2_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 
 #Get detail description for NAICS2 code
-NAICS_Lookup <- read.csv(file = "https://raw.githubusercontent.com/CSISdefense/Vendor/master/Data/Clean/NAICS6/Lookup_NAICS_code.csv")
+NAICS_Lookup <- read.csv(file = "https://raw.githubusercontent.com/CSISdefense/Vendor/master/Data/Clean/NAICS/Lookup_NAICS_code.csv")
 colnames(NAICS_Lookup) <- c("NAICS_Code", "NAICS_DESCRIPTION")
 NAICS2_Freq <- left_join(NAICS2_Freq, NAICS_Lookup, by = "NAICS_Code")
 NAICS2_Freq <- NAICS2_Freq[order(-NAICS2_Freq$Percent_Freq),]
@@ -661,9 +670,9 @@ colnames(NAICS2_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 NAICS2_Freq <- left_join(NAICS2_Freq, NAICS_Lookup, by = "NAICS_Code")
 
 Percent_Obli <- c()
-Total_Obli <- sum(def_serv$Action_Obligation.OMB20_GDP18, na.rm = TRUE)
+Total_Obli <- sum(def_serv$Action_Obligation_OMB20_GDP18, na.rm = TRUE)
 for (i in NAICS2_Freq$NAICS_Code) {
-  Percent_Obligation <- round(sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$NAICS2 == i], na.rm = TRUE)/Total_Obli,5)
+  Percent_Obligation <- round(sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$NAICS2 == i], na.rm = TRUE)/Total_Obli,5)
   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
 }
 
@@ -703,7 +712,7 @@ NAICS2_barplot
 
 ```{r NAICS3_Summary, fig.width=7.5 , fig.height=3}
 NAICS_summary<-def_serv %>% group_by(NAICS3,StartCY,def3_HHI_lag1,def3_obl_lag1,def3_ratio_lag1,US3_avg_sal_lag1) %>%
-  dplyr::summarise(annual_action_obligation=sum(Action_Obligation.OMB20_GDP18),
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation_OMB20_GDP18),
                    annual_count=length(StartCY)) 
 
 top_NAICS <- NAICS_summary %>% group_by(NAICS3) %>% 
@@ -832,7 +841,7 @@ Frequency[["Percent_Freq"]] <- round(Frequency[["Freq"]]/sum(Frequency[["Freq"]]
 colnames(Frequency) <- c("NAICS3", "Count_Freq", "Percent_Freq")
 Percent_Obli <- c()
 for (i in Frequency[["NAICS3"]]) {
-  Percent_Obligation <- round(sum(def_serv[["Action_Obligation.OMB20_GDP18"]][def_serv$NAICS3 == i], na.rm = TRUE)/sum(def_serv[["Action_Obligation.OMB20_GDP18"]], na.rm = TRUE),5)
+  Percent_Obligation <- round(sum(def_serv[["Action_Obligation_OMB20_GDP18"]][def_serv$NAICS3 == i], na.rm = TRUE)/sum(def_serv[["Action_Obligation_OMB20_GDP18"]], na.rm = TRUE),5)
     Percent_Obli <- c(Percent_Obli, Percent_Obligation)
   }
 Frequency[["Percent_Obli"]] <- Percent_Obli*100
@@ -867,7 +876,7 @@ part_grouped_barplot("NAICS3", NAICS3_Freq_TOP) + ggtitle("Top 15 of the most fr
 
 ```{r NAICS6_Summary, fig.width=7.5 , fig.height=3}
 NAICS_summary<-def_serv %>% group_by(NAICS6,StartCY,def6_HHI_lag1,def6_obl_lag1,def6_ratio_lag1,US6_avg_sal_lag1) %>%
-  dplyr::summarise(annual_action_obligation=sum(Action_Obligation.OMB20_GDP18),
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation_OMB20_GDP18),
                    annual_count=length(StartCY)) 
 
 top_NAICS <- NAICS_summary %>% group_by(NAICS6) %>% 
@@ -1020,15 +1029,15 @@ Frequency_Plot
 #Prepare dateframe for plot
 NAICS_Freq <- def_serv %>% group_by(NAICS6) %>% summarise(
   Count_Freq=length(CSIScontractID),
-  Action_Obligation.OMB20_GDP18=sum(Action_Obligation.OMB20_GDP18)
+  Action_Obligation_OMB20_GDP18=sum(Action_Obligation_OMB20_GDP18)
 )
   
   # NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Freq),]
 # NAICS_Freq_TOP20 <- NAICS_Freq[1:20,]   #Get top 20 NAICS6 has largest frequency count
 NAICS_Freq$Percent_Freq <- round(NAICS_Freq$Count_Freq/
                                    sum(NAICS_Freq$Count_Freq),4)*100
-NAICS_Freq$Percent_Obli <- round(NAICS_Freq$Action_Obligation.OMB20_GDP18/
-                                         sum(NAICS_Freq$Action_Obligation.OMB20_GDP18),4)*100
+NAICS_Freq$Percent_Obli <- round(NAICS_Freq$Action_Obligation_OMB20_GDP18/
+                                         sum(NAICS_Freq$Action_Obligation_OMB20_GDP18),4)*100
 
 colnames(NAICS_Freq)[colnames(NAICS_Freq)=="NAICS6"] <- "NAICS_Code"
 NAICS_Freq$NAICS_Code<-factor(NAICS_Freq$NAICS_Code)
@@ -1134,7 +1143,7 @@ summary(def_serv$pMarket)
 
 ```
 
-### Office and Vendor
+
 
 
 # Missing Data Measures
@@ -1222,11 +1231,11 @@ complete<-
 
 
 summary(complete)
-summary(def_serv$Action_Obligation.OMB20_GDP18)
-money<-def_serv$Action_Obligation.OMB20_GDP18
-any(def_serv$Action_Obligation.OMB20_GDP18<0)
-money[def_serv$Action_Obligation.OMB20_GDP18<0]<-0
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$Action_Obligation.OMB20_GDP18<0])
+summary(def_serv$Action_Obligation_OMB20_GDP18)
+money<-def_serv$Action_Obligation_OMB20_GDP18
+any(def_serv$Action_Obligation_OMB20_GDP18<0)
+money[def_serv$Action_Obligation_OMB20_GDP18<0]<-0
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$Action_Obligation_OMB20_GDP18<0])
 
 #Overall
 length(money[!complete])/length(money)
@@ -1239,7 +1248,7 @@ sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
 
 #Missing data, how many records
 nrow(def_serv[!complete,])/nrow(def_serv)
-sum(def_serv[!complete,]$Action_Obligation.OMB20_GDP18.OMB20,na.rm=TRUE)/sum(def_serv$Action.Obligation.OMB20_GDP18,na.rm=TRUE)
+sum(def_serv[!complete,]$Action_Obligation_OMB20_GDP18.OMB20,na.rm=TRUE)/sum(def_serv$Action.Obligation.OMB20_GDP18,na.rm=TRUE)
 
 #Missing data how much money?
 length(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1])/

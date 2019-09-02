@@ -484,20 +484,6 @@ if(!"office_naics_hhi_k" %in% colnames(def_serv)){
 }
 
 
-#********** Performance Based Services Contracting
-# def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
-
-#********** Office experience in PSC
-# def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
-
-#********** Vendor Market Share
-# def_serv$l_pMarket<-log(def_serv$pMarket+1)
-
-
-
-#********* Number of actions between vendor and office
-# def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
-
 #********8 Invoice rate  for PSC
 # def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
 
