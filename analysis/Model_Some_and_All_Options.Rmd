@@ -3838,6 +3838,10 @@ glmer_examine(b_AllOpt26A)
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv2,
                      b_SomeOpt25Cv3, type = "text", digits = 2)
 
+ 
+summary_residual_compare(b_AllOpt25A, b_AllOpt26A, bins=100)
+
+
 summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
                      b_SomeOpt25Cv2,b_SomeOpt25Cv3, bins=100)
 
