@@ -490,7 +490,7 @@ texreg::htmlreg(list(term25B),file="..//Output//terminations.html",
                 custom.coef.map=all_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 7: Terminations",
+                caption="Table 10: Terminations",
                 caption.above=TRUE)
 
 
