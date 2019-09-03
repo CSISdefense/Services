@@ -3594,5 +3594,8 @@ glmer_examine(b_CBre29B,display = TRUE)
 
 stargazer::stargazer(b_CBre28A, b_CBre29A, b_CBre28B, b_CBre29B, type="text", digits=2)
 
-summary_residual_compare( b_CBre28A, b_CBre29A,b_CBre28B,b_CBre29B,bins=100)
+summary_residual_compare( b_CBre28A, b_CBre29A,bins=100)
+summary_residual_compare( b_CBre28B,b_CBre29B,bins=100)
 ```
+
+Adding off focus is significant in its own right in the expected direction and lowers AIC and BIC.

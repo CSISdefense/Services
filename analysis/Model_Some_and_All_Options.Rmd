@@ -3834,17 +3834,17 @@ if(!exists("b_SomeOpt26A")){
 
 glmer_examine(b_AllOpt26A)
 
-stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv2,
+stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, 
                      b_SomeOpt25Cv3, b_SomeOpt26A,type = "text", digits = 2)
 
-stargazer::stargazer(b_AllOpt25A,b_AllOpt26A, type = "text", digits = 2)
+stargazer::stargazer(b_AllOpt25A,b_AllOpt25B,b_AllOpt26A, type = "text", digits = 2)
 
  
-summary_residual_compare(b_AllOpt25A, b_AllOpt26A, bins=100)
+summary_residual_compare(b_AllOpt25B, b_AllOpt26A, bins=100)
 
 
 summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
-                     b_SomeOpt25Cv2,b_SomeOpt25Cv3, bins=100)
+                     b_SomeOpt25Cv3, b_SomeOpt26A, bins=100)
 
 
 summary_residual_compare(b_AllOpt26A, bins=100)
@@ -3852,7 +3852,7 @@ summary_residual_compare(b_AllOpt26A, bins=100)
 
 ```
 
-
+####26B: 2019-08-31 - Adding pairCA
 ```{r SomeOpt26B}
 if(file.exists("..//Output//b_SomeOpt26B.rda"))  load("..//Output//b_SomeOpt26B.rda")
 
@@ -3920,17 +3920,23 @@ if(!exists("b_SomeOpt26B")){
 #                 caption.above=TRUE)
 # 
 
-glmer_examine(b_SomeOpt25Cv3)
+glmer_examine(b_SomeOpt26B)
 
-stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv2,
-                     b_SomeOpt25Cv3, b_SomeOpt26A,type = "text", digits = 2)
+stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, 
+                     b_SomeOpt25Cv3, b_SomeOpt26A,b_SomeOpt26B,type = "text", digits = 2)
 
+stargazer::stargazer(b_SomeOpt25Cv3,type = "text", digits = 2)
 # stargazer::stargazer(b_AllOpt25A,b_AllOpt26A,type = "text", digits = 2)
 
-summary_residual_compare(b_SomeOpt25Cv3,b_SomeOpt26A,
+summary_residual_compare(b_SomeOpt25A,b_SomeOpt25Cv3, 
+                         b_SomeOpt26A,b_SomeOpt26B,
                          # b_AllOpt25A,b_AllOpt26A,
                          bins=100)
 
 
 
 ```
+
+25C3 appears to do better by AIC, BIC, and even slightly by residuals. Sticking with it.
+
+Not sure whether it was adding the interaction or PairCA, but 26B doesn't manage to improve on AIC or BIC versus 26A either.
