@@ -1,5 +1,7 @@
 "Output","Variable","Odds Ratio","Lower Bound","Upper Bound"
-"All Options Exercised Likelihood","Log(Det. Ind. Salary)",1.08,0.96,1.2
-"All Options Exercised Likelihood","Office Perf.-Based %",1.08,0.98,1.19
-"All Options Exercised Likelihood","Paired Years",1.15,1.09,1.21
-"All Options Exercised Likelihood","Log(Paired Actions)",0.82,0.75,0.9
+"All Options Exercised Likelihood","Log(Det. Ind. Salary)",1.08,0.97,1.21
+"All Options Exercised Likelihood","Log(Serv. Code Invoice Rate)",0.94,0.88,1
+"All Options Exercised Likelihood","Office Perf.-Based %",1,0.91,1.1
+"All Options Exercised Likelihood","Office Serv. Code Exp. %",1.19,1.06,1.34
+"All Options Exercised Likelihood","Paired Years",1.16,1.1,1.22
+"All Options Exercised Likelihood","Log(Paired Actions)",0.8,0.73,0.88
