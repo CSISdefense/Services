@@ -197,6 +197,126 @@ save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
    
 Should be transferred into transform contract at some point
 
+### Exercised Options
+
+```{r OptPropSetup}
+  colnames(def_serv)[colnames(def_serv)=="UnmodifiedCeiling_Then_Year"]<-"UnmodifiedCeiling"
+  
+  #Ceiling Variables
+  def_serv<-input_contract_ceiling_breach(def_serv,
+                                          file="Contract.SP_ContractCeilingBreachCustomer.txt")
+  colnames(def_serv)[colnames(def_serv)=="UnmodifiedCeiling"]<-"UnmodifiedCeiling_Then_Year"
+  
+#Base Variables
+  def_serv<-read_and_join_experiment( def_serv  ,
+                                        "Contract.sp_ContractExercisedOptions.txt",
+                                        path="",
+                                        directory="..\\data\\semi_clean\\",
+                                        by=c("CSIScontractID"),
+                                        # add_var=c("AnyUnmodifiedUnexercisedOptions",
+                                        #           "AnyUnmodifiedUnexercisedOptionsWhy",
+                                        #           "UnmodifiedBase",
+                                        #           "SteadyScopeOptionGrowthAlone",
+                                        #           "SteadyScopeOptionRescision",
+                                        #           "AdminOptionModification"),
+                                        new_var_checked=FALSE,
+                                        create_lookup_rdata=TRUE,
+                                        lookup_char_as_factor=TRUE)
+  
+  
+  
+  colnames(def_serv)[colnames(def_serv)=="UnmodifiedBase"]<-"UnmodifiedBase_Then_Year"
+    colnames(def_serv)[colnames(def_serv)=="n_OptGrowth"]<-"n_OptGrowth_Then_Year"
+
+    
+```
+
+
+```{r OptOutcome}}
+
+    
+  #Determine original and updated space available 
+def_serv$OptSpaceOriginal<-def_serv$UnmodifiedCeiling_Then_Year-def_serv$UnmodifiedBase_Then_Year
+summary(def_serv$OptSpaceOriginal)
+
+def_serv$OptSpaceUpdated<-def_serv$UnmodifiedCeiling_Then_Year+def_serv$ChangeOrderCeilingGrowth+
+  def_serv$AdminCeilingModification+def_serv$SteadyScopeCeilingModification+def_serv$OtherCeilingModification-
+  def_serv$UnmodifiedBase_Then_Year
+summary(def_serv$OptSpaceUpdated)
+#Not included in the update ceiling.
+#ChangeOrderCeilingRescision
+#EndingCeilingModification+
+#OtherCeilingModification+
+
+def_serv$OptSpaceUpdated[def_serv$OptSpaceOriginal>def_serv$OptSpaceUpdated  &
+                           !is.na(def_serv$OptSpaceOriginal) & !is.na(def_serv$OptSpaceUpdated )] <-
+  def_serv$OptSpaceOriginal[def_serv$OptSpaceOriginal>def_serv$OptSpaceUpdated  &
+                           !is.na(def_serv$OptSpaceOriginal) & !is.na(def_serv$OptSpaceUpdated )]
+
+#Proportion of options
+def_serv$ExerOriginal<-(def_serv$n_OptGrowth_Then_Year-1)/def_serv$OptSpaceOriginal
+def_serv$ExerOriginal[def_serv$ExerOriginal>1]<-1
+def_serv$ExerOriginal[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-NA
+summary(def_serv$ExerOriginal)
+
+def_serv$ExerUpdate<-(def_serv$ChangeOrderOptionModification+
+                        def_serv$SteadyScopeOptionGrowthAlone+
+                        def_serv$SteadyScopeOptionGrowthMixed+
+                        def_serv$SteadyScopeOptionRescision+
+                        def_serv$AdminOptionModification+
+                        def_serv$OtherOptionModification
+                      )/def_serv$OptSpaceUpdated
+def_serv$ExerUpdate[def_serv$ExerUpdate>1]<-1
+def_serv$ExerUpdate[def_serv$ExerUpdate<0]<-0
+def_serv$ExerUpdate[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-NA
+summary(def_serv$ExerUpdate)
+
+#Excludes def_serv$EndingOptionModification+
+    
+def_serv$Exer<-ifelse(def_serv$ExerUpdate>def_serv$ExerOriginal,def_serv$ExerUpdate,def_serv$ExerOriginal)
+summary(def_serv$Exer)
+
+
+```
+
+
+```{r AlternateSomeCriteria}
+def_serv$b_AllOpt<-ifelse(def_serv$Exer>0.95,1,0)
+summary(def_serv$b_AllOpt)
+
+def_serv$b_SomeOpt_Strict<-ifelse(def_serv$n_OptGrowth_Then_Year>1,1,0)
+def_serv$b_SomeOpt_Strict[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-NA
+def_serv$CeilGrowth<-def_serv$OptSpaceUpdated-def_serv$OptSpaceOriginal
+def_serv$b_SomeOpt<-def_serv$b_SomeOpt_Strict
+def_serv$b_SomeOpt[def_serv$ChangeOrderOptionModification+
+                        def_serv$SteadyScopeOptionGrowthAlone+
+                        def_serv$SteadyScopeOptionGrowthMixed+
+                        def_serv$SteadyScopeOptionRescision+
+                        def_serv$AdminOptionModification+
+                        def_serv$OtherOptionModification>def_serv$CeilGrowth]<-1
+summary(def_serv$b_SomeOpt)
+summary(def_serv$b_SomeOpt_Strict)
+
+if(any(def_serv$b_SomeOpt==0 & def_serv$Exer>=1))
+   warning("Somehow a contract that does not meet the some criteria has reach 100% exercised.")
+def_serv$b_AllOpt[def_serv$b_SomeOpt==0]<-0
+summary(def_serv$b_AllOpt)
+
+def_serv$OptExer<-factor(NA, levels=c(
+        "Initial Base=Ceiling","Not Some Options","Some Options","Some and All Options"
+      ))
+def_serv$OptExer[(def_serv$AnyUnmodifiedUnexercisedOptions==1)& def_serv$b_SomeOpt==0]<-"Not Some Options"
+      def_serv$OptExer[def_serv$AnyUnmodifiedUnexercisedOptions==1& def_serv$b_SomeOpt==1]<-"Some Options"
+      def_serv$OptExer[def_serv$AnyUnmodifiedUnexercisedOptions==1&
+                     def_serv$b_SomeOpt==1 & def_serv$b_AllOpt==1]<-"Some and All Options"
+      def_serv$OptExer[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-"Initial Base=Ceiling"
+      def_serv$OptExer[def_serv$UnmodifiedBase_Then_Year>def_serv$UnmodifiedCeiling_Then_Year]<-NA
+      
+
+
+summary(def_serv$Opt)      
+summary(def_serv$OptExer)
+```
 
 ### Office Diversity NAICS 
 ```{r UnnecessaryNAICS}
@@ -353,7 +473,7 @@ if(!"office_naics_hhi_k" %in% colnames(def_serv)){
   rm(avg_office_naics_hhi)
   
   #Imputing missing
-  summary(def_serv$office_naics_hhi_obl)
+    summary(def_serv$office_naics_hhi_obl)
   def_serv$office_naics_hhi_obl[is.na(def_serv$office_naics_hhi_obl)]<-def_serv$avg_office_naics_hhi_obl[is.na(def_serv$office_naics_hhi_obl)]
   summary(def_serv$office_naics_hhi_k)
   def_serv$office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]<-def_serv$avg_office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]
@@ -364,22 +484,11 @@ if(!"office_naics_hhi_k" %in% colnames(def_serv)){
 }
 
 
-#********** Performance Based Services Contracting
-# def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
-
-#********** Office experience in PSC
-# def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
-
-#********** Vendor Market Share
-# def_serv$l_pMarket<-log(def_serv$pMarket+1)
-
-
-
-#********* Number of actions between vendor and office
-# def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
-
 #********8 Invoice rate  for PSC
 # def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
 
 save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
+
+
+
 ```

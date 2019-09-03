@@ -17,7 +17,6 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 library(csis360)
 library(ggplot2)
 library(arm)
-library(R2WinBUGS)
 library(dplyr)
 library(Hmisc)
 library(stargazer)
@@ -3837,6 +3836,8 @@ glmer_examine(b_AllOpt26A)
 
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv2,
                      b_SomeOpt25Cv3, type = "text", digits = 2)
+
+stargazer::stargazer(b_AllOpt25A,b_AllOpt26A, type = "text", digits = 2)
 
  
 summary_residual_compare(b_AllOpt25A, b_AllOpt26A, bins=100)
