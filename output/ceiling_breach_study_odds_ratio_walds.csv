@@ -1,5 +1,7 @@
 "Output","Variable","Odds Ratio","Lower Bound","Upper Bound"
 "Breach Likelihood","Log(Det. Ind. Salary)",1,0.88,1.12
-"Breach Likelihood","Office Perf.-Based %",1.07,1.02,1.12
-"Breach Likelihood","Paired Years",0.93,0.9,0.95
-"Breach Likelihood","Log(Paired Actions)",1.55,1.49,1.61
+"Breach Likelihood","Log(Serv. Code Invoice Rate)",1.06,1.03,1.09
+"Breach Likelihood","Office Perf.-Based %",1.08,1.02,1.13
+"Breach Likelihood","Office Serv. Code Exp. %",1.21,1.15,1.27
+"Breach Likelihood","Paired Years",0.92,0.9,0.95
+"Breach Likelihood","Log(Paired Actions)",1.56,1.5,1.62

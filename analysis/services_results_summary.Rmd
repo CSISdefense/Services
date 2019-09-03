@@ -534,6 +534,7 @@ get_icc(b_AllOpt25B)
 # comp_or<-odds_ratio(b_CBre29B,output="Breach Likelihood",rename_list=all_coef_list)
   comp_or_walds<-odds_ratio(b_CBre29B,"b_CBre29B",output="Breach Likelihood",walds=TRUE,rename_list=all_coef_list)
 # save(comp.or,file="..//Output//comp.or.rdata")
+debug(get_study_variables_odds_ratio)
 write.csv(get_study_variables_odds_ratio(comp_or_walds,study="services"),file="..//output//ceiling_breach_study_odds_ratio_walds.csv",row.names=FALSE)
 get_icc(b_CBre29B)
 
