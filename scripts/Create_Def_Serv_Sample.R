@@ -28,6 +28,7 @@ summary(def_serv$UnmodifiedBase_Then_Year)
 summary(def_serv$UnmodifiedCeiling_Then_Year)
 
 
+
 #Base2Ceil exploring
 ggplot(def_serv %>% filter(Base2Ceil>1 & Base2Ceil<10),aes(x=Base2Ceil))+geom_histogram(bins=30)
 ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=30)+scale_x_log10()
@@ -175,7 +176,28 @@ serv_breach<-transition_variable_names_service(serv_breach)
 
 
 
-save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt,serv_breach)
+
+# # load(file="data\\semi_clean\\serv_opt.rdata")
+# summary(serv_exeropt$n_CBre_Then_Year)
+# serv_exeropt$n_CBre_Then_Year<-serv_exeropt$n_CBre_Then_Year-1
+# serv_exeropt$n_CBre_Then_Year[serv_exeropt$override_change_order_growth==TRUE]<-NA
+# summary(serv_exeropt$n_CBre_Then_Year)
+# summary(serv_exeropt$ln_CBre_Then_Year)
+# serv_exeropt$ln_CBre_Then_Year<-na_non_positive_log(serv_exeropt$n_CBre_Then_Year)
+# summary(serv_exeropt$ln_CBre_Then_Year)
+# serv_exeropt<-serv_exeropt %>% dplyr::select(-n_CBre_OMB20_GDP18,-ln_CBre_OMB20_GDP18)
+# colnames(serv_exeropt)[colnames(serv_exeropt)=="n_CBre_Then_Year"]<-"n_CBre"
+# serv_exeropt<-deflate(serv_exeropt,
+#                   money_var = "n_CBre",
+#                   # deflator_var="OMB.2019",
+#                   fy_var="StartFY"
+# )
+# summary(serv_exeropt$n_CBre_OMB20_GDP18)
+# serv_exeropt$ln_CBre_OMB20_GDP18<-na_non_positive_log(serv_exeropt$n_CBre_OMB20_GDP18)
+# summary(serv_exeropt$ln_CBre_OMB20_GDP18)
+
+
+save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt,serv_exeropt,serv_breach)
 write.foreign(df=serv_smp,
               datafile="data//clean//def_serv_sample250k.dat",
               codefile="data//clean//def_serv_sample250k_code.do",

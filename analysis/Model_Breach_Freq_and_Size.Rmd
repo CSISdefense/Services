@@ -2964,20 +2964,22 @@ A large office may be able to more effectively divide its attention, limiting th
 Interact: Office Obligations	cp_PSC7:cln_OffObl7			-	+	+
 
 ```{r Model23A}
+summary_double_continuous(serv_opt,"cp_OffPSC7","cln_OffObl7")#,metric="opt"
+
 #Create the models
-b_cbre23A_no_interact <- glm(data=serv_smp, b_CBre ~ pOffPSC + cln_OffObl7, 
+b_cbre23A_no_interact <- glm(data=serv_smp, b_CBre ~ cp_OffPSC7 + cln_OffObl7, 
                                              family=binomial(link="logit"))
 glmer_examine(b_cbre23A_no_interact)
 
-b_cbre23A <- glm(data=serv_smp, b_CBre ~ pOffPSC + cln_OffObl7 + pOffPSC:cln_OffObl7,
+b_cbre23A <- glm(data=serv_smp, b_CBre ~ cp_OffPSC7 + cln_OffObl7 + cp_OffPSC7:cln_OffObl7,
                                  family=binomial(link="logit"))
 glmer_examine(b_cbre23A)
 
 
-n_cbre23A_no_interact <- glm(data=serv_breach, ln_CBre ~ pOffPSC + cln_OffObl7)
+n_cbre23A_no_interact <- glm(data=serv_breach, ln_CBre ~ cp_OffPSC7 + cln_OffObl7)
 glmer_examine(n_cbre23A_no_interact)
 
-n_cbre23A <- glm(data=serv_breach, ln_CBre ~ pOffPSC + cln_OffObl7 + pOffPSC:cln_OffObl7)
+n_cbre23A <- glm(data=serv_breach, ln_CBre ~ cp_OffPSC7 + cln_OffObl7 + cp_OffPSC7:cln_OffObl7)
 glmer_examine(n_cbre23A)
 
 
@@ -3016,7 +3018,7 @@ b_cbre23B <- glm(data=serv_smp,
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
                  Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffObl7, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffObl7, family=binomial(link="logit"))
 glmer_examine(b_cbre23B)
 
 n_cbre23B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal + 
@@ -3034,7 +3036,7 @@ n_cbre23B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                    cln_OffObl7+ 
                    cp_OffPerf7:cln_PairCA+
                  #cln_OffFocus+
-                   pOffPSC:cln_OffObl7)
+                   cp_OffPSC7:cln_OffObl7)
 glmer_examine(n_cbre23B)
 
 n_cbre23B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal + 
@@ -3052,7 +3054,7 @@ n_cbre23B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                    cln_OffObl7+ 
                    # cp_OffPerf7:cln_PairCA+
                  #cln_OffFocus+
-                   pOffPSC:cln_OffObl7)
+                   cp_OffPSC7:cln_OffObl7)
 glmer_examine(n_cbre23B2)
 
 #Compare the models
@@ -3111,11 +3113,11 @@ Interact: Office Obligations	cp_PSC7:cln_OffObl7			-	+	+
 
 ```{r Model24B}
 #Create the models
-b_cbre24B_no_interact <- glm(data=serv_smp, b_CBre ~ pOffPSC + cln_OffFocus, 
+b_cbre24B_no_interact <- glm(data=serv_smp, b_CBre ~ cp_OffPSC7 + cln_OffFocus, 
                                              family=binomial(link="logit"))
 glmer_examine(b_cbre24B_no_interact)
 
-b_cbre24B <- glm(data=serv_smp, b_CBre ~ pOffPSC + cln_OffFocus + pOffPSC:cln_OffFocus,
+b_cbre24B <- glm(data=serv_smp, b_CBre ~ cp_OffPSC7 + cln_OffFocus + cp_OffPSC7:cln_OffFocus,
                                  family=binomial(link="logit"))
 glmer_examine(b_cbre24B)
 
@@ -3146,7 +3148,7 @@ b_cbre24C <- glm(data=serv_smp,
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
                  Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_cbre24C)
 
 b_cbre24C2 <- glm(data=serv_smp,
@@ -3169,7 +3171,7 @@ b_cbre24C2 <- glm(data=serv_smp,
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
                  Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_cbre24C2)
 
 
@@ -3193,7 +3195,7 @@ b_cbre24C3 <- glm(data=serv_smp,
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
                  Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_cbre24C3)
 
 
@@ -3217,7 +3219,7 @@ b_cbre24C4 <- glm(data=serv_smp,
                  # cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
                  Pricing:cln_PSCrate+
-                   pOffPSC:cln_OffFocus, family=binomial(link="logit"))
+                   cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_cbre24C4)
 
 ```
@@ -3592,5 +3594,8 @@ glmer_examine(b_CBre29B,display = TRUE)
 
 stargazer::stargazer(b_CBre28A, b_CBre29A, b_CBre28B, b_CBre29B, type="text", digits=2)
 
-summary_residual_compare( b_CBre28A, b_CBre29A,b_CBre28B,b_CBre29B,bins=100)
+summary_residual_compare( b_CBre28A, b_CBre29A,bins=100)
+summary_residual_compare( b_CBre28B,b_CBre29B,bins=100)
 ```
+
+Adding off focus is significant in its own right in the expected direction and lowers AIC and BIC.
