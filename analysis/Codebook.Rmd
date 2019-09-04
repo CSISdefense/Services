@@ -73,23 +73,22 @@ citation("scales")
 
 
 # Dependent Variable
+ 
+### Options: b_SomeOpt and b_AllOpt
 
-### Options
+* b_SomeOpt ("Some Options Exercised") is a binary variable that reports whether the contract had at least one option exercised via a modification that did not increase scope. The sample for this for this model is restricted to those contracts with an initial base less than their initial ceiling.
+* b_AllOpt ("All Options Exercised") is a binary variable that reports Whether the vast majority, over 95 percent by value, of a contract’s options were exercised. The sample for the model using this variable is limited to contracts that exercised some options in order to more clearly illustrate the relationship between independent variables and all options being exercised.
 
 ```{r Options}
-summary(def_serv$UnmodifiedBase_OMB20_GDP18)
-
-freq_continuous_plot(def_serv,"",bins=50)
-freq_continuous_plot(def_serv,"l_Base",bins=50)
-freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50)
-freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"lp_OptGrowth",bins=50)
-
-statsummary_continuous(c("p_OptGrowth"), def_serv)
-
-
-statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18"), def_serv)
-
 grouped_barplot("Opt", def_serv)
+
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50, log=TRUE)
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"n_OptGrowth_OMB20_GDP18",bins=50, log=TRUE)
+
+grouped_barplot("b_SomeOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 ))
+grouped_barplot("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 &
+                                                              b_SomeOpt==1))
+
 
 statsummary_discrete("b_SomeOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 ))
 statsummary_discrete("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 &
@@ -99,14 +98,19 @@ statsummary_discrete("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexerc
 
 ### Ceiling Breaches
 
-* b_CBre is a binary variable that has a value of 1 for any contracts that have experienced a partial or complete termination, 0 otherwise. (`r summary(def_serv$b_CBre);
+* b_CBre ("Any Ceiling Breach") is a binary variable that reports whether a contract had its cost ceiling increased via a change order.
 sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_CBre==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
 NA_stats(def_serv,"b_CBre")`)
 
-```{r vargraphs: b_CBre}
-#The original variables for b_Term and b_CBre are Term and CBre
+* ln_CBre ("Any Ceiling Breach") is a continuous variable the increased contract ceiling due to change orders, logged, in 2018 constant dollars based on contract start fiscal year. The dataset for these models is limited to contracts with any ceiling breaches, in order to avoid clustering at zero-based problems.
 
+```{r vargraphs: b_CBre}
+#The base variables for b_CBre and  cln_CBre are is CBre and n_CBre_OMB20_GDP18 
 grouped_barplot("CBre", def_serv)
+
+freq_continuous_plot(def_serv %>%filter(b_CBre==1),"n_CBre_OMB20_GDP18",bins=50, log=TRUE)
+
+
 statsummary_discrete("CBre", def_serv)
 statsummary_continuous(c("n_CBre_OMB20_GDP18"), def_serv %>% dplyr::filter(b_CBre==1))
 ```
@@ -122,16 +126,15 @@ Contract terminations and the number of change orders can be calculated for the 
 
 These four categories and the "Close Out" category are used to mark a contract as closed.  Many contracts in FPDS and in the sample are never marked closed.  
 
-
 NA_stats(def_serv,"b_Term")
-* b_Term is a binary variable that has a value of 1 for any contracts that have experienced a partial or complete termination, 0 otherwise. (`r summary(def_serv$b_Term);
+* b_Term is a binary variable that reports whether contracts experienced a partial or complete termination. (`r summary(def_serv$b_Term);
 sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_Term==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)`
 
 
 ```{r vargraphs: b_Term}
-#The original variables for b_Term and b_CBre are Term and CBre
+#The original variables for b_Term is Term
 grouped_barplot("Term", def_serv)
-statsummary_discrete(c("b_Term"), def_serv)
+statsummary_discrete(c("Term"), def_serv)
 
 #Overlaping ceiling breach and termination
 nrow(def_serv %>% filter(b_Term==1 & b_CBre==1))
