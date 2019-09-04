@@ -35,6 +35,10 @@ note.text.size<-1.40
 load("../data/clean/transformed_def_serv.Rdata")
 def_serv<-transition_variable_names_service(def_serv)
 
+# colnames(def_serv)[duplicated(colnames(def_serv))]
+# which(duplicated(colnames(def_serv)))
+# def_serv<-def_serv[,-which(duplicated(colnames(def_serv)))]
+
 ```
 
 
@@ -75,18 +79,17 @@ citation("scales")
 ```{r Options}
 summary(def_serv$UnmodifiedBase_OMB20_GDP18)
 
-freq_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50)
+freq_continuous_plot(def_serv,"",bins=50)
 freq_continuous_plot(def_serv,"l_Base",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"lp_OptGrowth",bins=50)
 
 statsummary_continuous(c("p_OptGrowth"), def_serv)
+
+
+statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18"), def_serv)
+
 grouped_barplot("Opt", def_serv)
-
-# colnames(def_serv)[duplicated(colnames(def_serv))]
-# which(duplicated(colnames(def_serv)))
-# def_serv<-def_serv[,-which(duplicated(colnames(def_serv)))]
-
 
 statsummary_discrete("b_SomeOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 ))
 statsummary_discrete("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 &
@@ -304,20 +307,34 @@ NA_stats(def_serv,"clr_Def6toUS")
 * cl_Ceil is the natural log of the initial contract cost ceiling, in then-year dollars. `r centered_log_description(def_serv$UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18,"dollars");
 NA_stats(def_serv,"cl_Ceil")`
 
+```{r Base}
+
+summary_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=TRUE)
+summary_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=FALSE)
+
+```
+
 #### Base:Ceiling Ratio
+
+```{r statistic summary table for continuous variables: cl_Ceil, capped_cln_Days}
+#original variable for cl_Ceil: UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18
+
+summary_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=TRUE)
+summary_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=FALSE)
+
+```
 
 #### Duration
 * capped_cln_Days is the natural log of the initial maximum duration of the contract, in days. The variable is centered, by subtracting its mean (`r centered_log_description(def_serv$UnmodifiedDays,"days");
 NA_stats(def_serv,"capped_cln_Days")` 
 
-
 ```{r statistic summary table for continuous variables: cl_Ceil, capped_cln_Days}
-#original variable for cl_Ceil: UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18
 #original variable for capped_cln_Days: UnmodifiedDays
 
+summary_continuous_plot(def_serv,"UnmodifiedDays",bins=50, log=TRUE)
+summary_continuous_plot(def_serv,"UnmodifiedDays",bins=50, log=FALSE)
+
 statsummary_continuous(c("UnmodifiedDays","UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18"), def_serv)
-
-
 
 ```
 
@@ -1147,6 +1164,8 @@ statsummary_continuous(pair_category, def_serv)
 grouped_barplot("Intl", def_serv)
 statsummary_discrete("Intl", def_serv)
 ```
+
+### Start Year
 
 
 # Missing Data Measures
