@@ -22,7 +22,27 @@ library(reshape2)
 library(tidyverse)
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
 
+axis.text.size<-10
+strip.text.size<-10
+legend.text.size<-8
+# table.text.size<-5.75
+title.text.size<-12
+geom.text.size<-12
 
+main.text.size<-1
+note.text.size<-1.40
+
+load("../data/clean/transformed_def_serv.Rdata")
+def_serv<-transition_variable_names_service(def_serv)
+
+```
+
+
+Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start..
+
+
+## Citations
+```{r Citations}
 
 citation()
 citation("ggplot2")
@@ -45,47 +65,10 @@ citation("lubridate")
 citation("stringr")
 citation("scales")
 
-
-
-axis.text.size<-10
-strip.text.size<-10
-legend.text.size<-8
-# table.text.size<-5.75
-title.text.size<-12
-geom.text.size<-12
-
-main.text.size<-1
-note.text.size<-1.40
-
-load("../data/clean/transformed_def_serv.Rdata")
-def_serv<-transition_variable_names_service(def_serv)
-
 ```
-
-
-Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start..
-
-
-
-# Counts
-
-
-
-```{r GroupCounts, echo = TRUE}
-nrow(def_serv)
-length(unique(def_serv$NAICS3))
-length(unique(def_serv$NAICS6))
-length(unique(paste(def_serv$NAICS6,def_serv$ServArea)))
-length(unique(def_serv$Agency))
-length(unique(paste(def_serv$Agency,def_serv$Office)))
-length(unique(def_serv$Place))
-
-```
-
 
 
 # Dependent Variable
-
 
 ### Options
 
@@ -252,7 +235,7 @@ def_serv$office_entity_numberofactions_1year_plus1<-def_serv$office_entity_numbe
 statsummary_continuous(c("office_entity_numberofactions_1year_plus1"), def_serv)
 ```
 
-## Controls
+## Contract-Level Controls
 
 
 
@@ -317,10 +300,11 @@ NA_stats(def_serv,"clr_Def6toUS")
 
 ### Initial Contract Scope
 
-#### Ceiling
+#### Base
 * cl_Ceil is the natural log of the initial contract cost ceiling, in then-year dollars. `r centered_log_description(def_serv$UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18,"dollars");
 NA_stats(def_serv,"cl_Ceil")`
 
+#### Base:Ceiling Ratio
 
 #### Duration
 * capped_cln_Days is the natural log of the initial maximum duration of the contract, in days. The variable is centered, by subtracting its mean (`r centered_log_description(def_serv$UnmodifiedDays,"days");
@@ -355,7 +339,7 @@ statsummary_discrete("Veh", def_serv)
 ```
 
 
-### Pricing Fee
+### Pricing
 * n_Fixed is a numeric variable based on contract pricing. It has a value of 0 for cost-based, 0.5 or "combination or other", 1 for any fixed price (excluding fixed-price level of effort which is classified as cost-based). (`r summary(def_serv$n_Fixed);
 NA_stats(def_serv,"n_Fixed")
 sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$n_Fixed==0],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
@@ -412,18 +396,24 @@ grouped_barplot("UCA", def_serv)
 statsummary_discrete("PricingFee", def_serv)
 statsummary_discrete("UCA", def_serv)
 ```
-### International
 
-```{r International}
-#n_Fixed(0,1), PricingFee, n_Incent, b_UCA(0,1), b_Intl
-#original variable for b_UCA: UCA
-#original variable for n_Fixed: FxCb
-#original variable for n_Incent: Fee
+## Multilevel Controls
 
-grouped_barplot("Intl", def_serv)
-statsummary_discrete("Intl", def_serv)
+
+```{r GroupCounts, echo = TRUE}
+nrow(def_serv)
+length(unique(def_serv$NAICS3))
+length(unique(def_serv$NAICS6))
+length(unique(paste(def_serv$NAICS6,def_serv$ServArea)))
+length(unique(def_serv$Agency))
+length(unique(paste(def_serv$Agency,def_serv$Office)))
+length(unique(def_serv$Place))
+
 ```
-### Contracting Customer
+
+
+
+### Acquirer
 #### Agency
 
 
@@ -586,6 +576,18 @@ Agency_barplot <- ggplot(data = Agency_Freq,
                         plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm")) +
                  ggtitle("Top 5 of the most frequently appeared Agency") 
 Agency_barplot                  
+
+```
+
+### Pair: Office and Vendor
+
+#### pMarket
+```{r VarGraph}
+
+
+freq_continuous_plot(def_serv,"pMarket",bins=50)
+freq_continuous_plot(def_serv,"l_pMarket",bins=50)
+summary(def_serv$pMarket)
 
 ```
 
@@ -1131,19 +1133,20 @@ statsummary_continuous(pair_category, def_serv)
 
 ```
 
-### Office and Vendor
-
-#### pMarket
-```{r VarGraph}
 
 
-freq_continuous_plot(def_serv,"pMarket",bins=50)
-freq_continuous_plot(def_serv,"l_pMarket",bins=50)
-summary(def_serv$pMarket)
 
+### International
+
+```{r International}
+#n_Fixed(0,1), PricingFee, n_Incent, b_UCA(0,1), b_Intl
+#original variable for b_UCA: UCA
+#original variable for n_Fixed: FxCb
+#original variable for n_Incent: Fee
+
+grouped_barplot("Intl", def_serv)
+statsummary_discrete("Intl", def_serv)
 ```
-
-
 
 
 # Missing Data Measures
