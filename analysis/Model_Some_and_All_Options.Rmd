@@ -3490,6 +3490,7 @@ This was created while we were still using ceiling instead of base.
 
 ```{r CBre25A}
 if(file.exists("..//Output//Opt25A.rda")) load("..//Output//Opt25A.rda")
+load("..//Output//b_SomeOpt25A.rda")
 
 if(!exists("b_SomeOpt25A")){
 #Create the model
