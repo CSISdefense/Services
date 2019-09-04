@@ -423,14 +423,14 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt26A),file="..//Output//options.html
                   "NAICS/Office Characteristics" =27:33,
                   # "NAICS Characteristics" =27:30,
                   # "Office Characteristics" =31:33,
-                  "Interactions"=34:44
+                  "Interactions"=34:52
                 ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 6: Exercised Options",
                 caption.above=TRUE)
-
+?
 
 
 ```
