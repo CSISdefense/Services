@@ -101,8 +101,7 @@ statsummary_discrete("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexerc
 * b_CBre ("Any Ceiling Breach") is a binary variable that reports whether a contract had its cost ceiling increased via a change order.
 sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_CBre==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
 NA_stats(def_serv,"b_CBre")`)
-
-* ln_CBre ("Any Ceiling Breach") is a continuous variable the increased contract ceiling due to change orders, logged, in 2018 constant dollars based on contract start fiscal year. The dataset for these models is limited to contracts with any ceiling breaches, in order to avoid clustering at zero-based problems.
+* ln_CBre ("Any Ceiling Breach") is a continuous variable that reports the increased contract ceiling due to change orders, logged, in 2018 constant dollars based on contract start fiscal year. The dataset for these models is limited to contracts with any ceiling breaches, in order to avoid clustering at zero-based problems.
 
 ```{r vargraphs: b_CBre}
 #The base variables for b_CBre and  cln_CBre are is CBre and n_CBre_OMB20_GDP18 
@@ -147,98 +146,93 @@ sum((def_serv %>% filter(b_Term==1 & b_CBre==1))$Action_Obligation_OMB20_GDP18)
 
 ## Study Variables
 
+### Service Complexity 
+* cln_US6sal ("Detailed Industry Salary") is a continuous variable that reports the Average U.S. wage in the contract’s detailed industry in the calendar year prior to contract start. Deflated to 2018 constant dollars based on the prior calendar year, logged, and rescaled.
 
+#### Detailed Industry Salary
+```{r cln_US6sal}
 
+#The original variables for cln_US6sal is US6_avg_sal_lag1Const
 
+freq_continuous_plot(def_serv,"US6_avg_sal_lag1Const",bins=50)
+freq_continuous_plot(def_serv,"US6_avg_sal_lag1Const",bins=50, log=TRUE)
 
-```{r varGraphs: b_Comp, n_Comp, Comp, CompOffr, EffComp, offr}
-# b_Comp
-# n_Comp
-# Comp
-# EffComp
-# CompOffr
-# offr:
-
-
-grouped_barplot("Comp",def_serv)
-
-
-# def_serv$n_Comp <- factor(def_serv$n_Comp,c(0,1))
-# grouped_barplot("Comp", def_serv)
-# #grouped_barplot("n_Comp")
-# grouped_barplot("Comp", def_serv)
-# grouped_barplot("EffComp", def_serv)
-# grouped_barplot("CompOffr", def_serv)
-# grouped_barplot("Offr", def_serv)
 
 ```
 
-### Service Complexity 
-
-#### Detailed Industry Salary
 #### Service Code Invoice Rate
-```{r InvoiceRate}
-summary(def_serv$l_CFTE)
+* cln_PSCrate ("Service Code Invoice Rate") is a continuous variable that reports the average annual invoice rate for the contract’s product or service code in the fiscal year prior to contract start. In 2018 constant dollars based on the start fiscal year, logged and rescaled.
+
+```{r cln_PSCrate}
+#The original variables for cln_PSCrate is CFTE_Rate_1year
+
 freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50)
-freq_continuous_plot(def_serv,"l_CFTE",bins=50)
+freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50, log=TRUE)
 
 statsummary_continuous(c("US6_avg_sal_lag1Const","CFTE_Rate_1year"), def_serv)
 ```
 
-
-
 ### Office Capacity
+* cp_OffPerf7 ("Office Performance-Based ") is a continuous variable that reports the percentage share of office 2018 constant obligations that were for Performance-Based Service Contracts in the prior 7 fiscal years, rescaled.
+
 #### PBSC
 ```{r PBSC}
+#The original variables for cp_OffPerf7 is pPBSC
+#In turn pPBSC is the percentage form of office_PBSCobligated_1year / office_obligatedamount_7year
 
+freq_continuous_plot(def_serv,"office_PBSCobligated_1year",bins=50)
+freq_continuous_plot(def_serv,"office_PBSCobligated_1year",bins=50, log=TRUE,plus1=TRUE) 
 
 freq_continuous_plot(def_serv,"pPBSC",bins=50)
-freq_continuous_plot(def_serv,"l_pPBSC",bins=50) #No real point, stick with PBSC
+freq_continuous_plot(def_serv,"pPBSC",bins=50, log=TRUE,plus1=TRUE) #No real point, stick with PBSC
 ```
 
 #### Office Experience withthe Product or Service Code
+
+* cp_OffPSC7 ("Office Service Code Experience") is a continuous variable that reports the percentage of office 2018 constant obligations that went to contracts with the same product or service code as the product in question over the last 7 fiscal years, rescaled.
+
 ```{r OffPSC}
+#The original variables for cp_OffPerf7 is pOffPSC
+#In turn pOffPSC is the percentage form of office_psc_obligatedamount_7year / office_obligatedamount_7year
 
+#Absolute office psc spending 
+freq_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=50)
+freq_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=50, log=TRUE, plus1=TRUE)  #This does better.
 
-summary_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=100)
-summary_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=100, log=TRUE)  #No real point here either
+#Absolute proporitonal psc spending 
+freq_continuous_plot(def_serv,"pOffPSC",bins=50)
+freq_continuous_plot(def_serv,"pOffPSC",bins=50, log=TRUE, plus1=TRUE)  #No real point here either
 
-summary(def_serv$office_psc_obligatedamount_7year==0)
-summary(def_serv$pOffPSC==0)
-summary(def_serv$office_psc_obligatedamount_7year)
-summary(def_serv$pOffPSC)
-
-summary(def_serv$pMarket)
-
+#See Number of Paired Years for the StatSummaryContinuous
 ```
 
 
 
 ### Office-Vendor Relationship
 
+* cn_PairHist7 ("Paired Years") is a continuous variable that reports how many of the past 7 fiscal years involved obligations being made from the office to the vendor, recalled. `r centered_description(def_serv$office_entity_paircount_7year,"number of years")`
+
 #### Number of  Paired Years
 ```{r PairHistory}
+#The original variables for cn_PairHist7 is office_entity_paircount_7year
 
-freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
-freq_continuous_plot(def_serv,"l_CA",bins=50)
+freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=7)
 
-
-centered_description(def_serv$office_entity_paircount_7year,"number of years")
-summary(def_serv$pPBSC)
-summary(def_serv$pOffPSC)
-summary(def_serv$office_entity_paircount_7year)
 statsummary_continuous(c("pPBSC","pOffPSC","office_entity_paircount_7year"), def_serv,log=FALSE)
 
 ```
 
 #### Number of Prior Year Contract Action
-```{r PairActions}
+
+* cln_PairCA ("Paired Actions") is a continuous variable that reports how many contracting actions the contract’s vendor performed for the office in question in the prior fiscal year, logged and rescaled. 1 action was added to all office-vendor pairings to allow for logarithmic transformation even when there was no previous acts. `r centered_log_description(def_serv$office_entity_numberofactions_1year,"number of actions")`
+
+```{r cln_PairCA}
+#The original variables for cln_PairCA is office_entity_numberofactions_1year
 
 freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
-freq_continuous_plot(def_serv,"l_CA",bins=50)
-centered_log_description(def_serv$office_entity_numberofactions_1year,"number of actions")
-def_serv$office_entity_numberofactions_1year_plus1<-def_serv$office_entity_numberofactions_1year+1
-statsummary_continuous(c("office_entity_numberofactions_1year_plus1"), def_serv)
+freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50, log=TRUE, plus1 = TRUE)
+
+statsummary_continuous(c("office_entity_numberofactions_1year"), def_serv, plus1=TRUE)
 ```
 
 ## Contract-Level Controls
@@ -271,7 +265,7 @@ length(def_serv$CompOffr[def_serv$CompOffr=="1 offer"& !is.na(def_serv$CompOffr)
 length(def_serv$CompOffr[def_serv$CompOffr=="2 offers"& !is.na(def_serv$CompOffr)])/nrow(def_serv)
 length(def_serv$CompOffr[def_serv$CompOffr=="3-4 offers"& !is.na(def_serv$CompOffr)])/nrow(def_serv)
 length(def_serv$CompOffr[def_serv$CompOffr=="5+ offers"& !is.na(def_serv$CompOffr)])/nrow(def_serv)
-
+grouped_barplot("Comp",def_serv)
 
 
 summary(def_serv$offer)
@@ -302,6 +296,27 @@ NA_stats(def_serv,"clr_Def6toUS")
 # Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
 # Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
 # ggsave(Effplot,file="..\\Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
+
+# b_Comp
+# n_Comp
+# Comp
+# EffComp
+# CompOffr
+# offr:
+
+# def_serv$n_Comp <- factor(def_serv$n_Comp,c(0,1))
+# grouped_barplot("Comp", def_serv)
+# #grouped_barplot("n_Comp")
+# grouped_barplot("Comp", def_serv)
+# grouped_barplot("EffComp", def_serv)
+# grouped_barplot("CompOffr", def_serv)
+# grouped_barplot("Offr", def_serv)
+```
+
+
+```{r varGraphs: b_Comp, n_Comp, Comp, CompOffr, EffComp, offr}
+
+
 ```
 
 ### Initial Contract Scope
