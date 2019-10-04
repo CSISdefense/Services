@@ -154,8 +154,8 @@ sum((def_serv %>% filter(b_Term==1 & b_CBre==1))$Action_Obligation_OMB20_GDP18)
 
 #The original variables for cln_US6sal is US6_avg_sal_lag1Const
 
-freq_continuous_plot(def_serv,"US6_avg_sal_lag1Const",bins=50)
-freq_continuous_plot(def_serv,"US6_avg_sal_lag1Const",bins=50, log=TRUE)
+freq_continuous_plot(def_serv,"US6_avg_sal_lag1Const",bins=50,
+                     log=TRUE)
 
 
 ```
@@ -166,8 +166,9 @@ freq_continuous_plot(def_serv,"US6_avg_sal_lag1Const",bins=50, log=TRUE)
 ```{r cln_PSCrate}
 #The original variables for cln_PSCrate is CFTE_Rate_1year
 
-freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50)
-freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50, log=TRUE)
+freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50,
+                     log=TRUE)
+
 
 statsummary_continuous(c("US6_avg_sal_lag1Const","CFTE_Rate_1year"), def_serv)
 ```
@@ -180,37 +181,28 @@ statsummary_continuous(c("US6_avg_sal_lag1Const","CFTE_Rate_1year"), def_serv)
 #The original variables for cp_OffPerf7 is pPBSC
 #In turn pPBSC is the percentage form of office_PBSCobligated_1year / office_obligatedamount_1year
 
-freq_continuous_plot(def_serv,"office_PBSCobligated_1year",bins=50)
-freq_continuous_plot(def_serv,"office_PBSCobligated_1year",bins=50, log=TRUE,plus1=TRUE) 
-
-
 freq_continuous_plot(def_serv,"office_PBSCobligated_1year",bins=50, 
-                     denominator="office_obligatedamount_1year",cap1=TRUE)
-freq_continuous_plot(def_serv,"office_PBSCobligated_1year",bins=50, 
-                     denominator="office_obligatedamount_1year",cap1=TRUE,log=TRUE,plus1=TRUE)#No real point, stick with PBSC
-freq_continuous_plot(def_serv,"pPBSC",bins=50, log=TRUE,plus1=TRUE) 
+                     denominator="office_obligatedamount_1year",cap1=TRUE,log=TRUE,plus1=TRUE)
+
 ```
+
+
 
 #### Office Experience withthe Product or Service Code
 
 * cp_OffPSC7 ("Office Service Code Experience") is a continuous variable that reports the percentage of office 2018 constant obligations that went to contracts with the same product or service code as the product in question over the last 7 fiscal years, rescaled.
 
 ```{r OffPSC}
-#The original variables for cp_OffPerf7 is pOffPSC
-#In turn pOffPSC is the percentage form of office_psc_obligatedamount_7year / office_obligatedamount_7year
-
-#Absolute office psc spending 
-freq_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=50)
-freq_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=50, log=TRUE, plus1=TRUE)  #This does better.
+#The original variables for cp_OffPerf7 is the percentage form of office_psc_obligatedamount_7year / office_obligatedamount_7year
 
 #Absolute proporitonal psc spending 
-freq_continuous_plot(def_serv,"pOffPSC",bins=50)
-freq_continuous_plot(def_serv,"pOffPSC",bins=50, log=TRUE, plus1=TRUE)  #No real point here either
+freq_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=50, 
+                     denominator="office_obligatedamount_7year",cap1=TRUE,log=TRUE,plus1=TRUE)
 
 #See Number of Paired Years for the StatSummaryContinuous
 ```
 
-
+Log of the percentage version doesn't end up 
 
 ### Office-Vendor Relationship
 
@@ -233,7 +225,6 @@ statsummary_continuous(c("pPBSC","pOffPSC","office_entity_paircount_7year"), def
 ```{r cln_PairCA}
 #The original variables for cln_PairCA is office_entity_numberofactions_1year
 
-freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
 freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50, log=TRUE, plus1 = TRUE)
 
 statsummary_continuous(c("office_entity_numberofactions_1year"), def_serv, plus1=TRUE)
@@ -331,18 +322,19 @@ NA_stats(def_serv,"cl_Ceil")`
 
 ```{r Base}
 
-summary_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=TRUE)
-summary_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=FALSE)
+freq_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=TRUE)
+
+
 
 ```
 
 #### Base:Ceiling Ratio
 
 ```{r statistic summary table for continuous variables: cl_Ceil, capped_cln_Days}
-#original variable for cl_Ceil: UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18
+#The original variables for cp_OffPerf7 is the ratio form of UnmodifiedCeiling_OMB20_GDP18 / UnmodifiedBase_OMB20_GDP18
 
-summary_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=TRUE)
-summary_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=FALSE)
+freq_continuous_plot(def_serv,"UnmodifiedCeiling_OMB20_GDP18",bins=50, 
+                     denominator="UnmodifiedBase_OMB20_GDP18",log=TRUE)
 
 ```
 
@@ -353,10 +345,10 @@ NA_stats(def_serv,"capped_cln_Days")`
 ```{r statistic summary table for continuous variables: cl_Ceil, capped_cln_Days}
 #original variable for capped_cln_Days: UnmodifiedDays
 
-summary_continuous_plot(def_serv,"UnmodifiedDays",bins=50, log=TRUE)
-summary_continuous_plot(def_serv,"UnmodifiedDays",bins=50, log=FALSE)
+freq_continuous_plot(def_serv,"UnmodifiedDays",bins=50, log=TRUE)
 
-statsummary_continuous(c("UnmodifiedDays","UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18"), def_serv)
+statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18","Base2Ceil","UnmodifiedDays"), def_serv)
+
 
 ```
 
