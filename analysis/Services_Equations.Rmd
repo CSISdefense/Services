@@ -3,70 +3,221 @@ title: Defense Services Equations
 output: html_document
 ---
 
-#Options
-#Some Options
+# Options
 
-#All Options
+Note that because we use the complete dataset for exercised options, there's no 1 million entry variant.
+```{r Model-OptGrowth}
+
+if(file.exists("..//Output//p_Opt_12C.rdata")) load("..//Output//p_Opt_12C.rdata")
+
+if(!exists("p_Opt_12C")){
+  p_Opt_12C <- glm (data=serv_opt,
+                    lp_OptGrowth ~  cl_US6_avg_sal_lag1Const +
+                      cl_CFTE+ c_pPBSC+c_pOffPSC+
+                      c_pairHist+cl_pairCA +
+                      cl_Ceil + capped_cln_Days+
+                      Comp+
+                      Veh+
+                      Pricing+
+                      Crisis+
+                      cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                      cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                      c_pMarket+
+                      cl_OffVol+cl_office_naics_hhi_k #,
+                    # verbose=1
+                    )
+  glmer_examine(p_Opt_12C)
+  save(p_Opt_12C,file="..//Output//p_Opt_12C.rdata")
+}
+
+#Considering 
+# write.csv(exp(summary(p_Opt_12C)$coefficients[,1])-1,file="../Output/exp_p_Opt_12C.csv")
+# p_Opt_12C_exp<-log_analysis(p_Opt_12C)
+
+glmer_examine(p_Opt_12C)
+
+# Deprecated
+if(file.exists("..//Output//b_SomeOpt25Cv3.rda")) load("..//Output//b_SomeOpt25Cv3.rda")
+# 
+if(!exists("b_SomeOpt25Cv3")){
+  #Create the model
+
+  b_SomeOpt25Cv3 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                            cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                            cn_PairHist7+cln_PairCA+
+                            cln_Base + clr_Ceil2Base + cln_Days+
+                            Comp+
+                            Veh+
+                            Pricing+
+                            Crisis+
+                            cln_Def6HHI+clr_Def6toUS+
+                            cln_Def3HHI+
+                            clr_Def3toUS+
+                            cp_PairObl7+
+                            cln_OffObl7+
+                            cln_OffFocus+
+                            cp_OffPerf7:cp_PairObl7 +
+                            cp_OffPerf7:cln_PairCA +
+                            cn_PairHist7:Pricing +
+                            cp_PairObl7:cln_OffObl7 +
+                            clr_Ceil2Base:cln_Base +
+                            pOffPSC:cln_OffObl7 +
+                            (1 | NAICS3/NAICS6/ServArea)+
+                            (1 | Agency/Office) +
+                            (1 | Place)+
+                            (1 | StartFY),
+                          family=binomial(link="logit"),
+                          verbose=TRUE)
+  save(b_SomeOpt25Cv3, file="..\\Output\\b_SomeOpt25Cv3.rda")
+}
+
+glmer_examine(b_SomeOpt25Cv3)
+
+
+
+if(file.exists("..//Output//b_AllOpt26A.rda")) load("..//Output//b_AllOpt26A.rda")
+
+if(!exists("b_AllOpt26A")){
+  #Create the model
+  
+
+  b_AllOpt26A <- glmer(data=serv_exeropt,
+                       b_AllOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+cln_PairCA+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh+
+                   Pricing+
+                   Crisis+
+                 cln_Def6HHI+clr_Def6toUS+
+                 cln_Def3HHI+
+                   clr_Def3toUS+
+                 cp_PairObl7+
+                   cln_OffObl7+ 
+                 cln_OffFocus+
+                   cp_OffPerf7:cp_PairObl7 + 
+                  # cp_OffPerf7:cln_PairCA + 
+                   cp_OffPSC7:cln_OffFocus+
+                   
+                   Pricing:cln_PSCrate+
+                      # cp_OffPerf7:cln_Days+
+                 # Pricing:cln_PSCrate+
+                   cln_OffObl7:cln_OffFocus+
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                      family=binomial(link="logit"),
+                      verbose=TRUE)
+  
+  save(b_AllOpt26A,file="..\\output\\b_AllOpt26A.rda")
+
+}
+
+glmer_examine(b_AllOpt26A)
+
+# glmer_examine(p_Opt_12C,display=TRUE)
+# stargazer::stargazer(p_Opt_12C,type="text",
+#                        digits=2)
+
+glmer_examine(b_SomeOpt25Cv3)
+```
+
+
+
+## Some Options
+
+## All Options
 
 # Ceiling Breach
-## Breach Likelihood
-```{r setup, echo = FALSE , message=FALSE}
-#Equation 1 Combined Industrial Concentration and Competition and Ceiling Breaches Likelihood
-# The formula created for this code is made using the Mathematics in R Markdown. For more about Mathematics formatting in R Markdown, see my "Mathematics Formatting in R Markdown" file.
-library(lme4)
-load("..//Output//CBre_Cons_Comp_15A.rdata")
-library(stargazer)
 
+```{r Model-CBre}
+if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
 
-if(!exists("CBre_Cons_Comp_15A_1m")){
-  CBre_Cons_Comp_15A_1m <- glmer (data=smp1m,
-                               b_CBre ~cl_def3_HHI_lag1+cl_def3_ratio_lag1+#cl_def3_obl_lag1+
-                                 #cl_US3_avg_sal_lag1+
-                                 cl_def6_HHI_lag1+cl_def6_obl_lag1+cl_def6_ratio_lag1+
-                                 cl_US6_avg_sal_lag1+
-                                 CompOffr+
-                                 cl_Ceil_Then_Year + cl_Days+ 
-                                 Veh +
-                                 PricingFee + b_UCA +
-                                 b_Intl+
-                                 
-                                 
-                                 
-                                 b_UCA:CompOffr +
-                                 b_UCA:cl_def6_HHI_lag1 + 
-                                 b_UCA:cl_Ceil_Then_Year+
-                                 cl_def6_HHI_lag1:cl_def6_obl_lag1+
-                                 
-                                 (1 | NAICS3/NAICS) + 
-                                 (1 | Agency/Office) ,
-                               family=binomial(link="logit"),
-                               verbose=1)
+if(!exists("b_CBre29B")){
+  b_CBre29B <- glmer(data=serv_smp1m, b_CBre ~  cln_US6sal +
+                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                       cn_PairHist7+cln_PairCA+
+                       cln_Base + clr_Ceil2Base + cln_Days+
+                       Comp+
+                       Veh+
+                       Pricing+
+                       Crisis+
+                       cln_Def6HHI+clr_Def6toUS+
+                       #cln_Def3HHI+
+                       clr_Def3toUS+
+                       cp_PairObl7+
+                       cln_OffObl7+
+                       cln_OffFocus+
+                       cp_OffPerf7:cln_PairCA+
+                       #cp_OffPerf7:cp_PairObl7+
+                       cp_OffPerf7:cln_Days+
+                       # clr_Ceil2Base:cln_Base+
+                       (1 | NAICS3/NAICS6/ServArea)+
+                       (1 | Agency/Office) +
+                       (1 | Place)+
+                       (1 | StartFY),
+                     family=binomial(link="logit"),
+                     verbose=TRUE)
+
+}
+glmer_examine(b_CBre29B)
+
+if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
+
+if(!exists("n_CBre25A")){
+    
+  n_CBre25A <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
+                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                      cn_PairHist7+cln_PairCA+
+                      cln_Base + clr_Ceil2Base + cln_Days+
+                      Comp+
+                      Veh+
+                      Pricing+
+                      Crisis+
+                      cln_Def6HHI+clr_Def6toUS+
+                      #cln_Def3HHI+
+                      clr_Def3toUS+
+                      cp_PairObl7+
+                      cln_OffObl7+ 
+                      #cl_office_NAICS6_hhi_kc+
+                      cp_OffPerf7:cln_PairCA+
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                    verbose=TRUE)
   
+  save(n_CBre25A,file="..\\output\\n_CBre25A.rda")
 }
 
 
+glmer_examine(n_CBre25A)
 
-# summary(CBre_Cons_Comp_15A_1m)
-  
+
 ```
 
-$Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~$
+## Breach Likelihood
 
-$α^{Agency}_{l[i]}~+~α^{Office:Agency}_{m[i]}~+~β_{1}cl\_def3\_HHI\_lag1_{i}~+~~β_{2}cl\_def6\_HHI\_lag1_{i}~+$
 
-$(~β_{3}1Offr~+~β_{4}2Offr~+~β_{5}3–4Offr_{i}+~β_{6}5plusOffr_{i}~)~+~β_{7}cl\_def3\_ratio\_lag1_{i}~+$
+$Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~$
 
-$β_8cl\_def6\_obl\_lag1_{i}~+~β_9cl\_def6\_ratio\_lag1_{i}+~β_{10}cl\_US6\_avg\_sal\_lag1_{i}~+$
+$α^{Agency}_{m[i]}~+~α^{Office:Agency}_{m[i]}~+~{Place}_{n[i]}~+~{StartFY}_{o[i]}~+~β_{1}cln\_Def3HHI{i}~+~~β_{2}cln\_Def6HHI_{i}~+$
 
-$β_{11}cl\_Ceil\_Then\_Year_{i}~+~β_{12}cl\_Days_{i}~+~(~β_{13}SIDC_{i}~+~β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+$
+$(~β_{3}1Offr~+~β_{5}2–4Offr_{i}+~β_{6}5plusOffr_{i}~)~+~β_{7}clr\_Def3toUS{i}~+$
 
-$(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+~β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+~β_{21}TM–LH–FPLOE_{i}~)~+$
+$β_8cln\_OffObl7_{i}~+~β_9clr\_Def6toUS_{i}+~β_{10}cln\_US6sal_{i}~+$
 
-$β_{22}b\_UCA_{i}~+~β_{23}b\_Intl_{i}~+~β_{24}cl\_def6\_HHI\_lag1l_{i}·cl\_def6\_obl\_lag1_{i}~+$
+$β_{11}cln\_Base_{i}~+~β_{12}cln\_Days_{i}~+~(~β_{13}SIDC_{i}~+~β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+$
 
-$β_{25}cl\_def6\_HHI\_lag1_{i}·b\_UCA_{i}~+~β_{26}cl\_Ceil\_Then\_Year_{i}·b\_UCA_{i}~+~(~β_{27}1Offr_{i}·b\_UCA_{i}~+$
+$(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+~β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+~β_{21}TM–LH–FPLOE_{i}~+$
 
-$β_{28}2Offr_{i}·b\_UCA_{i}~+~β_{29}3–4Offr_{i}·b\_UCA_{i}+~β_{30}5plusOffr_{i}·b\_UCA_{i}~)~+~ε_{i}),$ 
+$β_{22}UCA_{i}~)~+~β_{23}b\_Intl_{i}~+~β_{24}cln\_Def6HHI_{i}·cln\_OffObl7_{i}~+$
+
+$β_{25}cln\_Def6HHI_{i}·b\_UCA_{i}~+~β_{26}cln\_Base_{i}·b\_UCA_{i}~+~(~β_{27}1Offr_{i}·b\_UCA_{i}~+$
+
+$β_{29}2–4Offr_{i}·b\_UCA_{i}+~β_{30}5plusOffr_{i}·b\_UCA_{i}~)~+~ε_{i}),$ 
 
 $for~i=  1~to~999,993;$
 
@@ -75,140 +226,112 @@ $$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~24; ~~~~a^{Agency:Offic
 
 ## Breach Size
 
-```{r setup, echo = FALSE, message=FALSE}
-# Equation 2 Combined Industrial Concentration and Competition and Ceiling Breach Size
-# The formula created for this code is made using the Mathematics in R Markdown. For more about Mathematics formatting in R Markdown, see my "Mathematics Formatting in R Markdown" file.
-library(lme4)
-load(file="..//Output//ln_CBre_15A.rdata")
-library(stargazer)
+$Estimated Log(y_i)~=~α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+$
+
+$~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{m[i]}~+~{Place}_{n[i]}~+~{StartFY}_{o[i]}~+$
+
+$β_{1}cln\_US6sal_{i}~+~β_{2}cln\_PSCrate_{i}~+~β_{3}cp\_OffPerf7_{i}~+~β_{4}cp\_OffPSC7_{i}~+~$
+
+$β_{5}cn\_PairHist7_{i}~+~β_{6}cln\_PairCA_{i}~+~$
+
+$β_{11}cln\_Base_{i}~+~β_{12}cln\_Ceil2Base_{i}~+~β_{12}cln\_Days_{i}~+~$
+
+$(~β_{13}1Offr~+~β_{14}2–4Offr_{i}+~β_{15}5plusOffr_{i}~)~+$
+
+$(~β_{16}SIDC_{i}~+~β_{17}MIDV_{i}+~β_{18}FSS–GWAC_{i}+~β_{19}BPA–BOA_{i}~)~+$
+
+$(~β_{20}Other\_FP_{i}~+~β_{21}Incentive_{i}~+~β_{22}Comb–Other_{i}~+~β_{23}Other\_CB_{i}~+$
+
+$β_{24}TM–LH–FPLOE_{i}~+~β_{25}UCA_{i}~)~+~$
+
+$β_{26}cln\_Def3HHI{i}~+~β_{27}clr\_Def3toUS{i}+~β_{28}cln\_Def6HHI_{i}~+~β_{29}clr\_Def6toUS_{i}~+$
+
+$β_{30}cp\_PairObl7{i}~+~β_{31}cln\_OffObl7_{i}~+~β_{32}cl\_cln\_OffFocus_{i}~+$
+
+$β_{33}cp\_OffPerf7_{i}·cln\_PairCA_{i}~+~(~β_{34}cp\_OffPerf7_{i}·cln\_Days_{i}~+$
+
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~80$$
+$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~813$$
+$$a^{ServArea:NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~813$$
+$$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~24$$
+$$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~880$$
+$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
+$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~24$$
 
 
 
-if(!exists("ln_CBre_Cons_Comp_15A"))
-  ln_CBre_Cons_Comp_15A <- lmer (data=def_breach,
-                                 ln_CBre_Then_Year ~CompOffr+cl_def6_HHI_lag1+cl_def6_ratio_lag1+cl_def6_obl_lag1+cl_US6_avg_sal_lag1+
-                                   cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                                   cl_Ceil_Then_Year+ cl_Days+
-                                   Veh+
-                                   PricingFee+b_UCA+
-                                   b_Intl +
-                                   b_UCA:CompOffr+
-                                   b_UCA:cl_def6_HHI_lag1+
-                                   cl_US6_avg_sal_lag1:PricingFee+
-                                   (1 | NAICS3/NAICS) + 
-                                   (1 | Agency/Office),
-                                 verbose=TRUE)
-# summary(ln_CBre_Cons_Comp_15A)
-  
-```
 
 
-$Estimated Log(y_i)~=~α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6}_{k[i]}~+~α^{Agency}_{l[i]}~+~α^{Office}_{m[i]}~+$
+$β_{24}cln\_Def6HHI_{i}·b\_UCA_{i}~+~(~β_{25}1Offr_{i}·b\_UCA_{i}~+$
 
-$β_{1}cl\_def3\_HHI\_lag1_{i}~+~β_{2}cl\_def6\_HHI\_lag1_{i}~+~(~β_{3}1Offr~+~β_{4}2Offr~+$
+$~β_{27}2–4Offr_{i}·b\_UCA_{i}~+~β_{28}5plusOffr_{i}·b\_UCA_{i}~)~+$
 
-$β_{5}3–4Offr_{i}+~β_{6}5plusOffr_{i}~)~+~β_{7}cl\_def3\_ratio\_lag1_{i}~+~β_8cl\_def6\_obl\_lag1_{i}~+$
+$(~β_{29}cln\_US6sal_{i}·Other\_FP_{i}~+~β_{30}cln\_US6sal_{i}·Incentive_{i}~+$
 
-$β_9cl\_def6\_ratio\_lag1_{i}+~β_{10}cl\_US6\_avg\_sal\_lag1_{i}~+~β_{11}cl\_Ceil\_Then\_Year_{i}~+$
+$β_{31}cln\_US6sal_{i}·Comb–Other_{i}~+~β_{32}cln\_US6sal_{i}·Other\_CB_{i}~+$
 
-$β_{12}cl\_Days_{i}~+~(~β_{13}SIDC_{i}~+~β_{14}MIDV_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+$
+$β_{33}cln\_US6sal_{i}·TM–LH–FPLOE_{i}~)~+~ε_{i}, for~i=  1~to~83,706$
 
-$(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+~β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+$
 
-$β_{21}TM–LH–FPLOE_{i}~)~+~β_{22}b\_UCA_{i}~+~β_{23}b\_Intl_{i}~+$
-
-$β_{24}cl\_def6\_HHI\_lag1_{i}·b\_UCA_{i}~+~(~β_{25}1Offr_{i}·b\_UCA_{i}~+~β_{26}2Offr_{i}·b\_UCA_{i}~+$
-
-$~β_{27}3–4Offr_{i}·b\_UCA_{i}~+~β_{28}5plusOffr_{i}·b\_UCA_{i}~)~+$
-
-$(~β_{29}cl\_US6\_avg\_sal\_lag1_{i}·Other\_FP_{i}~+~β_{30}cl\_US6\_avg\_sal\_lag1_{i}·Incentive_{i}~+$
-
-$β_{31}cl\_US6\_avg\_sal\_lag1_{i}·Comb–Other_{i}~+~β_{32}cl\_US6\_avg\_sal\_lag1_{i}·Other\_CB_{i}~+$
-
-$β_{33}cl\_US6\_avg\_sal\_lag1_{i}·TM–LH–FPLOE_{i}~)~+~ε_{i}, for~i=  1~to~83,706$
-
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~80;~~a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~813$$
-$$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~for~l= 1~to~24;~~a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~for~m= 1~to~880$$
 
 
 
 #Terminations
 
-```{r setup, echo = FALSE, message=FALSE}
-#Equation 3 Combined Industrial Concentration and Competition and Terminations
-# The formula created for this code is made using the Mathematics in R Markdown. For more about Mathematics formatting in R Markdown, see my "Mathematics Formatting in R Markdown" file.
-library(lme4)
-library(car)
-load(file="..//Output//Term_Cons_Comp_14C.rdata") 
-library(stargazer)
+```{r Model-Term}
+if(file.exists("..//Output//term25B.rdata")) load("..//Output//term25B.rdata")
 
-if(!exists("Term_Cons_Comp_14C_1m")){
+if(!exists("term25B")){
+
+  term25B <- glmer(data=serv_smp1m, b_Term ~ cl_US6_avg_sal_lag1Const + 
+                     cl_CFTE+ c_pPBSC+c_pOffPSC+
+                     c_pairHist+cl_pairCA +
+                     cl_Base + cln_Days+ cl_Base2Ceil+
+                     Comp+
+                     Veh+
+                     Pricing+
+                     Crisis+
+                     cl_def6_HHI_lag1+cl_def6_ratio_lag1+
+                     cl_def3_HHI_lag1+cl_def3_ratio_lag1+
+                     c_pMarket+
+                     cl_OffVol+cl_office_naics_hhi_k +
+                     c_pairHist:Pricing+ 
+                     (1 | NAICS3/NAICS/CrisisProductOrServiceArea)+  
+                     (1 | Agency/Office) +
+                     (1 | PlaceCountryISO3)+ 
+                     (1 | StartFY),
+                   family=binomial(link="logit"),
+                   verbose=TRUE)
   
-  Term_Cons_Comp_14C_1m <- glmer (data=smp1m,
-                                  b_Term ~cl_def3_HHI_lag1+cl_def3_ratio_lag1+#cl_def3_obl_lag1+
-                                    #cl_US3_avg_sal_lag1+
-                                    cl_def6_HHI_lag1+cl_def6_obl_lag1+cl_def6_ratio_lag1+
-                                    cl_US6_avg_sal_lag1+
-                                    CompOffr+
-                                    cl_Ceil_Then_Year + cl_Days+ 
-                                    Veh +
-                                    PricingFee + b_UCA +
-                                    b_Intl+
-                                    
-                                    # cl_def6_HHI_lag1:cl_Days+
-                                    b_UCA:cl_Ceil_Then_Year+
-                                    # b_UCA:cl_def6_HHI_lag1 +
-                                    # PricingFee:cl_US6_avg_sal_lag1+
-                                    cl_def6_HHI_lag1:cl_def6_obl_lag1  +
-                                    # cl_def6_HHI_lag1:cl_def6_ratio_lag1+
-                                    cl_def3_HHI_lag1:cl_def3_ratio_lag1+  
-                                    
-                                    (1 | NAICS3/NAICS) + (1 | Agency/Office)
-                                  , family=binomial(link="logit"),verbose=1)
-  
+  save(term25A,term25B,file="..\\output\\term25AB.rdata")
 }
-# summary(Term_Cons_Comp_14C_1m)
-# car::vif(Term_Cons_Comp_14C_1m)
+
+glmer_examine(term25B)
+
 ```
 
-$Probability~of~Termination~(y_i = 1) =$
+$Probability~of~Termination~(y_i = 1) = $Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+$
 
-$Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6}_{k[i]}~+~α^{Agency}_{l[i]}~+~α^{Office}_{m[i]}~+~β_{1}cl\_def3\_HHI\_lag1_{i}~+$
+$α^{Agency}_{m[i]}~+~α^{Office:Agency}_{m[i]}~+~{Place}_{n[i]}~+~{StartFY}_{o[i]}~+~β_{1}cln\_Def3HHI{i}~+$
 
-$β_{2}cl\_def6\_HHI\_lag1_{i}~+~(~β_{3}1Offr~+~β_{4}2Offr~+~β_{5}3–4Offr_{i}+~β_{6}5plusOffr_{i}~)~+$
+$β_{2}cln\_Def6HHI_{i}~+~(~β_{3}1Offr~+~β_{5}2–4Offr_{i}+~β_{6}5plusOffr_{i}~)~+$
 
-$β_{7}cl\_def3\_ratio\_lag1_{i}~+~β_{8}cl\_def6\_obl\_lag1_{i}~+~β_{9}cl\_def6\_ratio\_lag1_{i}~+$
+$β_{7}clr\_Def3toUS{i}~+~β_{8}cln\_OffObl7_{i}~+~β_{9}clr\_Def6toUS_{i}~+$
 
-$β_{10}cl\_US6\_avg\_sal\_lag1_{i}~+β_{11}cl\_Ceil\_Then\_Year_{i}~+~β_{12}cl\_Days_{i}~+$
+$β_{10}cln\_US6sal_{i}~+β_{11}cln\_Base_{i}~+~β_{12}cln\_Days_{i}~+$
 
 $(~β_{13}SIDC_{i}~+β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+$
 
 $(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+~β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+$
 
-$β_{21}TM–LH–FPLOE_{i}~)~+~β_{22}b\_UCA_{i}~+~β_{23}b\_Intl_{i}~+$
+$β_{21}TM–LH–FPLOE_{i}~+~β_{22}UCA_{i}~)~+~β_{23}b\_Intl_{i}~+$
 
-$β_{24}cl\_Ceil\_Then\_Year_{i}·b\_UCA_{i}~+~β_{25}cl\_def6\_HHI\_lag1l_{i}·cl\_def6\_obl\_lag1_{i}~+$
+$β_{24}cln\_Base_{i}·b\_UCA_{i}~+~β_{25}cln\_Def6HHI_{i}·cln\_OffObl7_{i}~+$
 
-$β_{26}cl\_def3\_HHI\_lag1_{i}·cl\_def3\_ratio\_lag1_{i}~+~ε_{i}),~~~~for~i=1~to~1,000,000$
+$β_{26}cln\_Def3HHI{i}·clr\_Def3toUS{i}~+~ε_{i}),~~~~for~i=1~to~1,000,000$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j= 1~to~82$$
 $$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~973;$$
 $$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~24$$ $$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~1,462$$
 
 
-
-
-
-
-$b\_Term~\sim~cl\_US6\_avg\_sal\_lag1Const~+$
-$$cl\_CFTE~+~c\_pPBSC+c\_pOffPSC+$$
-$$c\_pairHist+cl\_pairCA+$$
-$$cl\_Ceil~+~cl\_Days+cl\_Base2Ceil+$$
-$$Comp1or5+$$
-$$Veh+$$
-$$PricingUCA+$$
-$$Crisis+$$
-$$cl\_def6\_HHI\_lag1+cl\_def6\_ratio\_lag1+$$
-$$cl\_def3\_HHI\_lag1+cl\_def3\_ratio\_lag1+$$
-$$c\_pMarket+$$
-$$cl\_OffVol+cl\_office\_naics\_hhi\_k,~family=binomial(link="logit"))$$
