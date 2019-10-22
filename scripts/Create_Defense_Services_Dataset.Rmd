@@ -343,8 +343,8 @@ def_serv$l_US6_avg_sal_lag1Const<-na_non_positive_log(def_serv$US6_avg_sal_lag1C
       def_serv$cl_US6_avg_sal_lag1Const<-arm::rescale(def_serv$l_US6_avg_sal_lag1Const)
 
 def_serv <- def_serv  %>% dplyr::select(-BEA18,CensusYear)
-colnames(def_serv[colnames(def_serv)=="US6_avg_sal_lag1"])<-"US6_avg_sal_lag1_then_year"
-colnames(def_serv[colnames(def_serv)=="cl_US6_avg_sal_lag1"])<-"cl_US6_avg_sal_lag1_then_year"
+colnames(def_serv)[colnames(def_serv)=="US6_avg_sal_lag1"]<-"US6_avg_sal_lag1_then_year"
+colnames(def_serv)[colnames(def_serv)=="cl_US6_avg_sal_lag1"]<-"cl_US6_avg_sal_lag1_then_year"
 
 
 #def6_obl_lag1Const
@@ -356,8 +356,8 @@ def_serv <- def_serv  %>% dplyr::select(-BEA18)
 def_serv$l_def6_obl_lag1Const<-na_non_positive_log(def_serv$def6_obl_lag1Const)
       def_serv$cl_def6_obl_lag1Const<-arm::rescale(def_serv$l_def6_obl_lag1Const)
 
-colnames(def_serv[colnames(def_serv)=="def6_obl_lag1"])<-"def6_obl_lag1_then_year"
-colnames(def_serv[colnames(def_serv)=="cl_def6_obl_lag1"])<-"cl_def6_obl_lag1_then_year"
+colnames(def_serv)[colnames(def_serv)=="def6_obl_lag1"]<-"def6_obl_lag1_then_year"
+colnames(def_serv)[colnames(def_serv)=="cl_def6_obl_lag1"]<-"cl_def6_obl_lag1_then_year"
 #Removing l_s just to reduce size. They can be derived easily.
 
 # def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]

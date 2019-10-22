@@ -16,8 +16,8 @@ library(R2WinBUGS)
 library(Hmisc)
 library(sjstats)
 library(optimx)
-source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/scripts/DIIGstat.r")
-source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/scripts/NAICS.r")
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/NAICS.r")
 
 axis.text.size<-10
 strip.text.size<-10
@@ -28,15 +28,10 @@ geom.text.size<-12
 
 main.text.size<-1
 note.text.size<-1.40
-
-
-```
-
-## Load in data
-```{r Sample}
- load(file="..//data//clean//def_sample.Rdata")
+load(file="..//data//clean//def_sample.Rdata")
 
 ```
+
 
 #ICC Testing
 ## NAICS
