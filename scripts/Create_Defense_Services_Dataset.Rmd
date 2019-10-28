@@ -320,8 +320,8 @@ summary(def_serv$Opt)
 summary(def_serv$OptExer)
 ```
 
-### Office Diversity NAICS 
-```{r UnnecessaryNAICS}
+### Calendar Year Deflating
+```{r CalendarYearDeflating}
 load(file="../data/clean/transformed_def_serv.Rdata")
 
 cal_deflator<-remove_bom(read.csv("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/economic/Lookup_Calendar_Deflator.csv"))
@@ -363,86 +363,10 @@ colnames(def_serv)[colnames(def_serv)=="cl_def6_obl_lag1"]<-"cl_def6_obl_lag1_th
 #Removing l_s just to reduce size. They can be derived easily.
 
 # def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
+```
 
-
-#********************Still not done***************************
-#Def NAICS size
-#Salary
-#Both require calendar year deflators
-
-# summary(def_serv$Action.Obligation)
-# def_serv<-deflate(def_serv,
-#                    money_var = "Action.Obligation",
-#                    deflator_var="OMB.2019",
-#                   fy_var="StartFY",
-#                  path="C:/Users/gsand/Repositories/Lookup-Tables/"
-# )
-# def_serv<-deflate(def_serv,
-#                    money_var = "Ceil",
-#                    deflator_var="OMB.2019",
-#                   fy_var="StartFY",
-#                  path="C:/Users/gsand/Repositories/Lookup-Tables/"
-# )
-# def_serv$l_Ceil<-na_non_positive_log(def_serv$Ceil.OMB.2019)
-# def_serv$cl_Ceil<-arm::rescale(def_serv$l_Ceil)
-
-
-# def_serv<-def_serv[def_serv$PSR %in% c("Services"),]
-# summary(factor(def_serv$OCO_GF))
-# colnames(def_serv)[colnames(def_serv)=="Office"]<-"ContractingOfficeCode"
-# 
-# colnames(def_serv)[colnames(def_serv)=="StartFY"]<-"fiscal_year"
-# def_serv<-read_and_join_experiment( def_serv,
-#                                     "Office.sp_OfficeHistoryCapacityLaggedConst.txt",
-#                                     path="",
-#                                     directory="..\\data\\semi_clean\\",
-#                                     by=c("ContractingOfficeCode","fiscal_year"),
-#                                     add_var=c("office_obligatedamount_1year",
-#                                               "office_numberofactions_1year",
-#                                               "office_PBSCobligated_1year",
-#                                               "office_obligatedamount_7year"),
-#                                     new_var_checked=FALSE)
-# def_serv<-read_and_join_experiment( def_serv,
-#                                           "Office.sp_ProdServOfficeHistoryLaggedConst.txt",
-#                                           path="",
-#                                           directory="..\\data\\semi_clean\\",
-#                                           by=c("ContractingOfficeCode","fiscal_year","ProductOrServiceCode"),
-#                                           add_var=c("office_psc_obligatedamount_7year"),
-#                                           new_var_checked=FALSE,
-#                                     col_types="ccddddc")
-# def_serv<-read_and_join_experiment( def_serv,
-#                                           "Office.sp_EntityIDofficeHistoryLaggedConst.txt",
-#                                           path="",
-#                                           directory="..\\data\\semi_clean\\",
-#                                           by=c("EntityID","ContractingOfficeCode","fiscal_year"),
-#                                           add_var=c("office_entity_paircount_7year","office_entity_numberofactions_1year",
-#                                                     "office_entity_obligatedamount_7year"),
-#                                           new_var_checked=FALSE)
-# def_serv<-read_and_join( def_serv,
-#                            "ProductOrServiceCode.ProdServHistoryCFTEcoalesceLaggedConst.txt",
-#                            path="",
-#                            directory="..\\data\\semi_clean\\",
-#                            by=c("fiscal_year","OCO_GF","ProductOrServiceCode"),
-#                            add_var=c("CFTE_Rate_1year"),
-#                            new_var_checked=FALSE)
-#   colnames(def_serv)[colnames(def_serv)=="fiscal_year"]<-"StartFY"
-# colnames(def_serv)[colnames(def_serv)=="ContractingOfficeCode"]<-"Office"
-
-
-
-
-
-# deflate <- function(
-#   data,
-#   money_var = "Amount",
-#   fy_var = "Fiscal_Year",
-#   deflator_file = "Lookup_Deflators.csv",
-#   deflator_var="OMB20_GDP18",
-#   path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
-#   directory="economic/",
-#   deflator_dropped=TRUE
-# )
-
+### Office Diversity NAICS 
+```{r OfficeDiversityNAICS}
 
 
 length(unique((def_serv$Office)))
