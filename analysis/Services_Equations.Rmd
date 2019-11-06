@@ -1,7 +1,26 @@
 ---
-title: Defense Services Equations
-output: html_document
+title: "Defense Services Equations"
+output:
+  word_document: default
+  html_document: default
 ---
+
+# Setup
+First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
+```{r Libraries, echo = FALSE}
+library(csis360)
+library(ggplot2)
+library(dplyr)
+library(arm)
+library(knitr)
+library(foreign)
+library(stargazer)
+library(texreg)
+library(reshape2)
+library(tidyverse)
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
+
+```
 
 # Options
 
