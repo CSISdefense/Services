@@ -6,6 +6,7 @@ output:
     keep_md: yes
     toc: yes
 date: "Wednesday, July 11, 2019"
+
 ---
 
 
@@ -55,7 +56,7 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 ```{r Prune}
 
 load(file="../data/clean/defense_contract_complete.RData")
-
+def_serv<-transition_variable_names_service(def_serv)
 
 
 def_serv<-def %>% filter(PSR %in% c("Services"))
@@ -192,6 +193,7 @@ discrete_percent_plot(def_serv,"Term")
 # summary(def_serv$Unmodifieddef_servBaseAndAllOptionsValue)
 # summary(def_serv$Action.Obligation)
 # 
+
 save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
 ```
    
