@@ -200,31 +200,60 @@ glmer_examine(n_CBre25A)
 
 ## Breach Likelihood
 
-
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~$
 
-$α^{Agency}_{m[i]}~+~α^{Office:Agency}_{m[i]}~+~{Place}_{n[i]}~+~{StartFY}_{o[i]}~+~β_{1}cln\_Def3HHI{i}~+~~β_{2}cln\_Def6HHI_{i}~+$
+$α^{Agency}_{m[i]}~+~α^{Office:Agency}_{m[i]}~+~{Place}_{n[i]}~+~{StartFY}_{o[i]}~+$
 
-$(~β_{3}1Offr~+~β_{5}2–4Offr_{i}+~β_{6}5plusOffr_{i}~)~+~β_{7}clr\_Def3toUS{i}~+$
+$β_{1}cln\_US6sal_{i}~+~β_{2}cln\_PSCrate_{i}~+~β_{3}cp\_OffPerf7_{i}~+~β_{4}cp\_OffPSC7_{i}~+$
 
-$β_8cln\_OffObl7_{i}~+~β_9clr\_Def6toUS_{i}+~β_{10}cln\_US6sal_{i}~+$
+$β_{5}cn\_PairHist7_{i}~+~β_{6}cln\_PairCA_{i}~+~β_{7}cln\_Base_{i}~+~β_{8}clr\_Ceil2Base_{i}~+~$
 
-$β_{11}cln\_Base_{i}~+~β_{12}cln\_Days_{i}~+~(~β_{13}SIDC_{i}~+~β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+$
+$β_{9}cln\_Days_{i}~+~(~β_{10}1Offr~+~β_{11}2–4Offr_{i}+~β_{12}5plusOffr_{i}~)~+$
+
+$(~β_{13}SIDC_{i}~+~β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+$
 
 $(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+~β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+~β_{21}TM–LH–FPLOE_{i}~+$
 
-$β_{22}UCA_{i}~)~+~β_{23}b\_Intl_{i}~+~β_{24}cln\_Def6HHI_{i}·cln\_OffObl7_{i}~+$
+$β_{22}UCA_{i}~)~+~β_{23}OCO_{i}~+~β_{24}ARRA_{i}~+~β_{25}Dist_{i}$
 
-$β_{25}cln\_Def6HHI_{i}·b\_UCA_{i}~+~β_{26}cln\_Base_{i}·b\_UCA_{i}~+~(~β_{27}1Offr_{i}·b\_UCA_{i}~+$
+$β_{26}clr\_Def3toUS{i}~+~β_{27}cln\_Def6HHI_{i}~+~β_{28}clr\_Def6toUS_{i}~+~$
 
-$β_{29}2–4Offr_{i}·b\_UCA_{i}+~β_{30}5plusOffr_{i}·b\_UCA_{i}~)~+~ε_{i}),$ 
+$β_{29}cp\_PairObl7_{i}~+~β_{30}cln\_OffObl7_{i}~+~β_{31}cln\_OffFocus_{i}~+$
 
-$for~i=  1~to~999,993;$
+$β_{32}cln\_OffPerf7_{i}·cln\_PairCA_{i}~+~β_{33}cln\_OffPerf7_{i}·cln\_Days_{i},$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~82;~~~~ a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~973;$$
-$$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~24; ~~~~a^{Agency:Office}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~1,462$$
+$for~i=  1~to~1,000,000;$
+
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~82;$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~973;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~973;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~24$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~1,462$$
+$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
+$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~24$$
 
 ## Breach Size
+
+  n_CBre25A <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
+                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                      cn_PairHist7+cln_PairCA+
+                      cln_Base + clr_Ceil2Base + cln_Days+
+                      Comp+
+                      Veh+
+                      Pricing+
+                      Crisis+
+                      cln_Def6HHI+clr_Def6toUS+
+                      #cln_Def3HHI+
+                      clr_Def3toUS+
+                      cp_PairObl7+
+                      cln_OffObl7+ 
+                      #cl_office_NAICS6_hhi_kc+
+                      cp_OffPerf7:cln_PairCA+
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                    verbose=TRUE)
 
 $Estimated Log(y_i)~=~α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+$
 
@@ -244,11 +273,12 @@ $(~β_{20}Other\_FP_{i}~+~β_{21}Incentive_{i}~+~β_{22}Comb–Other_{i}~+~β_{2
 
 $β_{24}TM–LH–FPLOE_{i}~+~β_{25}UCA_{i}~)~+~$
 
+
 $β_{26}cln\_Def3HHI{i}~+~β_{27}clr\_Def3toUS{i}+~β_{28}cln\_Def6HHI_{i}~+~β_{29}clr\_Def6toUS_{i}~+$
 
 $β_{30}cp\_PairObl7{i}~+~β_{31}cln\_OffObl7_{i}~+~β_{32}cl\_cln\_OffFocus_{i}~+$
 
-$β_{33}cp\_OffPerf7_{i}·cln\_PairCA_{i}~+~(~β_{34}cp\_OffPerf7_{i}·cln\_Days_{i}~+$
+$β_{33}cp\_OffPerf7_{i}·cln\_PairCA_{i}, for~i=  1~to~1,000,000$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~80$$
 $$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~813$$
@@ -271,9 +301,6 @@ $(~β_{29}cln\_US6sal_{i}·Other\_FP_{i}~+~β_{30}cln\_US6sal_{i}·Incentive_{i}
 $β_{31}cln\_US6sal_{i}·Comb–Other_{i}~+~β_{32}cln\_US6sal_{i}·Other\_CB_{i}~+$
 
 $β_{33}cln\_US6sal_{i}·TM–LH–FPLOE_{i}~)~+~ε_{i}, for~i=  1~to~83,706$
-
-
-
 
 
 #Terminations
@@ -310,9 +337,15 @@ glmer_examine(term25B)
 
 ```
 
-$Probability~of~Termination~(y_i = 1) = $Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+$
+$Estimated~Probability(y_i = 1) = Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+$
 
 $α^{Agency}_{m[i]}~+~α^{Office:Agency}_{m[i]}~+~{Place}_{n[i]}~+~{StartFY}_{o[i]}~+~β_{1}cln\_Def3HHI{i}~+$
+
+
+
+
+
+
 
 $β_{2}cln\_Def6HHI_{i}~+~(~β_{3}1Offr~+~β_{5}2–4Offr_{i}+~β_{6}5plusOffr_{i}~)~+$
 
@@ -330,8 +363,13 @@ $β_{24}cln\_Base_{i}·b\_UCA_{i}~+~β_{25}cln\_Def6HHI_{i}·cln\_OffObl7_{i}~+$
 
 $β_{26}cln\_Def3HHI{i}·clr\_Def3toUS{i}~+~ε_{i}),~~~~for~i=1~to~1,000,000$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j= 1~to~82$$
-$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~973;$$
-$$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~24$$ $$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~1,462$$
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~80$$
+$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~813$$
+$$a^{ServArea:NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~813$$
+$$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~24$$
+$$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~880$$
+$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
+$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~24$$
+
 
 
