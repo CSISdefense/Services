@@ -187,7 +187,7 @@ $β_{5}cn\_PairHist7_{i}~+~β_{6}cln\_PairCA_{i}~+~β_{7}cln\_Base_{i}~+~β_{8}c
 
 $β_{9}cln\_Days_{i}~+~(~β_{10}1Offr_{i}~+~β_{11}2–4Offr_{i}+~β_{12}5plusOffr_{i}~)~+~(~β_{13}SIDC_{i}~+$
 
-$β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+$
+$β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+~(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+$
 
 $β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+~β_{21}TM–LH–FPLOE_{i}~+~β_{22}UCA_{i}~)~+$
 
@@ -219,7 +219,7 @@ $β_{6}cln\_PairCA_{i}~+~β_{7}cln\_Base_{i}~+~β_{8}clr\_Ceil2Base_{i}~+~β_{9}
 
 $(~β_{10}1Offr_{i}~+~β_{11}2–4Offr_{i}+~β_{12}5plusOffr_{i}~)~+~(~β_{13}SIDC_{i}~+~β_{14}MIDC_{i}~+~$
 
-$β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+$
+$β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+~(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+$
 
 $β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+~β_{21}TM–LH–FPLOE_{i}~+~β_{22}UCA_{i}~)~+$
 
@@ -285,7 +285,7 @@ $β_{5}cn\_PairHist7_{i}~+~β_{6}cln\_PairCA_{i}~+~β_{7}cln\_Base_{i}~+~β_{8}c
 
 $β_{9}cln\_Days_{i}~+~(~β_{10}1Offr_{i}~+~β_{11}2–4Offr_{i}+~β_{12}5plusOffr_{i}~)~+~(~β_{13}SIDC_{i}~+$
 
-$β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+$
+$β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+~(~β_{17}Other\_FP_{i}~+~β_{18}Incentive_{i}~+$
 
 $β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+~β_{21}TM–LH–FPLOE_{i}~+~β_{22}UCA_{i}~)~+$
 
@@ -293,9 +293,11 @@ $(~β_{23}OCO_{i}~+~β_{24}ARRA_{i}~+~β_{25}Dis_{i}~+~β_{26}clr\_Def3toUS{i}~+
 
 $β_{28}clr\_Def6toUS_{i}~+~β_{29}cp\_PairObl7_{i}~+~β_{30}cln\_OffObl7_{i}~+~β_{31}cln\_OffFocus_{i}~+$
 
-$β_{32}cln\_Base_{i}·b\_UCA_{i}~+~β_{33}cln\_Def6HHI_{i}·cln\_OffObl7_{i}~+$
+$(β_{32}cln\_Base_{i}·Other\_FP_{i}~+~β_{33}cln\_Base_{i}·Incentive_{i}~+$
 
-$β_{26}cln\_Def3HHI{i}·clr\_Def3toUS{i}~+~ε_{i}),~~~~for~i=1~to~1,000,000$
+$β_{34}cln\_Base_{i}·Comb–Other_{i}~+~β_{35}cln\_Base_{i}·Other\_CB_{i}~+$
+
+$β_{36}cln\_Base_{i}·TM–LH–FPLOE_{i}~+~β_{37}cln\_Base_{i}·UCA_{i}~),~~~~for~i=1~to~1,000,000$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~82$$
 $$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~878$$
