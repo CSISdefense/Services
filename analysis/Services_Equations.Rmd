@@ -101,7 +101,8 @@ if(!exists("b_AllOpt26A")){
   save(b_AllOpt26A,file="..\\output\\b_AllOpt26A.rda")
 
 }
-stargazer(b_SomeOpt25Cv3,b_AllOpt26A,type="text",digits=2)
+screenreg(list(b_SomeOpt25Cv3,b_AllOpt26A),custom.model.names = c("Some Options","All Options"))
+
 ```
 
 
@@ -171,9 +172,7 @@ if(!exists("n_CBre25A")){
   save(n_CBre25A,file="..\\output\\n_CBre25A.rda")
 }
 
-
-stargazer(b_CBre29B,n_CBre25A,type="text",digits=2)
-
+screenreg(list(b_CBre29B,n_CBre25A),custom.model.names = c("Breach Likelihood","Breach Size"))
 ```
 
 ## Breach Likelihood
@@ -192,7 +191,7 @@ $β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+(~β_{17}Other\
 
 $β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+~β_{21}TM–LH–FPLOE_{i}~+~β_{22}UCA_{i}~)~+$
 
-$(~β_{23}OCO_{i}~+~β_{24}ARRA_{i}~+~β_{25}Dist_{i}~+~β_{26}clr\_Def3toUS{i}~+~β_{27}cln\_Def6HHI_{i}~+$
+$(~β_{23}OCO_{i}~+~β_{24}ARRA_{i}~+~β_{25}Dis_{i}~+~β_{26}clr\_Def3toUS{i}~+~β_{27}cln\_Def6HHI_{i}~+$
 
 $β_{28}clr\_Def6toUS_{i}~+~β_{29}cp\_PairObl7_{i}~+~β_{30}cln\_OffObl7_{i}~+~β_{31}cln\_OffFocus_{i}~+$
 
@@ -201,12 +200,12 @@ $β_{32}cln\_OffPerf7_{i}·cln\_PairCA_{i}~+~β_{33}cln\_OffPerf7_{i}·cln\_Days
 $~~~for~i=  1~to~1,000,000$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~82;$$
-$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~973;$$
-$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~973;$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~24$$
-$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~1,462$$
-$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
-$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~24$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~878;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~3,242;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~26$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~1,092$$
+$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~186$$
+$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~9$$
 
 ## Breach Size
 
@@ -224,19 +223,19 @@ $β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+(~β_{17}Other\_FP_{i}~+~β_{18}
 
 $β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+~β_{21}TM–LH–FPLOE_{i}~+~β_{22}UCA_{i}~)~+$
 
-$(~β_{23}OCO_{i}~+~β_{24}ARRA_{i}~+~β_{25}Dist_{i}~+~β_{26}clr\_Def3toUS{i}~+~β_{27}cln\_Def6HHI_{i}~+$
+$(~β_{23}OCO_{i}~+~β_{24}ARRA_{i}~+~β_{25}Dis_{i}~+~β_{26}clr\_Def3toUS{i}~+~β_{27}cln\_Def6HHI_{i}~+$
 
-$β_{28}clr\_Def6toUS_{i}~+~β_{29}cp\_PairObl7_{i}~+~β_{30}cln\_OffObl7_{i}~+~β_{31}cln\_OffFocus_{i}~+$
+$β_{28}clr\_Def6toUS_{i}~+~β_{29}cp\_PairObl7_{i}~+~β_{30}cln\_OffObl7_{i}~+$
 
 $β_{32}cp\_OffPerf7_{i}·cln\_PairCA_{i}, for~i=  1~to~1,000,000$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~80$$
-$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~813$$
-$$a^{ServArea:NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~813$$
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~75$$
+$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~557$$
+$$a^{ServArea:NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~1,292$$
 $$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~24$$
-$$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~880$$
-$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
-$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~24$$
+$$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~656$$
+$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~123$$
+$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~9$$
 
 
 #Terminations
@@ -269,9 +268,9 @@ if(!exists("term25B")){
   save(term25A,term25B,file="..\\output\\term25AB.rdata")
 }
 
+screenreg(term25B,custom.model.names = c("Termination Likelihood"))
 
 
-stargazer(term25B,type="text",digits=2)
 
 
 ```
@@ -290,7 +289,7 @@ $β_{14}MIDC_{i}+~β_{15}FSS–GWAC_{i}+~β_{16}BPA–BOA_{i}~)~+(~β_{17}Other\
 
 $β_{19}Comb–Other_{i}~+~β_{20}Other\_CB_{i}~+~β_{21}TM–LH–FPLOE_{i}~+~β_{22}UCA_{i}~)~+$
 
-$(~β_{23}OCO_{i}~+~β_{24}ARRA_{i}~+~β_{25}Dist_{i}~+~β_{26}clr\_Def3toUS{i}~+~β_{27}cln\_Def6HHI_{i}~+$
+$(~β_{23}OCO_{i}~+~β_{24}ARRA_{i}~+~β_{25}Dis_{i}~+~β_{26}clr\_Def3toUS{i}~+~β_{27}cln\_Def6HHI_{i}~+$
 
 $β_{28}clr\_Def6toUS_{i}~+~β_{29}cp\_PairObl7_{i}~+~β_{30}cln\_OffObl7_{i}~+~β_{31}cln\_OffFocus_{i}~+$
 
@@ -298,13 +297,11 @@ $β_{32}cln\_Base_{i}·b\_UCA_{i}~+~β_{33}cln\_Def6HHI_{i}·cln\_OffObl7_{i}~+$
 
 $β_{26}cln\_Def3HHI{i}·clr\_Def3toUS{i}~+~ε_{i}),~~~~for~i=1~to~1,000,000$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~80$$
-$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~813$$
-$$a^{ServArea:NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~813$$
-$$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~24$$
-$$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~880$$
-$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
-$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~24$$
-
-
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~82$$
+$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~878$$
+$$a^{ServArea:NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~3,242$$
+$$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~26$$
+$$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~1,092$$
+$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~186$$
+$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~9$$
 
