@@ -234,5 +234,11 @@ $$a^{Office:Agency}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~880$$
 $$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
 $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~24$$
 
-
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~82$$
+$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~878$$
+$$a^{ServArea:NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~3,242$$
+$$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~26$$
+$$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~1,092$$
+$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~186$$
+$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~9$$
 
