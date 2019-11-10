@@ -32,49 +32,64 @@ load("..//Output//b_SomeOpt25Cv3.rda")
 
 load("..//Output//b_AllOpt26A.rda")
 
-stargazer(b_SomeOpt25Cv3,b_AllOpt26A,type="text",digits=2)
+# str(b_AllOpt26A)
+# b_AllOpt26A@flist
+# ?levels
+# 
+group_n<-function(m,col){
+  format(length(levels(m@flist[[col]])),big.mark=",")
+}
+
+sample_n<-function(m){
+  format(nrow(m@frame),big.mark=",")
+}
+texreg::screenreg(list(b_SomeOpt25Cv3,b_AllOpt26A),
+custom.model.names = c("Some Opt","All Opt"),                  
+                  digits=2)
 ```
 ## Some Options Likelihood
+
+
 
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+$
 
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 
-$β_{1}Intercept~+~β_{2}cln\_US6sal_{i}~+~β_{3}cln\_PSCrate_{i}~+~β_{4}cp\_OffPerf7_{i}~+$
+$β_{`r (b<-1)`}Intercept~+~β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+$
 
-$β_{6}cp\_OffPSC7_{i}~+β_{7}cn\_PairHist7_{i}~+~β_{8}cln\_PairCA_{i}~+~β_{9}cln\_Base_{i}~+$
+$β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+$
 
-$β_{10}clr\_Ceil2Base_{i}~+~β_{11}cln\_Days_{i}~+~(~β_{12}1Offr_{i}~+~β_{13}2–4Offr_{i}+~β_{14}5plusOffr_{i}~)~+$
+$β_{`r (b<-b+1)`}clr\_Ceil2Base_{i}~+~β_{`r (b<-b+1)`}cln\_Days_{i}~+~(~β_{`r (b<-b+1)`}1Offr_{i}~+~β_{`r (b<-b+1)`}2–4Offr_{i}+~β_{`r (b<-b+1)`}5plusOffr_{i}~)~+$
 
-$(~β_{15}SIDC_{i}~+~β_{16}MIDC_{i}+~β_{17}FSS–GWAC_{i}+~β_{18}BPA–BOA_{i}~)~+(~β_{19}Other\_FP_{i}~+$
+$(~β_{`r (b<-b+1)`}SIDC_{i}~+~β_{`r (b<-b+1)`}MIDC_{i}+~β_{`r (b<-b+1)`}FSS–GWAC_{i}+~β_{`r (b<-b+1)`}BPA–BOA_{i}~)~+(~β_{`r (b<-b+1)`}Other\_FP_{i}~+$
 
-$β_{20}Incentive_{i}~+~β_{21}Comb–Other_{i}~+~β_{22}Other\_CB_{i}~+~β_{23}TM–LH–FPLOE_{i}~+$
+$β_{`r (b<-b+1)`}Incentive_{i}~+~β_{`r (b<-b+1)`}Comb–Other_{i}~+~β_{`r (b<-b+1)`}Other\_CB_{i}~+~β_{`r (b<-b+1)`}TM–LH–FPLOE_{i}~+$
 
-$β_{24}UCA_{i}~)~+~(~+~β_{25}ARRA_{i}~+~β_{26}Dist_{i}~+~β_{27}OCO_{i}~)~+~β_{29}clr\_Def3toUS{i}~+$
+$β_{`r (b<-b+1)`}UCA_{i}~)~+~(~+~β_{`r (b<-b+1)`}ARRA_{i}~+~β_{`r (b<-b+1)`}Disaster_{i}~+~β_{`r (b<-b+1)`}OCO_{i}~)~+~β_{`r (b<-b+1)`}cln\_Def3HHI_{i}~+$
 
-$β_{29}cln\_Def6HHI_{i}~+~β_{30}clr\_Def6toUS_{i}~+~β_{31}cp\_PairObl7_{i}~+~β_{32}cln\_OffObl7_{i}~+$
+$β_{`r (b<-b+1)`}clr\_Def3toUS{i}~+~β_{`r (b<-b+1)`}cln\_Def6HHI_{i}~+~β_{`r (b<-b+1)`}clr\_Def6toUS_{i}~+~β_{`r (b<-b+1)`}cln\_OffObl7_{i}~+$
 
-$β_{33}cln\_OffFocus_{i}~+~β_{34}cp\_OffPSC7_{i}·cln\_OffObl7_{i}~+$
+$β_{`r (b<-b+1)`}cp\_PairObl7_{i}~+~β_{`r (b<-b+1)`}cp\_PairObl7_{i}~+~β_{`r (b<-b+1)`}cp\_OffPSC7_{i}·cln\_OffObl7_{i}~+$
 
-$β_{35}cln\_OffPerf7_{i}·cln\_PairCA_{i}~+~β_{36}cln\_OffPerf7_{i}·cp\_PairObl7_{i}~+$
+$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·cp\_PairObl7_{i}~+$
 
-$(~β_{37}cn\_OffPerf7_{i}·Other\_FP_{i}~+~β_{38}cn\_OffPerf7_{i}·Incentive_{i}~+$
+$(~β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Other\_FP_{i}~+~β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Incentive_{i}~+$
 
-$β_{39}cn\_OffPerf7_{i}·Other\_CB_{i}~+~β_{40}cn\_OffPerf7_{i}·TM–LH–FPLOE_{i}~+$
+$β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Comb–Other_{i}~+~β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Other\_CB_{i}~+$
 
-$β_{41}cn\_OffPerf7_{i}·UCA_{i}~)~+~β_{42}cln\_Base_{i}·clr\_Ceil2Base_{i}~+~$
+$β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·TM–LH–FPLOE_{i}~+~β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·UCA_{i}~)~+$
 
-$β_{43}cp\_PairObl7_{i}·cln\_OffObl7_{i}~+~ϵ_{i},~~~~for~i=1~to~1,000,000$
+$β_{`r (b<-b+1)`}cln\_Base_{i}·clr\_Ceil2Base_{i}~+~β_{`r (b<-b+1)`}cp\_PairObl7_{i}·cln\_OffObl7_{i}~+~ϵ_{i},$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~82;$$
-$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~973;$$
-$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~973;$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~24$$
-$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~1,462$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
-$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~24$$
+$for~i=1~to~`r sample_n(b_SomeOpt25Cv3)`$
 
-
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_SomeOpt25Cv3,"NAICS3")`;$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(b_SomeOpt25Cv3,"NAICS6:NAICS3")`;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(b_SomeOpt25Cv3,"ServArea:(NAICS6:NAICS3)")`;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(b_SomeOpt25Cv3,"Agency")`$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(b_SomeOpt25Cv3,"Office:Agency")`$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(b_SomeOpt25Cv3,"Place")`$$
+$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_SomeOpt25Cv3,"StartFY")`$$
 
 ## All Options Likelihood
 
@@ -82,37 +97,39 @@ $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS
 
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 
-$β_{1}Intercept~+~β_{2}cln\_US6sal_{i}~+~β_{3}cln\_PSCrate_{i}~+~β_{4}cp\_OffPerf7_{i}~+$
+$β_{`r (b<-1)`}Intercept~+~β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+$
 
-$β_{5}cp\_OffPSC7_{i}~+~β_{6}cn\_PairHist7_{i}~+~β_{7}cln\_PairCA_{i}~+~β_{8}cln\_Base_{i}~+$
+$β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+~β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+$
 
-$β_{9}clr\_Ceil2Base_{i}~+~β_{10}cln\_Days_{i}~+~(~β_{11}1Offr_{i}~+~β_{12}2–4Offr_{i}+~β_{13}5plusOffr_{i}~)~+$
+$β_{`r (b<-b+1)`}clr\_Ceil2Base_{i}~+~β_{`r (b<-b+1)`}cln\_Days_{i}~+~(~β_{`r (b<-b+1)`}1Offr_{i}~+~β_{`r (b<-b+1)`}2–4Offr_{i}+~β_{`r (b<-b+1)`}5plusOffr_{i}~)~+$
 
-$(~β_{14}SIDC_{i}~+~β_{15}MIDC_{i}+~β_{16}FSS–GWAC_{i}+~β_{17}BPA–BOA_{i}~)~+(~β_{18}Other\_FP_{i}~+$
+$(~β_{`r (b<-b+1)`}SIDC_{i}~+~β_{`r (b<-b+1)`}MIDC_{i}+~β_{`r (b<-b+1)`}FSS–GWAC_{i}+~β_{`r (b<-b+1)`}BPA–BOA_{i}~)~+(~β_{`r (b<-b+1)`}Other\_FP_{i}~+$
 
-$β_{19}Incentive_{i}~+β_{20}Comb–Other_{i}~+~β_{21}Other\_CB_{i}~+~β_{22}TM–LH–FPLOE_{i}~+$
+$β_{`r (b<-b+1)`}Incentive_{i}~+β_{`r (b<-b+1)`}Comb–Other_{i}~+~β_{`r (b<-b+1)`}Other\_CB_{i}~+~β_{`r (b<-b+1)`}TM–LH–FPLOE_{i}~+$
 
-$β_{23}UCA_{i}~)~+~(~β_{24}ARRA_{i}~+~β_{25}Dist_{i}~+~β_{26}OCO_{i}~)~+~β_{27}clr\_Def3toUS{i}~+$
+$β_{`r (b<-b+1)`}UCA_{i}~)~+~(~β_{`r (b<-b+1)`}ARRA_{i}~+~β_{`r (b<-b+1)`}Disaster_{i}~+~β_{`r (b<-b+1)`}OCO_{i}~)~+~β_{`r (b<-b+1)`}cln\_Def3HHI_{i}~+$
 
-$β_{28}cln\_Def6HHI_{i}~+~β_{29}clr\_Def6toUS_{i}~+~β_{30}cp\_PairObl7_{i}~+~β_{31}cln\_OffObl7_{i}~+$
+$β_{`r (b<-b+1)`}clr\_Def3toUS{i}~+~β_{`r (b<-b+1)`}cln\_Def6HHI_{i}~+~β_{`r (b<-b+1)`}clr\_Def6toUS_{i}~+~β_{`r (b<-b+1)`}cln\_OffObl7_{i}~+$
 
-$β_{32}cln\_OffFocus_{i}~+~β_{32}cln\_OffPSC7_{i}·cln\_OffFocus_{i}~+$
+$β_{`r (b<-b+1)`}cln\_OffFocus_{i}~+~β_{`r (b<-b+1)`}cp\_PairObl7_{i}~+~(~β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Other\_FP_{i}~+$
 
-$(~β_{33}cn\_PSCrate_{i}·Other\_FP_{i}~+~β_{34}cn\_PSCrate_{i}·Incentive_{i}~+$
+$β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Incentive_{i}~+~β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Comb–Other_{i}~+$
 
-$β_{35}cn\_PSCrate_{i}·Comb–Other_{i}~+~β_{36}cn\_PSCrate_{i}·Other\_CB_{i}~+$
+$β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Other\_CB_{i}~+~β_{`r (b<-b+1)`}cn\_PSCrate_{i}·TM–LH–FPLOE_{i}~+$
 
-$β_{37}cn\_PSCrate_{i}·TM–LH–FPLOE_{i}~+~β_{38}cn\_PSCrate_{i}·UCA_{i}~)~+$
+$β_{`r (b<-b+1)`}cn\_PSCrate_{i}·UCA_{i}~)~+~β_{`r (b<-b+1)`}cln\_OffPSC7_{i}·cln\_OffFocus_{i}~+$
 
-$β_{39}cln\_OffObl7_{i}·cln\_OffFocus_{i}~+~ϵ_{i},~~~~for~i=1~to~1,000,000$
+$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·cp\_PairObl7_{i}~+~β_{`r (b<-b+1)`}cln\_OffObl7_{i}·cln\_OffFocus_{i}~+~ϵ_{i},$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~82;$$
-$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~973;$$
-$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~973;$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~24$$
-$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~1,462$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
-$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~24$$
+$for~i=1~to~`r sample_n(b_AllOpt26A)`$
+
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_AllOpt26A,"NAICS3")`;$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(b_AllOpt26A,"NAICS6:NAICS3")`;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(b_AllOpt26A,"ServArea:(NAICS6:NAICS3)")`;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(b_AllOpt26A,"Agency")`$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(b_AllOpt26A,"Office:Agency")`$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(b_AllOpt26A,"Place")`$$
+$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_AllOpt26A,"StartFY")`$$
 
 
 
@@ -125,6 +142,9 @@ if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
 if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
 
 stargazer(b_CBre29B,n_CBre25A,type="text",digits=2)
+texreg::screenreg(list(b_CBre29B,n_CBre25A),
+                  custom.model.names = c("Breach Likelihood","BreachSize"),                  
+                  digits=2)
 
 ```
 
@@ -134,62 +154,61 @@ $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS
 
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 
-$β_{1}Intercept~+~β_{2}cln\_US6sal_{i}~+~β_{3}cln\_PSCrate_{i}~+~β_{4}cp\_OffPerf7_{i}~+$
+$β_{`r (b<-1)`}Intercept~+~β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+$
 
-$β_{5}cp\_OffPSC7_{i}~+~β_{6}cn\_PairHist7_{i}~+~β_{7}cln\_PairCA_{i}~+~β_{8}cln\_Base_{i}~+$
+$β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+~β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+$
 
-$β_{9}clr\_Ceil2Base_{i}~+~β_{10}cln\_Days_{i}~+~(~β_{11}1Offr_{i}~+~β_{12}2–4Offr_{i}+~β_{13}5plusOffr_{i}~)~+$
+$β_{`r (b<-b+1)`}clr\_Ceil2Base_{i}~+~β_{`r (b<-b+1)`}cln\_Days_{i}~+~(~β_{`r (b<-b+1)`}1Offr_{i}~+~β_{`r (b<-b+1)`}2–4Offr_{i}+~β_{`r (b<-b+1)`}5plusOffr_{i}~)~+$
 
-$(~β_{14}SIDC_{i}~+~β_{15}MIDC_{i}+~β_{16}FSS–GWAC_{i}+~β_{17}BPA–BOA_{i}~)~+(~β_{18}Other\_FP_{i}~+$
+$(~β_{`r (b<-b+1)`}SIDC_{i}~+~β_{`r (b<-b+1)`}MIDC_{i}+~β_{`r (b<-b+1)`}FSS–GWAC_{i}+~β_{`r (b<-b+1)`}BPA–BOA_{i}~)~+(~β_{`r (b<-b+1)`}Other\_FP_{i}~+$
 
-$β_{19}Incentive_{i}~+~β_{20}Comb–Other_{i}~+~β_{21}Other\_CB_{i}~+~β_{22}TM–LH–FPLOE_{i}~+$
+$β_{`r (b<-b+1)`}Incentive_{i}~+~β_{`r (b<-b+1)`}Comb–Other_{i}~+~β_{`r (b<-b+1)`}Other\_CB_{i}~+~β_{`r (b<-b+1)`}TM–LH–FPLOE_{i}~+$
 
-$β_{23}UCA_{i}~)~+~(~β_{24}ARRA_{i}~+~β_{25}Dist_{i}~+~β_{26}OCO_{i}~)~+~β_{27}clr\_Def3toUS{i}~+$
+$β_{`r (b<-b+1)`}UCA_{i}~)~+~(~β_{`r (b<-b+1)`}ARRA_{i}~+~β_{`r (b<-b+1)`}Disaster_{i}~+~β_{`r (b<-b+1)`}OCO_{i}~)~+~β_{`r (b<-b+1)`}clr\_Def3toUS{i}~+$
 
-$β_{28}cln\_Def6HHI_{i}~+~β_{29}clr\_Def6toUS_{i}~+~β_{30}cp\_PairObl7_{i}~+~β_{31}cln\_OffObl7_{i}~+$
+$β_{`r (b<-b+1)`}cln\_Def6HHI_{i}~+~β_{`r (b<-b+1)`}clr\_Def6toUS_{i}~+~β_{`r (b<-b+1)`}cln\_OffObl7_{i}~+~β_{`r (b<-b+1)`}cln\_OffFocus_{i}~+$
 
-$β_{32}cln\_OffFocus_{i}~+~β_{33}cln\_OffPerf7_{i}·cln\_PairCA_{i}~+$
+$β_{`r (b<-b+1)`}cp\_PairObl7_{i}~+~β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·cln\_PairCA_{i}~+$
 
-$β_{34}cln\_OffPerf7_{i}·cln\_Days_{i}~+~ϵ_{i},~~~for~i=  1~to~1,000,000$
+$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·cln\_Days_{i}~+~ϵ_{i},~~~for~i=  1~to~`r sample_n(b_CBre29B)`$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~82;$$
-$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~973;$$
-$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~973;$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~24$$
-$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~1,462$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
-$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~24$$
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_CBre29B,"NAICS3")`;$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(b_CBre29B,"NAICS6:NAICS3")`;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(b_CBre29B,"ServArea:(NAICS6:NAICS3)")`;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(b_CBre29B,"Agency")`$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(b_CBre29B,"Office:Agency")`$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(b_CBre29B,"Place")`$$
+$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_CBre29B,"StartFY")`$$
 
 ## Breach Size
 
 $Estimated~Log(y_i)~=~α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+$
 
-$α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+~α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+~β_{1}Intercept~+$
+$α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+~α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+~β_{`r (b<-1)`}Intercept~+$
 
-$β_{2}cln\_US6sal_{i}~+~β_{3}cln\_PSCrate_{i}~+~β_{4}cp\_OffPerf7_{i}~+~β_{5}cp\_OffPSC7_{i}~+~β_{6}cn\_PairHist7_{i}~+$
+$β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+~β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+$
 
-$β_{7}cln\_PairCA_{i}~+~β_{8}cln\_Base_{i}~+~β_{9}clr\_Ceil2Base_{i}~+~β_{10}cln\_Days_{i}~+$
+$β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+~β_{`r (b<-b+1)`}clr\_Ceil2Base_{i}~+$
 
-$(~β_{11}1Offr_{i}~+~β_{12}2–4Offr_{i}+~β_{13}5plusOffr_{i}~)~+~(~β_{14}SIDC_{i}~+~β_{15}MIDC_{i}~+~$
+$β_{`r (b<-b+1)`}cln\_Days_{i}~+~(~β_{`r (b<-b+1)`}1Offr_{i}~+~β_{`r (b<-b+1)`}2–4Offr_{i}+~β_{`r (b<-b+1)`}5plusOffr_{i}~)~+~(~β_{`r (b<-b+1)`}SIDC_{i}~+$
 
-$β_{16}FSS–GWAC_{i}+~β_{17}BPA–BOA_{i}~)~+(~β_{18}Other\_FP_{i}~+~β_{19}Incentive_{i}~+$
+$β_{`r (b<-b+1)`}MIDC_{i}~+~β_{`r (b<-b+1)`}FSS–GWAC_{i}+~β_{`r (b<-b+1)`}BPA–BOA_{i}~)~+(~β_{`r (b<-b+1)`}Other\_FP_{i}~+~β_{`r (b<-b+1)`}Incentive_{i}~+$
 
-$β_{20}Comb–Other_{i}~+~β_{21}Other\_CB_{i}~+~β_{22}TM–LH–FPLOE_{i}~+~β_{23}UCA_{i}~)~+$
+$β_{`r (b<-b+1)`}Comb–Other_{i}~+~β_{`r (b<-b+1)`}Other\_CB_{i}~+~β_{`r (b<-b+1)`}TM–LH–FPLOE_{i}~+~β_{`r (b<-b+1)`}UCA_{i}~)~+$
 
-$(~β_{24}ARRA_{i}~+~β_{25}Dist_{i}~+~β_{26}OCO_{i}~)~+~β_{27}clr\_Def3toUS{i}~+~β_{28}cln\_Def6HHI_{i}~+$
+$(~β_{`r (b<-b+1)`}ARRA_{i}~+~β_{`r (b<-b+1)`}Disaster_{i}~+~β_{`r (b<-b+1)`}OCO_{i}~)~+~β_{`r (b<-b+1)`}clr\_Def3toUS{i}~+~β_{`r (b<-b+1)`}cln\_Def6HHI_{i}~+$
 
-$β_{29}clr\_Def6toUS_{i}~+~β_{30}cp\_PairObl7_{i}~+~β_{31}cln\_OffObl7_{i}~+~β_{32}cln\_OffFocus_{i}~+$
+$β_{`r (b<-b+1)`}clr\_Def6toUS_{i}~+~β_{`r (b<-b+1)`}cln\_OffObl7_{i}~+~β_{`r (b<-b+1)`}cln\_OffFocus_{i}~+~β_{`r (b<-b+1)`}cp\_PairObl7_{i}~+$
 
-$β_{33}cp\_OffPerf7_{i}·cln\_PairCA_{i}~+~ϵ_{i}~+~ϵ_{i}, for~i=  1~to~1,000,000$
+$β_{`r (b<-b+1)`}cp\_OffPerf7_{i}·cln\_PairCA_{i}~+~ϵ_{i}~+~ϵ_{i}, for~i=  1~to~`r sample_n(n_CBre25A)`$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~80$$
-$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~813$$
-$$a^{ServArea:NAICS6:NAICS3}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~813$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~24$$
-$$a^{Office:Agency}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~880$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
-$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~24$$
-
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(n_CBre25A,"NAICS3")`;$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(n_CBre25A,"NAICS6:NAICS3")`;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(n_CBre25A,"ServArea:(NAICS6:NAICS3)")`;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(n_CBre25A,"Agency")`$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(n_CBre25A,"Office:Agency")`$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(n_CBre25A,"Place")`$$
+$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(n_CBre25A,"StartFY")`$$
 
 #Terminations
 
@@ -197,6 +216,9 @@ $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~24$$
  load("..//Output//term25B.rdata")
 
 stargazer(term25B,type="text",digits=2)
+texreg::screenreg(list(term25B),
+                  custom.model.names = c("Termination Likelihood"),                  
+                  digits=2)
 
 ```
 
@@ -204,41 +226,32 @@ $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS
 
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 
-$β_{1}Intercept_{i}~+~β_{2}cln\_US6sal_{i}~+~β_{3}cln\_PSCrate_{i}~+~β_{4}cp\_OffPerf7_{i}~+$
+$β_{`r (b<-1)`}Intercept_{i}~+~β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+$
 
-$β_{5}cp\_OffPSC7_{i}~+~β_{6}cn\_PairHist7_{i}~+~β_{7}cln\_PairCA_{i}~+~β_{8}cln\_Base_{i}~+$
+$β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+~β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+$
 
-$β_{9}clr\_Ceil2Base_{i}~+~β_{10}cln\_Days_{i}~+~(~β_{11}1Offr_{i}~+~β_{12}2–4Offr_{i}+~β_{13}5plusOffr_{i}~)~+$
+$β_{`r (b<-b+1)`}clr\_Ceil2Base_{i}~+~β_{`r (b<-b+1)`}cln\_Days_{i}~+~(~β_{`r (b<-b+1)`}1Offr_{i}~+~β_{`r (b<-b+1)`}2–4Offr_{i}+~β_{`r (b<-b+1)`}5plusOffr_{i}~)~+$
 
-$(~β_{14}SIDC_{i}~+~β_{15}MIDC_{i}+~β_{16}FSS–GWAC_{i}+~β_{17}BPA–BOA_{i}~)~+(~β_{18}Other\_FP_{i}~+$
+$(~β_{`r (b<-b+1)`}SIDC_{i}~+~β_{`r (b<-b+1)`}MIDC_{i}+~β_{`r (b<-b+1)`}FSS–GWAC_{i}+~β_{`r (b<-b+1)`}BPA–BOA_{i}~)~+(~β_{`r (b<-b+1)`}Other\_FP_{i}~+$
 
-$β_{19}Incentive_{i}~+~β_{20}Comb–Other_{i}~+~β_{21}Other\_CB_{i}~+~β_{22}TM–LH–FPLOE_{i}~+$
+$β_{`r (b<-b+1)`}Incentive_{i}~+~β_{`r (b<-b+1)`}Comb–Other_{i}~+~β_{`r (b<-b+1)`}Other\_CB_{i}~+~β_{`r (b<-b+1)`}TM–LH–FPLOE_{i}~+$
 
-$β_{23}UCA_{i}~)~+~(~β_{24}ARRA_{i}~+~β_{25}Dist_{i}~+~β_{26}OCO_{i}~)~+~β_{27}clr\_Def3toUS{i}~+$
+$β_{`r (b<-b+1)`}UCA_{i}~)~+~(~β_{`r (b<-b+1)`}ARRA_{i}~+~β_{`r (b<-b+1)`}Disaster_{i}~+~β_{`r (b<-b+1)`}OCO_{i}~)~+~β_{`r (b<-b+1)`}cln\_Def3HHI_{i}~+$
 
-$β_{28}cln\_Def6HHI_{i}~+~β_{29}clr\_Def6toUS_{i}~+~β_{30}cp\_PairObl7_{i}~+~β_{31}cln\_OffObl7_{i}~+$
+$β_{`r (b<-b+1)`}clr\_Def3toUS{i}~+~β_{`r (b<-b+1)`}cln\_Def6HHI_{i}~+~β_{`r (b<-b+1)`}clr\_Def6toUS_{i}~+~β_{`r (b<-b+1)`}cln\_OffObl7_{i}~+$
 
-$β_{32}cln\_OffFocus_{i}~+~(~β_{32}cn\_PairHist7_{i}·Other\_FP_{i}~+$
+$β_{`r (b<-b+1)`}cln\_OffFocus_{i}~+~β_{`r (b<-b+1)`}cp\_PairObl7_{i}~+~(~β_{`r (b<-b+1)`}cn\_PairHist7_{i}·Other\_FP_{i}~+$
 
-$β_{33}cn\_PairHist7_{i}·Incentive_{i}~+~β_{34}cn\_PairHist7_{i}·Comb–Other_{i}~+$
+$β_{`r (b<-b+1)`}cn\_PairHist7_{i}·Incentive_{i}~+~β_{`r (b<-b+1)`}cn\_PairHist7_{i}·Comb–Other_{i}~+$
 
-$β_{35}cn\_PairHist7_{i}·Other\_CB_{i}~+~β_{36}cn\_PairHist7_{i}·TM–LH–FPLOE_{i}~+$
+$β_{`r (b<-b+1)`}cn\_PairHist7_{i}·Other\_CB_{i}~+~β_{`r (b<-b+1)`}cn\_PairHist7_{i}·TM–LH–FPLOE_{i}~+$
 
-$β_{37}cn\_PairHist7_{i}·UCA_{i}~)~+~ϵ_{i}~+~ϵ_{i},~~~~for~i=1~to~1,000,000$
+$β_{`r (b<-b+1)`}cn\_PairHist7_{i}·UCA_{i}~)~+~ϵ_{i}~+~ϵ_{i},~~~~for~i=1~to~`r sample_n(term25B)`$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~80$$
-$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~813$$
-$$a^{ServArea:NAICS6:NAICS3}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~813$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~24$$
-$$a^{Office:Agency}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~880$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~24$$
-$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~24$$
-
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~j=1~to~82$$
-$$a^{NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~k= 1~to~878$$
-$$a^{ServArea:NAICS6:NAICS3}_{k}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~3,242$$
-$$a^{Agency}_{l}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~l= 1~to~26$$
-$$a^{Office:Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~m= 1~to~1,092$$
-$$a^{Place}_{n}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~186$$
-$$a^{StartFY}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~o= 1~to~9$$
-
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(term25B,"NAICS3")`;$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(term25B,"NAICS6:NAICS3")`;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(term25B,"ServArea:(NAICS6:NAICS3)")`;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(term25B,"Agency")`$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(term25B,"Office:Agency")`$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(term25B,"Place")`$$
+$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(term25B,"StartFY")`$$
