@@ -34,10 +34,16 @@ main.text.size<-1
 note.text.size<-1.40
 
 load(file="..//data//clean//def_sample.Rdata")
-serv_smp$ln_CBre<-serv_smp$ln_CBre_OMB20_GDP18
-serv_smp1m$ln_CBre<-serv_smp1m$ln_CBre_OMB20_GDP18
-serv_breach$ln_CBre<-serv_breach$ln_CBre_OMB20_GDP18
+if(!"ln_CBre" %in% colnames(serv_smp))
+  colnames(serv_smp)[colnames(serv_smp)=="ln_CBre_OMB20_GDP18"]<-"ln_CBre"
 
+if(!"ln_CBre" %in% colnames(serv_smp1m))
+  colnames(serv_smp1m)[colnames(serv_smp1m)=="ln_CBre_OMB20_GDP18"]<-"ln_CBre"
+
+if(!"ln_CBre" %in% colnames(serv_breach))
+  colnames(serv_breach)[colnames(serv_breach)=="ln_CBre_OMB20_GDP18"]<-"ln_CBre"
+
+memory.limit(64000)
 ```
 
 
@@ -54,7 +60,6 @@ Expectation: Higher service complexity would make work more demanding and thus r
 Expectation: Given the fact that one source for higher salaries is the difficulty of the work and the experience and education required, as average NAICS6 salary increases (decreases), the likelihood of cost ceiling breaches increases (decreases). We also then expect that higher average NAICS6 salaries (lower) will be correlated with ceiling breaches larger (smaller) in absolute size.
 
 ```{r Model01A}
-load(file="..//data//clean//def_sample.Rdata")
 summary_continuous_plot(serv_smp1m,metric="cbre","cln_US6sal")
 
 #Scatter Plot of n_CBre01A
@@ -1159,21 +1164,21 @@ Defense obligations (logged)	clr_Def6toUS+		-	-	+
 #Likelihood Plot for unlogged ceiling
       summary_continuous_plot(serv_smp1m,metric="cbre","def6_obl_lag1Const")
 
-      summary_continuous_plot(serv_smp1m,metric="cbre","cln_Def6OblConst")
+      summary_continuous_plot(serv_smp1m,metric="cbre","cln_Def6Obl")
       
 
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=cln_Def6OblConst, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=cln_Def6Obl, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
 b_CBre09C <- glm (data=serv_smp,
-                 b_CBre ~ cln_Def6OblConst, family=binomial(link="logit"))
+                 b_CBre ~ cln_Def6Obl, family=binomial(link="logit"))
 
 
 n_CBre09C <- glm(data=serv_breach,
-                        ln_CBre ~ cln_Def6OblConst)
+                        ln_CBre ~ cln_Def6Obl)
 
 
 #Plot residuals versus fitted
@@ -1198,12 +1203,12 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 #Model
 b_CBre09D <- glm (data=serv_smp,
-                 b_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst
+                 b_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl
                  , family=binomial(link="logit"))
 glmer_examine(b_CBre09D)
 
 n_CBre09D <- glm(data=serv_breach,
-                        ln_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst)
+                        ln_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl)
 
 glmer_examine(n_CBre09D)
 
@@ -1229,7 +1234,7 @@ b_CBre09E <- glm (data=serv_smp,
                    Veh+
                    Pricing+
                    Crisis+
-                   cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst, family=binomial(link="logit"))
+                   cln_Def6HHI+clr_Def6toUS+cln_Def6Obl, family=binomial(link="logit"))
 glmer_examine(b_CBre09E)
 
 n_CBre09E <- glm(data=serv_breach,
@@ -1241,7 +1246,7 @@ n_CBre09E <- glm(data=serv_breach,
                    Veh+
                    Pricing+
                    Crisis+
-                 cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst)
+                 cln_Def6HHI+clr_Def6toUS+cln_Def6Obl)
 
 glmer_examine(n_CBre09E)
 
@@ -1347,12 +1352,12 @@ We'll start by adding in everything from both models and seeing what violates VI
 
 #Model
 b_CBre10C <- glm (data=serv_smp,
-                 b_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                 b_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI+clr_Def3toUS, family=binomial(link="logit"))
 glmer_examine(b_CBre10C)
 
 n_CBre10C <- glm(data=serv_breach,
-                        ln_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                        ln_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI+clr_Def3toUS)
 glmer_examine(n_CBre10C)
 
@@ -1370,24 +1375,24 @@ glmer_examine(n_CBre10C2)
 #No HHI6
 
 b_CBre10C3 <- glm (data=serv_smp,
-                 b_CBre ~ clr_Def6toUS+cln_Def6OblConst+
+                 b_CBre ~ clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI+clr_Def3toUS, family=binomial(link="logit"))
 glmer_examine(b_CBre10C3)
 
 n_CBre10C3 <- glm(data=serv_breach,
-                        ln_CBre ~ clr_Def6toUS+cln_Def6OblConst+
+                        ln_CBre ~ clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI+clr_Def3toUS)
 glmer_examine(n_CBre10C3)
 
 
 #Model no ratio 3
 b_CBre10C4 <- glm (data=serv_smp,
-                 b_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                 b_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI, family=binomial(link="logit"))
 glmer_examine(b_CBre10C4)
 
 n_CBre10C4 <- glm(data=serv_breach,
-                        ln_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst+
+                        ln_CBre ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl+
                    cln_Def3HHI)
 glmer_examine(n_CBre10C4)
 
@@ -3061,7 +3066,7 @@ glmer_examine(n_cbre23B2)
                        n_cbre_partnership_actions_16B, n_cbre23B2, type="text", digits=2)
 
 summary_residual_compare(b_cbre_CFTE_pricing_22B, b_cbre23B)
-summary_residual_compare(n_cbre_partnership_actions_16B, n_cbre22B)
+summary_residual_compare(n_cbre_partnership_actions_16B, n_cbre23B2)
 
 ```
 Remains negative and contrary to expectation for likelihood. Positive and in line with expectation for ceiling breach size, but would require removing a prior interaction to avoid multicollienarity and c_pPSC:cl:PairCAis associated with a lower AIC. Leaving it out.
@@ -3349,10 +3354,14 @@ stargazer::stargazer(b_CBre_base2ceil_ceiling_21B, b_CBre25A,
                      n_cbre_partnership_actions_16B, n_CBre25A, type="text", digits=2)
 
 
-summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
+summary_residual_compare( b_CBre_base2ceil_ceiling_21B, b_CBre25A,bins=100)
+summary_residual_compare( n_cbre_partnership_actions_16B, n_CBre25A,bins=100)
 ```
 Both models  failed to converge after a 100000 evaluations but the boolean model took a lot longer which, combined with multiple interactions and study variables losing significance, suggests that perhaps the  interactions should  be trimmed back.
 
+
+Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B
+Current cumulative n_Cbre model: n_cbre_partnership_actions_16B
 
 ####26A: 2019-08-21 For size, swapping from p_PBSC to PairCA and base:basetoceiling ratio
 
@@ -3396,8 +3405,10 @@ glmer_examine(n_CBre26A,display = TRUE)
 
 stargazer::stargazer(n_cbre_partnership_actions_16B, n_CBre25A,n_CBre26A, type="text", digits=2)
 
+summary_residual_compare( n_cbre_partnership_actions_16B, n_CBre26A,
+                          n_CBre25A,n_CBre26A,bins=100)
 
-summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
+
 ```
 The n_CBre25A model has a lower AIC and BIC and removing the interaction did not restore the significance to the p_PBSC or cl_Pair. Sticking wih 25A.
 
@@ -3407,7 +3418,7 @@ Dropping cp_OffPerf7:cp_PairObl7 and cp_OffPerf7:cp_PairObl7 as they were not si
 Current cumulative b_CBre model: b_cbre_CFTE_pricing_22B, b_CBre25A
 Current cumulative n_Cbre model: n_cbre_partnership_actions_16B, n_CBre25A
 
-```{r Term27A}
+```{r CBre27A}
 if(file.exists("..//Output//b_CBre27A.rda")) load("..//Output//b_CBre27A.rda")
 
 if(!exists("b_CBre27A")){
@@ -3451,7 +3462,7 @@ summary_residual_compare(b_cbre_CFTE_pricing_22B, b_CBre27A, b_CBre25A, b_CBre27
 AIC is a  bit lower but the results, when significant, are not in line with expectation. Leaving out CFTE:PPricing.
 
 
-####28A: 2019-08-22 Just PBSC and pairCA/Days
+####28A and 28B: 2019-08-22 Just PBSC and pairCA/Days
 
 Trimming down to interactions that are present in n_CBRre (pPBSC:cln_PairCA) or significant and in line with expectations (pPBSC:Days)
 
@@ -3462,7 +3473,7 @@ This was created while we were still using ceiling instead of base.
 Current cumulative b_CBre model: b_CBre_base2ceil_ceiling_21B; b_CBre25A
 Current cumulative n_Cbre model: n_cbre_partnership_actions_16B; n_CBre25A
 
-```{r b_CBre28A}
+```{r b_CBre28AB}
 if(file.exists("..//Output//b_CBre28AB.rda")) load("..//Output//b_CBre28AB.rda")
 
 if(!exists("b_CBre28B")){
@@ -3527,10 +3538,10 @@ stargazer::stargazer(b_CBre25A, b_CBre28A, b_CBre28B, type="text", digits=2)
 summary_residual_compare( b_CBre25A, b_CBre28A,b_CBre25A,b_CBre28B,bins=100)
 ```
 
-####29A: 2019-08-22 Restoring cln_Def3HHI and cln_OffFocus
+####29A and 29B: 2019-08-22 Restoring cln_Def3HHI and cln_OffFocus
 
 
-```{r b_CBre29A}
+```{r b_CBre29AB}
 if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
 
 if(!exists("b_CBre29B")){
