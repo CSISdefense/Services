@@ -20,8 +20,9 @@ library(arm)
 library(dplyr)
 library(Hmisc)
 library(stargazer)
+library(texreg)
 library(optimx)
-# source("C:/Users/JGraham/Documents/CSIS/Vendor/Scripts/DIIGstat.r")
+source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
 
 axis.text.size<-10
 strip.text.size<-10
@@ -1851,7 +1852,7 @@ Office Volume keeps its same significance and sign though pair history becomes i
 #### 13A: Cumulative Model
 With PairCA removed, may be possible to bring back all of the Def3toUS
 
-```{r Model12C}
+```{r Model13A}
 #Likelihood Plot for unlogged ceiling
 
 
@@ -1977,8 +1978,8 @@ glmer_examine(b_AllOpt_salary_pricing_15A)
 stargazer::stargazer(b_SomeOpt_salary_pricing_15A_no_interact, b_SomeOpt_salary_pricing_15A, 
                      b_AllOpt_salary_pricing_15A_no_interact, b_AllOpt_salary_pricing_15A, type="text", digits=2)
 
-summary_residual_compare(b_SomeOpt_salary_pricing_15A_no_interact, b_SomeOpt_salary_pricing_15A, bins=50)
-summary_residual_compare(b_AllOpt_salary_pricing_15A_no_interact, b_AllOpt_salary_pricing_15A, bins=50)
+summary_residual_compare(b_SomeOpt_salary_pricing_15A_no_interact, b_SomeOpt_salary_pricing_15A, bins=10)
+summary_residual_compare(b_AllOpt_salary_pricing_15A_no_interact, b_AllOpt_salary_pricing_15A, bins=10)
 
 ```
 Expectations hold for incentive for some contracts, though not for other cost based. That said, for both models, incentive loses significance in the original input, and thus even with a large AIC reduction it may not be worth it.
@@ -2203,7 +2204,7 @@ A small office heavily reliant on a single vendor may just be practical consolid
 Interact: Office Volume cln_OffObl7: cp_PairObl7		+	+	-
 
 
-```{r Model17A}
+```{r Model17C}
 #Define the models
 
 
@@ -3354,7 +3355,7 @@ glmer_examine(b_AllOpt24E)
                        b_AllOpt24C, b_AllOpt24E, type = "text", digits=2)
 
 summary_residual_compare(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt24E,
-                         b_AllOpt24C, b_AllOpt24E2,bins=50)
+                         b_AllOpt24C, b_AllOpt24E,bins=50)
 
 ```
 SomeOpt - Aligns with expectations, but raises AIC.
@@ -3473,7 +3474,7 @@ if(file.exists("..//Output//Opt25B.rda")) load("..//Output//Opt25B.rda")
 if(file.exists("..//Output//b_SomeOpt25B.rda")) load("..//Output//b_SomeOpt25B.rda")
 if(file.exists("..//Output//b_AllOpt25B.rda")) load("..//Output//b_AllOpt25B.rda")
 
-if(!exist("b_SomeOpt25B")){
+if(!exists("b_SomeOpt25B")){
   b_SomeOpt25B <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                           cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                           cn_PairHist7+cln_PairCA+
@@ -3525,7 +3526,7 @@ if(!exist("b_SomeOpt25B")){
                          (1 | StartFY),
                        family=binomial(link="logit"),
                        verbose=TRUE)
-  save(b_SomeOpt25B, b_AllOpt25B, file="..\Output\Opt25B.rda")
+  save(b_SomeOpt25B, b_AllOpt25B, file="..//Output//Opt25B.rda")
 }
 
 

@@ -5,9 +5,12 @@ output:
   html_document: default
 ---
 
-# Setup
-First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
-```{r Libraries, echo = FALSE, message=FALSE}
+# Presetnation of Estimatinating Euation
+As described in section 4.3, this paper includes five different equations: likelihood some options are exercised; likelihood all options are exercised; likelihood of a ceiling breach; size of ceiling breach given a breach occurring; and likelihood of termination. The variable indicators used in the equations are listed in Appendix B. Each predictor in the equations has a subscript i, which refers to the individual contract or task order.  The level 2, 3, and 4 variables, covered in Table B 3, are listed at the start of each equation with an α coefficient that varies has a different intercept for each value of with the underlying variable (that is, subscripts j, k, l, m, n, o, and p) and whose calculation is described in the corresponding formula at the end of equation. Subscript j refers to the NAICS subsector, subscript k refers to the NAICS detailed industry, subscript l refers to the service area, subscript m refers to the contracting agency, subscript n refers to the contracting office, subscript o refers to the place of performance, and subscript p refers to the calendar year (for those equations that include it).
+
+The remaining variables have β coefficients, with each non-base level of the categorical variables receiving a separate coefficient. 
+
+```{r setup, echo = FALSE, message=FALSE}
 library(csis360)
 library(ggplot2)
 library(dplyr)
@@ -141,7 +144,6 @@ if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
 
 if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
 
-stargazer(b_CBre29B,n_CBre25A,type="text",digits=2)
 texreg::screenreg(list(b_CBre29B,n_CBre25A),
                   custom.model.names = c("Breach Likelihood","BreachSize"),                  
                   digits=2)
@@ -215,7 +217,6 @@ $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(n_CBre25A,"
 ```{r Model-Term, echo = FALSE, message=FALSE}
  load("..//Output//term25B.rdata")
 
-stargazer(term25B,type="text",digits=2)
 texreg::screenreg(list(term25B),
                   custom.model.names = c("Termination Likelihood"),                  
                   digits=2)

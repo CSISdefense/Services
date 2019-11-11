@@ -17,7 +17,6 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 library(csis360)
 library(ggplot2)
 library(arm)
-library(R2WinBUGS)
 library(dplyr)
 library(Hmisc)
 library(stargazer)
