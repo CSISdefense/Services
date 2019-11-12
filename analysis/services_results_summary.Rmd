@@ -57,35 +57,6 @@ None at present.
 Note that because we use the complete dataset for exercised options, there's no 1 million entry variant.
 ```{r Model-OptGrowth}
 
-if(file.exists("..//Output//p_Opt_12C.rdata")) load("..//Output//p_Opt_12C.rdata")
-
-if(!exists("p_Opt_12C")){
-  p_Opt_12C <- glm (data=serv_opt,
-                    lp_OptGrowth ~  cl_US6_avg_sal_lag1Const +
-                      cl_CFTE+ c_pPBSC+c_pOffPSC+
-                      c_pairHist+cl_pairCA +
-                      cl_Ceil + capped_cl_Days+
-                      Comp1or5+
-                      Veh+
-                      PricingUCA+
-                      Crisis+
-                      cl_def6_HHI_lag1+cl_def6_ratio_lag1+
-                      cl_def3_HHI_lag1+cl_def3_ratio_lag1+
-                      c_pMarket+
-                      cl_OffVol+cl_office_naics_hhi_k #,
-                    # verbose=1
-                    )
-  glmer_examine(p_Opt_12C)
-  save(p_Opt_12C,file="..//Output//p_Opt_12C.rdata")
-}
-
-#Considering 
-# write.csv(exp(summary(p_Opt_12C)$coefficients[,1])-1,file="../Output/exp_p_Opt_12C.csv")
-# p_Opt_12C_exp<-log_analysis(p_Opt_12C)
-
-glmer_examine(p_Opt_12C)
-
-# Deprecated
 if(file.exists("..//Output//b_SomeOpt25Cv3.rda")) load("..//Output//b_SomeOpt25Cv3.rda")
 # 
 if(!exists("b_SomeOpt25Cv3")){
@@ -165,10 +136,6 @@ if(!exists("b_AllOpt26A")){
 }
 
 glmer_examine(b_AllOpt26A)
-
-# glmer_examine(p_Opt_12C,display=TRUE)
-# stargazer::stargazer(p_Opt_12C,type="text",
-#                        digits=2)
 
 glmer_examine(b_SomeOpt25Cv3)
 ```
@@ -313,9 +280,9 @@ glmer_examine(term25B)
 ### Study Variables Only
 ```{r StudyVariableSummary}
 
-texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25B),file="..//Output//study_var_model_lvl1.html",
+texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),file="..//Output//study_var_model_lvl1.html",
                 single.row = TRUE,
-                custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
+                custom.model.name=c("Some Options","All Options","Breach Likelihood","Breach Size","Termination"),
                 stars=c(0.1,0.05,0.01,0.001),
                 #groups = list(
                  #             "Services Complexity" = 2:3,
@@ -330,43 +297,6 @@ texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25B),file="..//Output//study_var
 
 ```
 
-
-### All Level 1 Variables
-
-```{r AllVariableSummary}
-
-#Absolute Exercised Options
-  stargazer::stargazer(#p_Opt_12C,
-                       b_CBre12C_1m,term25B,
-                       single.row = TRUE,
-                custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
-                stars=c(0.1,0.05,0.01,0.001),
-                       type="text",
-                       digits=2)
-
-
-texreg::htmlreg(list(p_Opt_12C,b_CBre12C_1m,term25B),file="..//Output//all_var_model_lvl1.html",
-                single.row = TRUE,
-                custom.model.name=c("Exercised Option","Ceiling Breach","Termination"),
-                stars=c(0.1,0.05,0.01,0.001),
-                groups = list(
-                              "Services Complexity" = 2:3,
-                              "Office Capacity" =4:5,
-                              "Past Relationship"=6:7,
-                              "Contract Characteristics"=8:25,
-                              "NAICS Characteristics" =26:29,
-                                                            "Office Characteristics" =30:32
-                              
-                              ),
-                custom.coef.map=all_coef_list,
-                bold=0.05,
-                custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 7: All Variables and Outcomes",
-                caption.above=TRUE)
-
-
-
-```
 ## Results by Dependent Variable
 
 ### Exercised Options
@@ -411,7 +341,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt26A),file="..//Output//options.html
 ### Ceiling Breach
 ```{r CeilingResults}
 
-  stargazer::stargazer(#p_Opt_12C,
+  stargazer::stargazer(#b_SomeOpt25Cv3,b_AllOpt26A,
                        b_CBre29B,n_CBre25A,
                        single.row = TRUE,
                 custom.model.name=c("Breach Frequency (Logit)","Breach Size for Breached Contracts (Regression"),
@@ -445,10 +375,10 @@ texreg::htmlreg(list(b_CBre29B,n_CBre25A),file="..//Output//ceiling_breaches.htm
 
 ### Terminations
 
-```{r AllVariableSummary}
+```{r Terminations}
 
 #Absolute Exercised Options
-  stargazer::stargazer(#p_Opt_12C,
+  stargazer::stargazer(#b_SomeOpt25Cv3,b_AllOpt26A,
                        term25B,
                        single.row = TRUE,
                 custom.model.name=c("Termination"),
@@ -510,7 +440,7 @@ get_icc(b_AllOpt26A)
 ```
 
 ### Ceiling Breach 
-```{r Odds-Term}
+```{r Odds-Breach}
 # comp_or<-odds_ratio(b_CBre29B,output="Breach Likelihood",rename_list=all_coef_list)
   comp_or_walds<-odds_ratio(b_CBre29B,"b_CBre29B",output="Breach Likelihood",walds=TRUE,rename_list=all_coef_list)
 # save(comp.or,file="..//Output//comp.or.rdata")
@@ -546,7 +476,7 @@ get_icc(term25B)
 
 ## Discussion by Study Variable
 ### Service Complexity
-```{r CeilingResults}
+```{r ServComplexity}
 
 complex_coef<-all_coef_list[c(grep("cln_US6sal",names(all_coef_list)),
                               grep("cl_US6_avg_sal_lag1Const",names(all_coef_list)),
@@ -587,7 +517,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),fil
 
 
 ### Office Capacity
-```{r CeilingResults}
+```{r OffCapacity}
 
 
 office_coef<-all_coef_list[sort(unique(c(grep("c_pPBSC",names(all_coef_list)),
@@ -632,7 +562,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),
 
 
 ### Partner History
-```{r CeilingResults}
+```{r PartnerHistory}
 
 
 pair_coef<-all_coef_list[sort(c(grep("c_pairHist",names(all_coef_list)),

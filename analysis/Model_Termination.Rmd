@@ -12,6 +12,9 @@ Modeling Likelihood of Contract Termination, Ceiling Breach, or Exercised Option
 ============================================================================
 
 #Setup
+##Load Data
+First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from FPDS.
+
 ```{r Libraries, echo = FALSE}
 library(csis360)
 library(ggplot2)
@@ -32,19 +35,10 @@ geom.text.size<-12
 
 main.text.size<-1
 note.text.size<-1.40
-
-
-```
-
-
-
-##Load Data
-First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from FPDS.
-
-```{r ReadInData, echo = TRUE}
+memory.limit(64000)
 load(file="..//data//clean//def_sample.Rdata")
-
 ```
+
 
 
 The sample is created by including the entirity of the ARRA and Disaster datasets, as well as 100,000 records each from the OCO datase and another 100,000 from all remaining records.
@@ -660,14 +654,13 @@ glmer_examine(Term_04G)
 
 
 stargazer::stargazer(
-                       Term_03D,Term_04D,Term_04F,Term_04G,Term_04G2,
+                       Term_03D,Term_04D,Term_04F,Term_04G,
                        
                        type="text",
                        digits=2)
 
 #
-summary_residual_compare(Term_03D,Term_04G2, bins=3)
-summary_residual_compare(Term_04G,Term_04G2, bins=3)
+summary_residual_compare(Term_03D,Term_04G, bins=3)
 
 ```
 Salary has increased in significance in the opposite direction as expection while CFTE has lost it. Ceiling/Base has regained signifiance, and other variables had small chains in magnitude. Per discussion in 04F, sticking with base as there seems to be no downside.
@@ -1016,7 +1009,7 @@ summary_continuous_plot(serv_smp1m,"def6_obl_lag1Const",log=TRUE)
 
 #Model
 Term_09C <- glm (data=serv_smp,
-                 b_Term ~ cln_Def6OblConst, family=binomial(link="logit"))
+                 b_Term ~ cln_Def6Obl, family=binomial(link="logit"))
 
 stargazer::stargazer(Term_09A,Term_09B,Term_09C,
                        
@@ -1041,7 +1034,7 @@ Consolidation at lessa nd more granular levels may have different effects. Effic
 
 #Model
 Term_09D <- glm (data=serv_smp,
-                 b_Term ~ cln_Def6HHI+clr_Def6toUS+cln_Def6OblConst
+                 b_Term ~ cln_Def6HHI+clr_Def6toUS+cln_Def6Obl
                  , family=binomial(link="logit"))
 
 glmer_examine(Term_09D)
@@ -1378,8 +1371,8 @@ Combination				+	-	-
 ####15A: Average U.S. Salaries (logged):Contract Pricing
 Cost-based and incentive contract types may do a  better job at handling complex contracts.
 
-```{r}
-summary_continuous_plot(serv_smp1m,"cln_Base_Then_Year","Pricing",metric="cbre")
+```{r Model15A}
+summary_continuous_plot(serv_smp1m,"cln_Base","Pricing",metric="cbre")
 
 #Create the models
 term_salary_pricing_15A_no_interact <- glm(data=serv_smp, b_Term ~ Pricing + cl_US6_avg_sal_lag1,
@@ -1399,7 +1392,7 @@ summary_residual_compare(term_salary_pricing_15A_no_interact, term_salary_pricin
 ```
 Other cost based and other fixed price are in line with expectations. UCA is strongly contrary to expectations.
 ####15B: Cumulative
-```{r}
+```{r Model15B}
 #Create the model
 term_salary_pricing_15B <- glm(data=serv_smp, b_Term ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
@@ -1425,7 +1418,7 @@ Excluded for VIF reasons.
 Performance based contracting should  encourage higher communication interactions and allow for more flexability, potentially increasing the benefits of regular interaction.
 (Options, Breach, Terminations)
 Interact: Actions	cp_OffPerf7:cln_PairCA			+	-	-
-```{r}
+```{r Model16A}
 summary_continuous_plot(serv_smp1m,"cp_OffPerf7","cln_PairCA",metric="cbre")
 
 #Create the models
@@ -1447,7 +1440,7 @@ summary_residual_compare(term_partnership_actions_16A_no_interact, term_partners
 ```
 Expectations are contrary to expectations.
 ####16B: Cumulative
-```{r}
+```{r Model16B}
 
 #Create the model
 term_partnership_actions_16B <- glm(data=serv_smp, b_Term ~ cln_US6sal + 
@@ -1476,7 +1469,7 @@ Performance based contracting is thought to mitigte some of the risks of vendor 
 (option,breach,termination)
 Interact: Market Share Vendor for that Office	cp_OffPerf7: cp_PairObl7			++	--	--
 
-```{r}
+```{r Model17A}
 summary_double_continuous(serv_smp1m,"cp_OffPerf7","cp_PairObl7")
 
 #Define the models
@@ -1495,7 +1488,7 @@ summary_residual_compare(term_partnership_share_17A_no_interact, term_partnershi
 ```
 Significant and contrary to expectation, small reduction in AIC.
 ####17B: Cumulative
-```{r}
+```{r Model17B}
 #Create the model
 term_partnership_share_17B <- glm(data=serv_smp, b_Term ~ cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
@@ -1634,7 +1627,7 @@ Incentive Fee (both FPIF or CBIF)				++	--	--
 Other Cost Based				+	-	-
 Undefinitized Contract Award				+	-	-
 Combination				+	-	-
-```{r}
+```{r Model19A}
 summary_discrete_plot(serv_smp1m,"cn_PairHist7","Pricing")
 
 #Create the models
@@ -1698,28 +1691,6 @@ glmer_examine(term_competition_naics_20A)
 
 ```
 Excluded on VIF grounds.
-
-####20B: Cumulative
-```{r Model20B}
-#Create the model
-n_cbre_competition_naics_20B <- glm(data=serv_breach, ln_CBre_OMB20_GDP18 ~ cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA +
-                   cln_Base + clr_Ceil2Base + cln_Days
-                   Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                   cln_Def6HHI+clr_Def6toUS+
-                   cln_Def3HHI+clr_Def3toUS+
-                   cp_PairObl7+
-                   cln_OffObl7+cln_OffFocus + Comp:cln_Def6HHI)
-
-#Compare the models
-stargazer::stargazer(n_cbre_competition_naics_20B, n_CBre13B, type="text", digits=2)
-
-summary_residual_compare(n_cbre_competition_naics_20B, n_CBre13B, bins=5)
-```
 
 ####21A: Ratio Initial Base to Ceiling Ratio (logged):Initial Contract Ceiling (logged)
 This interaction approximates has a role similar to that of contract ceiling, although due to centering and logging it isn't equivalent. Thus in essence it covers the dollars rather than merely the proportion available for options. More option  space gives more flexibility to the government and may lessen the need for ceiling breaches and terminations. Likewise, this interaction provides something like the dollar size of available  options, so naturally it can be associated with a greater spending.
@@ -1867,30 +1838,33 @@ texreg::htmlreg(list(Term_01A,Term_01B,Term_02A,Term_02B,Term_03A,Term_03B,Term_
 ####25A: 2019-08-14 First run, original multilevel.
 This was created while we were still using ceiling instead of base.
 ```{r Term25A}
-#Create the model
-term25A <- glmer(data=serv_smp, b_Term ~ cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA +
-                   cln_Base + cln_Days+ clr_Ceil2Base+
-                   Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                   cln_Def6HHI+clr_Def6toUS+
-                   cln_Def3HHI+clr_Def3toUS+
-                   cp_PairObl7+
-                   cln_OffObl7+cln_OffFocus +
-                    cn_PairHist7:Pricing+ 
-                   # clr_Ceil2Base:cl_Ceil+
-                   (1 | NAICS3/NAICS6/ServArea)+  
-                   (1 | Agency/Office) +
-                   (1 | Place)+ 
-                   (1 | StartFY),
-                 family=binomial(link="logit"),
-               verbose=TRUE)
-glmer_examine(term25A,display = TRUE)
-save(term25A,file="..\\output\\term25A.rdata")
+if(file.exists("..\\output\\term25A.rdata")) load(file="..\\output\\term25A.rdata")
 
+if(!exists("term25A")){
+  #Create the model
+  term25A <- glmer(data=serv_smp, b_Term ~ cln_US6sal + 
+                     cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                     cn_PairHist7+cln_PairCA +
+                     cln_Base + cln_Days+ clr_Ceil2Base+
+                     Comp+
+                     Veh+
+                     Pricing+
+                     Crisis+
+                     cln_Def6HHI+clr_Def6toUS+
+                     cln_Def3HHI+clr_Def3toUS+
+                     cp_PairObl7+
+                     cln_OffObl7+cln_OffFocus +
+                     cn_PairHist7:Pricing+ 
+                     # clr_Ceil2Base:cl_Ceil+
+                     (1 | NAICS3/NAICS6/ServArea)+  
+                     (1 | Agency/Office) +
+                     (1 | Place)+ 
+                     (1 | StartFY),
+                   family=binomial(link="logit"),
+                   verbose=TRUE)
+  glmer_examine(term25A,display = TRUE)
+  save(term25A,file="..\\output\\term25A.rdata")
+}
 #Compare the models
 stargazer::stargazer(term_base2ceil_ceiling_21B, term25A, type="text", digits=2)
 
@@ -1900,28 +1874,34 @@ summary_residual_compare( term_base2ceil_ceiling_21B, term25A,bins=100)
 ####25B: 2019-08-14 Switch to base and 1m sample.
 
 ```{r Term25B}
-#Create the model
-term25B <- glmer(data=serv_smp1m, b_Term ~ cln_US6sal + 
-                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
-                 cn_PairHist7+cln_PairCA +
-                   cln_Base + cln_Days+ clr_Ceil2Base+
-                   Comp+
-                   Veh+
-                   Pricing+
-                   Crisis+
-                   cln_Def6HHI+clr_Def6toUS+
-                   cln_Def3HHI+clr_Def3toUS+
-                   cp_PairObl7+
-                   cln_OffObl7+cln_OffFocus +
-                    cn_PairHist7:Pricing+ 
-                   (1 | NAICS3/NAICS6/ServArea)+  
-                   (1 | Agency/Office) +
-                   (1 | Place)+ 
-                   (1 | StartFY),
-                 family=binomial(link="logit"),
-               verbose=TRUE)
-glmer_examine(term25B,display = TRUE)
-save(term25B,file="..\\output\\term25B.rdata")
+
+if(file.exists("..\\output\\term25B.rdata")) load(file="..\\output\\term25B.rdata")
+
+
+if(!exists("term25B")){
+  #Create the model
+  term25B <- glmer(data=serv_smp1m, b_Term ~ cln_US6sal + 
+                     cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                     cn_PairHist7+cln_PairCA +
+                     cln_Base + cln_Days+ clr_Ceil2Base+
+                     Comp+
+                     Veh+
+                     Pricing+
+                     Crisis+
+                     cln_Def6HHI+clr_Def6toUS+
+                     cln_Def3HHI+clr_Def3toUS+
+                     cp_PairObl7+
+                     cln_OffObl7+cln_OffFocus +
+                     cn_PairHist7:Pricing+ 
+                     (1 | NAICS3/NAICS6/ServArea)+  
+                     (1 | Agency/Office) +
+                     (1 | Place)+ 
+                     (1 | StartFY),
+                   family=binomial(link="logit"),
+                   verbose=TRUE)
+  glmer_examine(term25B,display = TRUE)
+  save(term25B,file="..\\output\\term25B.rdata")
+}
 
 #Compare the models
 stargazer::stargazer(term_base2ceil_ceiling_21B, term25B, type="text", digits=2)
