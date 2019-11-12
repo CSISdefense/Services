@@ -333,7 +333,6 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt26A),file="..//Output//options.html
                 custom.note="%stars. Numerical inputs are rescaled.",
                 caption="Table 6: Exercised Options",
                 caption.above=TRUE)
-?
 
 
 ```
