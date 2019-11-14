@@ -525,7 +525,7 @@ summary(def_serv$pMarket)
 
 ### Economic Sector
 
-#### NAICS6 2
+#### NAICS 2
 ```{r NAICS2_Summary, fig.width=7.5 , fig.height=3}
 
 # Add NAICS6 title
@@ -567,40 +567,8 @@ ggsave(NAICS2digit,file="..\\Output\\NAICS2digitCount.eps",width=10,height=6,dpi
 ```
 
 
-```{r NAICS2freqPercent}
-#Prepare data for plot
-NAICS2_Freq <- as.data.frame(table(def_serv$NAICS2))
-NAICS2_Freq$Percent_Freq <- round(NAICS2_Freq$Freq/sum(NAICS2_Freq$Freq),4)*100
-colnames(NAICS2_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 
-#Get detail description for NAICS2 code
-NAICS2_Freq<-csis360::read_and_join_experiment(NAICS2_Freq,
-                            lookup_file = "Lookup_PrincipalNAICScode.csv",
-                            path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
-                            dir="economic/",
-                            by=c("NAICS_Code"="principalnaicscode"),
-                            add_var="principalnaicscodeText"
-)
-
-
-NAICS2_Freq <- NAICS2_Freq[order(-NAICS2_Freq$Percent_Freq),]
-NAICS2_Freq$principalnaicscodeText <- factor(NAICS2_Freq$principalnaicscodeText, levels = rev(NAICS2_Freq$principalnaicscodeText))
-
-Frequency_Plot2 <- ggplot(data = NAICS2_Freq,
-                          aes(x = NAICS2_Freq$principalnaicscodeText, 
-                              y = NAICS2_Freq$Percent_Freq)) +
-                   geom_bar(stat = "identity", position = "dodge", width = 0.8) + 
-                   coord_flip() +
-                   xlab("") + 
-                   ylab("Percent of Frequency") + 
-                   theme_grey() + 
-                   scale_fill_grey() + 
-                   ggtitle("Percent of Frequency for NAICS2") +
-                   theme(text = element_text(size = 10))
-Frequency_Plot2
-```
-
-```{r grouped percent frequency/obligation barplot for all NAICS2, 21 in total}
+```{r NAICS2Percent}
 #Prepare data for plot
 NAICS2_Freq <- as.data.frame(table(def_serv$NAICS2))
 NAICS2_Freq$Percent_Freq <- round(NAICS2_Freq$Freq/sum(NAICS2_Freq$Freq),4)*100
@@ -658,7 +626,7 @@ NAICS2_barplot
 ```
 
 
-#### NAICS6 3
+#### NAICS 3
 
 ```{r NAICS3_Summary, fig.width=7.5 , fig.height=3}
 NAICS_summary<-def_serv %>% group_by(NAICS3,StartCY,def3_HHI_lag1,def3_obl_lag1,def3_ratio_lag1,US3_avg_sal_lag1) %>%
@@ -836,7 +804,7 @@ part_grouped_barplot("NAICS3", NAICS3_Freq_TOP) + ggtitle("Top 15 of the most fr
 
 
 
-#### NAICS6 6
+#### NAICS 6
 * NAICS6 is a factor reporting the top North American Industrial Classification Code of each contract. 
 `r summary(def_serv$NAICS6);
 NA_stats(def_serv,"NAICS6")`
