@@ -629,7 +629,13 @@ NAICS2_barplot
 #### NAICS 3
 
 ```{r NAICS3_Summary, fig.width=7.5 , fig.height=3}
-NAICS_summary<-def_serv %>% group_by(NAICS3,StartCY,def3_HHI_lag1,def3_obl_lag1,def3_ratio_lag1,US3_avg_sal_lag1) %>%
+
+
+NAICS_summary<-def_serv %>% group_by(NAICS3,
+                                     StartCY,
+                                     def3_HHI_lag1,
+                                     def3_obl_lag1,
+                                     def3_ratio_lag1,US3_avg_sal_lag1) %>%
   dplyr::summarise(annual_action_obligation=sum(Action_Obligation_OMB20_GDP18),
                    annual_count=length(StartCY)) 
 
