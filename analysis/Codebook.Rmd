@@ -267,7 +267,7 @@ freq_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=TRUE)
 
 #### Base:Ceiling Ratio
 
-```{r statistic summary table for continuous variables: cl_Ceil, capped_cln_Days}
+```{r ceilingratio}
 #The original variables for cp_OffPerf7 is the ratio form of UnmodifiedCeiling_OMB20_GDP18 / UnmodifiedBase_OMB20_GDP18
 
 freq_continuous_plot(def_serv,"UnmodifiedCeiling_OMB20_GDP18",bins=50, 
