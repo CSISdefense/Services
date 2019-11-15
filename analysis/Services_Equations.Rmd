@@ -58,7 +58,7 @@ $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS
 
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 
-$β_{`r (b<-1)`}Intercept~+~β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+$
+$β_{`r (b<-1)`}Intercept~+~β_{`r (b<-b+1)`}Log(Det. Ind. Salary)_{i}~+~β_{`r (b<-b+1)`}Log(Serv. Code Invoice Rate)_{i}~+~β_{`r (b<-b+1)`}Office Perf.-Based %_{i}~+$
 
 $β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+$
 
@@ -100,7 +100,7 @@ $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS
 
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 
-$β_{`r (b<-1)`}Intercept~+~β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+$
+$β_{`r (b<-1)`}Intercept~+~β_{`r (b<-b+1)`}Log(Det. Ind. Salary)_{i}~+~β_{`r (b<-b+1)`}Log(Serv. Code Invoice Rate)_{i}~+~β_{`r (b<-b+1)`}Office Perf.-Based %_{i}~+$
 
 $β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+~β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+$
 
@@ -156,7 +156,7 @@ $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS
 
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 
-$β_{`r (b<-1)`}Intercept~+~β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+$
+$β_{`r (b<-1)`}Intercept~+~β_{`r (b<-b+1)`}Log(Det. Ind. Salary)_{i}~+~β_{`r (b<-b+1)`}Log(Serv. Code Invoice Rate)_{i}~+~β_{`r (b<-b+1)`}Office Perf.-Based %_{i}~+$
 
 $β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+~β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+$
 
@@ -188,7 +188,7 @@ $Estimated~Log(y_i)~=~α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{
 
 $α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+~α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+~β_{`r (b<-1)`}Intercept~+$
 
-$β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+~β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+$
+$β_{`r (b<-b+1)`}Log(Det. Ind. Salary)_{i}~+~β_{`r (b<-b+1)`}Log(Serv. Code Invoice Rate)_{i}~+~β_{`r (b<-b+1)`}Office Perf.-Based %_{i}~+~β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+$
 
 $β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+~β_{`r (b<-b+1)`}clr\_Ceil2Base_{i}~+$
 
@@ -202,7 +202,7 @@ $(~β_{`r (b<-b+1)`}ARRA_{i}~+~β_{`r (b<-b+1)`}Disaster_{i}~+~β_{`r (b<-b+1)`}
 
 $β_{`r (b<-b+1)`}clr\_Def6toUS_{i}~+~β_{`r (b<-b+1)`}cln\_OffObl7_{i}~+~β_{`r (b<-b+1)`}cln\_OffFocus_{i}~+~β_{`r (b<-b+1)`}cp\_PairObl7_{i}~+$
 
-$β_{`r (b<-b+1)`}cp\_OffPerf7_{i}·cln\_PairCA_{i}~+~ϵ_{i}~+~ϵ_{i}, for~i=  1~to~`r sample_n(n_CBre25A)`$
+$β_{`r (b<-b+1)`}Office Perf.-Based %_{i}·cln\_PairCA_{i}~+~ϵ_{i}~+~ϵ_{i}, for~i=  1~to~`r sample_n(n_CBre25A)`$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(n_CBre25A,"NAICS3")`;$$
 $$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(n_CBre25A,"NAICS6:NAICS3")`;$$
@@ -227,7 +227,7 @@ $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS
 
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 
-$β_{`r (b<-1)`}Intercept_{i}~+~β_{`r (b<-b+1)`}cln\_US6sal_{i}~+~β_{`r (b<-b+1)`}cln\_PSCrate_{i}~+~β_{`r (b<-b+1)`}cp\_OffPerf7_{i}~+$
+$β_{`r (b<-1)`}Intercept_{i}~+~β_{`r (b<-b+1)`}Log(Det. Ind. Salary)_{i}~+~β_{`r (b<-b+1)`}Log(Serv. Code Invoice Rate)_{i}~+~β_{`r (b<-b+1)`}Office Perf.-Based %_{i}~+$
 
 $β_{`r (b<-b+1)`}cp\_OffPSC7_{i}~+~β_{`r (b<-b+1)`}cn\_PairHist7_{i}~+~β_{`r (b<-b+1)`}cln\_PairCA_{i}~+~β_{`r (b<-b+1)`}cln\_Base_{i}~+$
 
