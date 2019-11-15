@@ -238,9 +238,6 @@ Comp is derived from b_Comp to determine competition and UnmodifiedNumberOfOffer
 
 ```{r Competition}  
 
-
-grouped_barplot("b_Comp",def_serv)
-
 freq_continuous_plot(def_serv %>% dplyr::filter(b_Comp==1), #Only Competed
                      "UnmodifiedNumberOfOffersReceived", bins=100,log=TRUE)
 
@@ -306,15 +303,10 @@ statsummary_discrete("Veh",def_serv)
 ### Pricing
 Pricing is constructed using the two variables: PricingFee which tracks contract type and UCA, which tracks letter and undefinized contract actions.
 
-* PricingFee i is a numeric variable based on contract pricing. It has a value of 0 for cost-based, 0.5 or "combination or other", 1 for any fixed price (excluding fixed-price level of effort which is classified as cost-based). (`r summary(def_serv$n_Fixed);
+* Pricing isa categorical  variable based on contract pricing. It has six possible values, Firmed-Fixed Price, Other Fixed-Price, Incentive (Including Cost Sharing, Fixed-Price and Cost Plus), Combination or Other, Other Cost Based, Time & Materials, Labor Hours, Fixed-Price: Level of effort, and UCA.
 
-summary(def_serv$PricingFee);
-
-`)
-* b_UCA is a binary variable with a value of 1 for contracts/task orders that begin as letter contracts or undefinitized contract awards (UCA) and a value of 0 otherwise. `r summary(def_serv$b_UCA);
-sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_UCA==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
-length(def_serv$b_UCA[def_serv$b_UCA==1 & !is.na(def_serv$b_UCA)])/nrow(def_serv)
-NA_stats(def_serv,"b_UCA")`
+`r summary(def_serv$Pricing);
+NA_stats(def_serv,"Pricing")`
 
 
 ```{r PricingFeeGraphs}
@@ -351,17 +343,24 @@ NA_stats(def_serv,"Agency")`
 ```{r frequancy bar plot for agency}
 #Percent grouped bar plot for variable Agency
 #Generate new data frame containing frequency information
-Agency_Freq <- as.data.frame(table(def_serv$Agency))
-Agency_Freq$Percent_Freq <- round(Agency_Freq$Freq/sum(Agency_Freq$Freq),4)*100
-colnames(Agency_Freq) <- c("Agency","Count_Freq","Percent_Freq")
+Agency_Summary <- def_serv %>% group_by(Agency) %>%
+  dplyr::summarise(Count_Freq=length(Agency),
+                   Action_Obligation_OMB20_GDP18=sum(Action_Obligation_OMB20_GDP18)) %>%
+  dplyr::mutate(Percent_Freq=Count_Freq/sum(Count_Freq),
+                Obl_Freq=Action_Obligation_OMB20_GDP18/sum(Action_Obligation_OMB20_GDP18))
 
-Agency_Freq <- Agency_Freq[order(-Agency_Freq$Count_Freq),]
-Agency_Freq <- Agency_Freq[1:10,]
 
 #Add detail description to Agency code
-Agency_Lookup <- read.csv("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/Agency_AgencyID.csv")
-Agency_Lookup <- Agency_Lookup[,1:2]
-colnames(Agency_Lookup) <- c("Agency","Agency_Description")
+def_serv<-read_and_join_experiment(def_serv,
+                            lookup_file = "Agency_AgencyID.csv",
+                            path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                            dir="",
+                            by=c("Agency"="AgencyID"),
+                            add_var="AgencyIDtext",
+                            guess_max=1395
+)
+
+
 
 Agency_Freq <- left_join(Agency_Freq, Agency_Lookup, by = "Agency")
 Agency_Freq$Agency <- factor(Agency_Freq$Agency, levels = rev(Agency_Freq$Agency))
@@ -392,43 +391,8 @@ Agency_Freq[,c(3,5)] <- lapply(Agency_Freq[,c(3,5)], function(x) as.numeric(x))
 Agency_Freq <- melt(Agency_Freq, id = c("Agency","Count_Freq","Percent_Freq", "Agency_Description"))
 
 
-
-
-#build the frequency bar plot
-(
-Frequency_Plot3 <- ggplot(data = Agency_Freq, aes(x=Agency_Description,        y=Percent_Freq)) +
-                   geom_bar(stat = "identity", position = "dodge", width = 0.8) +
-                   coord_flip() +
-                   xlab("Agency") +
-                   ylab("Percent of Frequency") +
-                   theme_grey() +
-                   scale_fill_grey() +
-                   ggtitle("Top 10 of the most frequently appeared Agency") +
-                   theme(text = element_text(size = 10))
-)
-
-
-#Build grouped bar plot
-Agency_barplot <- ggplot(data = Agency_Freq, 
-                         aes(x = Agency_Description, 
-                             y=value, 
-                             fill=factor(variable))) + 
-                  geom_bar(stat = "identity", 
-                           position= "dodge", 
-                           width = 0.8) + 
-                  xlab("") + 
-                  ylab("") + 
-                  coord_flip() + 
-                  theme_grey() +
-                  scale_fill_grey(labels = c("% of records", "% of obligation"),
-                                  guide = guide_legend(reverse = TRUE)) +
-                  theme(legend.title = element_blank(),
-                        legend.position = "bottom",
-                        legend.margin = margin(t=-0.8, r=0, b=0.5, l=0, unit = "cm"),
-                        legend.text = element_text(margin = margin(r=0.5, unit = "cm")),
-                        plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm")) +
-                 ggtitle("Top 5 of the most frequently appeared Agency") 
-Agency_barplot                  
+            
+grouped_barplot("AgencyIDtext", def_serv)
 
 ```
 
