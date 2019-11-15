@@ -635,7 +635,8 @@ NAICS_summary<-def_serv %>% group_by(NAICS3,
                                      StartCY,
                                      def3_HHI_lag1,
                                      def3_obl_lag1,
-                                     def3_ratio_lag1,US3_avg_sal_lag1) %>%
+                                     def3_ratio_lag1,
+                                     US3_avg_sal_lag1) %>%
   dplyr::summarise(annual_action_obligation=sum(Action_Obligation_OMB20_GDP18),
                    annual_count=length(StartCY)) 
 
@@ -665,17 +666,14 @@ NAICS_summary<-read_and_join_experiment(NAICS_summary,
 # https://stackoverflow.com/questions/37174316/how-to-fit-long-text-into-ggplot2-facet-titles
 
 
-centered_log_description(def_serv$l_def3_obl_lag1,"obligations")
+centered_log_description(def_serv$def3_obl_lag1,"obligations")
 centered_log_description(def_serv$l_def6_obl_lag1,"obligations")
-NA_stats(def_serv,"l_def3_obl_lag1")
+NA_stats(def_serv,"cl_def3_obl_lag1")
+NA_stats(def_serv,"cln_Def6Obl")
 
-NA_stats(def_serv,"l_def6_obl_lag1")
-def_serv$l_def6_ratio_lag1[is.nan(def_serv$l_def6_ratio_lag1) | is.infinite(def_serv$l_def6_ratio_lag1)]<-NA
-def_serv$clr_Def6toUS[is.nan(def_serv$clr_Def6toUS) | is.infinite(def_serv$clr_Def6toUS)]<-NA
+centered_log_description(def_serv$def3_ratio_lag1,"obligations")
 
-centered_log_description(def_serv$l_def3_ratio_lag1,"obligations")
-
-centered_log_description(def_serv$l_def6_ratio_lag1,"obligations")
+centered_log_description(def_serv$def6_ratio_lag1,"obligations")
 NA_stats(def_serv,"clr_Def3toUS")
 NA_stats(def_serv,"clr_Def6toUS")
 
@@ -786,7 +784,17 @@ Frequency[["Percent_Obli"]] <- Percent_Obli*100
 NAICS3_Freq <- Frequency
 
 #Add detail description to unique NAICS3 code
-NAICS3_Freq <- left_join(NAICS3_Freq, NAICS_Lookup, by = c("NAICS3"="NAICS_Code"))
+NAICS3_Freq<-read_and_join_experiment(NAICS3_Freq,
+                                        lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                        path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                        dir="economic/",
+                                        by=c("NAICS3"="principalnaicscode"),
+                                        skip_check_var=c("principalnaicscodeText",
+                                                         "NAICS_shorthand",
+                                                         "principalNAICS4DigitCode")
+)
+
+
 colnames(NAICS3_Freq)[colnames(NAICS3_Freq)=="principalnaicscodeText"]<-"Description"
 NAICS3_Freq$Description <- as.character(NAICS3_Freq$Description)
 NAICS3_Freq$Description <- paste(NAICS3_Freq$NAICS6, " - ", NAICS3_Freq$Description)
@@ -946,7 +954,17 @@ NAICS_Freq_TOP20$Percent_Freq <- round(NAICS_Freq_TOP20$Freq/sum(NAICS_Freq$Freq
 colnames(NAICS_Freq_TOP20) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 
 #Get detail description for each NAICS6 code
-NAICS_Freq_TOP20 <- left_join(NAICS_Freq_TOP20, NAICS_Lookup, by = "NAICS_Code")
+NAICS_Freq_TOP20<-read_and_join_experiment(NAICS_Freq_TOP20,
+                                                 lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                                 path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                                 dir="economic/",
+                                                 by=c("NAICS_Code"="principalnaicscode"),
+                                                 skip_check_var=c("principalnaicscodeText",
+                                                                  "NAICS_shorthand",
+                                                                  "principalNAICS4DigitCode")
+
+)
+
 NAICS_Freq_TOP20 <- NAICS_Freq_TOP20[order(-NAICS_Freq_TOP20$Percent_Freq),]
 NAICS_Freq_TOP20$principalnaicscodeText <- factor(NAICS_Freq_TOP20$principalnaicscodeText, levels = rev(NAICS_Freq_TOP20$principalnaicscodeText))
 
@@ -984,9 +1002,20 @@ colnames(NAICS_Freq)[colnames(NAICS_Freq)=="NAICS6"] <- "NAICS_Code"
 NAICS_Freq$NAICS_Code<-factor(NAICS_Freq$NAICS_Code)
 
 #Get detail description for each NAICS6 code
-NAICS_Freq <- left_join(NAICS_Freq, NAICS_Lookup, by = "NAICS_Code")
+NAICS_Freq<-read_and_join_experiment(NAICS_Freq,
+                                                 lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                                 path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                                 dir="economic/",
+                                                 by=c("NAICS_Code"="principalnaicscode"),
+                                                 skip_check_var=c("principalnaicscodeText",
+                                                                  "NAICS_shorthand",
+                                                                  "principalNAICS4DigitCode")
+
+)
+
 NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Percent_Freq),]
-NAICS_Freq$principalnaicscodeText <- factor(NAICS_Freq$principalnaicscodeText, levels = rev(NAICS_Freq$principalnaicscodeText))
+NAICS_Freq$principalnaicscodeText <- factor(NAICS_Freq$principalnaicscodeText,
+                                                   levels = rev(unique(NAICS_Freq$principalnaicscodeText)))
 
 
 

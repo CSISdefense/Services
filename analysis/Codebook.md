@@ -8,6 +8,7 @@ date: "Thursday, July 11, 2017"
 ---
 
 # Setup
+First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
 
 ```
 ## Warning: replacing previous import 'Hmisc::summarize' by 'dplyr::summarize'
@@ -80,37 +81,7 @@ date: "Thursday, July 11, 2017"
 ```
 
 ```
-## Working directory is C:/Users/gsand/Repositories/Services/analysis
-```
-
-```
-## Loading required package: coda
-```
-
-```
-## 
-## Attaching package: 'coda'
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     traceplot
-```
-
-```
-## Loading required package: boot
-```
-
-```
-## 
-## Attaching package: 'boot'
-```
-
-```
-## The following object is masked from 'package:arm':
-## 
-##     logit
+## Working directory is F:/Users/Greg/Repositories/Services/analysis
 ```
 
 ```
@@ -146,26 +117,37 @@ date: "Thursday, July 11, 2017"
 ```
 
 ```
-## -- Attaching packages --------------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
+## -- Attaching packages ---------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
 ```
 
 ```
-## v tibble  2.1.1     v purrr   0.3.2
-## v tidyr   0.8.3     v stringr 1.4.0
+## v tibble  2.1.3     v purrr   0.3.3
+## v tidyr   1.0.0     v stringr 1.4.0
 ## v readr   1.3.1     v forcats 0.4.0
 ```
 
 ```
-## -- Conflicts ------------------------------------------------------------------------------------------------------------------------ tidyverse_conflicts() --
+## -- Conflicts ------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
 ## x tidyr::expand()  masks Matrix::expand()
 ## x tidyr::extract() masks texreg::extract()
 ## x dplyr::filter()  masks stats::filter()
 ## x dplyr::lag()     masks stats::lag()
+## x tidyr::pack()    masks Matrix::pack()
 ## x MASS::select()   masks dplyr::select()
+## x tidyr::unpack()  masks Matrix::unpack()
 ```
 
 ```
 ## Loading required package: carData
+```
+
+```
+## Registered S3 methods overwritten by 'car':
+##   method                          from
+##   influence.merMod                lme4
+##   cooks.distance.influence.merMod lme4
+##   dfbeta.influence.merMod         lme4
+##   dfbetas.influence.merMod        lme4
 ```
 
 ```
@@ -177,12 +159,6 @@ date: "Thursday, July 11, 2017"
 ## The following object is masked from 'package:purrr':
 ## 
 ##     some
-```
-
-```
-## The following object is masked from 'package:boot':
-## 
-##     logit
 ```
 
 ```
@@ -224,69 +200,625 @@ date: "Thursday, July 11, 2017"
 Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start..
 
 
-
-## Load Data
-First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from   FPDS.
-
-
+## Citations
 
 ```r
-load("../data/clean/transformed_def_serv.Rdata")
+citation()
+```
+
+```
+## 
+## To cite R in publications use:
+## 
+##   R Core Team (2019). R: A language and environment for
+##   statistical computing. R Foundation for Statistical Computing,
+##   Vienna, Austria. URL https://www.R-project.org/.
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {R: A Language and Environment for Statistical Computing},
+##     author = {{R Core Team}},
+##     organization = {R Foundation for Statistical Computing},
+##     address = {Vienna, Austria},
+##     year = {2019},
+##     url = {https://www.R-project.org/},
+##   }
+## 
+## We have invested a lot of time and effort in creating R, please
+## cite it when using it for data analysis. See also
+## 'citation("pkgname")' for citing R packages.
+```
+
+```r
+citation("ggplot2")
+```
+
+```
+## 
+## To cite ggplot2 in publications, please use:
+## 
+##   H. Wickham. ggplot2: Elegant Graphics for Data Analysis.
+##   Springer-Verlag New York, 2016.
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Book{,
+##     author = {Hadley Wickham},
+##     title = {ggplot2: Elegant Graphics for Data Analysis},
+##     publisher = {Springer-Verlag New York},
+##     year = {2016},
+##     isbn = {978-3-319-24277-4},
+##     url = {https://ggplot2.tidyverse.org},
+##   }
+```
+
+```r
+citation("dplyr")
+```
+
+```
+## 
+## To cite package 'dplyr' in publications use:
+## 
+##   Hadley Wickham, Romain François, Lionel Henry and Kirill Müller
+##   (2019). dplyr: A Grammar of Data Manipulation. R package version
+##   0.8.3. https://CRAN.R-project.org/package=dplyr
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {dplyr: A Grammar of Data Manipulation},
+##     author = {Hadley Wickham and Romain François and Lionel Henry and Kirill Müller},
+##     year = {2019},
+##     note = {R package version 0.8.3},
+##     url = {https://CRAN.R-project.org/package=dplyr},
+##   }
+```
+
+```r
+citation("arm")
+```
+
+```
+## 
+## To cite package 'arm' in publications use:
+## 
+##   Andrew Gelman and Yu-Sung Su (2018). arm: Data Analysis Using
+##   Regression and Multilevel/Hierarchical Models. R package version
+##   1.10-1. https://CRAN.R-project.org/package=arm
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {arm: Data Analysis Using Regression and Multilevel/Hierarchical
+## Models},
+##     author = {Andrew Gelman and Yu-Sung Su},
+##     year = {2018},
+##     note = {R package version 1.10-1},
+##     url = {https://CRAN.R-project.org/package=arm},
+##   }
+```
+
+```r
+citation("knitr")
+```
+
+```
+## 
+## To cite the 'knitr' package in publications use:
+## 
+##   Yihui Xie (2019). knitr: A General-Purpose Package for Dynamic
+##   Report Generation in R. R package version 1.25.
+## 
+##   Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd
+##   edition. Chapman and Hall/CRC. ISBN 978-1498716963
+## 
+##   Yihui Xie (2014) knitr: A Comprehensive Tool for Reproducible
+##   Research in R. In Victoria Stodden, Friedrich Leisch and Roger
+##   D. Peng, editors, Implementing Reproducible Computational
+##   Research. Chapman and Hall/CRC. ISBN 978-1466561595
+## 
+## To see these entries in BibTeX format, use 'print(<citation>,
+## bibtex=TRUE)', 'toBibtex(.)', or set
+## 'options(citation.bibtex.max=999)'.
+```
+
+```r
+citation("foreign")
+```
+
+```
+## 
+## To cite package 'foreign' in publications use:
+## 
+##   R Core Team (2018). foreign: Read Data Stored by 'Minitab', 'S',
+##   'SAS', 'SPSS', 'Stata', 'Systat', 'Weka', 'dBase', .... R
+##   package version 0.8-71.
+##   https://CRAN.R-project.org/package=foreign
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {foreign: Read Data Stored by 'Minitab', 'S', 'SAS', 'SPSS', 'Stata',
+## 'Systat', 'Weka', 'dBase', ...},
+##     author = {{R Core Team}},
+##     year = {2018},
+##     note = {R package version 0.8-71},
+##     url = {https://CRAN.R-project.org/package=foreign},
+##   }
+```
+
+```r
+citation("stargazer")
+```
+
+```
+## 
+## Please cite stargazer in publications as:
+## 
+##   Hlavac, Marek (2018). stargazer: Well-Formatted Regression and
+##   Summary Statistics Tables. R package version 5.2.1.
+##   https://CRAN.R-project.org/package=stargazer
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {stargazer: Well-Formatted Regression and Summary Statistics Tables},
+##     author = {Marek Hlavac},
+##     year = {2018},
+##     note = {R package version 5.2.2},
+##     organization = {Central European Labour Studies Institute (CELSI)},
+##     address = {Bratislava, Slovakia},
+##     url = {https://CRAN.R-project.org/package=stargazer},
+##   }
+```
+
+```r
+citation("texreg")
+```
+
+```
+## 
+## To cite texreg in publications use:
+## 
+##   Philip Leifeld (2013). texreg: Conversion of Statistical Model
+##   Output in R to LaTeX and HTML Tables. Journal of Statistical
+##   Software, 55(8), 1-24. URL http://www.jstatsoft.org/v55/i08/.
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Article{,
+##     title = {{texreg}: Conversion of Statistical Model Output in {R} to {\LaTeX} and {HTML} Tables},
+##     author = {Philip Leifeld},
+##     journal = {Journal of Statistical Software},
+##     year = {2013},
+##     volume = {55},
+##     number = {8},
+##     pages = {1--24},
+##     url = {http://www.jstatsoft.org/v55/i08/},
+##   }
+```
+
+```r
+citation("reshape2")
+```
+
+```
+## 
+## To cite reshape2 in publications use:
+## 
+##   Hadley Wickham (2007). Reshaping Data with the reshape Package.
+##   Journal of Statistical Software, 21(12), 1-20. URL
+##   http://www.jstatsoft.org/v21/i12/.
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Article{,
+##     title = {Reshaping Data with the {reshape} Package},
+##     author = {Hadley Wickham},
+##     journal = {Journal of Statistical Software},
+##     year = {2007},
+##     volume = {21},
+##     number = {12},
+##     pages = {1--20},
+##     url = {http://www.jstatsoft.org/v21/i12/},
+##   }
+```
+
+```r
+citation("tidyverse")
+```
+
+```
+## 
+## To cite package 'tidyverse' in publications use:
+## 
+##   Hadley Wickham (2017). tidyverse: Easily Install and Load the
+##   'Tidyverse'. R package version 1.2.1.
+##   https://CRAN.R-project.org/package=tidyverse
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {tidyverse: Easily Install and Load the 'Tidyverse'},
+##     author = {Hadley Wickham},
+##     year = {2017},
+##     note = {R package version 1.2.1},
+##     url = {https://CRAN.R-project.org/package=tidyverse},
+##   }
+```
+
+```r
+citation("Hmisc")
+```
+
+```
+## 
+## To cite package 'Hmisc' in publications use:
+## 
+##   Frank E Harrell Jr, with contributions from Charles Dupont and
+##   many others. (2019). Hmisc: Harrell Miscellaneous. R package
+##   version 4.3-0. https://CRAN.R-project.org/package=Hmisc
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {Hmisc: Harrell Miscellaneous},
+##     author = {Frank E {Harrell Jr} and with contributions from Charles Dupont and many others.},
+##     year = {2019},
+##     note = {R package version 4.3-0},
+##     url = {https://CRAN.R-project.org/package=Hmisc},
+##   }
+## 
+## ATTENTION: This citation information has been auto-generated from
+## the package DESCRIPTION file and may need manual editing, see
+## 'help("citation")'.
+```
+
+```r
+citation("lme4")
+```
+
+```
+## 
+## To cite lme4 in publications use:
+## 
+##   Douglas Bates, Martin Maechler, Ben Bolker, Steve Walker (2015).
+##   Fitting Linear Mixed-Effects Models Using lme4. Journal of
+##   Statistical Software, 67(1), 1-48. doi:10.18637/jss.v067.i01.
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Article{,
+##     title = {Fitting Linear Mixed-Effects Models Using {lme4}},
+##     author = {Douglas Bates and Martin M{\"a}chler and Ben Bolker and Steve Walker},
+##     journal = {Journal of Statistical Software},
+##     year = {2015},
+##     volume = {67},
+##     number = {1},
+##     pages = {1--48},
+##     doi = {10.18637/jss.v067.i01},
+##   }
+```
+
+```r
+citation("optimx")
+```
+
+```
+## 
+## To cite optimx in publications use:
+## 
+##   John C. Nash, Ravi Varadhan (2011). Unifying Optimization
+##   Algorithms to Aid Software System Users: optimx for R. Journal
+##   of Statistical Software, 43(9), 1-14. URL
+##   http://www.jstatsoft.org/v43/i09/.
+## 
+##   John C. Nash (2014). On Best Practice Optimization Methods in R.
+##   Journal of Statistical Software, 60(2), 1-14. URL
+##   http://www.jstatsoft.org/v60/i02/.
+## 
+## To see these entries in BibTeX format, use 'print(<citation>,
+## bibtex=TRUE)', 'toBibtex(.)', or set
+## 'options(citation.bibtex.max=999)'.
+```
+
+```r
+citation("magrittr")
+```
+
+```
+## 
+## To cite package 'magrittr' in publications use:
+## 
+##   Stefan Milton Bache and Hadley Wickham (2014). magrittr: A
+##   Forward-Pipe Operator for R. R package version 1.5.
+##   https://CRAN.R-project.org/package=magrittr
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {magrittr: A Forward-Pipe Operator for R},
+##     author = {Stefan Milton Bache and Hadley Wickham},
+##     year = {2014},
+##     note = {R package version 1.5},
+##     url = {https://CRAN.R-project.org/package=magrittr},
+##   }
+## 
+## ATTENTION: This citation information has been auto-generated from
+## the package DESCRIPTION file and may need manual editing, see
+## 'help("citation")'.
+```
+
+```r
+citation("lazyeval")
+```
+
+```
+## 
+## To cite package 'lazyeval' in publications use:
+## 
+##   Hadley Wickham (2019). lazyeval: Lazy (Non-Standard) Evaluation.
+##   R package version 0.2.2.
+##   https://CRAN.R-project.org/package=lazyeval
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {lazyeval: Lazy (Non-Standard) Evaluation},
+##     author = {Hadley Wickham},
+##     year = {2019},
+##     note = {R package version 0.2.2},
+##     url = {https://CRAN.R-project.org/package=lazyeval},
+##   }
+```
+
+```r
+citation("forcats")
+```
+
+```
+## 
+## To cite package 'forcats' in publications use:
+## 
+##   Hadley Wickham (2019). forcats: Tools for Working with
+##   Categorical Variables (Factors). R package version 0.4.0.
+##   https://CRAN.R-project.org/package=forcats
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {forcats: Tools for Working with Categorical Variables (Factors)},
+##     author = {Hadley Wickham},
+##     year = {2019},
+##     note = {R package version 0.4.0},
+##     url = {https://CRAN.R-project.org/package=forcats},
+##   }
+```
+
+```r
+citation("readr")
+```
+
+```
+## 
+## To cite package 'readr' in publications use:
+## 
+##   Hadley Wickham, Jim Hester and Romain Francois (2018). readr:
+##   Read Rectangular Text Data. R package version 1.3.1.
+##   https://CRAN.R-project.org/package=readr
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {readr: Read Rectangular Text Data},
+##     author = {Hadley Wickham and Jim Hester and Romain Francois},
+##     year = {2018},
+##     note = {R package version 1.3.1},
+##     url = {https://CRAN.R-project.org/package=readr},
+##   }
+```
+
+```r
+citation("lubridate")
+```
+
+```
+## 
+## To cite lubridate in publications use:
+## 
+##   Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made
+##   Easy with lubridate. Journal of Statistical Software, 40(3),
+##   1-25. URL http://www.jstatsoft.org/v40/i03/.
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Article{,
+##     title = {Dates and Times Made Easy with {lubridate}},
+##     author = {Garrett Grolemund and Hadley Wickham},
+##     journal = {Journal of Statistical Software},
+##     year = {2011},
+##     volume = {40},
+##     number = {3},
+##     pages = {1--25},
+##     url = {http://www.jstatsoft.org/v40/i03/},
+##   }
+```
+
+```r
+citation("stringr")
+```
+
+```
+## 
+## To cite package 'stringr' in publications use:
+## 
+##   Hadley Wickham (2019). stringr: Simple, Consistent Wrappers for
+##   Common String Operations. R package version 1.4.0.
+##   https://CRAN.R-project.org/package=stringr
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {stringr: Simple, Consistent Wrappers for Common String Operations},
+##     author = {Hadley Wickham},
+##     year = {2019},
+##     note = {R package version 1.4.0},
+##     url = {https://CRAN.R-project.org/package=stringr},
+##   }
+```
+
+```r
+citation("scales")
+```
+
+```
+## 
+## To cite package 'scales' in publications use:
+## 
+##   Hadley Wickham (2018). scales: Scale Functions for
+##   Visualization. R package version 1.0.0.
+##   https://CRAN.R-project.org/package=scales
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {scales: Scale Functions for Visualization},
+##     author = {Hadley Wickham},
+##     year = {2018},
+##     note = {R package version 1.0.0},
+##     url = {https://CRAN.R-project.org/package=scales},
+##   }
 ```
 
 
+# Dependent Variable
+ 
+### Options: b_SomeOpt and b_AllOpt
+The measures b_SomeOptand b_AllOpt  are constructed using a variety of different measures of exercised options.
 
-# Dependent Variables
-
-NA_stats(def_serv,"b_Term")
-* b_Term is a binary variable that has a value of 1 for any contracts that have experienced a partial or complete termination, 0 otherwise. (0.0246381
-* b_CBre is a binary variable that has a value of 1 for any contracts that have experienced a partial or complete termination, 0 otherwise. (Data is missing for 0 of records and 0 of obligated dollars.)
+* b_SomeOpt ("Some Options Exercised") is a binary variable that reports whether the contract had at least one option exercised via a modification that did not increase scope. The sample for this for this model is restricted to those contracts with an initial base less than their initial ceiling.
+* b_AllOpt ("All Options Exercised") is a binary variable that reports Whether the vast majority, over 95 percent by value, of a contract’s options were exercised. The sample for the model using this variable is limited to contracts that exercised some options in order to more clearly illustrate the relationship between independent variables and all options being exercised.
 
 
 ```r
-#The original variables for b_Term and b_CBre are Term and CBre
-grouped_barplot("Term", def_serv)
+grouped_barplot("Opt", def_serv)
 ```
 
-![](Codebook_files/figure-html/vargraphs: b_Term, b_CBre-1.png)<!-- -->
+![](Codebook_files/figure-html/Options-1.png)<!-- -->
+
+```r
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50, log=TRUE)
+```
+
+```
+## Warning: Removed 702 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 702 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/Options-2.png)<!-- -->
+
+```r
+freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"n_OptGrowth_OMB20_GDP18",bins=50, log=TRUE)
+```
+
+```
+## Warning: Removed 699 rows containing non-finite values (stat_bin).
+```
+
+```
+## Warning: Removed 699 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/Options-3.png)<!-- -->
+
+```r
+grouped_barplot("b_SomeOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 ))
+```
+
+![](Codebook_files/figure-html/Options-4.png)<!-- -->
+
+```r
+grouped_barplot("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 &
+                                                              b_SomeOpt==1))
+```
+
+![](Codebook_files/figure-html/Options-5.png)<!-- -->
+
+```r
+statsummary_discrete("b_SomeOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 ))
+```
+
+```
+##   b_SomeOpt % of records % of $s
+## 1         0       32.05%   8.14%
+## 2         1       67.89%  91.83%
+## 3        NA        0.06%   0.03%
+```
+
+```r
+statsummary_discrete("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 &
+                                                              b_SomeOpt==1))
+```
+
+```
+##   b_AllOpt % of records % of $s
+## 1        0       26.79%  20.17%
+## 2        1       72.10%  79.54%
+## 3       NA        1.11%   0.29%
+```
+
+
+### Ceiling Breaches
+The base variables for b_CBre and  cln_CBre are is CBre and n_CBre_OMB20_GDP18 
+* b_CBre ("Any Ceiling Breach") is a binary variable that reports whether a contract had its cost ceiling increased via a change order.
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_CBre==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
+NA_stats(def_serv,"b_CBre")`)
+* ln_CBre ("Any Ceiling Breach") is a continuous variable that reports the increased contract ceiling due to change orders, logged, in 2018 constant dollars based on contract start fiscal year. The dataset for these models is limited to contracts with any ceiling breaches, in order to avoid clustering at zero-based problems.  The variable is rescaled, by subtracting its mean (9.19) and dividing by its standard deviation doubled (5.54). Values of -1, -0.5, 0, 0.5, and 1 correspond to 38, 612, 9,751, 155,323, and 2,474,204 dollars respectively.
+
 
 ```r
 grouped_barplot("CBre", def_serv)
 ```
 
-![](Codebook_files/figure-html/vargraphs: b_Term, b_CBre-2.png)<!-- -->
+![](Codebook_files/figure-html/vargraphs: b_CBre-1.png)<!-- -->
 
 ```r
-statsummary_discrete(c("b_Term"), def_serv)
+freq_continuous_plot(def_serv %>%filter(b_CBre==1),"n_CBre_OMB20_GDP18",bins=50, log=TRUE)
 ```
 
 ```
-##   b_Term %of records % of $s
-## 1      0      98.07%  97.54%
-## 2      1       1.93%   2.46%
+## Warning: Removed 2662 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 2662 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/vargraphs: b_CBre-2.png)<!-- -->
+
+```r
+statsummary_discrete("CBre", def_serv)
+```
+
+```
+##             CBre % of records % of $s
+## 1           None       93.96%  76.60%
+## 2 Ceiling Breach        6.04%  23.40%
 ```
 
 ```r
-statsummary_discrete(c("CBre"), def_serv)
+statsummary_continuous(c("n_CBre_OMB20_GDP18"), def_serv %>% dplyr::filter(b_CBre==1))
 ```
 
 ```
-##             CBre %of records % of $s
-## 1           None      94.34%  78.41%
-## 2 Ceiling Breach       5.66%  21.59%
+##        Variable_Name   Min             Max     Median Logarithmic Mean
+## 1 n_CBre_OMB20_GDP18 0.000 367,080,377.479 10,583.141        9,750.761
+##   1 unit below   1 unit above % of records NA
+## 1      38.427  2,474,204.171            3.55%
+##   % of Obligations to NA records
+## 1                          5.34%
 ```
-
-```r
-statsummary_continuous(c("p_OptGrowth"), def_serv)
-```
-
-```
-##   Variable_Name   Min            Max Median Logarithmic Mean 1 unit below
-## 1   p_OptGrowth 1.000 58,837,341.000  1.000            1.045    0.644  * 
-##   1 unit above % of records NA % of Obligations to NA records
-## 1       1.695           0.593%                         0.515%
-```
-
 
 ### Contract Terminations
 
@@ -298,321 +830,91 @@ Contract terminations and the number of change orders can be calculated for the 
 * "Legal Contract Cancellation"
 
 These four categories and the "Close Out" category are used to mark a contract as closed.  Many contracts in FPDS and in the sample are never marked closed.  
+
+The original variables for b_Term is Term.
+
+NA_stats(def_serv,"b_Term")
+* b_Term is a binary variable that reports whether contracts experienced a partial or complete termination. (0.0246327
+
+
+```r
+grouped_barplot("Term", def_serv)
+```
+
+![](Codebook_files/figure-html/vargraphs: b_Term-1.png)<!-- -->
+
+```r
+statsummary_discrete(c("Term"), def_serv)
+```
+
+```
+##   Term % of records % of $s
+## 1    0       98.12%  97.54%
+## 2    1        1.88%   2.46%
+```
+
+```r
+#Overlaping ceiling breach and termination
+nrow(def_serv %>% filter(b_Term==1 & b_CBre==1))
+```
+
+```
+## [1] 1034
+```
+
+```r
+sum((def_serv %>% filter(b_Term==1 & b_CBre==1))$Action_Obligation_OMB20_GDP18)
+```
+
+```
+## [1] 4300188992
+```
+
+
 # Independent Variables
 
 ## Study Variables
 
+### Service Complexity 
+The original variables for cln_US6sal is US6_avg_sal_lag1Const
+* cln_US6sal ("Detailed Industry Salary") is a continuous variable that reports the Average U.S. wage in the contract’s detailed industry in the calendar year prior to contract start. Deflated to 2018 constant dollars based on the prior calendar year, logged, and rescaled. The variable is rescaled, by subtracting its mean (11) and dividing by its standard deviation doubled (0.799). Values of -1, -0.5, 0, 0.5, and 1 correspond to 26,033, 38,807, 57,851, 86,239, and 128,558 dollars respectively.
 
+#### Detailed Industry Salary
 
+```r
+freq_continuous_plot(def_serv,"US6_avg_sal_lag1Const",bins=50,
+                     log=TRUE)
+```
 
+```
+## Warning: Removed 36642 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 36642 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/cln_US6sal-1.png)<!-- -->
+
+#### Service Code Invoice Rate
+The original variables for cln_PSCrate is CFTE_Rate_1year
+
+* cln_PSCrate ("Service Code Invoice Rate") is a continuous variable that reports the average annual invoice rate for the contract’s product or service code in the fiscal year prior to contract start. In 2018 constant dollars based on the start fiscal year, logged and rescaled. The variable is rescaled, by subtracting its mean (12) and dividing by its standard deviation doubled (1). Values of -1, -0.5, 0, 0.5, and 1 correspond to 59,462, 98,226, 162,260, 268,037, and 442,771 dollars respectively.
 
 
 ```r
-# b_Comp
-# n_Comp
-# Comp
-# EffComp
-# CompOffr
-# offr:
-
-
-grouped_barplot("Comp",def_serv)
+freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50,
+                     log=TRUE)
 ```
 
-![](Codebook_files/figure-html/varGraphs: b_Comp, n_Comp, Comp, CompOffr, EffComp, offr-1.png)<!-- -->
+```
+## Warning: Removed 1204 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 1204 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/cln_PSCrate-1.png)<!-- -->
 
 ```r
-grouped_barplot("EffComp",def_serv)
-```
-
-![](Codebook_files/figure-html/varGraphs: b_Comp, n_Comp, Comp, CompOffr, EffComp, offr-2.png)<!-- -->
-
-```r
-grouped_barplot("CompOffr", def_serv)
-```
-
-![](Codebook_files/figure-html/varGraphs: b_Comp, n_Comp, Comp, CompOffr, EffComp, offr-3.png)<!-- -->
-
-```r
-grouped_barplot("Offr", def_serv)
-```
-
-![](Codebook_files/figure-html/varGraphs: b_Comp, n_Comp, Comp, CompOffr, EffComp, offr-4.png)<!-- -->
-
-```r
-# def_serv$n_Comp <- factor(def_serv$n_Comp,c(0,1))
-# grouped_barplot("Comp", def_serv)
-# #grouped_barplot("n_Comp")
-# grouped_barplot("Comp", def_serv)
-# grouped_barplot("EffComp", def_serv)
-# grouped_barplot("CompOffr", def_serv)
-# grouped_barplot("Offr", def_serv)
-```
-
-### Variable examination
-
-```r
-summary(def_serv$UnmodifiedBaseandExercisedOptionsValue)
-```
-
-```
-##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.      NA's 
-## 0.000e+00 7.454e+03 2.979e+04 4.911e+05 1.372e+05 1.392e+10      8148
-```
-
-```r
-def_serv$UnmodifiedBaseandExercisedOptionsValue[def_serv$UnmodifiedBaseandExercisedOptionsValue<=0]<-NA
-
-
-
-def_serv$l_base<-log(def_serv$UnmodifiedBaseandExercisedOptionsValue+1)
-def_serv$p_OptGrowth<-def_serv$ExercisedOptions/def_serv$UnmodifiedBaseandExercisedOptionsValue+1
-def_serv$lp_OptGrowth<-log(def_serv$p_OptGrowth)
-def_serv$n_OptGrowth<-def_serv$ExercisedOptions+1
-def_serv$ln_OptGrowth<-log(def_serv$n_OptGrowth)
-
-
-def_serv$Opt<-NA
-def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==1& def_serv$ExercisedOptions>0]<-"Option Growth"
-def_serv$Opt[(def_serv$AnyUnmodifiedUnexercisedOptions==1)& def_serv$ExercisedOptions==0]<-"No Growth"
-def_serv$Opt[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-"Initial Base=Ceiling"
-def_serv$Opt<-factor(def_serv$Opt)
-
-
-def_serv$l_pPBSC<-log(def_serv$pPBSC+1)
-def_serv$l_pOffPSC<-log(def_serv$pOffPSC+1)
-def_serv$l_pMarket<-log(def_serv$pMarket+1)
-def_serv$l_CA<-log(def_serv$office_entity_numberofactions_1year+1)
-def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
-
-summary(def_serv$l_CFTE)
-```
-
-```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##   8.905  11.711  12.016  11.997  12.325  14.462    1207
-```
-
-```r
-freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50)
-```
-
-```
-## Warning: Removed 1207 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-1.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"l_CFTE",bins=50)
-```
-
-```
-## Warning: Removed 1207 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-2.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"UnmodifiedBaseandExercisedOptionsValue",bins=50)
-```
-
-```
-## Warning: Removed 8148 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-3.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"l_base",bins=50)
-```
-
-```
-## Warning: Removed 8148 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-4.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50)
-```
-
-```
-## Warning: Removed 9 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-5.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"lp_OptGrowth",bins=50)
-```
-
-```
-## Warning: Removed 9 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-6.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"pPBSC",bins=50)
-```
-
-```
-## Warning: Removed 2218 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-7.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"l_pPBSC",bins=50) #No real point, stick with PBSC
-```
-
-```
-## Warning: Removed 2218 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-8.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"pOffPSC",bins=50)
-```
-
-```
-## Warning: Removed 2225 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-9.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"l_pOffPSC",bins=50)  #No real point here either
-```
-
-```
-## Warning: Removed 2225 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-10.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"pMarket",bins=50)
-```
-
-```
-## Warning: Removed 4087 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-11.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"l_pMarket",bins=50)
-```
-
-```
-## Warning: Removed 4087 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-12.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=50)
-```
-
-```
-## Warning: Removed 4087 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-13.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50)
-```
-
-```
-## Warning: Removed 4087 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-14.png)<!-- -->
-
-```r
-freq_continuous_plot(def_serv,"l_CA",bins=50)
-```
-
-```
-## Warning: Removed 4087 rows containing non-finite values (stat_bin).
-```
-
-![](Codebook_files/figure-html/VarGraph-15.png)<!-- -->
-
-```r
-summary(def_serv$pMarket)
-```
-
-```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##   0.000   0.000   0.002   0.049   0.019   1.000    4087
-```
-
-```r
-def_serv$l_pMarket<-log(def_serv$pMarket+1)
-
-
-# Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
-# Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
-# ggsave(Effplot,file="..\\Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
-```
-
-## Controls
-
-
-
-### Competition
-* b_Comp is a binary variable based on competition. It has a value of 0 for uncompeted contracts and a value of 1 for competition, regardless of number of offers. Data is missing for 0.00022 of records and 0.000212 of obligated dollars.
-* n_Comp is a binary variable based on competition. It has a value of 0 for uncompeted contracts and a value of 1 for competition, regardless of number of offers. 0.6154563
-)
-* CompOffr is a dummy variable based on competition and the number of offers. It's baseline value is No Competition, sole-source contracts, which are intentionally not assigned a dummy to avoid multicollinearity. 0.2185878
-)
-summary(def_serv$offer)
-centered_description(def_serv$UnmodifiedNumberOfOffersReceived,"number of offers")
-centered_log_description(def_serv$UnmodifiedNumberOfOffersReceived,"number of offers")
-NA_stats(def_serv,"cl_Offr")
-<!-- cl_def3_HHI_lag1+cl_def3_ratio_lag1+#cl_def3_obl_lag1+ -->
-                            <!-- #cl_US3_avg_sal_lag1+ -->
-                            <!-- cl_def6_HHI_lag1+cl_def6_obl_lag1+cl_def6_ratio_lag1+ -->
-                            <!-- cl_US6_avg_sal_lag1Const+ -->
-
-
-centered_log_description(def_serv$l_def3_obl_lag1,"obligations")
-centered_log_description(def_serv$l_def6_obl_lag1,"obligations")
-NA_stats(def_serv,"l_def3_obl_lag1")
-
-NA_stats(def_serv,"l_def6_obl_lag1")
-def_serv$l_def6_ratio_lag1[is.nan(def_serv$l_def6_ratio_lag1) | is.infinite(def_serv$l_def6_ratio_lag1)]<-NA
-def_serv$cl_def6_ratio_lag1[is.nan(def_serv$cl_def6_ratio_lag1) | is.infinite(def_serv$cl_def6_ratio_lag1)]<-NA
-
-centered_log_description(def_serv$l_def3_ratio_lag1,"obligations")
-
-centered_log_description(def_serv$l_def6_ratio_lag1,"obligations")
-centered_log_description(def_serv$l_def6_ratio_lag1[!
-NA_stats(def_serv,"cl_def3_ratio_lag1")
-NA_stats(def_serv,"cl_def6_ratio_lag1")
-
-
-### Initial Contract Scope
-
-#### Ceiling
-* cl_Ceil is the natural log of the initial contract cost ceiling, in then-year dollars. Data is missing for 0.00334 of records and 0.0055 of obligated dollars.
-
-
-#### Duration
-* capped_cl_Days is the natural log of the initial maximum duration of the contract, in days. The variable is centered, by subtracting its mean (Data is missing for 0.0244 of records and 0.0196 of obligated dollars. 
-
-
-
-```r
-#original variable for cl_Ceil: UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18
-#original variable for capped_cl_Days: UnmodifiedDays
-
-statsummary_continuous(c("UnmodifiedDays","UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18"), def_serv)
+statsummary_continuous(c("US6_avg_sal_lag1Const","CFTE_Rate_1year"), def_serv)
 ```
 
 ```
@@ -622,148 +924,456 @@ statsummary_continuous(c("UnmodifiedDays","UnmodifiedContractBaseAndAllOptionsVa
 ```
 
 ```
-##                                          Variable_Name   Min
-## 1                                       UnmodifiedDays 1.000
-## 2 UnmodifiedContractBaseAndAllOptionsValue.OMB20_GDP18 0.000
-##                  Max     Median Logarithmic Mean 1 unit below 1 unit above
-## 1         33,049.000    114.000           78.537       2.809    2,195.777 
-## 2 89,605,495,681.342 32,786.980            0.000         NaN          NaN 
-##   % of records NA % of Obligations to NA records
-## 1           2.44%                          1.96%
-## 2           0.00%                          0.00%
+##           Variable_Name       Min           Max      Median
+## 1 US6_avg_sal_lag1Const 9,995.927   278,828.551  62,408.814
+## 2       CFTE_Rate_1year 7,369.585 1,908,519.761 165,307.106
+##   Logarithmic Mean 1 unit below 1 unit above % of records NA
+## 1       57,850.656  26,032.696  128,557.502            2.95%
+## 2      162,259.713  59,462.380  442,770.953            0.10%
+##   % of Obligations to NA records
+## 1                          1.10%
+## 2                          0.04%
+```
+
+### Office Capacity
+The variablecp_OffPerf7 is constructed by diving are the percentage form of office_PBSCobligated_1year / office_obligatedamount_1year
+
+* cp_OffPerf7 ("Office Performance-Based ") is a continuous variable that reports the percentage share of office 2018 constant obligations that were for Performance-Based Service Contracts in the prior 7 fiscal years, rescaled.
+
+#### PBSC
+
+```r
+freq_continuous_plot(def_serv,"office_PBSCobligated_1year",bins=50, 
+                     denominator="office_obligatedamount_1year",cap1=TRUE,log=TRUE,plus1=TRUE)
+```
+
+```
+## Warning: Removed 1188 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 1188 rows containing non-finite values (stat_bin).
+```
+
+```
+## Warning: Removed 20605 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 20605 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/PBSC-1.png)<!-- -->
+
+
+
+#### Office Experience withthe Product or Service Code
+The original variables for cp_OffPerf7 is the percentage form of office_psc_obligatedamount_7year / office_obligatedamount_7year
+
+* cp_OffPSC7 ("Office Service Code Experience") is a continuous variable that reports the percentage of office 2018 constant obligations that went to contracts with the same product or service code as the product in question over the last 7 fiscal years, rescaled.
+
+
+```r
+#Absolute proporitonal psc spending 
+freq_continuous_plot(def_serv,"office_psc_obligatedamount_7year",bins=50, 
+                     denominator="office_obligatedamount_7year",cap1=TRUE,log=TRUE,plus1=TRUE)
+```
+
+```
+## Warning: Removed 1192 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 1192 rows containing non-finite values (stat_bin).
+```
+
+```
+## Warning: Removed 18040 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 18040 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/OffPSC-1.png)<!-- -->
+
+```r
+#See Number of Paired Years for the StatSummaryContinuous
+```
+
+Log of the percentage version doesn't end up 
+
+### Office-Vendor Relationship
+The original variables for cn_PairHist7 is office_entity_paircount_7year
+
+* cn_PairHist7 ("Paired Years") is a continuous variable that reports how many of the past 7 fiscal years involved obligations being made from the office to the vendor, recalled. The variable is rescaled, by subtracting its mean (3.51) and dividing by its standard deviation doubled(4.82). Values of -1, -0.5, 0, 0.5, and 1 correspond to -1.3, 1.1, 3.5, 5.9, and 8.3 number of years respectively.
+
+#### Number of  Paired Years
+
+```r
+freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=7)
+```
+
+```
+## Warning: Removed 3052 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/PairHistory-1.png)<!-- -->
+
+```r
+statsummary_continuous(c("pPBSC","pOffPSC","office_entity_paircount_7year"), def_serv,log=FALSE)
+```
+
+```
+## Warning in if (!x %in% colnames(contract)) stop(paste(x, "is not a column
+## in contract.")): the condition has length > 1 and only the first element
+## will be used
+```
+
+```
+##                   Variable_Name   Min   Max Median Arithmatic Mean
+## 1                         pPBSC 0.000 1.000  0.281           0.339
+## 2                       pOffPSC 0.000 1.000  0.012           0.126
+## 3 office_entity_paircount_7year 0.000 7.000  4.000           3.505
+##   1 unit below 1 unit above % of records NA % of Obligations to NA records
+## 1   -0.261  *        0.939           0.096%                         0.000%
+## 2   -0.377  *        0.630           0.096%                         0.000%
+## 3   -1.312  *     8.323  *           0.246%                         0.517%
+```
+
+#### Number of Prior Year Contract Action
+The original variables for cln_PairCA is office_entity_numberofactions_1year
+
+* cln_PairCA ("Paired Actions") is a continuous variable that reports how many contracting actions the contract’s vendor performed for the office in question in the prior fiscal year, logged and rescaled. 1 action was added to all office-vendor pairings to allow for logarithmic transformation even when there was no previous acts. The variable is rescaled, by subtracting its mean (3.39) and dividing by its standard deviation doubled (4.54). Values of -1, -0.5, 0, 0.5, and 1 correspond to 0.32, 3.1, 30, 288, and 2,783 number of actions respectively.
+
+
+```r
+freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50, log=TRUE, plus1 = TRUE)
+```
+
+```
+## Warning: Removed 3052 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 3052 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/cln_PairCA-1.png)<!-- -->
+
+```r
+statsummary_continuous(c("office_entity_numberofactions_1year"), def_serv, plus1=TRUE)
+```
+
+```
+##                         Variable_Name   Min           Max Median
+## 1 office_entity_numberofactions_1year 1.000 7,806,579.000 27.000
+##   Logarithmic Mean 1 unit below 1 unit above % of records NA
+## 1           34.012    0.491  *    2,355.033           0.246%
+##   % of Obligations to NA records
+## 1                         0.517%
+```
+
+## Contract-Level Controls
+
+
+
+### Competition
+Comp is derived from b_Comp to determine competition and UnmodifiedNumberOfOffersReceived to categorize competed contracts by offers
+
+* Comp (Competition) is a categorical variable based on competition and the number of offers. 
+  * No Competition  is its baseline value, for contracts that did not use competitive procedures. 
+  * 1Offr (1 Offer) for contracts that were competed but only recieved one offer.
+  * 2-4Offr (2-4 Offers) for competed contracts receiving between 2 and 4 offers.
+  * 5plusOffr (5+ Offers) 5+ Offers for competed contracts receiving 5 or more offers.
+
+
+```r
+grouped_barplot("b_Comp",def_serv)
+```
+
+![](Codebook_files/figure-html/Competition-1.png)<!-- -->
+
+```r
+freq_continuous_plot(def_serv %>% dplyr::filter(b_Comp==1), #Only Competed
+                     "UnmodifiedNumberOfOffersReceived", bins=100,log=TRUE)
+```
+
+```
+## Warning: Removed 12969 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 12969 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/Competition-2.png)<!-- -->
+
+```r
+grouped_barplot("Comp",def_serv)
+```
+
+![](Codebook_files/figure-html/Competition-3.png)<!-- -->
+
+```r
+statsummary_discrete("Comp",def_serv)
+```
+
+```
+##             Comp % of records % of $s
+## 1 No Competition       27.14%  26.25%
+## 2        1 offer       16.98%  11.48%
+## 3     2-4 offers       33.00%  34.23%
+## 4      5+ offers       21.83%  27.31%
+## 5             NA        1.06%   0.73%
+```
+
+
+### Initial Contract Scope
+
+#### Base
+* cl_Ceil is the natural log of the initial contract cost ceiling, in then-year dollars. Data is missing for 0.00321 of records and 0.00548 of obligated dollars.
+
+
+```r
+#The original variables for cp_OffPerf7 is the ratio form of UnmodifiedBase_OMB20_GDP18
+
+freq_continuous_plot(def_serv,"UnmodifiedBase_OMB20_GDP18",bins=50, log=TRUE)
+```
+
+```
+## Warning: Removed 6403 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 6403 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/Base-1.png)<!-- -->
+
+#### Base:Ceiling Ratio
+
+
+```r
+#The original variables for cp_OffPerf7 is the ratio form of UnmodifiedCeiling_OMB20_GDP18 / UnmodifiedBase_OMB20_GDP18
+
+freq_continuous_plot(def_serv,"UnmodifiedCeiling_OMB20_GDP18",bins=50, 
+                     denominator="UnmodifiedBase_OMB20_GDP18",log=TRUE)
+```
+
+```
+## Warning: Removed 785 rows containing non-finite values (stat_bin).
+```
+
+```
+## Warning: Transformation introduced infinite values in continuous x-axis
+```
+
+```
+## Warning: Removed 3990 rows containing non-finite values (stat_bin).
+```
+
+```
+## Warning: Removed 6408 rows containing non-finite values (stat_bin).
+```
+
+```
+## Warning: Transformation introduced infinite values in continuous x-axis
+```
+
+```
+## Warning: Removed 6409 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/ceilingratio-1.png)<!-- -->
+
+#### Duration
+* capped_cln_Days is the natural log of the initial maximum duration of the contract, in days. The variable is centered, by subtracting its mean (Data is missing for NaN of records and 0 of obligated dollars. 
+
+
+```r
+#original variable for capped_cln_Days: UnmodifiedDays
+
+freq_continuous_plot(def_serv,"UnmodifiedDays",bins=50, log=TRUE)
+```
+
+```
+## Warning: Removed 28643 rows containing non-finite values (stat_bin).
+
+## Warning: Removed 28643 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/statistic summary table for continuous variables: cl_Ceil, capped_cln_Days-1.png)<!-- -->
+
+```r
+statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18","Base2Ceil","UnmodifiedDays"), def_serv)
+```
+
+```
+## Warning in if (!x %in% colnames(contract)) stop(paste(x, "is not a column
+## in contract.")): the condition has length > 1 and only the first element
+## will be used
+```
+
+```
+##                Variable_Name   Min                Max     Median
+## 1 UnmodifiedBase_OMB20_GDP18 0.009 14,756,841,090.022 30,043.570
+## 2                  Base2Ceil 1.000     29,008,179.896      1.000
+## 3             UnmodifiedDays 1.000         33,049.000    114.000
+##   Logarithmic Mean 1 unit below   1 unit above % of records NA
+## 1       34,224.128     469.889  2,492,697.987            0.52%
+## 2            1.092    0.460  *          2.591            0.52%
+## 3           78.537       2.809      2,195.777            2.31%
+##   % of Obligations to NA records
+## 1                          0.64%
+## 2                          0.65%
+## 3                          1.95%
 ```
 
 
 ### Contract Vehicle
-* SIDV, MIDV, and FSS/GWAC, BPA/BOA are dummy variables based on the contract vehicle. They correspond to Single-Award IDVs, Multi-Award IDVs, and Other IDVs, respectively, having a value of 1 when the task order has that vehicle type, and having a 0 other. The remaining types, definitive contracts and purchase orders, are intentionally left out. (Data is missing for 0.000534 of records and 0.00157 of obligated dollars.
+* Comp (Competition) is a categorical variable based on whether there was a parent contract and if so of what type. 
+* It's baseline value is for contracts that did not use competitive procedures. Other values are assigned based on the number of offers a competed contract received: 1 Offer, 2-4 Offers, 5+ Offers.
+
+* Veh (Vehicle) is  SIDV, MIDV, and FSS/GWAC, BPA/BOA are dummy variables based on the contract vehicle. They correspond to Single-Award IDVs, Multi-Award IDVs, and Other IDVs, respectively, having a value of 1 when the task order has that vehicle type, and having a 0 other. The remaining types, definitive contracts and purchase orders, are intentionally left out. 
 
 
 ```r
-grouped_barplot("Veh", def_serv)
+grouped_barplot("Veh",def_serv)
 ```
 
 ![](Codebook_files/figure-html/VehGraph-1.png)<!-- -->
 
 ```r
-statsummary_discrete("Veh", def_serv)
+statsummary_discrete("Veh",def_serv)
 ```
 
 ```
-##        Veh %of records % of $s
-## 1  Def/Pur      28.72%  28.08%
-## 2    S-IDC      49.44%  38.78%
-## 3    M-IDC      12.92%  27.85%
-## 4 FSS/GWAC       4.04%   3.54%
-## 5  BPA/BOA       4.82%   1.58%
-## 6       NA       0.05%   0.16%
+##        Veh % of records % of $s
+## 1  Def/Pur       28.76%  28.08%
+## 2    S-IDC       49.40%  38.78%
+## 3    M-IDC       12.91%  27.85%
+## 4 FSS/GWAC        4.05%   3.54%
+## 5  BPA/BOA        4.83%   1.58%
+## 6       NA        0.05%   0.16%
 ```
 
 
-### Pricing Fee
-* n_Fixed is a numeric variable based on contract pricing. It has a value of 0 for cost-based, 0.5 or "combination or other", 1 for any fixed price (excluding fixed-price level of effort which is classified as cost-based). (Data is missing for 0.000275 of records and 2.1e-06 of obligated dollars.)
-NA_stats(def_serv,"n_Incent")`)
-* b_UCA is a binary variable with a value of 1 for contracts/task orders that begin as letter contracts or undefinitized contract awards (UCA) and a value of 0 otherwise. Data is missing for 0.0873 of records and 0.0704 of obligated dollars.
-* b_Intl is a binary variable with a value of 1 for contracts/task orders with any transactions performed internationally and a value of 0 otherwise. Data is missing for 4.83e-06 of records and 0.000198 of obligated dollars.
-* NAICS is a factor reporting the top North American Industrial Classification Code of each contract. 
-Data is missing for 0.00328 of records and 0.00301 of obligated dollars.
-* Agency is a factor reporting the top Contracting Agency of each contract. 
-Data is missing for 0.000889 of records and -1.97e-08 of obligated dollars.
-* Office is a factor reporting the top Contracting office of each contract. 
-Data is missing for 0.00178 of records and -1.83e-07 of obligated dollars.
+### Pricing
+Pricing is constructed using the two variables: PricingFee which tracks contract type and UCA, which tracks letter and undefinized contract actions.
+
+* PricingFee i is a numeric variable based on contract pricing. It has a value of 0 for cost-based, 0.5 or "combination or other", 1 for any fixed price (excluding fixed-price level of effort which is classified as cost-based). (1115255, 13046, 4460, 12478, 73269, 22763, 178)
+* b_UCA is a binary variable with a value of 1 for contracts/task orders that begin as letter contracts or undefinitized contract awards (UCA) and a value of 0 otherwise. Data is missing for 0.0874 of records and 0.0704 of obligated dollars.
 
 
-
-```r
-#n_Fixed(0,1), PricingFee, n_Incent, b_UCA(0,1), b_Intl
-#original variable for b_UCA: UCA
-#original variable for n_Fixed: FxCb
-#original variable for n_Incent: Fee
-
-def_serv$n_Fixed <- factor(def_serv$n_Fixed, c(0,0.5,1))
-def_serv$n_Incent <- factor(def_serv$n_Incent, c(0,0.5,1))
-def_serv$b_UCA <- factor(def_serv$b_UCA, c(0,1))
-grouped_barplot("FxCb", def_serv)
-```
-
-![](Codebook_files/figure-html/PricingFeeGraphs-1.png)<!-- -->
-
-```r
-grouped_barplot("Fee", def_serv)
-```
-
-![](Codebook_files/figure-html/PricingFeeGraphs-2.png)<!-- -->
 
 ```r
 grouped_barplot("PricingFee", def_serv)
 ```
 
-![](Codebook_files/figure-html/PricingFeeGraphs-3.png)<!-- -->
+![](Codebook_files/figure-html/PricingFeeGraphs-1.png)<!-- -->
 
 ```r
 grouped_barplot("UCA", def_serv)
 ```
 
-![](Codebook_files/figure-html/PricingFeeGraphs-4.png)<!-- -->
+![](Codebook_files/figure-html/PricingFeeGraphs-2.png)<!-- -->
 
 ```r
-statsummary_discrete("PricingFee", def_serv)
+summary((def_serv %>% dplyr::filter(b_UCA==1))$PricingFee)
 ```
 
 ```
-##             PricingFee %of records % of $s
-## 1                  FFP      89.82%  63.66%
-## 2             Other FP       1.05%   2.57%
-## 3            Incentive       0.36%   1.62%
-## 4 Combination or Other       1.00%   6.09%
-## 5             Other CB       5.90%  20.21%
-## 6         T&M/LH/FPLOE       1.84%   5.85%
-## 7                   NA       0.03%   0.00%
+##                  FFP             Other FP            Incentive 
+##                10029                   49                   41 
+## Combination or Other             Other CB         T&M/LH/FPLOE 
+##                  196                 1864                  184
 ```
 
 ```r
-statsummary_discrete("UCA", def_serv)
+grouped_barplot("Pricing", def_serv)
+```
+
+![](Codebook_files/figure-html/PricingFeeGraphs-3.png)<!-- -->
+
+```r
+statsummary_discrete("Pricing", def_serv)
 ```
 
 ```
-##       UCA %of records % of $s
-## 1 Not UCA      90.28%  90.59%
-## 2     UCA       1.00%   2.37%
-## 3      NA       8.73%   7.04%
+##                Pricing % of records % of $s
+## 1                  FFP       81.27%  58.50%
+## 2             Other FP        0.89%   2.32%
+## 3            Incentive        0.34%   1.42%
+## 4 Combination or Other        0.91%   5.23%
+## 5             Other CB        5.13%  17.98%
+## 6         T&M/LH/FPLOE        1.71%   5.13%
+## 7                  UCA        1.00%   2.37%
+## 8                   NA        8.75%   7.04%
 ```
-### International
+
+## Multilevel Controls
+
 
 
 ```r
-#n_Fixed(0,1), PricingFee, n_Incent, b_UCA(0,1), b_Intl
-#original variable for b_UCA: UCA
-#original variable for n_Fixed: FxCb
-#original variable for n_Incent: Fee
-
-grouped_barplot("Intl", def_serv)
+nrow(def_serv)
 ```
 
-![](Codebook_files/figure-html/International-1.png)<!-- -->
+```
+## [1] 1241449
+```
 
 ```r
-statsummary_discrete("Intl", def_serv)
+length(unique(def_serv$NAICS3))
 ```
 
 ```
-##        Intl %of records % of $s
-## 1 Just U.S.      83.11%  83.94%
-## 2 Any Intl.      16.89%  16.04%
-## 3        NA       0.00%   0.02%
+## [1] 108
 ```
-### Contracting Customer
+
+```r
+length(unique(def_serv$NAICS6))
+```
+
+```
+## [1] 1059
+```
+
+```r
+length(unique(paste(def_serv$NAICS6,def_serv$ServArea)))
+```
+
+```
+## [1] 3825
+```
+
+```r
+length(unique(def_serv$Agency))
+```
+
+```
+## [1] 28
+```
+
+```r
+length(unique(paste(def_serv$Agency,def_serv$Office)))
+```
+
+```
+## [1] 1228
+```
+
+```r
+length(unique(def_serv$Place))
+```
+
+```
+## [1] 197
+```
+
+
+
+### Acquirer
 #### Agency
+* Agency is a factor reporting the top Contracting Agency of each contract. 
+Data is missing for 0.000615 of records and -1.97e-08 of obligated dollars.
 
 
 
 ```r
-#Prepare the dataframe for plot
+#Percent grouped bar plot for variable Agency
+#Generate new data frame containing frequency information
 Agency_Freq <- as.data.frame(table(def_serv$Agency))
 Agency_Freq$Percent_Freq <- round(Agency_Freq$Freq/sum(Agency_Freq$Freq),4)*100
 colnames(Agency_Freq) <- c("Agency","Count_Freq","Percent_Freq")
+
 Agency_Freq <- Agency_Freq[order(-Agency_Freq$Count_Freq),]
 Agency_Freq <- Agency_Freq[1:10,]
 
@@ -771,6 +1381,7 @@ Agency_Freq <- Agency_Freq[1:10,]
 Agency_Lookup <- read.csv("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/Agency_AgencyID.csv")
 Agency_Lookup <- Agency_Lookup[,1:2]
 colnames(Agency_Lookup) <- c("Agency","Agency_Description")
+
 Agency_Freq <- left_join(Agency_Freq, Agency_Lookup, by = "Agency")
 ```
 
@@ -785,7 +1396,46 @@ Agency_Freq <- Agency_Freq[order(-Agency_Freq$Percent_Freq),]
 Agency_Freq$Agency_Description <- factor(Agency_Freq$Agency_Description, 
                                          levels=rev(Agency_Freq$Agency_Description))
 
+
+
+
+#Add obligation percent information to data frame
+Percent_Obli <- c()
+for (i in Agency_Freq$Agency) {
+  Percent_Obligation <- round(sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$Agency == i], na.rm = TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18, na.rm = TRUE),5)
+  Percent_Obli <- c(Percent_Obli, Percent_Obligation)
+}
+Agency_Freq$Percent_Obli <- Percent_Obli*100
+
+#Get top 5 Agencies that take largest percent obligation
+Agency_Freq <- Agency_Freq[order(-Percent_Obli),]
+Agency_Freq <- Agency_Freq[1:5,]
+percent_freq_rest <- 100 - sum(Agency_Freq$Percent_Freq, na.rm = TRUE)
+percent_obli_rest <- 100 - sum(Agency_Freq$Percent_Obli, na.rm = TRUE)
+
+Agency_Freq[6,] <- c("All Other", "NA", percent_freq_rest, "All Other", percent_obli_rest)
+```
+
+```
+## Warning in `[<-.factor`(`*tmp*`, iseq, value = "All Other"): invalid factor
+## level, NA generated
+```
+
+```
+## Warning in `[<-.factor`(`*tmp*`, iseq, value = "All Other"): invalid factor
+## level, NA generated
+```
+
+```r
+Agency_Freq$Agency_Description <- factor(Agency_Freq$Agency_Description, levels = rev(Agency_Freq$Agency_Description))
+Agency_Freq[,c(3,5)] <- lapply(Agency_Freq[,c(3,5)], function(x) as.numeric(x))
+Agency_Freq <- melt(Agency_Freq, id = c("Agency","Count_Freq","Percent_Freq", "Agency_Description"))
+
+
+
+
 #build the frequency bar plot
+(
 Frequency_Plot3 <- ggplot(data = Agency_Freq, aes(x=Agency_Description,        y=Percent_Freq)) +
                    geom_bar(stat = "identity", position = "dodge", width = 0.8) +
                    coord_flip() +
@@ -795,11 +1445,41 @@ Frequency_Plot3 <- ggplot(data = Agency_Freq, aes(x=Agency_Description,        y
                    scale_fill_grey() +
                    ggtitle("Top 10 of the most frequently appeared Agency") +
                    theme(text = element_text(size = 10))
-Frequency_Plot3
+)
 ```
 
 ![](Codebook_files/figure-html/frequancy bar plot for agency-1.png)<!-- -->
+
+```r
+#Build grouped bar plot
+Agency_barplot <- ggplot(data = Agency_Freq, 
+                         aes(x = Agency_Description, 
+                             y=value, 
+                             fill=factor(variable))) + 
+                  geom_bar(stat = "identity", 
+                           position= "dodge", 
+                           width = 0.8) + 
+                  xlab("") + 
+                  ylab("") + 
+                  coord_flip() + 
+                  theme_grey() +
+                  scale_fill_grey(labels = c("% of records", "% of obligation"),
+                                  guide = guide_legend(reverse = TRUE)) +
+                  theme(legend.title = element_blank(),
+                        legend.position = "bottom",
+                        legend.margin = margin(t=-0.8, r=0, b=0.5, l=0, unit = "cm"),
+                        legend.text = element_text(margin = margin(r=0.5, unit = "cm")),
+                        plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm")) +
+                 ggtitle("Top 5 of the most frequently appeared Agency") 
+Agency_barplot                  
+```
+
+![](Codebook_files/figure-html/frequancy bar plot for agency-2.png)<!-- -->
+
 #### Office 
+
+* Office is a factor reporting the top Contracting office of each contract. 
+Data is missing for 0.000957 of records and -1.83e-07 of obligated dollars.
 
 ```r
 #grouped bar plot for variable Office
@@ -818,15 +1498,22 @@ memory.limit(56000)
 ```r
 Office_Freq <- def_serv %>% group_by(Office,ContractingOfficeName) %>% summarise(
   Count_Freq=length(CSIScontractID),
-  Action_Obligation.OMB20_GDP18=sum(Action_Obligation.OMB20_GDP18)
+  Action_Obligation_OMB20_GDP18=sum(Action_Obligation_OMB20_GDP18)
 )
-  
+```
+
+```
+## Warning: Factor `ContractingOfficeName` contains implicit NA, consider
+## using `forcats::fct_explicit_na`
+```
+
+```r
   # Office_Freq <- Office_Freq[order(-Office_Freq$Freq),]
-# Office_Freq_TOP20 <- Office_Freq[1:20,]   #Get top 20 NAICS has largest frequency count
+# Office_Freq_TOP20 <- Office_Freq[1:20,]   #Get top 20 NAICS6 has largest frequency count
 Office_Freq$Percent_Freq <- round(Office_Freq$Count_Freq/
                                    sum(Office_Freq$Count_Freq),4)*100
-Office_Freq$Percent_Obli <- round(Office_Freq$Action_Obligation.OMB20_GDP18/
-                                         sum(Office_Freq$Action_Obligation.OMB20_GDP18),4)*100
+Office_Freq$Percent_Obli <- round(Office_Freq$Action_Obligation_OMB20_GDP18/
+                                         sum(Office_Freq$Action_Obligation_OMB20_GDP18),4)*100
 
 colnames(Office_Freq)[colnames(Office_Freq)=="Office"] <- "OfficeID"
 colnames(Office_Freq)[colnames(Office_Freq)=="ContractingOfficeName"] <- "OfficeName"
@@ -859,6 +1546,7 @@ Office_Freq_TOP$Office_Full <- factor(Office_Freq_TOP$Office_Full,
 Office_Freq_TOP <- melt(Office_Freq_TOP, 
                         id = c("OfficeID", "OfficeName", "Count_Freq", "Office_Full"))
 
+(
 Office_barplot <- ggplot(data = Office_Freq_TOP,
                          aes(x = Office_Full, 
                              y = value,
@@ -879,97 +1567,77 @@ Office_barplot <- ggplot(data = Office_Freq_TOP,
                         legend.margin = margin(t=-0.8, r=0, b=0.5, l=0, unit = "cm"),
                         legend.text = element_text(margin = margin(r=0.5, unit = "cm")), 
                         plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm"))
-Office_barplot
+)
 ```
 
 ![](Codebook_files/figure-html/grouped percent frequency/obligation barplot for all Office-1.png)<!-- -->
 
 
-```r
-#Percent grouped bar plot for variable Agency
-#Generate new data frame containing frequency information
-Agency_Freq <- as.data.frame(table(def_serv$Agency))
-Agency_Freq$Percent_Freq <- round(Agency_Freq$Freq/sum(Agency_Freq$Freq),4)*100
-colnames(Agency_Freq) <- c("Agency","Count_Freq","Percent_Freq")
+### Pair: Office and Vendor
 
-#Add detail Agency description according to agency code
-Agency_Lookup <- read.csv("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/Agency_AgencyID.csv")
-Agency_Lookup <- Agency_Lookup[,1:2]
-colnames(Agency_Lookup) <- c("Agency","Agency_Description")
-Agency_Freq <- left_join(Agency_Freq, Agency_Lookup, by = "Agency")
-```
-
-```
-## Warning: Column `Agency` joining factors with different levels, coercing to
-## character vector
-```
+#### pMarket
 
 ```r
-#Add obligation percent information to data frame
-Percent_Obli <- c()
-for (i in Agency_Freq$Agency) {
-  Percent_Obligation <- round(sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$Agency == i], na.rm = TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18, na.rm = TRUE),5)
-  Percent_Obli <- c(Percent_Obli, Percent_Obligation)
-}
-Agency_Freq$Agency_Description <- as.character(Agency_Freq$Agency_Description)
-Agency_Freq$Percent_Obli <- Percent_Obli*100
-
-#Get top 5 Agencies that take largest percent obligation
-Agency_Freq <- Agency_Freq[order(-Percent_Obli),]
-Agency_Freq <- Agency_Freq[1:5,]
-percent_freq_rest <- 100 - sum(Agency_Freq$Percent_Freq, na.rm = TRUE)
-percent_obli_rest <- 100 - sum(Agency_Freq$Percent_Obli, na.rm = TRUE)
-
-Agency_Freq[6,] <- c("All Other", "NA", percent_freq_rest, "All Other", percent_obli_rest)
-Agency_Freq$Agency_Description <- factor(Agency_Freq$Agency_Description, levels = rev(Agency_Freq$Agency_Description))
-Agency_Freq[,c(3,5)] <- lapply(Agency_Freq[,c(3,5)], function(x) as.numeric(x))
-Agency_Freq <- melt(Agency_Freq, id = c("Agency","Count_Freq", "Agency_Description"))
-
-#Build grouped bar plot
-Agency_barplot <- ggplot(data = Agency_Freq, 
-                         aes(x = Agency_Description, 
-                             y=value, 
-                             fill=factor(variable))) + 
-                  geom_bar(stat = "identity", 
-                           position= "dodge", 
-                           width = 0.8) + 
-                  xlab("") + 
-                  ylab("") + 
-                  coord_flip() + 
-                  theme_grey() +
-                  scale_fill_grey(labels = c("% of records", "% of obligation"),
-                                  guide = guide_legend(reverse = TRUE)) +
-                  theme(legend.title = element_blank(),
-                        legend.position = "bottom",
-                        legend.margin = margin(t=-0.8, r=0, b=0.5, l=0, unit = "cm"),
-                        legend.text = element_text(margin = margin(r=0.5, unit = "cm")),
-                        plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm")) +
-                 ggtitle("Top 5 of the most frequently appeared Agency") 
-Agency_barplot                  
+freq_continuous_plot(def_serv,"pMarket",bins=50,log=TRUE)
 ```
 
-![](Codebook_files/figure-html/frequancy and obligation percent grouped bar plot for agency-1.png)<!-- -->
+```
+## Warning: Removed 3052 rows containing non-finite values (stat_bin).
+```
 
-### Economic Secto
+```
+## Warning: Transformation introduced infinite values in continuous x-axis
+```
+
+```
+## Warning: Removed 208511 rows containing non-finite values (stat_bin).
+```
+
+![](Codebook_files/figure-html/VarGraph-1.png)<!-- -->
+
+```r
+summary(def_serv$pMarket)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##  0.0000  0.0001  0.0019  0.0489  0.0192  1.0000    3052
+```
+
+### Economic Sector
 
 #### NAICS 2
 
 ```r
-# Add NAICS title
-#def_serv$NAICS_Code<-create_naics2(def_serv$NAICS)
+# Add NAICS6 title
+#def_serv$NAICS_Code<-create_naics2(def_serv$NAICS6)
 def_serv$NAICS_Code<-def_serv$NAICS2
 
 
-def_serv<-csis360::read_and_join(def_serv,
-                            lookup_file = "Lookup_NAICS_code.csv",
-                            path="https://raw.githubusercontent.com/CSISdefense/Vendor/master/",
-                            dir="Data/Clean/NAICS/",
-                            by="NAICS_Code",
-                            skip_check_var="NAICS_DESCRIPTION"
+def_serv<-csis360::read_and_join_experiment(def_serv,
+                            lookup_file = "Lookup_PrincipalNAICScode.csv",
+                            path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                            dir="economic/",
+                            by=c("NAICS_Code"="principalnaicscode"),
+                            add_var="principalnaicscodeText"
 )
+```
 
+```
+## Parsed with column specification:
+## cols(
+##   principalnaicscode = col_character(),
+##   principalnaicscodeText = col_character(),
+##   principalNAICS2DigitCode = col_double(),
+##   principalNAICS3DigitCode = col_double(),
+##   principalNAICS4DigitCode = col_double(),
+##   NAICS_shorthand = col_character()
+## )
+```
+
+```r
 def_serv$NAICS2_label<-paste(def_serv$NAICS_Code,
-                             def_serv$NAICS_DESCRIPTION)
+                             def_serv$principalnaicscodeText)
 
 def_serv$NAICS2_label[
   def_serv$NAICS2_label==
@@ -986,7 +1654,7 @@ NAICS2digit<-ggplot(def_serv,
        aes(x=NAICS2_label))+
   geom_bar()+coord_flip()+
   scale_y_continuous(label=scales::comma)+scale_x_discrete(limits=order)+
-  labs(x="2-Digit NAICS Code",y="Number of Contracts and Task Orders in Unfiltered Dataset")
+  labs(x="2-Digit NAICS6 Code",y="Number of Contracts and Task Orders in Unfiltered Dataset")
 
 NAICS2digit
 ```
@@ -1000,43 +1668,6 @@ ggsave(NAICS2digit,file="..\\Output\\NAICS2digitCount.eps",width=10,height=6,dpi
 
 
 
-```r
-#Prepare data for plot
-NAICS2_Freq <- as.data.frame(table(def_serv$NAICS2))
-NAICS2_Freq$Percent_Freq <- round(NAICS2_Freq$Freq/sum(NAICS2_Freq$Freq),4)*100
-colnames(NAICS2_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
-
-#Get detail description for NAICS2 code
-NAICS_Lookup <- read.csv(file = "https://raw.githubusercontent.com/CSISdefense/Vendor/master/Data/Clean/NAICS/Lookup_NAICS_code.csv")
-colnames(NAICS_Lookup) <- c("NAICS_Code", "NAICS_DESCRIPTION")
-NAICS2_Freq <- left_join(NAICS2_Freq, NAICS_Lookup, by = "NAICS_Code")
-```
-
-```
-## Warning: Column `NAICS_Code` joining factors with different levels,
-## coercing to character vector
-```
-
-```r
-NAICS2_Freq <- NAICS2_Freq[order(-NAICS2_Freq$Percent_Freq),]
-NAICS2_Freq$NAICS_DESCRIPTION <- factor(NAICS2_Freq$NAICS_DESCRIPTION, levels = rev(NAICS2_Freq$NAICS_DESCRIPTION))
-
-Frequency_Plot2 <- ggplot(data = NAICS2_Freq,
-                          aes(x = NAICS2_Freq$NAICS_DESCRIPTION, 
-                              y = NAICS2_Freq$Percent_Freq)) +
-                   geom_bar(stat = "identity", position = "dodge", width = 0.8) + 
-                   coord_flip() +
-                   xlab("") + 
-                   ylab("Percent of Frequency") + 
-                   theme_grey() + 
-                   scale_fill_grey() + 
-                   ggtitle("Percent of Frequency for NAICS2") +
-                   theme(text = element_text(size = 10))
-Frequency_Plot2
-```
-
-![](Codebook_files/figure-html/barplot for all NAICS2, 21 in total-1.png)<!-- -->
-
 
 ```r
 #Prepare data for plot
@@ -1044,33 +1675,54 @@ NAICS2_Freq <- as.data.frame(table(def_serv$NAICS2))
 NAICS2_Freq$Percent_Freq <- round(NAICS2_Freq$Freq/sum(NAICS2_Freq$Freq),4)*100
 colnames(NAICS2_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 
+
+
+
 #Get detail description for NAICS2 code
-NAICS2_Freq <- left_join(NAICS2_Freq, NAICS_Lookup, by = "NAICS_Code")
+NAICS2_Freq<-csis360::read_and_join_experiment(NAICS2_Freq,
+                            lookup_file = "Lookup_PrincipalNAICScode.csv",
+                            path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                            dir="economic/",
+                            by=c("NAICS_Code"="principalnaicscode"),
+                            add_var="principalnaicscodeText"
+)
 ```
 
 ```
-## Warning: Column `NAICS_Code` joining factors with different levels,
-## coercing to character vector
+## Parsed with column specification:
+## cols(
+##   principalnaicscode = col_character(),
+##   principalnaicscodeText = col_character(),
+##   principalNAICS2DigitCode = col_double(),
+##   principalNAICS3DigitCode = col_double(),
+##   principalNAICS4DigitCode = col_double(),
+##   NAICS_shorthand = col_character()
+## )
+```
+
+```
+## Warning: Column `NAICS_Code`/`principalnaicscode` joining factor and
+## character vector, coercing into character vector
 ```
 
 ```r
 Percent_Obli <- c()
-Total_Obli <- sum(def_serv$Action_Obligation.OMB20_GDP18, na.rm = TRUE)
+Total_Obli <- sum(def_serv$Action_Obligation_OMB20_GDP18, na.rm = TRUE)
 for (i in NAICS2_Freq$NAICS_Code) {
-  Percent_Obligation <- round(sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$NAICS2 == i], na.rm = TRUE)/Total_Obli,5)
+  Percent_Obligation <- round(sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$NAICS2 == i], na.rm = TRUE)/Total_Obli,5)
   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
 }
 
 NAICS2_Freq$Percent_Obli <- Percent_Obli * 100
 NAICS2_Freq <- NAICS2_Freq[order(-NAICS2_Freq$Percent_Obli),]
 NAICS2_Freq[,c(1,3)] <- lapply(NAICS2_Freq[,c(1,3)], function(x) as.character(x))
-NAICS2_Freq$NAICS_DESCRIPTION <- paste(NAICS2_Freq$NAICS_Code, " - ", NAICS2_Freq$NAICS_DESCRIPTION)
-NAICS2_Freq$NAICS_DESCRIPTION <- factor(NAICS2_Freq$NAICS_DESCRIPTION, levels = rev(NAICS2_Freq$NAICS_DESCRIPTION))
-NAICS2_Freq <- melt(NAICS2_Freq, id = c("NAICS_Code", "Count_Freq","NAICS_DESCRIPTION"))
+NAICS2_Freq$principalnaicscodeText <- paste(NAICS2_Freq$NAICS_Code, " - ", NAICS2_Freq$principalnaicscodeText)
+NAICS2_Freq$principalnaicscodeText <- factor(NAICS2_Freq$principalnaicscodeText, levels = rev(NAICS2_Freq$principalnaicscodeText))
+NAICS2_Freq <- melt(NAICS2_Freq, id = c("NAICS_Code", "Count_Freq","principalnaicscodeText"))
 NAICS2_Freq$value <- as.numeric(NAICS2_Freq$value)
 
 NAICS2_barplot <- ggplot(data = NAICS2_Freq,
-                          aes(x = NAICS_DESCRIPTION, 
+                          aes(x = principalnaicscodeText, 
                               y = value,
                               fill = factor(variable))) +
                    geom_bar(stat = "identity", 
@@ -1092,15 +1744,20 @@ NAICS2_barplot <- ggplot(data = NAICS2_Freq,
 NAICS2_barplot
 ```
 
-![](Codebook_files/figure-html/grouped percent frequency/obligation barplot for all NAICS2, 21 in total-1.png)<!-- -->
+![](Codebook_files/figure-html/NAICS2Percent-1.png)<!-- -->
 
 
 #### NAICS 3
 
 
 ```r
-NAICS_summary<-def_serv %>% group_by(NAICS3,StartCY,def3_HHI_lag1,def3_obl_lag1,def3_ratio_lag1,US3_avg_sal_lag1) %>%
-  dplyr::summarise(annual_action_obligation=sum(Action_Obligation.OMB20_GDP18),
+NAICS_summary<-def_serv %>% group_by(NAICS3,
+                                     StartCY,
+                                     def3_HHI_lag1,
+                                     def3_obl_lag1,
+                                     def3_ratio_lag1,
+                                     US3_avg_sal_lag1) %>%
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation_OMB20_GDP18),
                    annual_count=length(StartCY)) 
 
 top_NAICS <- NAICS_summary %>% group_by(NAICS3) %>% 
@@ -1117,13 +1774,13 @@ colnames(NAICS_summary)[colnames(NAICS_summary)=="NAICS3"]<-"principalnaicscode"
 NAICS_summary$principalnaicscode<-as.character(NAICS_summary$principalnaicscode)
 NAICS_summary<-as.data.frame(NAICS_summary)
 NAICS_summary<-read_and_join_experiment(NAICS_summary,
-                                                 lookup_file = "Lookup_PrincipalNAICScode.csv",
-                                                 path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
-                                                 dir="economic/",
-                                                 by="principalnaicscode",
-                                                 skip_check_var=c("principalnaicscodeText",
-                                                                  "NAICS_shorthand",
-                                                                  "principalNAICS4DigitCode")
+                                        lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                        path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                        dir="economic/",
+                                        by="principalnaicscode",
+                                        skip_check_var=c("principalnaicscodeText",
+                                                         "NAICS_shorthand",
+                                                         "principalNAICS4DigitCode")
 )
 ```
 
@@ -1132,7 +1789,7 @@ NAICS_summary<-read_and_join_experiment(NAICS_summary,
 ## cols(
 ##   principalnaicscode = col_character(),
 ##   principalnaicscodeText = col_character(),
-##   principalNAICS2DigitCode = col_character(),
+##   principalNAICS2DigitCode = col_double(),
 ##   principalNAICS3DigitCode = col_double(),
 ##   principalNAICS4DigitCode = col_double(),
 ##   NAICS_shorthand = col_character()
@@ -1143,7 +1800,70 @@ NAICS_summary<-read_and_join_experiment(NAICS_summary,
 # https://stackoverflow.com/questions/37174316/how-to-fit-long-text-into-ggplot2-facet-titles
 
 
+centered_log_description(def_serv$def3_obl_lag1,"obligations")
+```
 
+```
+## [1] "The variable is rescaled, by subtracting its mean (22.6) and dividing by its standard deviation doubled (4.12). Values of -1, -0.5, 0, 0.5, and 1 correspond to 1.1e+08, 8.5e+08, 6.7e+09, 5.3e+10, and 4.1e+11 obligations respectively."
+```
+
+```r
+centered_log_description(def_serv$l_def6_obl_lag1,"obligations")
+```
+
+```
+## [1] "The variable is rescaled, by subtracting its mean (3.02) and dividing by its standard deviation doubled (0.253). Values of -1, -0.5, 0, 0.5, and 1 correspond to 16, 18, 20, 23, and 26 obligations respectively."
+```
+
+```r
+NA_stats(def_serv,"cl_def3_obl_lag1")
+```
+
+```
+## [1] "Data is missing for 0.00644 of records and 0.00539 of obligated dollars."
+```
+
+```r
+NA_stats(def_serv,"cln_Def6Obl")
+```
+
+```
+## [1] "Data is missing for 0.0252 of records and 0.00884 of obligated dollars."
+```
+
+```r
+centered_log_description(def_serv$def3_ratio_lag1,"obligations")
+```
+
+```
+## [1] "The variable is rescaled, by subtracting its mean (-4.12) and dividing by its standard deviation doubled (3.06). Values of -1, -0.5, 0, 0.5, and 1 correspond to 0.00076, 0.0035, 0.016, 0.075, and 0.35 obligations respectively."
+```
+
+```r
+centered_log_description(def_serv$def6_ratio_lag1,"obligations")
+```
+
+```
+## [1] "The variable is rescaled, by subtracting its mean (-3.77) and dividing by its standard deviation doubled (4.56). Values of -1, -0.5, 0, 0.5, and 1 correspond to 0.00024, 0.0024, 0.023, 0.22, and 2.2 obligations respectively."
+```
+
+```r
+NA_stats(def_serv,"clr_Def3toUS")
+```
+
+```
+## [1] "Data is missing for 0.0117 of records and 0.00784 of obligated dollars."
+```
+
+```r
+NA_stats(def_serv,"clr_Def6toUS")
+```
+
+```
+## [1] "Data is missing for 0.0295 of records and 0.011 of obligated dollars."
+```
+
+```r
 # View(NAICS_summary)
 NAICS_summary$NAICS_shorthand<-swr(NAICS_summary$NAICS_shorthand,nwrap = 25)
 NAICS_summary$CY<-NAICS_summary$StartCY-1
@@ -1287,25 +2007,45 @@ Frequency[["Percent_Freq"]] <- round(Frequency[["Freq"]]/sum(Frequency[["Freq"]]
 colnames(Frequency) <- c("NAICS3", "Count_Freq", "Percent_Freq")
 Percent_Obli <- c()
 for (i in Frequency[["NAICS3"]]) {
-  Percent_Obligation <- round(sum(def_serv[["Action_Obligation.OMB20_GDP18"]][def_serv$NAICS3 == i], na.rm = TRUE)/sum(def_serv[["Action_Obligation.OMB20_GDP18"]], na.rm = TRUE),5)
+  Percent_Obligation <- round(sum(def_serv[["Action_Obligation_OMB20_GDP18"]][def_serv$NAICS3 == i], na.rm = TRUE)/sum(def_serv[["Action_Obligation_OMB20_GDP18"]], na.rm = TRUE),5)
     Percent_Obli <- c(Percent_Obli, Percent_Obligation)
   }
 Frequency[["Percent_Obli"]] <- Percent_Obli*100
 NAICS3_Freq <- Frequency
 
 #Add detail description to unique NAICS3 code
-NAICS3_Freq <- left_join(NAICS3_Freq, NAICS_Lookup, by = c("NAICS3"="NAICS_Code"))
+NAICS3_Freq<-read_and_join_experiment(NAICS3_Freq,
+                                        lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                        path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                        dir="economic/",
+                                        by=c("NAICS3"="principalnaicscode"),
+                                        skip_check_var=c("principalnaicscodeText",
+                                                         "NAICS_shorthand",
+                                                         "principalNAICS4DigitCode")
+)
 ```
 
 ```
-## Warning: Column `NAICS3`/`NAICS_Code` joining factors with different
-## levels, coercing to character vector
+## Parsed with column specification:
+## cols(
+##   principalnaicscode = col_character(),
+##   principalnaicscodeText = col_character(),
+##   principalNAICS2DigitCode = col_double(),
+##   principalNAICS3DigitCode = col_double(),
+##   principalNAICS4DigitCode = col_double(),
+##   NAICS_shorthand = col_character()
+## )
+```
+
+```
+## Warning: Column `NAICS3`/`principalnaicscode` joining factor and character
+## vector, coercing into character vector
 ```
 
 ```r
-colnames(NAICS3_Freq)[colnames(NAICS3_Freq)=="NAICS_DESCRIPTION"]<-"Description"
+colnames(NAICS3_Freq)[colnames(NAICS3_Freq)=="principalnaicscodeText"]<-"Description"
 NAICS3_Freq$Description <- as.character(NAICS3_Freq$Description)
-NAICS3_Freq$Description <- paste(NAICS3_Freq$NAICS, " - ", NAICS3_Freq$Description)
+NAICS3_Freq$Description <- paste(NAICS3_Freq$NAICS6, " - ", NAICS3_Freq$Description)
 
 #Get the top 15 most frequently appeared NAICS3
 NAICS3_Freq_top10Freq <- NAICS3_Freq[order(-NAICS3_Freq$Percent_Freq),]
@@ -1329,23 +2069,25 @@ part_grouped_barplot("NAICS3", NAICS3_Freq_TOP) + ggtitle("Top 15 of the most fr
 
 
 #### NAICS 6
+* NAICS6 is a factor reporting the top North American Industrial Classification Code of each contract. 
+Data is missing for 0.00328 of records and 0.00301 of obligated dollars.
 
 
 ```r
-NAICS_summary<-def_serv %>% group_by(NAICS,StartCY,def6_HHI_lag1,def6_obl_lag1,def6_ratio_lag1,US6_avg_sal_lag1) %>%
-  dplyr::summarise(annual_action_obligation=sum(Action_Obligation.OMB20_GDP18),
+NAICS_summary<-def_serv %>% group_by(NAICS6,StartCY,def6_HHI_lag1,def6_obl_lag1,def6_ratio_lag1,US6_avg_sal_lag1) %>%
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation_OMB20_GDP18),
                    annual_count=length(StartCY)) 
 
-top_NAICS <- NAICS_summary %>% group_by(NAICS) %>% 
+top_NAICS <- NAICS_summary %>% group_by(NAICS6) %>% 
   dplyr::summarise(naics_action_obligation=sum(annual_action_obligation),
                    naics_count=sum(annual_count)) 
 top_NAICS$naics_dollar_rank<-rank(-top_NAICS$naics_action_obligation)
 top_NAICS$naics_count_rank<-rank(-top_NAICS$naics_count)
 
 
-NAICS_summary<-left_join(NAICS_summary,top_NAICS, by="NAICS")
+NAICS_summary<-left_join(NAICS_summary,top_NAICS, by="NAICS6")
 
-colnames(NAICS_summary)[colnames(NAICS_summary)=="NAICS"]<-"principalnaicscode"
+colnames(NAICS_summary)[colnames(NAICS_summary)=="NAICS6"]<-"principalnaicscode"
 
 NAICS_summary$principalnaicscode<-as.character(NAICS_summary$principalnaicscode)
 NAICS_summary<-as.data.frame(NAICS_summary)
@@ -1368,7 +2110,7 @@ NAICS_summary<-read_and_join_experiment(NAICS_summary,
 ## cols(
 ##   principalnaicscode = col_character(),
 ##   principalnaicscodeText = col_character(),
-##   principalNAICS2DigitCode = col_character(),
+##   principalNAICS2DigitCode = col_double(),
 ##   principalNAICS3DigitCode = col_double(),
 ##   principalNAICS4DigitCode = col_double(),
 ##   NAICS_shorthand = col_character()
@@ -1416,7 +2158,7 @@ summary(NAICS_summary$naics_count_rank)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##     1.0   199.0   401.0   418.6   620.5  1018.5
+##     1.0   199.0   401.0   418.6   620.0  1018.5
 ```
 
 ```r
@@ -1520,28 +2262,49 @@ write.csv(NAICS_summary,file="..\\Output/NAICS6_summary.csv",row.names = FALSE)
 
 ```r
 #Prepare dateframe for plot
-NAICS_Freq <- as.data.frame(table(def_serv$NAICS))
+NAICS_Freq <- as.data.frame(table(def_serv$NAICS6))
 NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Freq),]
-NAICS_Freq_TOP20 <- NAICS_Freq[1:20,]   #Get top 20 NAICS has largest frequency count
+NAICS_Freq_TOP20 <- NAICS_Freq[1:20,]   #Get top 20 NAICS6 has largest frequency count
 NAICS_Freq_TOP20$Percent_Freq <- round(NAICS_Freq_TOP20$Freq/sum(NAICS_Freq$Freq),4)*100
 colnames(NAICS_Freq_TOP20) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
 
-#Get detail description for each NAICS code
-NAICS_Freq_TOP20 <- left_join(NAICS_Freq_TOP20, NAICS_Lookup, by = "NAICS_Code")
+#Get detail description for each NAICS6 code
+NAICS_Freq_TOP20<-read_and_join_experiment(NAICS_Freq_TOP20,
+                                                 lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                                 path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                                 dir="economic/",
+                                                 by=c("NAICS_Code"="principalnaicscode"),
+                                                 skip_check_var=c("principalnaicscodeText",
+                                                                  "NAICS_shorthand",
+                                                                  "principalNAICS4DigitCode")
+
+)
 ```
 
 ```
-## Warning: Column `NAICS_Code` joining factors with different levels,
-## coercing to character vector
+## Parsed with column specification:
+## cols(
+##   principalnaicscode = col_character(),
+##   principalnaicscodeText = col_character(),
+##   principalNAICS2DigitCode = col_double(),
+##   principalNAICS3DigitCode = col_double(),
+##   principalNAICS4DigitCode = col_double(),
+##   NAICS_shorthand = col_character()
+## )
+```
+
+```
+## Warning: Column `NAICS_Code`/`principalnaicscode` joining factor and
+## character vector, coercing into character vector
 ```
 
 ```r
 NAICS_Freq_TOP20 <- NAICS_Freq_TOP20[order(-NAICS_Freq_TOP20$Percent_Freq),]
-NAICS_Freq_TOP20$NAICS_DESCRIPTION <- factor(NAICS_Freq_TOP20$NAICS_DESCRIPTION, levels = rev(NAICS_Freq_TOP20$NAICS_DESCRIPTION))
+NAICS_Freq_TOP20$principalnaicscodeText <- factor(NAICS_Freq_TOP20$principalnaicscodeText, levels = rev(NAICS_Freq_TOP20$principalnaicscodeText))
 
 
 Frequency_Plot <- ggplot(data = NAICS_Freq_TOP20, 
-                         aes(x = NAICS_Freq_TOP20$NAICS_DESCRIPTION, 
+                         aes(x = NAICS_Freq_TOP20$principalnaicscodeText, 
                              y = NAICS_Freq_TOP20$Percent_Freq)) +
                   geom_bar(stat = "identity", position = "dodge", width = 0.8) + 
                   coord_flip() +
@@ -1549,44 +2312,66 @@ Frequency_Plot <- ggplot(data = NAICS_Freq_TOP20,
                   ylab("Percent of Frequency") + 
                   theme_grey() + 
                   scale_fill_grey() + 
-                  ggtitle("Top 20 of the most frequently appeared NAICS") +
+                  ggtitle("Top 20 of the most frequently appeared NAICS6") +
                   theme(text = element_text(size = 10))
 Frequency_Plot
 ```
 
-![](Codebook_files/figure-html/barplot for top 20 most frequently appeared NAICS-1.png)<!-- -->
+![](Codebook_files/figure-html/barplot for top 20 most frequently appeared NAICS6-1.png)<!-- -->
 
 
 ```r
-#Percent frequency/obligation grouped bar plot for variable NAICS
+#Percent frequency/obligation grouped bar plot for variable NAICS6
 #Prepare dateframe for plot
-NAICS_Freq <- def_serv %>% group_by(NAICS) %>% summarise(
+NAICS_Freq <- def_serv %>% group_by(NAICS6) %>% summarise(
   Count_Freq=length(CSIScontractID),
-  Action_Obligation.OMB20_GDP18=sum(Action_Obligation.OMB20_GDP18)
+  Action_Obligation_OMB20_GDP18=sum(Action_Obligation_OMB20_GDP18)
 )
   
   # NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Freq),]
-# NAICS_Freq_TOP20 <- NAICS_Freq[1:20,]   #Get top 20 NAICS has largest frequency count
+# NAICS_Freq_TOP20 <- NAICS_Freq[1:20,]   #Get top 20 NAICS6 has largest frequency count
 NAICS_Freq$Percent_Freq <- round(NAICS_Freq$Count_Freq/
                                    sum(NAICS_Freq$Count_Freq),4)*100
-NAICS_Freq$Percent_Obli <- round(NAICS_Freq$Action_Obligation.OMB20_GDP18/
-                                         sum(NAICS_Freq$Action_Obligation.OMB20_GDP18),4)*100
+NAICS_Freq$Percent_Obli <- round(NAICS_Freq$Action_Obligation_OMB20_GDP18/
+                                         sum(NAICS_Freq$Action_Obligation_OMB20_GDP18),4)*100
 
-colnames(NAICS_Freq)[colnames(NAICS_Freq)=="NAICS"] <- "NAICS_Code"
+colnames(NAICS_Freq)[colnames(NAICS_Freq)=="NAICS6"] <- "NAICS_Code"
 NAICS_Freq$NAICS_Code<-factor(NAICS_Freq$NAICS_Code)
 
-#Get detail description for each NAICS code
-NAICS_Freq <- left_join(NAICS_Freq, NAICS_Lookup, by = "NAICS_Code")
+#Get detail description for each NAICS6 code
+NAICS_Freq<-read_and_join_experiment(NAICS_Freq,
+                                                 lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                                 path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                                 dir="economic/",
+                                                 by=c("NAICS_Code"="principalnaicscode"),
+                                                 skip_check_var=c("principalnaicscodeText",
+                                                                  "NAICS_shorthand",
+                                                                  "principalNAICS4DigitCode")
+
+)
 ```
 
 ```
-## Warning: Column `NAICS_Code` joining factors with different levels,
-## coercing to character vector
+## Parsed with column specification:
+## cols(
+##   principalnaicscode = col_character(),
+##   principalnaicscodeText = col_character(),
+##   principalNAICS2DigitCode = col_double(),
+##   principalNAICS3DigitCode = col_double(),
+##   principalNAICS4DigitCode = col_double(),
+##   NAICS_shorthand = col_character()
+## )
+```
+
+```
+## Warning: Column `NAICS_Code`/`principalnaicscode` joining factor and
+## character vector, coercing into character vector
 ```
 
 ```r
 NAICS_Freq <- NAICS_Freq[order(-NAICS_Freq$Percent_Freq),]
-NAICS_Freq$NAICS_DESCRIPTION <- factor(NAICS_Freq$NAICS_DESCRIPTION, levels = rev(NAICS_Freq$NAICS_DESCRIPTION))
+NAICS_Freq$principalnaicscodeText <- factor(NAICS_Freq$principalnaicscodeText,
+                                                   levels = rev(unique(NAICS_Freq$principalnaicscodeText)))
 
 
 
@@ -1607,15 +2392,15 @@ NAICS_Freq_top10Obli <- NAICS_Freq_top10Obli[1:10, ]
 NAICS_Freq_TOP <- rbind( NAICS_Freq_top10Obli, NAICS_Freq_top10Freq)
 NAICS_Freq_TOP <- unique(NAICS_Freq_TOP)  #18 records in total
 NAICS_Freq_TOP[,c(1,4)] <- lapply(NAICS_Freq_TOP[,c(1,4)], function(x) as.character(x))
-NAICS_Freq_TOP$NAICS_DESCRIPTION <- paste(NAICS_Freq_TOP$NAICS_Code, " - ", NAICS_Freq_TOP$NAICS_DESCRIPTION)
+NAICS_Freq_TOP$principalnaicscodeText <- paste(NAICS_Freq_TOP$NAICS_Code, " - ", NAICS_Freq_TOP$principalnaicscodeText)
 
-NAICS_Freq_TOP$NAICS_DESCRIPTION <- factor(NAICS_Freq_TOP$NAICS_DESCRIPTION, levels = rev(NAICS_Freq_TOP$NAICS_DESCRIPTION))
-NAICS_Freq_TOP <- melt(NAICS_Freq_TOP, id = c("NAICS_Code","Count_Freq","NAICS_DESCRIPTION"))
+NAICS_Freq_TOP$principalnaicscodeText <- factor(NAICS_Freq_TOP$principalnaicscodeText, levels = rev(NAICS_Freq_TOP$principalnaicscodeText))
+NAICS_Freq_TOP <- melt(NAICS_Freq_TOP, id = c("NAICS_Code","Count_Freq","principalnaicscodeText"))
 #NAICS_Freq_TOP <- merge(NAICS_Freq_top20Freq, NAICS_Freq_top20Obli, by= "NAICS_Code", all=TRUE)
 
 (
 NAICS_barPlot <- ggplot(data = NAICS_Freq_TOP, 
-                         aes(x = NAICS_DESCRIPTION, 
+                         aes(x = principalnaicscodeText, 
                              y = value,
                              fill = factor(variable))) +
                   geom_bar(stat = "identity", position = "dodge", width = 0.8) + 
@@ -1625,7 +2410,7 @@ NAICS_barPlot <- ggplot(data = NAICS_Freq_TOP,
                   theme_grey() + 
                   scale_fill_grey(labels = c("% records", "% obligation"),
                                   guide = guide_legend(reverse = TRUE)) + 
-                  ggtitle("Top 18 of the most frequently appeared NAICS") +
+                  ggtitle("Top 18 of the most frequently appeared NAICS6") +
                   theme(text = element_text(size = 10),
                         legend.title = element_blank(),
                         legend.position = "bottom",
@@ -1635,14 +2420,14 @@ NAICS_barPlot <- ggplot(data = NAICS_Freq_TOP,
 )
 ```
 
-![](Codebook_files/figure-html/grouped barplot for NAICS most frequency appeared/has the largest percent obligation-1.png)<!-- -->
+![](Codebook_files/figure-html/grouped barplot for NAICS6 most frequency appeared/has the largest percent obligation-1.png)<!-- -->
 
 ##### Detailed Industry HHI                            
                             
-* cl_def6_HHI_lag1 is a numeric variable based on the HHI Index of a NAICS code for defense contracting. Index values of 1500 and below are considered unconsolidated. 1500-2000 is considered moderately consolidated. And 2,000 and above are considered highly consolidated. The scale runs from 0 to 10,000. Data is missing for 0.00644 of records and 0.00539 of obligated dollars.
+* cln_Def6HHI is a numeric variable based on the HHI Index of a NAICS6 code for defense contracting. Index values of 1500 and below are considered unconsolidated. 1500-2000 is considered moderately consolidated. And 2,000 and above are considered highly consolidated. The scale runs from 0 to 10,000. Data is missing for 0.00644 of records and 0.00539 of obligated dollars.
 
 ```r
-# !is.na(def_serv$cl_US6_avg_sal_lag1Const)&
+# !is.na(def_serv$cln_US6sal)&
 #   !is.na(def_serv$pPBSC)&
 # !is.na(def_serv$pOffPSC)&
 
@@ -1656,13 +2441,13 @@ statsummary_discrete("CompOffr",def_serv)
 ```
 
 ```
-##         CompOffr %of records % of $s
-## 1 No Competition      27.13%  26.25%
-## 2        1 offer      16.96%  11.48%
-## 3       2 offers      13.06%  13.89%
-## 4     3-4 offers      19.93%  20.34%
-## 5      5+ offers      21.86%  27.31%
-## 6             NA       1.06%   0.73%
+##         CompOffr % of records % of $s
+## 1 No Competition       27.14%  26.25%
+## 2        1 offer       16.98%  11.48%
+## 3       2 offers       13.06%  13.89%
+## 4     3-4 offers       19.93%  20.34%
+## 5      5+ offers       21.83%  27.31%
+## 6             NA        1.06%   0.73%
 ```
 
 ```r
@@ -1682,11 +2467,11 @@ hhi
 
 ```
 ##   Variable_Name    Min        Max  Median Logarithmic Mean 1 unit below
-## 1 def3_HHI_lag1 28.116 10,000.000 253.671          237.109      30.831 
-## 2 def6_HHI_lag1 22.094 10,000.000 601.752          639.154      60.875 
+## 1 def3_HHI_lag1 28.116 10,000.000 253.671          237.090      30.826 
+## 2 def6_HHI_lag1 22.094 10,000.000 601.752          639.237      60.888 
 ##   1 unit above % of records NA % of Obligations to NA records
-## 1   1,823.529            0.64%                         0.539%
-## 2   6,710.785            2.42%                         0.854%
+## 1   1,823.514            0.64%                         0.539%
+## 2   6,711.109            2.42%                         0.854%
 ```
 
 ```r
@@ -1702,11 +2487,11 @@ statsummary_continuous(complex_category, def_serv)
 
 ```
 ##      Variable_Name       Min           Max      Median Logarithmic Mean
-## 1 US6_avg_sal_lag1 8,690.708   247,576.055  53,959.761       49,589.524
-## 2  CFTE_Rate_1year 7,369.585 1,908,519.761 165,307.106      162,265.238
+## 1 US6_avg_sal_lag1 8,690.708   247,576.055  53,959.761       49,593.149
+## 2  CFTE_Rate_1year 7,369.585 1,908,519.761 165,307.106      162,259.713
 ##   1 unit below 1 unit above % of records NA % of Obligations to NA records
-## 1  22,210.205  110,720.313            2.95%                          1.10%
-## 2  59,458.328  442,831.278            0.10%                          0.04%
+## 1  22,215.287  110,711.173            2.95%                          1.10%
+## 2  59,462.380  442,770.953            0.10%                          0.04%
 ```
 
 ```r
@@ -1724,8 +2509,8 @@ statsummary_continuous(capacity_category, def_serv,log=FALSE)
 ## 1         pPBSC 0.000 1.000  0.281           0.339   -0.261  * 
 ## 2       pOffPSC 0.000 1.000  0.012           0.126   -0.377  * 
 ##   1 unit above % of records NA % of Obligations to NA records
-## 1       0.939         0.17800%                             0%
-## 2       0.629         0.17900%                             0%
+## 1       0.939          0.0960%                             0%
+## 2       0.630          0.0960%                             0%
 ```
 
 ```r
@@ -1734,11 +2519,42 @@ statsummary_continuous(pair_category, def_serv)
 
 ```
 ##          Variable_Name   Min           Max Median Logarithmic Mean
-## 1 office_entity_ca_inc 1.000 7,806,579.000 27.000           33.983
+## 1 office_entity_ca_inc 1.000 7,806,579.000 27.000           34.012
 ##   1 unit below 1 unit above % of records NA % of Obligations to NA records
-## 1    0.491  *    2,353.075           0.329%                         0.518%
+## 1    0.491  *    2,355.033           0.246%                         0.517%
 ```
 
+
+
+
+### International
+* b_Intl is a binary variable with a value of 1 for contracts/task orders with any transactions performed internationally and a value of 0 otherwise. Data is missing for 4.83e-06 of records and 0.000198 of obligated dollars.
+
+
+
+```r
+#n_Fixed(0,1), PricingFee, n_Incent, b_UCA(0,1), b_Intl
+#original variable for b_UCA: UCA
+#original variable for n_Fixed: FxCb
+#original variable for n_Incent: Fee
+
+grouped_barplot("Intl", def_serv)
+```
+
+![](Codebook_files/figure-html/International-1.png)<!-- -->
+
+```r
+statsummary_discrete("Intl", def_serv)
+```
+
+```
+##        Intl % of records % of $s
+## 1 Just U.S.       83.23%  83.94%
+## 2 Any Intl.       16.77%  16.03%
+## 3        NA        0.00%   0.02%
+```
+
+### Start Year
 
 
 # Missing Data Measures
@@ -1751,7 +2567,7 @@ summary(def_serv$b_Term)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-## 0.00000 0.00000 0.00000 0.01934 0.00000 1.00000
+## 0.00000 0.00000 0.00000 0.01879 0.00000 1.00000
 ```
 
 ```r
@@ -1760,7 +2576,7 @@ summary(def_serv$b_CBre)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.0000  0.0000  0.0000  0.0566  0.0000  1.0000
+## 0.00000 0.00000 0.00000 0.06041 0.00000 1.00000
 ```
 
 ```r
@@ -1769,7 +2585,7 @@ summary(def_serv$lp_OptGrowth) #Missing
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##   0.000   0.000   0.000   0.044   0.000  17.890    8149
+##   0.000   0.000   0.000   0.043   0.000  17.890    7276
 ```
 
 ```r
@@ -1777,8 +2593,8 @@ summary(def_serv$ExercisedOptions)
 ```
 
 ```
-##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.      NA's 
-##         0         0         0     61446         0 504504112         6
+## Length  Class   Mode 
+##      0   NULL   NULL
 ```
 
 ```r
@@ -1787,62 +2603,62 @@ summary(def_serv$AnyUnmodifiedUnexercisedOptions)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##   0.000   0.000   0.000   0.069   0.000   1.000    7717
+##   0.000   0.000   0.000   0.069   0.000   1.000    5977
 ```
 
 ```r
 #Study Variables
-summary(def_serv$cl_US6_avg_sal_lag1Const)
+summary(def_serv$cln_US6sal)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##   -2.20   -0.25    0.10    0.00    0.34    1.97   36656
+##   -2.20   -0.25    0.09    0.00    0.34    1.97   36642
 ```
 
 ```r
-summary(def_serv$cl_CFTE)
+summary(def_serv$cln_PSCrate)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-## -3.0797 -0.2848  0.0185  0.0000  0.3265  2.4551    1207
+## -3.0800 -0.2847  0.0185  0.0000  0.3266  2.4554    1204
 ```
 
 ```r
-summary(def_serv$c_pPBSC)
+summary(def_serv$cp_OffPerf7)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-## -0.5655 -0.4604 -0.0969  0.0000  0.3543  1.1010    2218
+## -0.5655 -0.4604 -0.0970  0.0000  0.3543  1.1010    1188
 ```
 
 ```r
-summary(def_serv$c_pOffPSC)
+summary(def_serv$cp_OffPSC7)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-## -0.2511 -0.2495 -0.2264  0.0000 -0.0687  1.7366    2225
+## -0.2511 -0.2495 -0.2264  0.0000 -0.0687  1.7362    1192
 ```
 
 ```r
-summary(def_serv$c_pairHist)
+summary(def_serv$cn_PairHist7)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -0.727  -0.520   0.103   0.000   0.518   0.726    4087
+## -0.7276 -0.5200  0.1027  0.0000  0.5179  0.7255    3052
 ```
 
 ```r
-summary(def_serv$cl_pairCA)
+summary(def_serv$cln_PairCA)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -0.832  -0.409  -0.054   0.000   0.317   2.913    4087
+## -0.8322 -0.4094 -0.0545  0.0000  0.3182  2.9129    3052
 ```
 
 ```r
@@ -1852,9 +2668,9 @@ summary(def_serv$CompOffr)
 
 ```
 ## No Competition        1 offer       2 offers     3-4 offers      5+ offers 
-##         337284         210889         162302         247725         271746 
+##         336894         210759         162167         247460         271022 
 ##           NA's 
-##          13243
+##          13147
 ```
 
 ```r
@@ -1863,7 +2679,7 @@ summary(def_serv$cl_Offr)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -0.446  -0.446  -0.075   0.000   0.296   3.251   13212
+##  -0.446  -0.446  -0.075   0.000   0.297   3.254   13116
 ```
 
 ```r
@@ -1872,16 +2688,16 @@ summary(def_serv$cl_Ceil)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -3.397  -0.350  -0.032  -0.001   0.308   3.242    4155
+##  -3.423  -0.350  -0.031   0.000   0.312   3.272    3990
 ```
 
 ```r
-summary(def_serv$capped_cl_Days)
+summary(def_serv$capped_cln_Days)
 ```
 
 ```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -1.310  -0.279   0.112   0.000   0.446   1.153   30383
+## Length  Class   Mode 
+##      0   NULL   NULL
 ```
 
 ```r
@@ -1890,60 +2706,38 @@ summary(def_serv$Veh)
 
 ```
 ##  Def/Pur    S-IDC    M-IDC FSS/GWAC  BPA/BOA     NA's 
-##   357014   614683   160635    50284    59909      664
+##   357013   613264   160315    50284    59909      664
 ```
 
 ```r
-summary(def_serv$PricingUCA)
+summary(def_serv$Pricing)
 ```
 
 ```
-## Combination or Other                  FFP            Incentive 
-##                11343              1010236                 4277 
-##             Other CB             Other FP         T&M/LH/FPLOE 
-##                63816                11036                21280 
+##                  FFP             Other FP            Incentive 
+##              1008903                11023                 4267 
+## Combination or Other             Other CB         T&M/LH/FPLOE 
+##                11343                63690                21230 
 ##                  UCA                 NA's 
-##                12367               108834
+##                12363               108630
 ```
 
 ```r
-summary(def_serv$PlaceCountryISO3)
+summary(def_serv$Place)
 ```
 
 ```
-##     USA     JPN     DEU     AFG     KOR     ITA     BHR     IRQ     ESP 
-## 1012656   44491   29294   26185   18764   10306    9234    6927    4709 
-##     SGP     *MF     KWT     PHL     THA     ARE     GBR     COL     IOT 
-##    3707    3440    3329    3182    2863    2773    2754    2246    2202 
-##     SAU     BEL     *MU     QAT     GRC     CUB     DJI     TUR     PER 
-##    1665    1634    1483    1428    1421    1390    1209    1167    1046 
-##     CAN     PRT     HND     NLD     KGZ     JOR     KEN     VNM     AUS 
-##     912     837     753     672     566     531     523     516     510 
-##     EGY     KHM     ROU     IDN     HTI     LAO     OMN     GTM     MYS 
-##     477     462     462     428     412     341     317     272     271 
-##     ISR     ETH     UGA     HKG     BGD     SLV     PAN     BLZ     MAR 
-##     264     260     260     254     234     220     219     216     195 
-##     FRA     DOM     BGR     PAK     NER     LBR     SEN     POL     GEO 
-##     187     182     181     134     124     122     112     109     102 
-##     GAB     UKR     NOR     TLS     PNG     HRV     GHA     CHL     KIR 
-##      99      95      91      90      84      82      79      74      69 
-##     MHL     IND     CMR     MDA     GRL     MKD     BRB     NIC     ALB 
-##      69      68      66      62      59      57      56      55      53 
-##     TCD     LVA     MLI     MNG     TKM     TZA     BIH     AZE     BRN 
-##      53      51      51      51      50      50      47      46      45 
-##     FSM     MRT     RUS     DZA     LTU     NZL     NPL     TTO (Other) 
-##      45      45      44      43      43      43      41      41    1604 
-##    NA's 
-##   25346
+##    Length     Class      Mode 
+##   1241449 character character
 ```
 
 ```r
-summary(def_serv$NAICS)
+summary(def_serv$NAICS6)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##   54171  336413  541330  489857  561920  928120    4077
+##   54171  336413  541330  489853  561920  928120    4075
 ```
 
 ```r
@@ -1952,7 +2746,7 @@ summary(def_serv$NAICS3)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##   111.0   336.0   541.0   493.3   561.0   928.0    4077
+##   111.0   336.0   541.0   493.3   561.0   928.0    4075
 ```
 
 ```r
@@ -1961,7 +2755,7 @@ summary(def_serv$Office)
 
 ```
 ##    Length     Class      Mode 
-##   1243189 character character
+##   1241449 character character
 ```
 
 ```r
@@ -1970,13 +2764,13 @@ summary(def_serv$Agency)
 
 ```
 ##   *ODD   1450   1700   2100   3600   4730   4745   5700   6950   7012 
-##      0      0 411637 498926      0      0      0 176370      0      0 
+##      0      0 411473 498204      0      0      0 175993      0      0 
 ##   8900   96CE   9700   9748   9760   9761   9763   9770   9771   9773 
-##      4      9      0    661    845    677   1939      0    304      0 
+##      4      8      0    661    845    676   1939      0    304      0 
 ##   9776   9777   97AB   97AE   97AK   97AS   97AT   97AV   97AZ   97BZ 
-##  24569    111      0     92  41956  58261   1995    411      1   1317 
+##  24519    111      0     92  41912  58234   1992    411      1   1317 
 ##   97DH   97F1   97F2   97F5   97F7   97HW   97JC   97ZS   NA's 
-##    572    810   4412   4279     81   1671    326   9848   1105
+##    572    810   4405   4278     81   1671    326   9846    764
 ```
 
 ```r
@@ -1989,48 +2783,48 @@ summary(def_serv$StartCY)
 ```
 
 ```r
-summary(def_serv$cl_def3_HHI_lag1)
+summary(def_serv$cln_Def3HHI)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -1.045  -0.457   0.033   0.000   0.326   1.834    8005
+##  -1.045  -0.457   0.033   0.000   0.326   1.834    8001
 ```
 
 ```r
-summary(def_serv$cl_def3_ratio_lag1)
+summary(def_serv$clr_Def3toUS)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -0.556  -0.455  -0.110   0.000   0.452   2.091   14589
+##  -0.556  -0.455  -0.110   0.000   0.452   2.092   14579
 ```
 
 ```r
-summary(def_serv$cl_def6_HHI_lag1)
+summary(def_serv$cln_Def6HHI)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -1.431  -0.313  -0.026   0.000   0.374   1.170   30116
+##  -1.431  -0.314  -0.026   0.000   0.374   1.170   30108
 ```
 
 ```r
-summary(def_serv$cl_def6_obl_lag1)
+summary(def_serv$cln_Def6Obl)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -2.862  -0.315  -0.015   0.000   0.448   0.830   31353
+##  -2.861  -0.315  -0.015   0.000   0.448   0.830   31332
 ```
 
 ```r
-summary(def_serv$cl_def6_ratio_lag1)
+summary(def_serv$clr_Def6toUS)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##   -0.33   -0.25   -0.18    0.00    0.11   15.27   36656
+##   -0.33   -0.25   -0.18    0.00    0.11   15.27   36642
 ```
 
 ```r
@@ -2040,7 +2834,7 @@ summary(def_serv$cl_OffCA)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-## -2.2258 -0.2093  0.0140  0.0000  0.2339  2.4020    2218
+## -2.2258 -0.2093  0.0140  0.0000  0.2338  2.4019    1188
 ```
 
 ```r
@@ -2049,16 +2843,16 @@ summary(def_serv$cl_OffCA)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-## -2.2258 -0.2093  0.0140  0.0000  0.2339  2.4020    2218
+## -2.2258 -0.2093  0.0140  0.0000  0.2338  2.4019    1188
 ```
 
 ```r
-summary(def_serv$c_pMarket)
+summary(def_serv$cp_PairObl7)
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  -0.157  -0.157  -0.151   0.000  -0.095   3.049    4087
+## -0.1568 -0.1566 -0.1509  0.0000 -0.0951  3.0486    3052
 ```
 
 ```r
@@ -2067,7 +2861,7 @@ summary(def_serv$Crisis)
 
 ```
 ##   Other    ARRA     Dis     OCO 
-## 1162623    6526    1917   72123
+## 1160883    6526    1917   72123
 ```
 
 ```r
@@ -2079,36 +2873,36 @@ complete<-
   !is.na(def_serv$ExercisedOptions)&
   !is.na(def_serv$AnyUnmodifiedUnexercisedOptions)&
   #Study Variables
-  !is.na(def_serv$cl_US6_avg_sal_lag1Const)&
-  !is.na(def_serv$cl_CFTE)&
-  !is.na(def_serv$c_pPBSC)&
-  !is.na(def_serv$c_pOffPSC)&
-  !is.na(def_serv$c_pairHist)&
-  !is.na(def_serv$cl_pairCA)&
+  !is.na(def_serv$cln_US6sal)&
+  !is.na(def_serv$cln_PSCrate)&
+  !is.na(def_serv$cp_OffPerf7)&
+  !is.na(def_serv$cp_OffPSC7)&
+  !is.na(def_serv$cn_PairHist7)&
+  !is.na(def_serv$cln_PairCA)&
   #Controls
   !is.na(def_serv$CompOffr)&
   !is.na(def_serv$cl_Offr)&
   !is.na(def_serv$cl_Ceil)&
-  !is.na(def_serv$capped_cl_Days)&
+  !is.na(def_serv$capped_cln_Days)&
   !is.na(def_serv$Veh) &
-  !is.na(def_serv$PricingUCA)&
-  !is.na(def_serv$PlaceCountryISO3)& #New Variable
+  !is.na(def_serv$Pricing)&
+  !is.na(def_serv$Place)& #New Variable
   # !is.na(def_serv$b_UCA)& No longer  used
-  !is.na(def_serv$NAICS)&
+  !is.na(def_serv$NAICS6)&
   !is.na(def_serv$NAICS3)&
   !is.na(def_serv$Office)&
   !is.na(def_serv$Agency)&
   !is.na(def_serv$StartCY)&
-  !is.na(def_serv$cl_def3_HHI_lag1)&
-  !is.na(def_serv$cl_def3_ratio_lag1)&
-  !is.na(def_serv$cl_def6_HHI_lag1)&
-  !is.na(def_serv$cl_def6_obl_lag1Const)&
-  !is.na(def_serv$cl_def6_ratio_lag1)&
+  !is.na(def_serv$cln_Def3HHI)&
+  !is.na(def_serv$clr_Def3toUS)&
+  !is.na(def_serv$cln_Def6HHI)&
+  !is.na(def_serv$cln_Def6OblConst)&
+  !is.na(def_serv$clr_Def6toUS)&
   #New Controls
   !is.na(def_serv$cl_OffCA)& #summary(def_serv$cl_OffCA)
-  !is.na(def_serv$cl_OffVol)& #summary(def_serv$cl_OffVol)
-  !is.na(def_serv$c_pMarket)&  #summary(def_serv$c_pMarket)
-  !is.na(def_serv$Crisis)  #summary(def_serv$c_pMarket)
+  !is.na(def_serv$cln_OffObl7)& #summary(def_serv$cln_OffObl7)
+  !is.na(def_serv$cp_PairObl7)&  #summary(def_serv$cp_PairObl7)
+  !is.na(def_serv$Crisis)  #summary(def_serv$cp_PairObl7)
 
 
 
@@ -2117,22 +2911,22 @@ summary(complete)
 ```
 
 ```
-##    Mode   FALSE    TRUE 
-## logical  196524 1046665
+##    Mode 
+## logical
 ```
 
 ```r
-summary(def_serv$Action_Obligation.OMB20_GDP18)
+summary(def_serv$Action_Obligation_OMB20_GDP18)
 ```
 
 ```
 ##       Min.    1st Qu.     Median       Mean    3rd Qu.       Max. 
-##   -6369931       6865      29458     585182     143622 9489310163
+##   -6369931       6907      29592     585994     143976 9489310163
 ```
 
 ```r
-money<-def_serv$Action_Obligation.OMB20_GDP18
-any(def_serv$Action_Obligation.OMB20_GDP18<0)
+money<-def_serv$Action_Obligation_OMB20_GDP18
+any(def_serv$Action_Obligation_OMB20_GDP18<0)
 ```
 
 ```
@@ -2140,8 +2934,8 @@ any(def_serv$Action_Obligation.OMB20_GDP18<0)
 ```
 
 ```r
-money[def_serv$Action_Obligation.OMB20_GDP18<0]<-0
-sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$Action_Obligation.OMB20_GDP18<0])
+money[def_serv$Action_Obligation_OMB20_GDP18<0]<-0
+sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$Action_Obligation_OMB20_GDP18<0])
 ```
 
 ```
@@ -2154,7 +2948,7 @@ length(money[!complete])/length(money)
 ```
 
 ```
-## [1] 0.1580805
+## [1] 0
 ```
 
 ```r
@@ -2162,7 +2956,7 @@ sum(money[!complete],na.rm=TRUE)/sum(money,na.rm=TRUE)
 ```
 
 ```
-## [1] 0.1297659
+## [1] 0
 ```
 
 ```r
@@ -2172,7 +2966,7 @@ sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
 ```
 
 ```
-## [1] 0.2685064
+## [1] 0.2685101
 ```
 
 ```r
@@ -2181,20 +2975,11 @@ nrow(def_serv[!complete,])/nrow(def_serv)
 ```
 
 ```
-## [1] 0.1580805
+## [1] 0
 ```
 
 ```r
-sum(def_serv[!complete,]$Action_Obligation.OMB20_GDP18.OMB20,na.rm=TRUE)/sum(def_serv$Action.Obligation.OMB20_GDP18,na.rm=TRUE)
-```
-
-```
-## Warning: Unknown or uninitialised column:
-## 'Action_Obligation.OMB20_GDP18.OMB20'.
-```
-
-```
-## Warning: Unknown or uninitialised column: 'Action.Obligation.OMB20_GDP18'.
+sum(def_serv[!complete,]$Action_Obligation_OMB20_GDP18.OMB20,na.rm=TRUE)/sum(def_serv$Action.Obligation.OMB20_GDP18,na.rm=TRUE)
 ```
 
 ```
@@ -2208,7 +2993,7 @@ length(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1])/
 ```
 
 ```
-## [1] 0.2028848
+## [1] 0
 ```
 
 ```r
@@ -2217,5 +3002,5 @@ sum(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
 ```
 
 ```
-## [1] 0.1054625
+## [1] 0
 ```
