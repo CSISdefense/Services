@@ -81,6 +81,7 @@ The measures b_SomeOptand b_AllOpt  are constructed using a variety of different
 * b_AllOpt ("All Options Exercised") is a binary variable that reports Whether the vast majority, over 95 percent by value, of a contract’s options were exercised. The sample for the model using this variable is limited to contracts that exercised some options in order to more clearly illustrate the relationship between independent variables and all options being exercised.
 
 ```{r Options}
+
 grouped_barplot("Opt", def_serv)
 
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50, log=TRUE)
@@ -109,6 +110,24 @@ NA_stats(def_serv,"b_CBre")`)
 grouped_barplot("CBre", def_serv)
 
 freq_continuous_plot(def_serv %>%filter(b_CBre==1),"n_CBre_OMB20_GDP18",bins=50, log=TRUE)
+# (
+#   cbre_plot<-ggplot(def_serv %>% filter(b_CBre==1 & !is.na(qHighCeiling)), aes(x=n_CBre_OMB20_GDP18)) +
+#     geom_histogram(bins=100)+
+#     theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+#     scale_x_log10(label=scales::comma, breaks =c(0,1e3,1e6,1e8))+
+#     scale_y_continuous(label=scales::comma)+
+#     scale_x_log10(label=scales::comma, breaks =c(0,1,50,1e3,5e4,1e6,5e7,1e9))+
+#     coord_cartesian(xlim = c(1, round(max(def_serv$n_CBre_OMB20_GDP18,na.rm=TRUE),-9)))+
+#     facet_wrap(~qHighCeiling,scales="free_y")+
+#     labs(y="Count of Contracts that Experienced\na Ceiling Breach (Variable Scale)",x="Ceiling Breach Size on a Logarithmic Scale")#+, space="free_y"
+#   
+#   #+geom_vline(xintercept = 0.1)+
+#   #facet_grid(NoPreTermObl~.,scales="free_y", space="free_y")+
+#   # labs(title="Distribution of Contracts with Obligations After Last termination",
+#   #      y="Contract Count",
+#   #      x="Percent of Obligations After Day of Termination",
+#   #      fill="Termination Completion"
+# )
 
 statsummary_discrete("CBre", def_serv)
 statsummary_continuous(c("n_CBre_OMB20_GDP18"), def_serv %>% dplyr::filter(b_CBre==1))
@@ -154,7 +173,6 @@ The original variables for cln_US6sal is US6_avg_sal_lag1Const
 ```{r cln_US6sal}
 freq_continuous_plot(def_serv,"US6_avg_sal_lag1Const",bins=50,
                      log=TRUE)
-
 ```
 
 #### Service Code Invoice Rate
@@ -184,7 +202,7 @@ freq_continuous_plot(def_serv,"office_PBSCobligated_1year",bins=50,
 
 
 
-#### Office Experience withthe Product or Service Code
+#### Office Experience with the Product or Service Code
 The original variables for cp_OffPerf7 is the percentage form of office_psc_obligatedamount_7year / office_obligatedamount_7year
 
 * cp_OffPSC7 ("Office Service Code Experience") is a continuous variable that reports the percentage of office 2018 constant obligations that went to contracts with the same product or service code as the product in question over the last 7 fiscal years, rescaled.
@@ -235,6 +253,7 @@ Comp is derived from b_Comp to determine competition and UnmodifiedNumberOfOffer
   * 1Offr (1 Offer) for contracts that were competed but only recieved one offer.
   * 2-4Offr (2-4 Offers) for competed contracts receiving between 2 and 4 offers.
   * 5plusOffr (5+ Offers) 5+ Offers for competed contracts receiving 5 or more offers.
+
 
 ```{r Competition}  
 
@@ -288,8 +307,7 @@ statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18","Base2Ceil","UnmodifiedDay
 
 
 ### Contract Vehicle
-* Comp (Competition) is a categorical variable based on whether there was a parent contract and if so of what type. 
-* It's baseline value is for contracts that did not use competitive procedures. Other values are assigned based on the number of offers a competed contract received: 1 Offer, 2-4 Offers, 5+ Offers.
+
 
 * Veh (Vehicle) is  SIDV, MIDV, and FSS/GWAC, BPA/BOA are dummy variables based on the contract vehicle. They correspond to Single-Award IDVs, Multi-Award IDVs, and Other IDVs, respectively, having a value of 1 when the task order has that vehicle type, and having a 0 other. The remaining types, definitive contracts and purchase orders, are intentionally left out. 
 
@@ -304,9 +322,6 @@ statsummary_discrete("Veh",def_serv)
 Pricing is constructed using the two variables: PricingFee which tracks contract type and UCA, which tracks letter and undefinized contract actions.
 
 * Pricing isa categorical  variable based on contract pricing. It has six possible values, Firmed-Fixed Price, Other Fixed-Price, Incentive (Including Cost Sharing, Fixed-Price and Cost Plus), Combination or Other, Other Cost Based, Time & Materials, Labor Hours, Fixed-Price: Level of effort, and UCA.
-
-`r summary(def_serv$Pricing);
-NA_stats(def_serv,"Pricing")`
 
 
 ```{r PricingFeeGraphs}
