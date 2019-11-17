@@ -321,7 +321,7 @@ statsummary_discrete("Veh",def_serv)
 ### Pricing
 Pricing is constructed using the two variables: PricingFee which tracks contract type and UCA, which tracks letter and undefinized contract actions.
 
-* Pricing isa categorical  variable based on contract pricing. It has six possible values, Firmed-Fixed Price, Other Fixed-Price, Incentive (Including Cost Sharing, Fixed-Price and Cost Plus), Combination or Other, Other Cost Based, Time & Materials, Labor Hours, Fixed-Price: Level of effort, and UCA.
+* Pricing is a categorical  variable based on contract pricing. It has six possible values, Firmed-Fixed Price, Other Fixed-Price, Incentive (Including Cost Sharing, Fixed-Price and Cost Plus), Combination or Other, Other Cost Based, Time & Materials, Labor Hours, Fixed-Price: Level of effort, and UCA.
 
 
 ```{r PricingFeeGraphs}
