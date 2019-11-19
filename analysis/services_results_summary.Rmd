@@ -50,7 +50,502 @@ if(!exists("serv_smp")) load(file="../data/clean/def_sample.Rdata")
 Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start.
 
 # Pre-Model Graphs
-None at present.
+
+## Data Exploration
+
+### Economic
+#### NAICS 2
+
+```{r grouped percent frequency/obligation barplot for all NAICS2, 21 in total}
+#Prepare data for plot
+NAICS2_Freq <- as.data.frame(table(def_serv$NAICS2))
+NAICS2_Freq$Percent_Freq <- round(NAICS2_Freq$Freq/sum(NAICS2_Freq$Freq),4)*100
+colnames(NAICS2_Freq) <- c("NAICS_Code", "Count_Freq", "Percent_Freq")
+
+#Get detail description for NAICS2 code
+NAICS2_Freq<-read_and_join_experiment(NAICS2_Freq,
+                                           lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                      path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                      dir="economic\\",
+                                      by=c("NAICS_Code"="principalnaicscode"),
+                                      add_var = "principalnaicscodeText"
+                                      )
+
+Percent_Obli <- c()
+Total_Obli <- sum(def_serv$Action_Obligation_Then_Year, na.rm = TRUE)
+for (i in NAICS2_Freq$NAICS_Code) {
+  Percent_Obligation <- round(sum(def_serv$Action_Obligation_Then_Year[def_serv$NAICS2 == i], na.rm = TRUE)/Total_Obli,5)
+  Percent_Obli <- c(Percent_Obli, Percent_Obligation)
+}
+
+NAICS2_Freq$Percent_Obli <- Percent_Obli * 100
+NAICS2_Freq <- NAICS2_Freq[order(-NAICS2_Freq$Percent_Obli),]
+NAICS2_Freq[,c(1,3)] <- lapply(NAICS2_Freq[,c(1,3)], function(x) as.character(x))
+NAICS2_Freq$principalnaicscodeText <- paste(NAICS2_Freq$NAICS_Code, " - ", NAICS2_Freq$principalnaicscodeText)
+NAICS2_Freq$principalnaicscodeText <- factor(NAICS2_Freq$principalnaicscodeText, levels = rev(NAICS2_Freq$principalnaicscodeText))
+NAICS2_Freq <- melt(NAICS2_Freq, id = c("NAICS_Code", "Count_Freq","principalnaicscodeText"))
+NAICS2_Freq$value <- as.numeric(NAICS2_Freq$value)
+
+NAICS2_barplot <- ggplot(data = NAICS2_Freq,
+                          aes(x = principalnaicscodeText, 
+                              y = value,
+                              fill = factor(variable))) +
+                   geom_bar(stat = "identity", 
+                            position = "dodge", 
+                            width = 0.8) + 
+                   coord_flip() +
+                   xlab("") + 
+                   ylab("") + 
+                   theme_grey() + 
+                   scale_fill_grey(labels = c("% records", "% obligation"),
+                                  guide = guide_legend(reverse = TRUE)) + 
+                   ggtitle("Percent of Frequency and obligation for NAICS2") +
+                   theme(text = element_text(size = 10), 
+                         legend.title = element_blank(),
+                         legend.position = "bottom",
+                         legend.margin = margin(t=-0.8, r=0, b=0.5, l=0, unit = "cm"),
+                         legend.text = element_text(margin = margin(r=0.5, unit = "cm")),
+                         plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm"))
+NAICS2_barplot
+```
+
+#### NAICS 3
+
+```{r NAICS3_Summary, fig.width=7.5 , fig.height=3}
+NAICS_summary<-def_serv %>% group_by(NAICS3,StartCY,def3_HHI_lag1,def3_obl_lag1,def3_ratio_lag1,US3_avg_sal_lag1) %>%
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation_Then_Year),
+                   annual_count=length(StartCY)) 
+
+top_NAICS <- NAICS_summary %>% group_by(NAICS3) %>% 
+  dplyr::summarise(naics_action_obligation=sum(annual_action_obligation),
+                   naics_count=sum(annual_count)) 
+top_NAICS$naics_dollar_rank<-rank(-top_NAICS$naics_action_obligation)
+top_NAICS$naics_count_rank<-rank(-top_NAICS$naics_count)
+
+#If statement there to prevent adding it a second time in  reruns.
+if(!"naics_dollar_rank" %in% colnames(NAICS_summary))
+  NAICS_summary<-left_join(NAICS_summary,top_NAICS, by="NAICS3")
+
+
+
+
+NAICS_summary<-as.data.frame(NAICS_summary)
+NAICS_summary$NAICS3<-as.character(NAICS_summary$NAICS3)
+NAICS_summary<-read_and_join_experiment(NAICS_summary,
+                                      lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                      path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                      dir="economic\\",
+                                      by=c("NAICS3"="principalnaicscode"),
+                                      skip_check_var=c("principalnaicscodeText",
+                                                       "NAICS_shorthand",
+                                                       "principalNAICS4DigitCode")
+                                      )
+
+# https://stackoverflow.com/questions/37174316/how-to-fit-long-text-into-ggplot2-facet-titles
+
+
+
+# Helper function for string wrapping. 
+#  20 character target width.
+swr <- function(string, nwrap=20) {
+  paste(strwrap(string, width=nwrap), collapse="\n")
+}
+swr <- Vectorize(swr)
+summary(NAICS_summary$NAICS_shorthand)
+
+# View(NAICS_summary)
+NAICS_summary$NAICS_shorthand<-swr(NAICS_summary$NAICS_shorthand,nwrap = 25)
+NAICS_summary$CY<-NAICS_summary$StartCY-1
+NAICS3top<-ggplot(subset(NAICS_summary,naics_dollar_rank<=4 |
+                          naics_count_rank<=4),
+       aes(x=CY,y=def3_HHI_lag1))+#color=NAICS_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+  # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
+  labs(x="Calendar Year",y="Herfindahl-Herschman Index")+ 
+  geom_hline(yintercept=c(1500,2500),linetype="dotted")
+
+NAICS3top_paper<-NAICS3top+ facet_wrap(~NAICS_shorthand,ncol=2)
+ggsave(NAICS3top_paper,file="..//Output\\NAICS3top.png",width=4,height=8,dpi=600)
+ggsave(NAICS3top_paper,file="..//Output\\NAICS3top.eps",width=4,height=8,dpi=600)
+
+NAICS3top_pp<-NAICS3top+ facet_wrap(~NAICS_shorthand,ncol=4)
+NAICS3top_pp
+ggsave(NAICS3top_pp,file="..//Output\\NAICS3top_pp.png",width=10.5,height=5.5,dpi=600)
+ggsave(NAICS3top_pp,file="..//Output\\NAICS3top_pp.eps",width=10.5,height=5.5,dpi=600)
+
+summary(NAICS_summary$naics_count_rank)
+
+
+NAICS_summary$NAICS_shorthand<-swr(NAICS_summary$NAICS_shorthand,nwrap = 14)
+# NAICS_summary$CY<-factor(paste("'",substring(as.character(NAICS_summary$CY),3,4),sep=""))
+
+NAICS3top8<-ggplot(subset(NAICS_summary,naics_dollar_rank<=8),
+       aes(x=CY,y=def3_HHI_lag1))+#color=NAICS_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+  scale_x_continuous(breaks=c(2007,2012))+
+  labs(x="Calendar Year",y="Herfindahl-Herschman Index")+ 
+  geom_hline(yintercept=c(1500,2500),linetype="dotted")
+
+NAICS3top8_wide<-NAICS3top8+ facet_grid(.~NAICS_shorthand)
+ggsave(NAICS3top8_wide,file="..//Output\\NAICS3top8.png",width=9.5,height=4,dpi=600)
+ggsave(NAICS3top8_wide,file="..//Output\\NAICS3top8.eps",width=9.5,height=4,dpi=600)
+
+colnames(NAICS_summary)
+NAICS_long<-NAICS_summary[,colnames(NAICS_summary) %in% c( "NAICS3",
+                                                    "def3_HHI_lag1",
+                                                    "def3_obl_lag1",
+                                                    "def3_ratio_lag1",
+                                                    # "US3_avg_sal_lag1",
+                                                    "naics_dollar_rank" ,
+                                                    "naics_count_rank",
+                                                    "principalnaicscodeText",
+                                                     "NAICS_shorthand",
+                                                    "CY")]
+NAICS_long<-melt(NAICS_long, id=c("NAICS3","naics_dollar_rank","naics_count_rank","principalnaicscodeText","CY", "NAICS_shorthand"))
+
+
+
+#Drop the ratios and average salaries w/ unique values
+# NAICS_long<-NAICS_long[NAICS_long$variable %in% c(),]
+
+NAICS_long$value[NAICS_long$variable=="def3_obl_lag1"]<-NAICS_long$value[NAICS_long$variable=="def3_obl_lag1"]/1e9
+NAICS_long$value[NAICS_long$variable=="def3_ratio_lag1"]<-NAICS_long$value[NAICS_long$variable=="def3_ratio_lag1"]*1e2
+
+levels(NAICS_long$variable)<- list("Herfindahl-\nHerschman Index"=c("def3_HHI_lag1"),
+                                   "Defense Obligations\n(Billions)"=c("def3_obl_lag1"),
+                                   "def_serv. Obligations to\nU.S. Revenue Ratio\n(Percent)"=c("def3_ratio_lag1"))
+
+NAICS_long$high<-2500
+NAICS_long$high[NAICS_long$variable!="Herfindahl-\nHerschman Index"]<-NA
+NAICS_long$low<-1500
+NAICS_long$low[NAICS_long$variable!="Herfindahl-\nHerschman Index"]<-NA
+
+(
+NAICS3long_wide<-ggplot(subset(NAICS_long,naics_dollar_rank<=8),
+       aes(x=CY,y=value))+#color=NAICS_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+  scale_x_continuous(breaks=c(2007,2012))+
+  labs(x="Calendar Year",y="Detailed Industry Metric")+
+  geom_hline(aes(
+           yintercept=high),linetype="dotted")+
+  geom_hline(aes(
+           yintercept=low),linetype="dotted") + 
+  facet_grid(variable~NAICS_shorthand,scales="free_y")   
+)
+
+ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure2.png",width=9.5,height=6,dpi=600)
+ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure2.eps",width=9.5,height=6,dpi=600)
+ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure2.svg",width=9.5,height=6,dpi=600)
+
+write.csv(NAICS_summary,file="..//Output/NAICS3_summary.csv",row.names = FALSE)
+```
+
+
+
+
+
+
+
+#### NAICS 6
+
+
+
+```{r NAICS6_Summary, fig.width=7.5 , fig.height=3}
+NAICS_summary<-def_serv %>% group_by(NAICS,StartCY,def6_HHI_lag1,def6_obl_lag1,def6_ratio_lag1,US6_avg_sal_lag1) %>%
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation_Then_Year),
+                   annual_count=length(StartCY)) 
+
+top_NAICS <- NAICS_summary %>% group_by(NAICS) %>% 
+  dplyr::summarise(naics_action_obligation=sum(annual_action_obligation),
+                   naics_count=sum(annual_count)) 
+top_NAICS$naics_dollar_rank<-rank(-top_NAICS$naics_action_obligation)
+top_NAICS$naics_count_rank<-rank(-top_NAICS$naics_count)
+
+
+NAICS_summary<-left_join(NAICS_summary,top_NAICS, by="NAICS")
+
+colnames(NAICS_summary)[colnames(NAICS_summary)=="NAICS"]<-"principalnaicscode"
+
+NAICS_summary$principalnaicscode<-as.character(NAICS_summary$principalnaicscode)
+NAICS_summary<-as.data.frame(NAICS_summary)
+
+NAICS_summary<-read_and_join(NAICS_summary,
+                        lookup_file = "Lookup_PrincipalNAICScode.csv",
+                        path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                      dir="economic\\",
+                        by="principalnaicscode",
+                        skip_check_var=c("principalnaicscodeText",
+                                         "NAICS_shorthand")
+               )
+
+
+
+
+summary(NAICS_summary$NAICS_shorthand)
+
+# View(NAICS_summary)
+NAICS_summary$NAICS_shorthand<-swr(NAICS_summary$NAICS_shorthand,nwrap = 25)
+NAICS_summary$CY<-NAICS_summary$StartCY-1
+NAICS6top<-ggplot(subset(NAICS_summary,naics_dollar_rank<=4 |
+                          naics_count_rank<=4),
+       aes(x=CY,y=def6_HHI_lag1))+#color=NAICS_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+  # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
+  labs(x="Calendar Year",y="Herfindahl-Herschman Index")+ 
+  geom_hline(yintercept=c(1500,2500),linetype="dotted")
+
+(NAICS6top_paper<-NAICS6top+ facet_wrap(~NAICS_shorthand,ncol=2))
+ggsave(NAICS6top_paper,file="..//Output\\NAICS6top.png",width=4,height=8,dpi=600)
+ggsave(NAICS6top_paper,file="..//Output\\NAICS6top.eps",width=4,height=8,dpi=600)
+
+(NAICS6top_pp<-NAICS6top+ facet_wrap(~NAICS_shorthand,ncol=4))
+ggsave(NAICS6top_pp,file="..//Output\\NAICS6top_pp.png",width=10.5,height=5.5,dpi=600)
+ggsave(NAICS6top_pp,file="..//Output\\NAICS6top_pp.eps",width=10.5,height=5.5,dpi=600)
+
+summary(NAICS_summary$naics_count_rank)
+
+
+NAICS_summary$NAICS_shorthand<-swr(NAICS_summary$NAICS_shorthand,nwrap = 14)
+# NAICS_summary$CY<-factor(paste("'",substring(as.character(NAICS_summary$CY),3,4),sep=""))
+
+NAICS6top8<-ggplot(subset(NAICS_summary,naics_dollar_rank<=8),
+       aes(x=CY,y=def6_HHI_lag1))+#color=NAICS_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+  scale_x_continuous(breaks=c(2007,2012))+
+  labs(x="Calendar Year",y="Herfindahl-Herschman Index")+ 
+  geom_hline(yintercept=c(1500,2500),linetype="dotted")
+
+NAICS6top8_wide<-NAICS6top8+ facet_grid(.~NAICS_shorthand)
+ggsave(NAICS6top8_wide,file="..//Output\\NAICS6top8.png",width=9.5,height=4,dpi=600)
+ggsave(NAICS6top8_wide,file="..//Output\\NAICS6top8.eps",width=9.5,height=4,dpi=600)
+
+
+colnames(NAICS_summary)
+NAICS_long<-NAICS_summary[,colnames(NAICS_summary) %in% c( "principalnaicscode",
+                                                    "def6_HHI_lag1",
+                                                    "def6_obl_lag1",
+                                                    "def6_ratio_lag1",
+                                                    # "US6_avg_sal_lag1",
+                                                    "naics_dollar_rank" ,
+                                                    "naics_count_rank",
+                                                    "principalnaicscodeText",
+                                                     "NAICS_shorthand",
+                                                    "CY")]
+NAICS_long<-melt(NAICS_long, id=c("principalnaicscode","naics_dollar_rank","naics_count_rank","principalnaicscodeText","CY", "NAICS_shorthand"))
+
+
+
+#Drop the ratios and average salaries w/ unique values
+# NAICS_long<-NAICS_long[NAICS_long$variable %in% c(),]
+NAICS_long$value[NAICS_long$variable=="def6_obl_lag1"]<-NAICS_long$value[NAICS_long$variable=="def6_obl_lag1"]/1e9
+NAICS_long$value[NAICS_long$variable=="def6_ratio_lag1"]<-NAICS_long$value[NAICS_long$variable=="def6_ratio_lag1"]*1e2
+
+
+levels(NAICS_long$variable)<- list("Herfindahl-\nHerschman Index"=c("def6_HHI_lag1"),
+                                   "Defense Obligations\n(Billions)"=c("def6_obl_lag1"),
+                                   "def_serv. Obligations to\nU.S. Revenue Ratio\n(Percent)"=c("def6_ratio_lag1"))
+
+NAICS_long$high<-2500
+NAICS_long$high[NAICS_long$variable!="Herfindahl-\nHerschman Index"]<-NA
+NAICS_long$low<-1500
+NAICS_long$low[NAICS_long$variable!="Herfindahl-\nHerschman Index"]<-NA
+
+(
+
+NAICS6long_wide<-ggplot(subset(NAICS_long,naics_dollar_rank<=8),
+       aes(x=CY,y=value))+#color=NAICS_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+  scale_x_continuous(breaks=c(2007,2012))+
+  labs(x="Calendar Year",y="Detailed Industry Metric")+
+  geom_hline(aes(
+           yintercept=high),linetype="dotted")+
+  geom_hline(aes(
+           yintercept=low),linetype="dotted")    + 
+    facet_grid(variable~NAICS_shorthand,scales="free_y")
+
+)
+
+ggsave(NAICS6long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure3.png",width=9.5,height=6,dpi=600)
+ggsave(NAICS6long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure3.eps",width=9.5,height=6,dpi=600)
+ggsave(NAICS6long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure3.svg",width=9.5,height=6,dpi=600)
+write.csv(NAICS_summary,file="..//Output/NAICS6_summary.csv",row.names = FALSE)
+```
+
+
+
+
+
+
+### Office
+```{r grouped percent frequency/obligation barplot for all Office}
+#grouped bar plot for variable Office
+#Perpare data for plot
+Office_Freq <- def_serv %>% group_by(Agency, Office) %>%
+  dplyr::summarise(
+    Count_Freq=length(CSIScontractID),
+    Action_Obligation_Then_Year=sum(Action_Obligation_Then_Year,na.rm=TRUE)
+  )
+
+Office_Freq$Percent_Obligation <- Office_Freq$Action_Obligation_Then_Year/
+                                          sum(Office_Freq$Action_Obligation_Then_Year,na.rm=TRUE)
+
+Office_Freq$Percent_Freq <- Office_Freq$Count_Freq/
+                                          sum(Office_Freq$Count_Freq,na.rm=TRUE)
+
+#get the detailed desceription for Office by AgencyID and OfficeID
+
+Office_Freq<-read_and_join_experiment(Office_Freq,
+                                      lookup_file = "Office.ContractingOfficeCode.txt",
+                                      path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                      dir="office/",
+                                      by=c("Agency"="AgencyID",
+                                       "Office"="ContractingOfficeCode"   
+                                      ),
+                                      add_var = "ContractingOfficeName",
+                                      skip_check_var = "ContractingOfficeName")
+
+
+colnames(Office_Freq)[colnames(Office_Freq)=="ContractingOfficeName"] <- "OfficeName"
+
+# Office_Freq[,1:2] <- lapply(Office_Freq[,1:2], function(x) as.character(x))
+#Generate a new name column by Combining Office and officeName
+Office_Freq$Office_Full <- ifelse(is.na(Office_Freq$OfficeName), Office_Freq$Office, 
+                                  paste(Office_Freq$Office, 
+                                            sep=" - ", Office_Freq$OfficeName))
+
+
+# Office_Freq$Percent_Obli <- Percent_Obli * 100
+
+Office_Freq_top10Freq <- Office_Freq[order(-Office_Freq$Percent_Freq),]
+Office_Freq_top10Freq <- Office_Freq_top10Freq[1:10, ]  #including NULL category
+Office_Freq_top10Obli <- Office_Freq[order(-Office_Freq$Percent_Obligation),]
+Office_Freq_top10Obli <- Office_Freq_top10Obli[1:10, ]  #including NULL category
+
+Office_Freq_TOP <- rbind(Office_Freq_top10Obli, Office_Freq_top10Freq)
+Office_Freq_TOP <- unique(Office_Freq_TOP)  #17 records in total
+
+Office_Freq_TOP$Office_Full <- factor(Office_Freq_TOP$Office_Full, 
+                                      levels = rev(Office_Freq_TOP$Office_Full))
+Office_Freq_TOP <- melt(Office_Freq_TOP, 
+                        id = c("Agency","Office", "OfficeName", "Office_Full", "Count_Freq", "Action_Obligation_Then_Year"))
+
+Office_barplot <- ggplot(data = Office_Freq_TOP,
+                         aes(x = Office_Full, 
+                             y = value,
+                             fill = factor(variable))) +
+                  geom_bar(stat = "identity", 
+                  position = "dodge", 
+                  width = 0.8) + 
+                  coord_flip() +
+                  xlab("") + 
+                  ylab("") + 
+                  theme_grey() + 
+                  scale_fill_grey(labels = c("% of records", "% of obligation"),
+                                  guide = guide_legend(reverse = TRUE)) + 
+                  ggtitle("Percent of Frequency and obligation for Office") +
+                  theme(text = element_text(size = 10), 
+                        legend.title = element_blank(),
+                        legend.position = "bottom",
+                        legend.margin = margin(t=-0.8, r=0, b=0.5, l=0, unit = "cm"),
+                        legend.text = element_text(margin = margin(r=0.5, unit = "cm")), 
+                        plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm"))
+Office_barplot
+```
+
+
+### Platform Portfolio
+```{r Platform, fig.width=6.5 , fig.height=3.25}
+
+library(readr)
+annual_platform_summary<-read_csv(file="..//Output//annual_platform_summary.csv")
+colnames(annual_platform_summary)[colnames(annual_platform_summary)=="platformPortfolio"]<-"PlatformPortfolio"
+
+platform_no_na<-subset(annual_platform_summary,!is.na(PlatformPortfolio))
+labels_and_colors<-csis360::prepare_labels_and_colors(platform_no_na,"PlatformPortfolio")
+
+
+
+platform_no_na$plat_short <-swr(platform_no_na$PlatformPortfolio,nwrap = 21)
+platform_no_na<-subset(platform_no_na,Fiscal.Year>=2000 & Fiscal.Year<=2017)
+
+ 
+
+# plat<-ggplot(platform_no_na,
+#        aes(x=Fiscal.Year,y=hh_index))+#color=NAICS_Code
+#   geom_line()+
+#   scale_y_continuous(label=scales::comma)+ 
+#   # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
+#   labs(x="Fiscal Year",y="Herfindahl-Herschman Index")+ 
+#   geom_hline(yintercept=c(1500,2500),linetype="dotted")+
+#   facet_wrap(~plat_short)
+# add_preassigned_scales(plat,labels_and_colors = labels_and_colors)
+
+# str(platform_no_na)
+# summary(platform_no_na$Fiscal.Year)
+#
+# undebug(add_preassigned_scales)
+plat<-build_plot(
+  data=platform_no_na,
+  chart_geom = "Line Chart",
+  share = FALSE,
+  x_var="Fiscal.Year",
+  y_var="hh_index", #Name of variable to plot on y-axis
+  color_var="PlatformPortfolio",       # name of coloration variable, as string
+  facet_var="PlatformPortfolio",        # name of facet variable, as string
+  legend=FALSE, #Include a legend
+  caption=FALSE, #Include a source caption
+  labels_and_colors=labels_and_colors,
+  column_key=NULL
+)
+
+
+# add_preassigned_scales(plat, labels_and_colors,  var="PlatformPortfolio"
+
+plat<-plat+geom_hline(yintercept=c(1500,2500),linetype="dotted")+
+  labs(x="Fiscal Year",y="Herfindahl-Herschman Indetx")
+plat
+ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index,color=PlatformPortfolio),size=1),filename="..//Output//platform_hhi.png",height=3.25, width=6.5)
+ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index)),filename="..//Output//platform_hhi_bw.png",height=3.25, width=6.5)
+ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index,color=PlatformPortfolio),size=1),filename="..//Output//platform_hhi.eps",height=3.25, width=6.5)
+ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index)),filename="..//Output//platform_hhi_bw.eps",height=3.25, width=6.5)
+
+```
+
+### Variable examination
+```{r VarGraph}
+
+
+HH1plot<-freq_continuous_plot(def_serv,"def6_HHI_lag1",bins=50)
+HH1plot<-HH1plot+geom_vline(xintercept=c(1500,2500))+labs(x="Annual Herfindahl-Hirschman Index (HHI) for NAICS-6 Sector",y="Contract or Task Order Count")
+HH1plot
+ggsave(HH1plot,file="..//Output//HH1freq.png",width=5.5,height=5.5,dpi=600)
+ggsave(HH1plot,file="..//Output//HH1freq.eps",width=5.5,height=5.5,dpi=600)
+
+sum(def_serv$Action_Obligation_Then_Year[def_serv$EffComp=="No Comp."],na.rm=TRUE)/sum(def_serv$Action_Obligation_Then_Year,na.rm=TRUE)
+sum(def_serv$Action_Obligation_Then_Year[def_serv$EffComp=="1 Offer"],na.rm=TRUE)/sum(def_serv$Action_Obligation_Then_Year,na.rm=TRUE)
+sum(def_serv$Action_Obligation_Then_Year[def_serv$EffComp=="2+ Offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation_Then_Year,na.rm=TRUE)
+nrow(def_serv[def_serv$EffComp=="No Comp.",])/nrow(def_serv)
+
+sum(def_serv$Action_Obligation_Then_Year[is.na(def_serv$EffComp)],na.rm=TRUE)/sum(def_serv$Action_Obligation_Then_Year,na.rm=TRUE)
+
+
+# Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
+# Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
+# ggsave(Effplot,file="..//Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
+
+```
+
+
+
+
+
+
 # Models
 ## Loading Models
 ### Exercised Options
