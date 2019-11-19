@@ -55,9 +55,7 @@ custom.model.names = c("Some Opt","All Opt"),
 
 
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+$
-
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
-
 $β_{`r (b<-1)`}Intercept~+~$
 $β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
 $β_{`r (b<-b+1)`}Service~Code~Inv.~Rate_{i}~+~$
@@ -115,9 +113,7 @@ $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_SomeOpt25
 ## All Options Likelihood
 
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+$
-
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
-
 $β_{`r (b<-1)`}Intercept~+~$
 $β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
 $β_{`r (b<-b+1)`}Service~Code~Inv.~Rate_{i}~+~$
@@ -189,9 +185,7 @@ texreg::screenreg(list(b_CBre29B,n_CBre25A),
 ## Breach Likelihood
 
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+$
-
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
-
 $β_{`r (b<-1)`}Intercept~+~$
 $β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
 $β_{`r (b<-b+1)`}Service~Code~Inv.~Rate_{i}~+~$
@@ -239,7 +233,6 @@ $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_CBre29B,"
 ## Breach Size
 
 $Estimated~Log(y_i)~=~α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+$
-
 $α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+~α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+~$
 $β_{`r (b<-1)`}Intercept~+$
 $β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
@@ -296,9 +289,7 @@ texreg::screenreg(list(term25B),
 ```
 
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+$
-
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
-
 $β_{`r (b<-1)`}Intercept_{i}~+~$
 $β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
 $β_{`r (b<-b+1)`}Service~Code~Inv.~Rate_{i}~+~$
