@@ -1090,17 +1090,21 @@ NA_stats(def_serv,"b_Intl")`
 
 
 ```{r International}
-#n_Fixed(0,1), PricingFee, n_Incent, b_UCA(0,1), b_Intl
-#original variable for b_UCA: UCA
-#original variable for n_Fixed: FxCb
-#original variable for n_Incent: Fee
+
 
 grouped_barplot("Intl", def_serv)
 statsummary_discrete("Intl", def_serv)
+grouped_barplot("Place", def_serv, top_rank=10)
 ```
 
 ### Start Year
 
+
+```{r StartYear}
+
+
+grouped_barplot("StartCY", def_serv)
+```
 
 # Missing Data Measures
 ```{r Sample}
