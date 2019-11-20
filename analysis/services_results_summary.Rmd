@@ -57,10 +57,12 @@ Contracts are classified using a mix of numerical and categorical variables. Whi
 
 ```{r ProdServ_Summary, fig.width=7.5 , fig.height=3}
 ProdServ_summary<-
-  read_delim("..\\data\\semi_clean\\ProductOrServiceCode.ProdServHistoryCFTEcoalesceLaggedConst.txt",delim="\t")
+  read_delim("..\\data\\semi_clean\\ProductOrServiceCode.ProdServHistoryCFTEcoalesceLaggedConst.txt",delim="\t",
+             na=c("NA","NULL"),
+             guess_max = 200000)
 
 top_ProdServ<-def_serv %>% group_by(ProdServ,CFTE_Rate_1year,OCO_GF) %>%
-  dplyr::summarise(annual_action_obligation=sum(Action_Obligation.OMB20_GDP18),
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation_OMB20_GDP18),
                    annual_count=length(StartFY))  %>% 
   dplyr::summarise(ProdServ_action_obligation=sum(annual_action_obligation),
                    ProdServ_count=sum(annual_count)) 
@@ -79,103 +81,43 @@ ProdServ_summary<-read_and_join_experiment(ProdServ_summary,
                         lookup_file = "ProductOrServiceCodes.csv",
                         path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
                                       dir="",
-                        by=c("ProdServ"="ProductOrServiceCode"),
-                        add_var="ProductOrServiceCodeText"
-                        # skip_check_var=c("principalProdServcodeText",
+                        by=c("ProductOrServiceCode"="ProductOrServiceCode"),
+                        add_var=c("ProductOrServiceCodeText","Simple"),
+                        skip_check_var=c("ProductOrServiceCodeText","Simple")
                         #                  "ProdServ_shorthand")
                )
 
+#Remove R&D
+ProdServ_summary<-ProdServ_summary %>% dplyr::filter(Simple=="Services" &
+                                                       fiscal_year>=2011)
 
 
 
 # View(ProdServ_summary)
 ProdServ_summary$ProductOrServiceCodeText<-swr(ProdServ_summary$ProductOrServiceCodeText,nwrap = 25)
-ProdServ_summary$FY<-ProdServ_summary$StartFY-1
+
+
+ProdServ_summary$CFTE_Rate_1yearP4<-1/ProdServ_summary$CFTE_Factor_1yearP4
+
+ProdServ_short<-subset(ProdServ_summary,ProdServ_dollar_rank<=13 |
+                             ProdServ_count_rank<=13)
+
 
 (
-ProdServ20top<-ggplot(subset(ProdServ_summary,ProdServ_dollar_rank<=5 |
-                             ProdServ_count_rank<=5),
-       aes(x=FY,y=CFTE_Rate_1year,linetype=OCO_GF))+#color=ProdServ_Code
+ProdServ20top<-ggplot(ProdServ_short,
+       aes(x=fiscal_year,y=CFTE_Rate_1yearP4,linetype=OCO_GF))+#color=ProdServ_Code
   geom_line()+
   scale_y_continuous(label=scales::comma)+ 
   # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
-  labs(x="Calendar Year",y="Invoice Rate (Constant 2018 $)")+ 
-    facet_wrap(~ProductOrServiceCodeText,ncol=5)
+  labs(x="Fiscal Year",y="Invoice Rate (Constant 2018 $)")+ 
+    facet_wrap(~ProductOrServiceCodeText,ncol=5)+theme(
+                        legend.position = "bottom")
 )
   
 
-ggsave(ProdServ20top,file="..//Output\\ProdServ20top.png",width=6.5,height=4,dpi=600)
-ggsave(ProdServ20top,file="..//Output\\ProdServ20top.eps",width=6.5,height=4,dpi=600)
+ggsave(ProdServ20top,file="..//Output\\ProdServ20top.png",width=9.5,height=6,dpi=600)
+ggsave(ProdServ20top,file="..//Output\\ProdServ20top.eps",width=9.5,height=6)
 
-summary(ProdServ_summary$ProdServ_count_rank)
-
-
-ProdServ_summary$ProductOrServiceCodeText<-swr(ProdServ_summary$ProductOrServiceCodeText,nwrap = 14)
-# ProdServ_summary$FY<-factor(paste("'",substring(as.character(ProdServ_summary$FY),3,4),sep=""))
-
-ProdServ6top8<-ggplot(subset(ProdServ_summary,ProdServ_dollar_rank<=8),
-       aes(x=FY,y=def6_HHI_lag1))+#color=ProdServ_Code
-  geom_line()+
-  scale_y_continuous(label=scales::comma)+ 
-  scale_x_continuous(breaks=c(2007,2012))+
-  labs(x="Calendar Year",y="Herfindahl-Herschman Index")+ 
-  geom_hline(yintercept=c(1500,2500),linetype="dotted")
-
-ProdServ6top8_wide<-ProdServ6top8+ facet_grid(.~ProductOrServiceCodeText)
-ggsave(ProdServ6top8_wide,file="..//Output\\ProdServ6top8.png",width=9.5,height=4,dpi=600)
-ggsave(ProdServ6top8_wide,file="..//Output\\ProdServ6top8.eps",width=9.5,height=4,dpi=600)
-
-
-colnames(ProdServ_summary)
-ProdServ_long<-ProdServ_summary[,colnames(ProdServ_summary) %in% c( "principalProdServcode",
-                                                    "def6_HHI_lag1",
-                                                    "def6_obl_lag1",
-                                                    "def6_ratio_lag1",
-                                                    # "US6_avg_sal_lag1",
-                                                    "ProdServ_dollar_rank" ,
-                                                    "ProdServ_count_rank",
-                                                    "principalProdServcodeText",
-                                                     "ProductOrServiceCodeText",
-                                                    "FY")]
-ProdServ_long<-melt(ProdServ_long, id=c("principalProdServcode","ProdServ_dollar_rank","ProdServ_count_rank","principalProdServcodeText","FY", "ProductOrServiceCodeText"))
-
-
-
-#Drop the ratios and average salaries w/ unique values
-# ProdServ_long<-ProdServ_long[ProdServ_long$variable %in% c(),]
-ProdServ_long$value[ProdServ_long$variable=="def6_obl_lag1"]<-ProdServ_long$value[ProdServ_long$variable=="def6_obl_lag1"]/1e9
-ProdServ_long$value[ProdServ_long$variable=="def6_ratio_lag1"]<-ProdServ_long$value[ProdServ_long$variable=="def6_ratio_lag1"]*1e2
-
-
-levels(ProdServ_long$variable)<- list("Herfindahl-\nHerschman Index"=c("def6_HHI_lag1"),
-                                   "Defense Obligations\n(Billions)"=c("def6_obl_lag1"),
-                                   "def_serv. Obligations to\nU.S. Revenue Ratio\n(Percent)"=c("def6_ratio_lag1"))
-
-ProdServ_long$high<-2500
-ProdServ_long$high[ProdServ_long$variable!="Herfindahl-\nHerschman Index"]<-NA
-ProdServ_long$low<-1500
-ProdServ_long$low[ProdServ_long$variable!="Herfindahl-\nHerschman Index"]<-NA
-
-(
-
-ProdServ6long_wide<-ggplot(subset(ProdServ_long,ProdServ_dollar_rank<=8),
-       aes(x=FY,y=value))+#color=ProdServ_Code
-  geom_line()+
-  scale_y_continuous(label=scales::comma)+ 
-  scale_x_continuous(breaks=c(2007,2012))+
-  labs(x="Calendar Year",y="Detailed Industry Metric")+
-  geom_hline(aes(
-           yintercept=high),linetype="dotted")+
-  geom_hline(aes(
-           yintercept=low),linetype="dotted")    + 
-    facet_grid(variable~ProductOrServiceCodeText,scales="free_y")
-
-)
-
-ggsave(ProdServ6long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure3.png",width=9.5,height=6,dpi=600)
-ggsave(ProdServ6long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure3.eps",width=9.5,height=6,dpi=600)
-ggsave(ProdServ6long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure3.svg",width=9.5,height=6,dpi=600)
-write.csv(ProdServ_summary,file="..//Output/ProdServ6_summary.csv",row.names = FALSE)
 ```
 
 
