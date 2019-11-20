@@ -302,7 +302,7 @@ freq_continuous_plot(def_serv,"UnmodifiedDays",bins=50, log=TRUE)
 
 statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18","Base2Ceil","UnmodifiedDays"), def_serv)
 
-
+write.csv(scope,"..\\output\\scope_characteristic.csv",row.names = FALSE)
 ```
 
 
@@ -490,15 +490,28 @@ Office_barplot <- ggplot(data = Office_Freq_TOP,
                         plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm"))
 )
 ```
+##### Office Obligations
+```{r OffFocus}
 
+freq_continuous_plot(def_serv,"office_obligatedamount_1year",bins=50, log=TRUE , plus1 = TRUE)
+```
+
+##### Office Focus
+```{r OffFocus}
+
+freq_continuous_plot(def_serv,"office_naics_hhi_k",bins=50, log=TRUE)
+```
 
 ### Pair: Office and Vendor
 
-#### pMarket
+#### Pair Share
 ```{r VarGraph}
 
-freq_continuous_plot(def_serv,"pMarket",bins=50,log=TRUE)
+freq_continuous_plot(def_serv,"pMarket",bins=50)
 summary(def_serv$pMarket)
+
+
+statsummary_continuous(c("pMarket"), def_serv)
 
 ```
 
@@ -795,7 +808,9 @@ NAICS3_Freq_TOP <- melt(NAICS3_Freq_TOP, id = c("NAICS3", "Count_Freq", "Descrip
 part_grouped_barplot("NAICS3", NAICS3_Freq_TOP) + ggtitle("Top 15 of the most frequently appeared NAICS3")
 ```
 
+##### Subsector HHI
 
+##### Subsector : US
 
 #### NAICS 6
 * NAICS6 is a factor reporting the top North American Industrial Classification Code of each contract. 
@@ -1081,9 +1096,9 @@ statsummary_continuous(pair_category, def_serv)
 ```
 
 
+##### Detailed Industry : US
 
-
-### International
+### Place
 * b_Intl is a binary variable with a value of 1 for contracts/task orders with any transactions performed internationally and a value of 0 otherwise. `r summary(def_serv$b_Intl);
 sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_Intl==1],na.rm=TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18,na.rm=TRUE)
 NA_stats(def_serv,"b_Intl")`
@@ -1106,8 +1121,37 @@ grouped_barplot("Place", def_serv, top_rank=10)
 grouped_barplot("StartCY", def_serv)
 ```
 
-# Missing Data Measures
-```{r Sample}
+# Summary Tables
+## Controls
+```{r control}
+
+logged<-statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18",
+                                 "Base2Ceil",
+                                 "UnmodifiedDays",
+                                 "def3_HHI_lag1",
+                                 "def3_ratio_lag1",
+                                 "def6_HHI_lag1",
+                                 "def6_ratio_lag1",
+                                 "office_naics_hhi_k"), def_serv)
+write.csv(logged,"..\\output\\logged_controls.csv",row.names = FALSE)
+
+
+
+
+
+
+loggedplus1<-statsummary_continuous(c("office_obligatedamount_1year"), def_serv,plus1 = TRUE)
+
+write.csv(logged,"..\\output\\logged_controls.csv",row.names = FALSE)
+
+unlogged<-statsummary_continuous(c("pMarket"), def_serv, log = FALSE)
+
+
+
+```
+
+## Missing Data Measures
+```{r missing}
 
  # load(file="data//def_sample.Rdata")
 

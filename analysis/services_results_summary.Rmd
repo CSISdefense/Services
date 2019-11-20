@@ -52,8 +52,7 @@ Contracts are classified using a mix of numerical and categorical variables. Whi
 
 # Data Exploration
 
-
-## Service Area
+## Prod Serv
 
 ```{r ProdServ_Summary, fig.width=7.5 , fig.height=3}
 ProdServ_summary<-
@@ -94,29 +93,42 @@ ProdServ_summary<-ProdServ_summary %>% dplyr::filter(Simple=="Services" &
 
 
 # View(ProdServ_summary)
-ProdServ_summary$ProductOrServiceCodeText<-swr(ProdServ_summary$ProductOrServiceCodeText,nwrap = 25)
+
+ProdServ_summary$ProdServName<-factor(paste(
+                                              ProdServ_summary$ProductOrServiceCode,
+                                              ProdServ_summary$ProductOrServiceCodeText,sep=": "))
+
+ProdServ_summary$ProdServName<-factor(ProdServ_summary$ProdServName
+                                            ,levels=levels(ProdServ_summary$ProdServName),
+                                            ,labels=swr(levels(ProdServ_summary$ProdServName),nwrap = 15)
+                                            )
+
 
 
 ProdServ_summary$CFTE_Rate_1yearP4<-1/ProdServ_summary$CFTE_Factor_1yearP4
 
-ProdServ_short<-subset(ProdServ_summary,ProdServ_dollar_rank<=13 |
-                             ProdServ_count_rank<=13)
+ProdServ_short<-subset(ProdServ_summary,ProdServ_dollar_rank<=6 |
+                             ProdServ_count_rank<=6)
 
+ProdServ_short$FYdate<-as.Date(paste(ProdServ_short$fiscal_year,"01","01",sep="-"))
 
 (
 ProdServ20top<-ggplot(ProdServ_short,
-       aes(x=fiscal_year,y=CFTE_Rate_1yearP4,linetype=OCO_GF))+#color=ProdServ_Code
+       aes(x=FYdate,y=CFTE_Rate_1yearP4,linetype=OCO_GF))+#color=ProdServ_Code
   geom_line()+
   scale_y_continuous(label=scales::comma)+ 
+    scale_x_date(date_labels = "'%y",limits=as.Date(c("2013-01-01", "2017-01-01")))+
   # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
-  labs(x="Fiscal Year",y="Invoice Rate (Constant 2018 $)")+ 
-    facet_wrap(~ProductOrServiceCodeText,ncol=5)+theme(
-                        legend.position = "bottom")
+  labs(x="Fiscal Year",y="Annual Invoice Rate (Constant 2018 $)")+ 
+    facet_wrap(~ProdServName,ncol=5)+theme(
+                        legend.position = "bottom")#+
+    # coord_cartesian(xlim = as.Date(c("2013-01-01", "2017-01-01")))
 )
   
 
-ggsave(ProdServ20top,file="..//Output\\ProdServ20top.png",width=9.5,height=6,dpi=600)
-ggsave(ProdServ20top,file="..//Output\\ProdServ20top.eps",width=9.5,height=6)
+ggsave600dpi(ProdServ20top,file="..//Output\\ProdServ20top.png",width=6.5,height=3.5,
+             size=8,lineheight=1)
+ggsave(ProdServ20top,file="..//Output\\ProdServ20top.eps",width=6.5,height=3)
 
 ```
 
@@ -124,266 +136,6 @@ ggsave(ProdServ20top,file="..//Output\\ProdServ20top.eps",width=9.5,height=6)
 
 
 
-## Organization
-
-### Agency
-```{r Agency}
-
-ProdServ_summary<-def_serv %>% group_by(ProdServ,StartFY,CFTE_Rate_1year,OCO_GF) %>%
-  dplyr::summarise(annual_action_obligation=sum(Action_Obligation.OMB20_GDP18),
-                   annual_count=length(StartFY)) 
-
-top_ProdServ <- ProdServ_summary %>% group_by(ProdServ) %>% 
-  dplyr::summarise(ProdServ_action_obligation=sum(annual_action_obligation),
-                   ProdServ_count=sum(annual_count)) 
-top_ProdServ$ProdServ_dollar_rank<-rank(-top_ProdServ$ProdServ_action_obligation)
-top_ProdServ$ProdServ_count_rank<-rank(-top_ProdServ$ProdServ_count)
-
-
-ProdServ_summary<-left_join(ProdServ_summary,top_ProdServ %>% 
-                              dplyr::filter(-ProdServ_action_obligation,-ProdServ_count)
-                            , by="ProdServ")
-rm(top_ProdServ)
-
-
-ProdServ_summary<-as.data.frame(ProdServ_summary)
-ProdServ_summary<-read_and_join_experiment(ProdServ_summary,
-                        lookup_file = "ProductOrServiceCodes.csv",
-                        path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
-                                      dir="",
-                        by=c("ProdServ"="ProductOrServiceCode"),
-                        add_var="ProductOrServiceCodeText"
-                        # skip_check_var=c("principalProdServcodeText",
-                        #                  "ProdServ_shorthand")
-               )
-
-
-
-
-# View(ProdServ_summary)
-ProdServ_summary$ProductOrServiceCodeText<-swr(ProdServ_summary$ProductOrServiceCodeText,nwrap = 25)
-ProdServ_summary$FY<-ProdServ_summary$StartFY-1
-
-(
-ProdServ20top<-ggplot(subset(ProdServ_summary,ProdServ_dollar_rank<=5 |
-                             ProdServ_count_rank<=5),
-       aes(x=FY,y=CFTE_Rate_1year,linetype=OCO_GF))+#color=ProdServ_Code
-  geom_line()+
-  scale_y_continuous(label=scales::comma)+ 
-  # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
-  labs(x="Calendar Year",y="Invoice Rate (Constant 2018 $)")+ 
-    facet_wrap(~ProductOrServiceCodeText,ncol=5)
-)
-  
-
-ggsave(ProdServ20top,file="..//Output\\ProdServ20top.png",width=6.5,height=4,dpi=600)
-ggsave(ProdServ20top,file="..//Output\\ProdServ20top.eps",width=6.5,height=4,dpi=600)
-
-summary(ProdServ_summary$ProdServ_count_rank)
-
-
-ProdServ_summary$ProductOrServiceCodeText<-swr(ProdServ_summary$ProductOrServiceCodeText,nwrap = 14)
-# ProdServ_summary$FY<-factor(paste("'",substring(as.character(ProdServ_summary$FY),3,4),sep=""))
-
-ProdServ6top8<-ggplot(subset(ProdServ_summary,ProdServ_dollar_rank<=8),
-       aes(x=FY,y=def6_HHI_lag1))+#color=ProdServ_Code
-  geom_line()+
-  scale_y_continuous(label=scales::comma)+ 
-  scale_x_continuous(breaks=c(2007,2012))+
-  labs(x="Calendar Year",y="Herfindahl-Herschman Index")+ 
-  geom_hline(yintercept=c(1500,2500),linetype="dotted")
-
-ProdServ6top8_wide<-ProdServ6top8+ facet_grid(.~ProductOrServiceCodeText)
-ggsave(ProdServ6top8_wide,file="..//Output\\ProdServ6top8.png",width=9.5,height=4,dpi=600)
-ggsave(ProdServ6top8_wide,file="..//Output\\ProdServ6top8.eps",width=9.5,height=4,dpi=600)
-
-
-colnames(ProdServ_summary)
-ProdServ_long<-ProdServ_summary[,colnames(ProdServ_summary) %in% c( "principalProdServcode",
-                                                    "def6_HHI_lag1",
-                                                    "def6_obl_lag1",
-                                                    "def6_ratio_lag1",
-                                                    # "US6_avg_sal_lag1",
-                                                    "ProdServ_dollar_rank" ,
-                                                    "ProdServ_count_rank",
-                                                    "principalProdServcodeText",
-                                                     "ProductOrServiceCodeText",
-                                                    "FY")]
-ProdServ_long<-melt(ProdServ_long, id=c("principalProdServcode","ProdServ_dollar_rank","ProdServ_count_rank","principalProdServcodeText","FY", "ProductOrServiceCodeText"))
-
-
-
-#Drop the ratios and average salaries w/ unique values
-# ProdServ_long<-ProdServ_long[ProdServ_long$variable %in% c(),]
-ProdServ_long$value[ProdServ_long$variable=="def6_obl_lag1"]<-ProdServ_long$value[ProdServ_long$variable=="def6_obl_lag1"]/1e9
-ProdServ_long$value[ProdServ_long$variable=="def6_ratio_lag1"]<-ProdServ_long$value[ProdServ_long$variable=="def6_ratio_lag1"]*1e2
-
-
-levels(ProdServ_long$variable)<- list("Herfindahl-\nHerschman Index"=c("def6_HHI_lag1"),
-                                   "Defense Obligations\n(Billions)"=c("def6_obl_lag1"),
-                                   "def_serv. Obligations to\nU.S. Revenue Ratio\n(Percent)"=c("def6_ratio_lag1"))
-
-ProdServ_long$high<-2500
-ProdServ_long$high[ProdServ_long$variable!="Herfindahl-\nHerschman Index"]<-NA
-ProdServ_long$low<-1500
-ProdServ_long$low[ProdServ_long$variable!="Herfindahl-\nHerschman Index"]<-NA
-
-(
-
-ProdServ6long_wide<-ggplot(subset(ProdServ_long,ProdServ_dollar_rank<=8),
-       aes(x=FY,y=value))+#color=ProdServ_Code
-  geom_line()+
-  scale_y_continuous(label=scales::comma)+ 
-  scale_x_continuous(breaks=c(2007,2012))+
-  labs(x="Calendar Year",y="Detailed Industry Metric")+
-  geom_hline(aes(
-           yintercept=high),linetype="dotted")+
-  geom_hline(aes(
-           yintercept=low),linetype="dotted")    + 
-    facet_grid(variable~ProductOrServiceCodeText,scales="free_y")
-
-)
-
-ggsave(ProdServ6long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure3.png",width=9.5,height=6,dpi=600)
-ggsave(ProdServ6long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure3.eps",width=9.5,height=6,dpi=600)
-ggsave(ProdServ6long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure3.svg",width=9.5,height=6,dpi=600)
-write.csv(ProdServ_summary,file="..//Output/ProdServ6_summary.csv",row.names = FALSE)
-```
-
-### Office
-```{r grouped percent frequency/obligation barplot for all Office}
-#grouped bar plot for variable Office
-#Perpare data for plot
-Office_Freq <- def_serv %>% group_by(Agency, Office) %>%
-  dplyr::summarise(
-    Count_Freq=length(CSIScontractID),
-    Action_Obligation.OMB20_GDP18=sum(Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-  )
-
-Office_Freq$Percent_Obligation <- Office_Freq$Action_Obligation.OMB20_GDP18/
-                                          sum(Office_Freq$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
-
-Office_Freq$Percent_Freq <- Office_Freq$Count_Freq/
-                                          sum(Office_Freq$Count_Freq,na.rm=TRUE)
-
-#get the detailed desceription for Office by AgencyID and OfficeID
-
-Office_Freq<-read_and_join_experiment(Office_Freq,
-                                      lookup_file = "Office.ContractingOfficeCode.txt",
-                                      path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
-                                      dir="office/",
-                                      by=c("Agency"="AgencyID",
-                                       "Office"="ContractingOfficeCode"   
-                                      ),
-                                      add_var = "ContractingOfficeName",
-                                      skip_check_var = "ContractingOfficeName")
-
-
-colnames(Office_Freq)[colnames(Office_Freq)=="ContractingOfficeName"] <- "OfficeName"
-
-# Office_Freq[,1:2] <- lapply(Office_Freq[,1:2], function(x) as.character(x))
-#Generate a new name column by Combining Office and officeName
-Office_Freq$Office_Full <- ifelse(is.na(Office_Freq$OfficeName), Office_Freq$Office, 
-                                  paste(Office_Freq$Office, 
-                                            sep=" - ", Office_Freq$OfficeName))
-
-
-# Office_Freq$Percent_Obli <- Percent_Obli * 100
-
-Office_Freq_top10Freq <- Office_Freq[order(-Office_Freq$Percent_Freq),]
-Office_Freq_top10Freq <- Office_Freq_top10Freq[1:10, ]  #including NULL category
-Office_Freq_top10Obli <- Office_Freq[order(-Office_Freq$Percent_Obligation),]
-Office_Freq_top10Obli <- Office_Freq_top10Obli[1:10, ]  #including NULL category
-
-Office_Freq_TOP <- rbind(Office_Freq_top10Obli, Office_Freq_top10Freq)
-Office_Freq_TOP <- unique(Office_Freq_TOP)  #17 records in total
-
-Office_Freq_TOP$Office_Full <- factor(Office_Freq_TOP$Office_Full, 
-                                      levels = rev(Office_Freq_TOP$Office_Full))
-Office_Freq_TOP <- melt(Office_Freq_TOP, 
-                        id = c("Agency","Office", "OfficeName", "Office_Full", "Count_Freq", "Action_Obligation.OMB20_GDP18"))
-
-Office_barplot <- ggplot(data = Office_Freq_TOP,
-                         aes(x = Office_Full, 
-                             y = value,
-                             fill = factor(variable))) +
-                  geom_bar(stat = "identity", 
-                  position = "dodge", 
-                  width = 0.8) + 
-                  coord_flip() +
-                  xlab("") + 
-                  ylab("") + 
-                  theme_grey() + 
-                  scale_fill_grey(labels = c("% of records", "% of obligation"),
-                                  guide = guide_legend(reverse = TRUE)) + 
-                  ggtitle("Percent of Frequency and obligation for Office") +
-                  theme(text = element_text(size = 10), 
-                        legend.title = element_blank(),
-                        legend.position = "bottom",
-                        legend.margin = margin(t=-0.8, r=0, b=0.5, l=0, unit = "cm"),
-                        legend.text = element_text(margin = margin(r=0.5, unit = "cm")), 
-                        plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm"))
-Office_barplot
-```
-
-
-## Platform Portfolio
-```{r Platform, fig.width=6.5 , fig.height=3.25}
-
-library(readr)
-annual_platform_summary<-read_csv(file="..//Output//annual_platform_summary.csv")
-colnames(annual_platform_summary)[colnames(annual_platform_summary)=="platformPortfolio"]<-"PlatformPortfolio"
-
-platform_no_na<-subset(annual_platform_summary,!is.na(PlatformPortfolio))
-labels_and_colors<-csis360::prepare_labels_and_colors(platform_no_na,"PlatformPortfolio")
-
-
-
-platform_no_na$plat_short <-swr(platform_no_na$PlatformPortfolio,nwrap = 21)
-platform_no_na<-subset(platform_no_na,Fiscal.Year>=2000 & Fiscal.Year<=2017)
-
- 
-
-# plat<-ggplot(platform_no_na,
-#        aes(x=Fiscal.Year,y=hh_index))+#color=NAICS_Code
-#   geom_line()+
-#   scale_y_continuous(label=scales::comma)+ 
-#   # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
-#   labs(x="Fiscal Year",y="Herfindahl-Herschman Index")+ 
-#   geom_hline(yintercept=c(1500,2500),linetype="dotted")+
-#   facet_wrap(~plat_short)
-# add_preassigned_scales(plat,labels_and_colors = labels_and_colors)
-
-# str(platform_no_na)
-# summary(platform_no_na$Fiscal.Year)
-#
-# undebug(add_preassigned_scales)
-plat<-build_plot(
-  data=platform_no_na,
-  chart_geom = "Line Chart",
-  share = FALSE,
-  x_var="Fiscal.Year",
-  y_var="hh_index", #Name of variable to plot on y-axis
-  color_var="PlatformPortfolio",       # name of coloration variable, as string
-  facet_var="PlatformPortfolio",        # name of facet variable, as string
-  legend=FALSE, #Include a legend
-  caption=FALSE, #Include a source caption
-  labels_and_colors=labels_and_colors,
-  column_key=NULL
-)
-
-
-# add_preassigned_scales(plat, labels_and_colors,  var="PlatformPortfolio"
-
-plat<-plat+geom_hline(yintercept=c(1500,2500),linetype="dotted")+
-  labs(x="Fiscal Year",y="Herfindahl-Herschman Indetx")
-plat
-ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index,color=PlatformPortfolio),size=1),filename="..//Output//platform_hhi.png",height=3.25, width=6.5)
-ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index)),filename="..//Output//platform_hhi_bw.png",height=3.25, width=6.5)
-ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index,color=PlatformPortfolio),size=1),filename="..//Output//platform_hhi.eps",height=3.25, width=6.5)
-ggsave(plat+geom_line(aes(x=Fiscal.Year,y=hh_index)),filename="..//Output//platform_hhi_bw.eps",height=3.25, width=6.5)
-
-```
 
 ## Variable examination
 ```{r VarGraph}

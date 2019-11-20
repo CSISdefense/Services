@@ -57,15 +57,15 @@ custom.model.names = c("Some Opt","All Opt"),
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+$
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 $β_{`r (b<-1)`}Intercept~+~$
-$β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
-$β_{`r (b<-b+1)`}Service~Code~Inv.~Rate_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Perf.-Based_{i}~+$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~Salary)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}~+~$
+$β_{`r (b<-b+1)`}Office~Perf.-Based~%_{i}~+$
 $β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}~+$
 $β_{`r (b<-b+1)`}Paired~Years_{i}~+~$
-$β_{`r (b<-b+1)`}Paired~Actions_{i}~+~$
-$β_{`r (b<-b+1)`}Initial~Base_{i}~+$
-$β_{`r (b<-b+1)`}Initial~Ceiling:Base_{i}~+~$
-$β_{`r (b<-b+1)`}Planned~Duration_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Paired~Actions+1)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Init.~Base)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Init.~Ceiling:Base)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Planned~Dur.)_{i}~+~$
 $(~β_{`r (b<-b+1)`}1~Offer_{i}~+~$
 $β_{`r (b<-b+1)`}1~Offer_{i}+~$
 $β_{`r (b<-b+1)`}5plus~Offers_{i}~)~+~$
@@ -82,15 +82,15 @@ $β_{`r (b<-b+1)`}UCA_{i}~)~+~$
 $(~β_{`r (b<-b+1)`}ARRA_{i}~+~$
 $β_{`r (b<-b+1)`}Disaster_{i}~+~$
 $β_{`r (b<-b+1)`}OCO_{i}~)~+~$
-$β_{`r (b<-b+1)`}Subsector~HHI_{i}~+$
-$β_{`r (b<-b+1)`}Subsector~DoD:US {i}~+~$
-$β_{`r (b<-b+1)`}Detailed~Ind.~HHI_{i}~+~$
-$β_{`r (b<-b+1)`}Detailed~Ind.~DoD:US_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Obligations_{i}~+$
-$β_{`r (b<-b+1)`}Paired~Share_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Subsector~HHI)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Subsector~DoD:US)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~HHI)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~DoD:US)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Office~Focus)_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Share_{i}~+~$\newline\
-$β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}·Office~Obligations_{i}~+~$\newline\
-$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Paired~Actions_{i}~+~$
+$β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}·Log(Office~Obl.+1)_{i}~+~$\newline\
+$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Log(Paired~Actions+1)_{i}~+~$
 $β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Paired~Share_{i}~+~$
 $(~β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Other~Fixed–Price_{i}~+~$
 $β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Incentive~Fee_{i}~+~$
@@ -98,8 +98,8 @@ $β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Comb–Other_{i}~+~$
 $β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Other~Cost–Based_{i}~+~$
 $β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Time~\&~Materials_{i}~+~$
 $β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·UCA_{i}~)~+$\newline\
-$β_{`r (b<-b+1)`}Initial~Base_{i}·Initial~Ceiling:Base_{i}~+~$
-$β_{`r (b<-b+1)`}Paired~Share_{i}·Office~Obligations_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Init.~Base)_{i}·Log(Init.~Ceiling:Base)_{i}~+~$
+$β_{`r (b<-b+1)`}Paired~Share_{i}·Log(Office~Obl.+1)_{i}~+~$
 $ϵ_{i},~for~i=1~to~`r sample_n(b_SomeOpt25Cv3)`$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_SomeOpt25Cv3,"NAICS3")`;$$
@@ -115,15 +115,15 @@ $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_SomeOpt25
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+$
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 $β_{`r (b<-1)`}Intercept~+~$
-$β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
-$β_{`r (b<-b+1)`}Service~Code~Inv.~Rate_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Perf.-Based_{i}~+$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~Salary)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}~+~$
+$β_{`r (b<-b+1)`}Office~Perf.-Based~%_{i}~+$
 $β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Years_{i}~+~$
-$β_{`r (b<-b+1)`}Paired~Actions_{i}~+~$
-$β_{`r (b<-b+1)`}Initial~Base_{i}~+$
-$β_{`r (b<-b+1)`}Initial~Ceiling:Base_{i}~+~$
-$β_{`r (b<-b+1)`}Planned~Duration_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Paired~Actions+1)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Init.~Base)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Init.~Ceiling:Base)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Planned~Dur.)_{i}~+~$
 $(~β_{`r (b<-b+1)`}1~Offer_{i}~+~$
 $β_{`r (b<-b+1)`}2–4Offers_{i}+~$
 $β_{`r (b<-b+1)`}5plus~Offers_{i}~)~+~$
@@ -140,12 +140,12 @@ $β_{`r (b<-b+1)`}UCA_{i}~)~+~$
 $(~β_{`r (b<-b+1)`}ARRA_{i}~+~$
 $β_{`r (b<-b+1)`}Disaster_{i}~+~$
 $β_{`r (b<-b+1)`}OCO_{i}~)~+~$
-$β_{`r (b<-b+1)`}Subsector~HHI_{i}~+$
-$β_{`r (b<-b+1)`}Subsector~DoD:US {i}~+~$
-$β_{`r (b<-b+1)`}Detailed~Ind.~HHI_{i}~+~$
-$β_{`r (b<-b+1)`}Detailed~Ind.~DoD:US_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Obligations_{i}~+$
-$β_{`r (b<-b+1)`}Office~Focus_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Subsector~HHI)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Subsector~DoD:US)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~HHI)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~DoD:US)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Office~Focus)_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Share_{i}~+~$
 $(~β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Other~Fixed–Price_{i}~+$
 $β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Incentive~Fee_{i}~+~$
@@ -153,9 +153,9 @@ $β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Comb–Other_{i}~+$\newline\
 $β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Other~Cost–Based_{i}~+~$
 $β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Time~\&~Materials_{i}~+$
 $β_{`r (b<-b+1)`}cn\_PSCrate_{i}·UCA_{i}~)~+~$
-$β_{`r (b<-b+1)`}cln\_OffPSC7_{i}·Office~Focus_{i}~+$\newline\
+$β_{`r (b<-b+1)`}cln\_OffPSC7_{i}·Log(Office~Focus)_{i}~+$\newline\
 $β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Paired~Share_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Obligations_{i}·Office~Focus_{i}~+~$\newline\
+$β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}·Log(Office~Focus)_{i}~+~$\newline\
 $ϵ_{i},~for~i=1~to~`r sample_n(b_AllOpt26A)`$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_AllOpt26A,"NAICS3")`;$$
@@ -187,15 +187,15 @@ texreg::screenreg(list(b_CBre29B,n_CBre25A),
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+$
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 $β_{`r (b<-1)`}Intercept~+~$
-$β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
-$β_{`r (b<-b+1)`}Service~Code~Inv.~Rate_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Perf.-Based_{i}~+$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~Salary)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}~+~$
+$β_{`r (b<-b+1)`}Office~Perf.-Based~%_{i}~+$
 $β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Years_{i}~+~$
-$β_{`r (b<-b+1)`}Paired~Actions_{i}~+~$
-$β_{`r (b<-b+1)`}Initial~Base_{i}~+$
-$β_{`r (b<-b+1)`}Initial~Ceiling:Base_{i}~+~$
-$β_{`r (b<-b+1)`}Planned~Duration_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Paired~Actions+1)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Init.~Base)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Init.~Ceiling:Base)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Planned~Dur.)_{i}~+~$
 $(~β_{`r (b<-b+1)`}1~Offer_{i}~+~$
 $β_{`r (b<-b+1)`}2–4Offers_{i}+~$
 $β_{`r (b<-b+1)`}5plus~Offers_{i}~)~+$
@@ -212,14 +212,14 @@ $β_{`r (b<-b+1)`}UCA_{i}~)~+~$
 $(~β_{`r (b<-b+1)`}ARRA_{i}~+~$
 $β_{`r (b<-b+1)`}Disaster_{i}~+~$
 $β_{`r (b<-b+1)`}OCO_{i}~)~+~$
-$β_{`r (b<-b+1)`}Subsector~DoD:US {i}~+$
-$β_{`r (b<-b+1)`}Detailed~Ind.~HHI_{i}~+~$
-$β_{`r (b<-b+1)`}Detailed~Ind.~DoD:US_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Obligations_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Focus_{i}~+$
+$β_{`r (b<-b+1)`}Log(Subsector~DoD:US)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~HHI)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~DoD:US)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Office~Focus)_{i}~+$
 $β_{`r (b<-b+1)`}Paired~Share_{i}~+~$
-$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Paired~Actions_{i}~+$\newline\
-$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Planned~Duration_{i}~+~$
+$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Log(Paired~Actions+1)_{i}~+$\newline\
+$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Log(Planned~Dur.)_{i}~+~$
 $ϵ_{i},~for~i=  1~to~`r sample_n(b_CBre29B)`$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_CBre29B,"NAICS3")`;$$
@@ -235,15 +235,15 @@ $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_CBre29B,"
 $Estimated~Log(y_i)~=~α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+~α^{NAICS6:NAICS3:ServArea}_{l[i]}~+$
 $α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+~α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+~$
 $β_{`r (b<-1)`}Intercept~+$
-$β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
-$β_{`r (b<-b+1)`}Service~Code~Inv.~Rate_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Perf.-Based_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~Salary)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}~+~$
+$β_{`r (b<-b+1)`}Office~Perf.-Based~%_{i}~+~$
 $β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}~+$
 $β_{`r (b<-b+1)`}Paired~Years_{i}~+~$
-$β_{`r (b<-b+1)`}Paired~Actions_{i}~+~$
-$β_{`r (b<-b+1)`}Initial~Base_{i}~+~$
-$β_{`r (b<-b+1)`}Initial~Ceiling:Base_{i}~+$
-$β_{`r (b<-b+1)`}Planned~Duration_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Paired~Actions+1)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Init.~Base)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Init.~Ceiling:Base)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Planned~Dur.)_{i}~+~$
 $(~β_{`r (b<-b+1)`}1~Offer_{i}~+~$
 $β_{`r (b<-b+1)`}2–4Offers_{i}+~$
 $β_{`r (b<-b+1)`}5plus~Offers_{i}~)~+~$
@@ -260,13 +260,13 @@ $β_{`r (b<-b+1)`}UCA_{i}~)~+~$
 $(~β_{`r (b<-b+1)`}ARRA_{i}~+~$
 $β_{`r (b<-b+1)`}Disaster_{i}~+~$
 $β_{`r (b<-b+1)`}OCO_{i}~)~+~$
-$β_{`r (b<-b+1)`}Subsector~DoD:US {i}~+~$
-$β_{`r (b<-b+1)`}Detailed~Ind.~HHI_{i}~+$
-$β_{`r (b<-b+1)`}Detailed~Ind.~DoD:US_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Obligations_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Focus_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Subsector~DoD:US)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~HHI)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~DoD:US)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Office~Focus)_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Share_{i}~+$
-$β_{`r (b<-b+1)`}Office~Perf.-Based_{i}·Paired~Actions_{i}~+~ϵ_{i}~+~$\newline\
+$β_{`r (b<-b+1)`}Office~Perf.-Based~%_{i}·Log(Paired~Actions+1)_{i}~+~ϵ_{i}~+~$\newline\
 $ϵ_{i},~for~i=  1~to~`r sample_n(n_CBre25A)`$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(n_CBre25A,"NAICS3")`;$$
@@ -291,15 +291,15 @@ texreg::screenreg(list(term25B),
 $Estimated~Probability(y_i = 1)~=~Logit^{-1}(α~+~α^{NAICS3}_{j[i]}~+~α^{NAICS6:NAICS3}_{k[i]}~+$
 $α^{NAICS6:NAICS3:ServArea}_{l[i]}~+~α^{Agency}_{m[i]}~+~α^{Office:Agency}_{n[i]}~+α^{Place}_{o[i]}~+~α^{StartFY}_{p[i]}~+$
 $β_{`r (b<-1)`}Intercept_{i}~+~$
-$β_{`r (b<-b+1)`}Detailed~Industry~Salary_{i}~+~$
-$β_{`r (b<-b+1)`}Service~Code~Inv.~Rate_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Perf.-Based_{i}~+$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~Salary)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}~+~$
+$β_{`r (b<-b+1)`}Office~Perf.-Based~%_{i}~+$
 $β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Years_{i}~+~$
-$β_{`r (b<-b+1)`}Paired~Actions_{i}~+~$
-$β_{`r (b<-b+1)`}Initial~Base_{i}~+$
-$β_{`r (b<-b+1)`}Initial~Ceiling:Base_{i}~+$
-$β_{`r (b<-b+1)`}Planned~Duration_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Paired~Actions+1)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Init.~Base)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Init.~Ceiling:Base)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Planned~Dur.)_{i}~+~$
 $(~β_{`r (b<-b+1)`}1~Offer_{i}~+~$
 $β_{`r (b<-b+1)`}2–4Offers_{i}+~$
 $β_{`r (b<-b+1)`}5plus~Offers_{i}~)~+~$
@@ -316,12 +316,12 @@ $β_{`r (b<-b+1)`}UCA_{i}~)~+~$
 $(~β_{`r (b<-b+1)`}ARRA_{i}~+~$
 $β_{`r (b<-b+1)`}Disaster_{i}~+~$
 $β_{`r (b<-b+1)`}OCO_{i}~)~+~$
-$β_{`r (b<-b+1)`}Subsector~HHI_{i}~+$
-$β_{`r (b<-b+1)`}Subsector~DoD:US {i}~+~$
-$β_{`r (b<-b+1)`}Detailed~Ind.~HHI_{i}~+~$
-$β_{`r (b<-b+1)`}Detailed~Ind.~DoD:US_{i}~+~$
-$β_{`r (b<-b+1)`}Office~Obligations_{i}~+$
-$β_{`r (b<-b+1)`}Office~Focus_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Subsector~HHI)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Subsector~DoD:US)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~HHI)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Det.~Ind.~DoD:US)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}~+$
+$β_{`r (b<-b+1)`}Log(Office~Focus)_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Share_{i}~+~$
 $(~β_{`r (b<-b+1)`}Paired~Years_{i}·Other~Fixed–Price_{i}~+$
 $β_{`r (b<-b+1)`}Paired~Years_{i}·Incentive~Fee_{i}~+~$
