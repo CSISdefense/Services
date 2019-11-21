@@ -490,10 +490,11 @@ Office_barplot <- ggplot(data = Office_Freq_TOP,
                         plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm"))
 )
 ```
-##### Office Obligations
-```{r OffFocus}
 
-freq_continuous_plot(def_serv,"office_obligatedamount_1year",bins=50, log=TRUE , plus1 = TRUE)
+##### Office Obligations
+```{r cln_OffObl7}
+
+freq_continuous_plot(def_serv,"office_obligatedamount_7year",bins=50, log=TRUE , plus1 = TRUE)
 ```
 
 ##### Office Focus
@@ -808,9 +809,17 @@ NAICS3_Freq_TOP <- melt(NAICS3_Freq_TOP, id = c("NAICS3", "Count_Freq", "Descrip
 part_grouped_barplot("NAICS3", NAICS3_Freq_TOP) + ggtitle("Top 15 of the most frequently appeared NAICS3")
 ```
 
-##### Subsector HHI
+##### Def3 HHI
+```{r cln_Def6HHI}
 
-##### Subsector : US
+freq_continuous_plot(def_serv,"cl_def3_HHI_lag1",bins=50, log=TRUE)
+```
+
+##### Def3:US
+```{r clr_Def3toUS}
+
+freq_continuous_plot(def_serv,"def3_ratio_lag1",bins=50, log=TRUE)
+```
 
 #### NAICS 6
 * NAICS6 is a factor reporting the top North American Industrial Classification Code of each contract. 
@@ -929,6 +938,7 @@ NAICS6long<-ggplot(subset(NAICS_long,naics_dollar_rank<=8),
            yintercept=high),linetype="dotted")+
   geom_hline(aes(
            yintercept=low),linetype="dotted")    
+
 
 
 
@@ -1053,8 +1063,8 @@ NAICS_barPlot <- ggplot(data = NAICS_Freq_TOP,
 )
 ```
 
-##### Detailed Industry HHI                            
-                            
+##### Def6 HHI                            
+
 * cln_Def6HHI is a numeric variable based on the HHI Index of a NAICS6 code for defense contracting. Index values of 1500 and below are considered unconsolidated. 1500-2000 is considered moderately consolidated. And 2,000 and above are considered highly consolidated. The scale runs from 0 to 10,000. `r summary(def_serv$cln_Def6HHI);
 summary(def_serv$cln_Def6HHI);
 centered_description(def_serv$def6_HHI_lag1,"HHI score")
@@ -1075,28 +1085,28 @@ NA_stats(def_serv,"cln_Def3HHI")
 #   !is.na(def_serv$pPBSC)&
 # !is.na(def_serv$pOffPSC)&
 
-HHI_category<-c("def3_HHI_lag1","def6_HHI_lag1")
-complex_category <- c("US6_avg_sal_lag1","CFTE_Rate_1year")
-capacity_category <- c("pPBSC", "pOffPSC")
-pair_category <- c("office_entity_ca_inc")
+freq_continuous_plot(def_serv,"def6_HHI_lag1",bins=50, log=TRUE)
 
-# def_serv$CFTE_Rate_1year
+
+HHI_category<-c("def3_HHI_lag1","def6_HHI_lag1")
+
 statsummary_discrete("CompOffr",def_serv)
 
-def_serv$office_entity_ca_inc<-def_serv$office_entity_numberofactions_1year+1
 hhi<-statsummary_continuous(HHI_category, def_serv)
 hhi
+
 write.csv(hhi,file="..\\Output/hhi_summary.csv")
-statsummary_continuous(complex_category, def_serv)
-statsummary_continuous(capacity_category, def_serv,log=FALSE)
-statsummary_continuous(pair_category, def_serv)
 
 
 
 ```
 
 
-##### Detailed Industry : US
+##### Def6:US
+```{r clr_Def6toUS}
+
+freq_continuous_plot(def_serv,"def6_ratio_lag1",bins=50, log=TRUE)
+```
 
 ### Place
 * b_Intl is a binary variable with a value of 1 for contracts/task orders with any transactions performed internationally and a value of 0 otherwise. `r summary(def_serv$b_Intl);
@@ -1104,7 +1114,7 @@ sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$b_Intl==1],na.rm=TRUE)/sum(d
 NA_stats(def_serv,"b_Intl")`
 
 
-```{r International}
+```{r Place}
 
 
 grouped_barplot("Intl", def_serv)
@@ -1125,19 +1135,28 @@ grouped_barplot("StartCY", def_serv)
 ## Controls
 ```{r control}
 
+(
 logged<-statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18",
                                  "Base2Ceil",
                                  "UnmodifiedDays",
                                  "def3_HHI_lag1",
-                                 "def3_ratio_lag1",
+                                 # "def3_ratio_lag1",
                                  "def6_HHI_lag1",
-                                 "def6_ratio_lag1",
+                                 # "def6_ratio_lag1",
                                  "office_naics_hhi_k"), def_serv)
+)
 
 summary(def_serv$def6_ratio_lag1)
 summary(log(def_serv$def6_ratio_lag1))
 summary(na_non_positive_log(def_serv$def6_ratio_lag1))
 summary(arm::rescale(na_non_positive_log(def_serv$def6_ratio_lag1)))
+summary(arm::rescale(def_serv$def6_ratio_lag1))
+summary(def_serv$clr_Def6toUS)
+
+
+summary(arm::rescale(na_non_positive_log(def_serv$def3_ratio_lag1)))
+summary(arm::rescale(def_serv$def3_ratio_lag1))
+summary(def_serv$clr_Def3toUS)
 
 
 sd(def_serv$def6_ratio_lag1,na.rm = TRUE)
@@ -1145,7 +1164,7 @@ summary(arm::rescale(def_serv$def6_ratio_lag1))
 summary(def_serv$capped_def6_ratio_lag1)
 
 summary(arm::rescale(def_serv$capped_def6_ratio_lag1))
-summary(def_serv$clr_Def6toUS)
+
 
 
 write.csv(logged,"..\\output\\logged_controls.csv",row.names = FALSE)
@@ -1155,11 +1174,13 @@ write.csv(logged,"..\\output\\logged_controls.csv",row.names = FALSE)
 
 
 
-loggedplus1<-statsummary_continuous(c("office_obligatedamount_1year"), def_serv,plus1 = TRUE)
+loggedplus1<-statsummary_continuous(c("office_obligatedamount_7year"), def_serv,plus1 = TRUE)
 
 write.csv(loggedplus1,"..\\output\\logged_controls_plus1.csv",row.names = FALSE)
 
-unlogged<-statsummary_continuous(c("pMarket"), def_serv, log = FALSE)
+unlogged<-statsummary_continuous(c("def3_ratio_lag1",
+                                   "def6_ratio_lag1",
+                                   "pMarket"), def_serv, log = FALSE)
 write.csv(unlogged,"..\\output\\unlogged_controls.csv",row.names = FALSE)
 
 
