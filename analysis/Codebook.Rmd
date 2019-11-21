@@ -1133,6 +1133,21 @@ logged<-statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18",
                                  "def6_HHI_lag1",
                                  "def6_ratio_lag1",
                                  "office_naics_hhi_k"), def_serv)
+
+summary(def_serv$def6_ratio_lag1)
+summary(log(def_serv$def6_ratio_lag1))
+summary(na_non_positive_log(def_serv$def6_ratio_lag1))
+summary(arm::rescale(na_non_positive_log(def_serv$def6_ratio_lag1)))
+
+
+sd(def_serv$def6_ratio_lag1,na.rm = TRUE)
+summary(arm::rescale(def_serv$def6_ratio_lag1))
+summary(def_serv$capped_def6_ratio_lag1)
+
+summary(arm::rescale(def_serv$capped_def6_ratio_lag1))
+summary(def_serv$clr_Def6toUS)
+
+
 write.csv(logged,"..\\output\\logged_controls.csv",row.names = FALSE)
 
 
@@ -1142,10 +1157,10 @@ write.csv(logged,"..\\output\\logged_controls.csv",row.names = FALSE)
 
 loggedplus1<-statsummary_continuous(c("office_obligatedamount_1year"), def_serv,plus1 = TRUE)
 
-write.csv(logged,"..\\output\\logged_controls.csv",row.names = FALSE)
+write.csv(loggedplus1,"..\\output\\logged_controls_plus1.csv",row.names = FALSE)
 
 unlogged<-statsummary_continuous(c("pMarket"), def_serv, log = FALSE)
-
+write.csv(unlogged,"..\\output\\unlogged_controls.csv",row.names = FALSE)
 
 
 ```
