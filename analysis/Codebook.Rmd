@@ -821,6 +821,144 @@ freq_continuous_plot(def_serv,"cl_def3_HHI_lag1",bins=50, log=TRUE)
 freq_continuous_plot(def_serv,"def3_ratio_lag1",bins=50, log=TRUE)
 ```
 
+
+
+```{r NAICS3_Summary, fig.width=7.5 , fig.height=3}
+NAICS_summary<-def_serv %>% group_by(NAICS3,StartCY,def3_HHI_lag1,def3_obl_lag1,def3_ratio_lag1,US3_avg_sal_lag1) %>%
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation_Then_Year),
+                   annual_count=length(StartCY)) 
+
+top_NAICS <- NAICS_summary %>% group_by(NAICS3) %>% 
+  dplyr::summarise(naics_action_obligation=sum(annual_action_obligation),
+                   naics_count=sum(annual_count)) 
+top_NAICS$naics_dollar_rank<-rank(-top_NAICS$naics_action_obligation)
+top_NAICS$naics_count_rank<-rank(-top_NAICS$naics_count)
+
+#If statement there to prevent adding it a second time in  reruns.
+if(!"naics_dollar_rank" %in% colnames(NAICS_summary))
+  NAICS_summary<-left_join(NAICS_summary,top_NAICS, by="NAICS3")
+
+
+
+
+NAICS_summary<-as.data.frame(NAICS_summary)
+NAICS_summary$NAICS3<-as.character(NAICS_summary$NAICS3)
+NAICS_summary<-read_and_join_experiment(NAICS_summary,
+                                      lookup_file = "Lookup_PrincipalNAICScode.csv",
+                                      path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                      dir="economic\\",
+                                      by=c("NAICS3"="principalnaicscode"),
+                                      skip_check_var=c("principalnaicscodeText",
+                                                       "NAICS_shorthand",
+                                                       "principalNAICS4DigitCode")
+                                      )
+
+# https://stackoverflow.com/questions/37174316/how-to-fit-long-text-into-ggplot2-facet-titles
+
+
+
+# Helper function for string wrapping. 
+#  20 character target width.
+swr <- function(string, nwrap=20) {
+  paste(strwrap(string, width=nwrap), collapse="\n")
+}
+swr <- Vectorize(swr)
+summary(NAICS_summary$NAICS_shorthand)
+
+# View(NAICS_summary)
+NAICS_summary$NAICS_shorthand<-swr(NAICS_summary$NAICS_shorthand,nwrap = 25)
+NAICS_summary$CY<-NAICS_summary$StartCY-1
+NAICS3top<-ggplot(subset(NAICS_summary,naics_dollar_rank<=4 |
+                          naics_count_rank<=4),
+       aes(x=CY,y=def3_HHI_lag1))+#color=NAICS_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+  # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
+  labs(x="Calendar Year",y="Herfindahl-Herschman Index")+ 
+  geom_hline(yintercept=c(1500,2500),linetype="dotted")
+
+NAICS3top_paper<-NAICS3top+ facet_wrap(~NAICS_shorthand,ncol=2)
+ggsave(NAICS3top_paper,file="..//Output\\NAICS3top.png",width=4,height=8,dpi=600)
+ggsave(NAICS3top_paper,file="..//Output\\NAICS3top.eps",width=4,height=8,dpi=600)
+
+NAICS3top_pp<-NAICS3top+ facet_wrap(~NAICS_shorthand,ncol=4)
+NAICS3top_pp
+ggsave(NAICS3top_pp,file="..//Output\\NAICS3top_pp.png",width=10.5,height=5.5,dpi=600)
+ggsave(NAICS3top_pp,file="..//Output\\NAICS3top_pp.eps",width=10.5,height=5.5,dpi=600)
+
+summary(NAICS_summary$naics_count_rank)
+
+
+NAICS_summary$NAICS_shorthand<-swr(NAICS_summary$NAICS_shorthand,nwrap = 14)
+# NAICS_summary$CY<-factor(paste("'",substring(as.character(NAICS_summary$CY),3,4),sep=""))
+
+NAICS3top8<-ggplot(subset(NAICS_summary,naics_dollar_rank<=8),
+       aes(x=CY,y=def3_HHI_lag1))+#color=NAICS_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+  scale_x_continuous(breaks=c(2007,2012))+
+  labs(x="Calendar Year",y="Herfindahl-Herschman Index")+ 
+  geom_hline(yintercept=c(1500,2500),linetype="dotted")
+
+NAICS3top8_wide<-NAICS3top8+ facet_grid(.~NAICS_shorthand)
+ggsave(NAICS3top8_wide,file="..//Output\\NAICS3top8.png",width=9.5,height=4,dpi=600)
+ggsave(NAICS3top8_wide,file="..//Output\\NAICS3top8.eps",width=9.5,height=4,dpi=600)
+
+colnames(NAICS_summary)
+NAICS_long<-NAICS_summary[,colnames(NAICS_summary) %in% c( "NAICS3",
+                                                    "def3_HHI_lag1",
+                                                    "def3_obl_lag1",
+                                                    "def3_ratio_lag1",
+                                                    # "US3_avg_sal_lag1",
+                                                    "naics_dollar_rank" ,
+                                                    "naics_count_rank",
+                                                    "principalnaicscodeText",
+                                                     "NAICS_shorthand",
+                                                    "CY")]
+NAICS_long<-melt(NAICS_long, id=c("NAICS3","naics_dollar_rank","naics_count_rank","principalnaicscodeText","CY", "NAICS_shorthand"))
+
+
+
+#Drop the ratios and average salaries w/ unique values
+# NAICS_long<-NAICS_long[NAICS_long$variable %in% c(),]
+
+NAICS_long$value[NAICS_long$variable=="def3_obl_lag1"]<-NAICS_long$value[NAICS_long$variable=="def3_obl_lag1"]/1e9
+NAICS_long$value[NAICS_long$variable=="def3_ratio_lag1"]<-NAICS_long$value[NAICS_long$variable=="def3_ratio_lag1"]*1e2
+
+levels(NAICS_long$variable)<- list("Herfindahl-\nHerschman Index"=c("def3_HHI_lag1"),
+                                   "Defense Obligations\n(Billions)"=c("def3_obl_lag1"),
+                                   "Def. Obligations to\nU.S. Revenue Ratio\n(Percent)"=c("def3_ratio_lag1"))
+
+NAICS_long$high<-2500
+NAICS_long$high[NAICS_long$variable!="Herfindahl-\nHerschman Index"]<-NA
+NAICS_long$low<-1500
+NAICS_long$low[NAICS_long$variable!="Herfindahl-\nHerschman Index"]<-NA
+
+(
+NAICS3long_wide<-ggplot(subset(NAICS_long,naics_dollar_rank<=8),
+       aes(x=CY,y=value))+#color=NAICS_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+  scale_x_continuous(breaks=c(2007,2012))+
+  labs(x="Calendar Year",y="Detailed Industry Metric")+
+  geom_hline(aes(
+           yintercept=high),linetype="dotted")+
+  geom_hline(aes(
+           yintercept=low),linetype="dotted") + 
+  facet_grid(variable~NAICS_shorthand,scales="free_y")   
+)
+
+ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure2.png",width=9.5,height=6,dpi=600)
+ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure2.eps",width=9.5,height=6,dpi=600)
+ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure2.svg",width=9.5,height=6,dpi=600)
+
+write.csv(NAICS_summary,file="..//Output/NAICS3_summary.csv",row.names = FALSE)
+```
+
+
+
+
+
 #### NAICS 6
 * NAICS6 is a factor reporting the top North American Industrial Classification Code of each contract. 
 `r summary(def_serv$NAICS6);
