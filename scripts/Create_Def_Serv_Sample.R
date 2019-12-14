@@ -29,10 +29,10 @@ summary(def_serv$UnmodifiedCeiling_Then_Year)
 
 
 
-#Base2Ceil exploring
-ggplot(def_serv %>% filter(Base2Ceil>1 & Base2Ceil<10),aes(x=Base2Ceil))+geom_histogram(bins=30)
-ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=30)+scale_x_log10()
-ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=50)+scale_x_log10()
+#Ceil2Base exploring
+ggplot(def_serv %>% filter(Ceil2Base>1 & Ceil2Base<10),aes(x=Ceil2Base))+geom_histogram(bins=30)
+ggplot(def_serv %>% filter(Ceil2Base>1),aes(x=Ceil2Base))+geom_histogram(bins=30)+scale_x_log10()
+ggplot(def_serv %>% filter(Ceil2Base>1),aes(x=Ceil2Base))+geom_histogram(bins=50)+scale_x_log10()
 # def_serv$cp_AvlOpt<-arm::rescale(def_serv$p_AvlOpt)
 # def_serv <-def_serv %>% dplyr::select(-AvlOpt,-p_AvlOpt,-cp_AvlOpt)
 
@@ -41,83 +41,78 @@ ggplot(def_serv %>% filter(Base2Ceil>1),aes(x=Base2Ceil))+geom_histogram(bins=50
 summary(def_serv$b_Term)
 summary(def_serv$ln_CBre_OMB20_GDP18)
 summary(def_serv$ln_OptGrowth_OMB20_GDP18) 
-summary(def_serv$ExercisedOptions)
 summary(def_serv$AnyUnmodifiedUnexercisedOptions)
 #Study Variables
-summary(def_serv$cl_US6_avg_sal_lag1Const)
-summary(def_serv$cl_CFTE)
-summary(def_serv$c_pPBSC)
-summary(def_serv$c_pOffPSC)
-summary(def_serv$c_pairHist)
-summary(def_serv$cl_pairCA)
+summary(def_serv$cln_US6sal)
+summary(def_serv$cln_PSCrate) 
+summary(def_serv$cp_OffPerf7) 
+summary(def_serv$cp_OffPSC7) 
+summary(def_serv$cn_PairHist7)
+summary(def_serv$cln_PairCA)
 #Controls
-summary(def_serv$CompOffr)
-summary(def_serv$cl_Offr)
-summary(def_serv$cl_Ceil)
-summary(def_serv$capped_cl_Days)
+summary(def_serv$Comp)
+summary(def_serv$cln_Ceil)
+summary(def_serv$cln_Base)
+summary(def_serv$cln_Days)
 summary(def_serv$Veh) 
-summary(def_serv$PricingUCA)
-summary(def_serv$PlaceCountryISO3)
-summary(def_serv$NAICS)
+summary(def_serv$Pricing)
+summary(def_serv$Place)
+summary(def_serv$NAICS6)
 summary(def_serv$NAICS3)
 summary(def_serv$Office)
 summary(def_serv$Agency)
 summary(def_serv$StartCY)
-summary(def_serv$cl_def3_HHI_lag1)
-summary(def_serv$cl_def3_ratio_lag1)
-summary(def_serv$cl_def6_HHI_lag1)
-summary(def_serv$cl_def6_obl_lag1)
-summary(def_serv$cl_def6_ratio_lag1)
-summary(def_serv$cl_US6_avg_sal_lag1)
+summary(def_serv$cln_Def3HHI) 
+summary(def_serv$clr_Def3toUS)
+summary(def_serv$cln_Def6HHI)
+summary(def_serv$cln_Def6Obl)
+summary(def_serv$clr_Def6toUS)
+summary(def_serv$cln_US6sal) 
 #New Controls
-summary(def_serv$cl_OffCA)
-summary(def_serv$cl_OffCA)
-summary(def_serv$c_pMarket)
+summary(def_serv$cp_PairObl7)
 summary(def_serv$Crisis)
-summary(def_serv$cl_office_naics_hhi_k)
-summary(def_serv$cl_office_naics_hhi_obl)
+summary(def_serv$cln_OffFocus)  
+summary(def_serv$cl_office_naics_hhi_obl) 
 
 complete<-
   #Dependent Variables
   !is.na(def_serv$b_Term)& #summary(def_serv$b_Term)
   !is.na(def_serv$b_CBre)&
-  !is.na(def_serv$ln_CBre_OMB20_GDP18)&
-  !is.na(def_serv$ln_OptGrowth)&
+  # !is.na(def_serv$ln_CBre_OMB20_GDP18)&
+  # !is.na(def_serv$ln_OptGrowth)&
   !is.na(def_serv$AnyUnmodifiedUnexercisedOptions)&
   #Study Variables
-  !is.na(def_serv$cl_US6_avg_sal_lag1Const)&
-  !is.na(def_serv$cl_CFTE)&
-  !is.na(def_serv$c_pPBSC)&
-  !is.na(def_serv$c_pOffPSC)&
-  !is.na(def_serv$c_pairHist)&
-  !is.na(def_serv$cl_pairCA)&
+  !is.na(def_serv$cln_US6sal)&
+  !is.na(def_serv$cln_PSCrate)&
+  !is.na(def_serv$cp_OffPerf7)&
+  !is.na(def_serv$cp_OffPSC7)&
+  !is.na(def_serv$cn_PairHist7)&
+  !is.na(def_serv$cln_PairCA)&
   #Controls
-  !is.na(def_serv$CompOffr)&
-  !is.na(def_serv$cl_Offr)&
-  !is.na(def_serv$cl_Base)&
-  !is.na(def_serv$cl_Ceil)&
-  !is.na(def_serv$capped_cl_Days)&
+  !is.na(def_serv$Comp)&
+  !is.na(def_serv$clr_Ceil2Base)&
+  !is.na(def_serv$cln_Base)&
+  !is.na(def_serv$cln_Days)&
   !is.na(def_serv$Veh) &
-  !is.na(def_serv$PricingUCA)&
-  !is.na(def_serv$PlaceCountryISO3)& #New Variable
+  !is.na(def_serv$Pricing)&
+  !is.na(def_serv$Place)& #New Variable
   # !is.na(def_serv$b_UCA)& No longer  used
-  !is.na(def_serv$NAICS)&
+  !is.na(def_serv$NAICS6)&
   !is.na(def_serv$NAICS3)&
   !is.na(def_serv$Office)&
   !is.na(def_serv$Agency)&
   !is.na(def_serv$StartCY)&
-  !is.na(def_serv$cl_def3_HHI_lag1)&
-  !is.na(def_serv$cl_def3_ratio_lag1)&
-  !is.na(def_serv$cl_def6_HHI_lag1)&
-  !is.na(def_serv$cl_def6_obl_lag1Const)&
-  !is.na(def_serv$cl_def6_ratio_lag1)&
+  !is.na(def_serv$cln_Def3HHI)&
+  !is.na(def_serv$clr_Def3toUS)&
+  !is.na(def_serv$cln_Def6HHI)&
+  !is.na(def_serv$cln_Def6Obl)&
+  !is.na(def_serv$clr_Def6toUS)&
   #New Controls
-  !is.na(def_serv$cl_OffCA)& #summary(def_serv$cl_OffCA)
-  !is.na(def_serv$cl_OffVol)& #summary(def_serv$cl_OffVol)
-  !is.na(def_serv$c_pMarket)&  #summary(def_serv$c_pMarket)
-  !is.na(def_serv$Crisis)&  #summary(def_serv$c_pMarket)
-  !is.na(def_serv$cl_office_naics_hhi_k)&
-  !is.na(def_serv$cl_Base2Ceil)
+  !is.na(def_serv$cln_OffObl7)& #summary(def_serv$cln_OffObl7)
+  !is.na(def_serv$cp_PairObl7)&  #summary(def_serv$cp_PairObl7)
+  !is.na(def_serv$Crisis)&  #summary(def_serv$cp_PairObl7)
+  !is.na(def_serv$cln_OffFocus)&
+  !is.na(def_serv$clr_Ceil2Base)
 
 
 summary(complete)
@@ -146,33 +141,30 @@ serv_smp1m<-serv_complete[sample(nrow(serv_complete),1000000),]
 serv_smp<-serv_complete[sample(nrow(serv_complete),250000),]
 rm(serv_complete)
 serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
+serv_exeropt<-serv_opt[serv_opt$Exer %in% c("Some Options","Some and All Options"),]
 serv_breach<-def_serv[complete&def_serv$b_CBre==1,]
 
 #To instead replace entries in existing sample, use  this code.
 # load(file="data/clean/def_sample.Rdata")
-serv_smp<-update_sample_col_CSIScontractID(serv_smp,
-                                           def_serv[complete,],
-                                           col=NULL,
-                                           drop_and_replace=TRUE)
-
-serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
-                                           def_serv[complete,],
-                                           col=NULL,
-                                           drop_and_replace=TRUE)
-
-serv_opt<-update_sample_col_CSIScontractID(serv_opt,
-                                             def_serv[complete,],
-                                             col=NULL,
-                                             drop_and_replace=TRUE)
+# serv_smp<-update_sample_col_CSIScontractID(serv_smp,
+#                                            def_serv[complete,],
+#                                            col=NULL,
+#                                            drop_and_replace=TRUE)
+# 
+# serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
+#                                            def_serv[complete,],
+#                                            col=NULL,
+#                                            drop_and_replace=TRUE)
+# 
+# serv_opt<-update_sample_col_CSIScontractID(serv_opt,
+#                                              def_serv[complete,],
+#                                              col=NULL,
+#                                              drop_and_replace=TRUE)
 
 # serv_smp<-serv_smp %>% dplyr::select(-c(Ceil, qCRais))
 # serv_smp1m<-serv_smp1m %>% dplyr::select(-c(Ceil, qCRais))
 # serv_opt<-serv_opt %>% dplyr::select(-c(Ceil, qCRais))
 
-serv_smp<-transition_variable_names_service(serv_smp)
-serv_smp1m<-transition_variable_names_service(serv_smp1m)
-serv_opt<-transition_variable_names_service(serv_opt)
-serv_breach<-transition_variable_names_service(serv_breach)
 
 
 
@@ -195,6 +187,12 @@ serv_breach<-transition_variable_names_service(serv_breach)
 # summary(serv_exeropt$n_CBre_OMB20_GDP18)
 # serv_exeropt$ln_CBre_OMB20_GDP18<-na_non_positive_log(serv_exeropt$n_CBre_OMB20_GDP18)
 # summary(serv_exeropt$ln_CBre_OMB20_GDP18)
+
+colnames(serv_smp)[colnames(serv_smp)=="CrisisProductOrServiceArea"]<-"ServArea"
+colnames(serv_smp1m)[colnames(serv_smp1m)=="CrisisProductOrServiceArea"]<-"ServArea"
+colnames(serv_opt)[colnames(serv_opt)=="CrisisProductOrServiceArea"]<-"ServArea"
+colnames(serv_exeropt)[colnames(serv_exeropt)=="CrisisProductOrServiceArea"]<-"ServArea"
+colnames(serv_breach)[colnames(serv_breach)=="CrisisProductOrServiceArea"]<-"ServArea"
 
 
 save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt,serv_exeropt,serv_breach)
