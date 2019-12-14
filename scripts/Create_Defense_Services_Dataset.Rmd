@@ -137,7 +137,7 @@ save(def_serv,file="../data/clean/defense_services_complete.RData")
 ```
 
 
-z### Entity
+### Entity
 
 ```{r Entity}
 load(file="../data/clean/defense_services_complete.RData")
@@ -178,7 +178,7 @@ save(def_serv,file="../data/clean/defense_services_complete.RData")
 ### Transform
 ```{r Transform}
 load(file="../data/clean/defense_services_complete.RData")
-
+debug(transform_contract)
 def_serv<-transform_contract(def_serv)
 #
 #
@@ -198,42 +198,26 @@ Should be transferred into transform contract at some point
 
 ### Exercised Options
 
-```{r OptPropSetup}
+#### Option Outcome
+
+ 
+```{r OptOutcome}}
+
+    
+load(file="../data/clean/transformed_def_serv.Rdata")
+
+
+
+#Need to pull in ceiling breach again to get the variants. Ideally we move this over to vendor at some point.
   colnames(def_serv)[colnames(def_serv)=="UnmodifiedCeiling_Then_Year"]<-"UnmodifiedCeiling"
-  
-  #Ceiling Variables
+ #Ceiling Variables
   def_serv<-input_contract_ceiling_breach(def_serv,
                                           file="Contract.SP_ContractCeilingBreachCustomer.txt")
   colnames(def_serv)[colnames(def_serv)=="UnmodifiedCeiling"]<-"UnmodifiedCeiling_Then_Year"
   
-#Base Variables
-  def_serv<-read_and_join_experiment( def_serv  ,
-                                        "Contract.sp_ContractExercisedOptions.txt",
-                                        path="",
-                                        directory="..\\data\\semi_clean\\",
-                                        by=c("CSIScontractID"),
-                                        # add_var=c("AnyUnmodifiedUnexercisedOptions",
-                                        #           "AnyUnmodifiedUnexercisedOptionsWhy",
-                                        #           "UnmodifiedBase",
-                                        #           "SteadyScopeOptionGrowthAlone",
-                                        #           "SteadyScopeOptionRescision",
-                                        #           "AdminOptionModification"),
-                                        new_var_checked=FALSE,
-                                        create_lookup_rdata=TRUE,
-                                        lookup_char_as_factor=TRUE)
   
   
-  
-  colnames(def_serv)[colnames(def_serv)=="UnmodifiedBase"]<-"UnmodifiedBase_Then_Year"
-    colnames(def_serv)[colnames(def_serv)=="n_OptGrowth"]<-"n_OptGrowth_Then_Year"
 
-    
-```
-
-
-```{r OptOutcome}}
-
-    
   #Determine original and updated space available 
 def_serv$OptSpaceOriginal<-def_serv$UnmodifiedCeiling_Then_Year-def_serv$UnmodifiedBase_Then_Year
 summary(def_serv$OptSpaceOriginal)
@@ -276,10 +260,16 @@ def_serv$Exer<-ifelse(def_serv$ExerUpdate>def_serv$ExerOriginal,def_serv$ExerUpd
 summary(def_serv$Exer)
 
 
+
+if(any(duplicated(names(def_serv)))) stop("Duplicate names in def_serv")
+save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
+
 ```
 
+#### Option Alternate
 
 ```{r AlternateSomeCriteria}
+load(file="../data/clean/transformed_def_serv.Rdata")
 def_serv$b_AllOpt<-ifelse(def_serv$Exer>0.95,1,0)
 summary(def_serv$b_AllOpt)
 
@@ -315,6 +305,9 @@ def_serv$OptExer[(def_serv$AnyUnmodifiedUnexercisedOptions==1)& def_serv$b_SomeO
 
 summary(def_serv$Opt)      
 summary(def_serv$OptExer)
+
+if(any(duplicated(names(def_serv)))) stop("Duplicate names in def_serv")
+save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
 ```
 
 ### Calendar Year Deflating
@@ -339,7 +332,7 @@ def_serv$US6_avg_sal_lag1Const<-def_serv$US6_avg_sal_lag1/def_serv$BEA18
 
 
 def_serv$l_US6_avg_sal_lag1Const<-na_non_positive_log(def_serv$US6_avg_sal_lag1Const)
-      def_serv$cl_US6_avg_sal_lag1Const<-arm::rescale(def_serv$l_US6_avg_sal_lag1Const)
+      def_serv$cln_US6sal<-arm::rescale(def_serv$l_US6_avg_sal_lag1Const)
 
 def_serv <- def_serv  %>% dplyr::select(-BEA18,CensusYear)
 colnames(def_serv)[colnames(def_serv)=="US6_avg_sal_lag1"]<-"US6_avg_sal_lag1_then_year"
@@ -360,11 +353,15 @@ colnames(def_serv)[colnames(def_serv)=="cl_def6_obl_lag1"]<-"cl_def6_obl_lag1_th
 #Removing l_s just to reduce size. They can be derived easily.
 
 # def_serv<-def_serv[!colnames(def_serv) %in% colnames(def_serv)[grep("^l_",colnames(def_serv))]]
+
+if(any(duplicated(names(def_serv)))) stop("Duplicate names in def_serv")
+save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
 ```
 
 ### Office Diversity NAICS 
 ```{r OfficeDiversityNAICS}
 
+load(file="../data/clean/transformed_def_serv.Rdata")
 
 length(unique((def_serv$Office)))
 length(unique((def_serv$Agency)))
@@ -402,7 +399,7 @@ if(!"office_naics_hhi_k" %in% colnames(def_serv)){
   def_serv$office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]<-def_serv$avg_office_naics_hhi_k[is.na(def_serv$office_naics_hhi_k)]
   
   def_serv$cl_office_naics_hhi_obl <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_obl))
-  def_serv$cl_office_naics_hhi_k <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_k))
+  def_serv$cln_OffFocus <- arm::rescale(na_non_positive_log(def_serv$office_naics_hhi_k))
   def_serv<- def_serv %>% dplyr::select(-c(avg_office_naics_hhi_obl,avg_office_naics_hhi_k))
 }
 
@@ -410,6 +407,7 @@ if(!"office_naics_hhi_k" %in% colnames(def_serv)){
 #********8 Invoice rate  for PSC
 # def_serv$l_CFTE<-log(def_serv$CFTE_Rate_1year)
 
+if(any(duplicated(names(def_serv)))) stop("Duplicate names in def_serv")
 save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
 
 
