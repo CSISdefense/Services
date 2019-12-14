@@ -78,8 +78,8 @@ complete<-
   #Dependent Variables
   !is.na(def_serv$b_Term)& #summary(def_serv$b_Term)
   !is.na(def_serv$b_CBre)&
-  !is.na(def_serv$ln_CBre_OMB20_GDP18)&
-  !is.na(def_serv$ln_OptGrowth)&
+  # !is.na(def_serv$ln_CBre_OMB20_GDP18)&
+  # !is.na(def_serv$ln_OptGrowth)&
   !is.na(def_serv$AnyUnmodifiedUnexercisedOptions)&
   #Study Variables
   !is.na(def_serv$cln_US6sal)&
@@ -108,12 +108,11 @@ complete<-
   !is.na(def_serv$cln_Def6Obl)&
   !is.na(def_serv$clr_Def6toUS)&
   #New Controls
-  !is.na(def_serv$cl_OffCA)& #summary(def_serv$cl_OffCA)
   !is.na(def_serv$cln_OffObl7)& #summary(def_serv$cln_OffObl7)
   !is.na(def_serv$cp_PairObl7)&  #summary(def_serv$cp_PairObl7)
   !is.na(def_serv$Crisis)&  #summary(def_serv$cp_PairObl7)
   !is.na(def_serv$cln_OffFocus)&
-  !is.na(def_serv$cl_Ceil2Base)
+  !is.na(def_serv$clr_Ceil2Base)
 
 
 summary(complete)
@@ -142,33 +141,30 @@ serv_smp1m<-serv_complete[sample(nrow(serv_complete),1000000),]
 serv_smp<-serv_complete[sample(nrow(serv_complete),250000),]
 rm(serv_complete)
 serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
+serv_exeropt<-serv_opt[serv_opt$Exer %in% c("Some Options","Some and All Options"),]
 serv_breach<-def_serv[complete&def_serv$b_CBre==1,]
 
 #To instead replace entries in existing sample, use  this code.
 # load(file="data/clean/def_sample.Rdata")
-serv_smp<-update_sample_col_CSIScontractID(serv_smp,
-                                           def_serv[complete,],
-                                           col=NULL,
-                                           drop_and_replace=TRUE)
-
-serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
-                                           def_serv[complete,],
-                                           col=NULL,
-                                           drop_and_replace=TRUE)
-
-serv_opt<-update_sample_col_CSIScontractID(serv_opt,
-                                             def_serv[complete,],
-                                             col=NULL,
-                                             drop_and_replace=TRUE)
+# serv_smp<-update_sample_col_CSIScontractID(serv_smp,
+#                                            def_serv[complete,],
+#                                            col=NULL,
+#                                            drop_and_replace=TRUE)
+# 
+# serv_smp1m<-update_sample_col_CSIScontractID(serv_smp1m,
+#                                            def_serv[complete,],
+#                                            col=NULL,
+#                                            drop_and_replace=TRUE)
+# 
+# serv_opt<-update_sample_col_CSIScontractID(serv_opt,
+#                                              def_serv[complete,],
+#                                              col=NULL,
+#                                              drop_and_replace=TRUE)
 
 # serv_smp<-serv_smp %>% dplyr::select(-c(Ceil, qCRais))
 # serv_smp1m<-serv_smp1m %>% dplyr::select(-c(Ceil, qCRais))
 # serv_opt<-serv_opt %>% dplyr::select(-c(Ceil, qCRais))
 
-serv_smp<-transition_variable_names_service(serv_smp)
-serv_smp1m<-transition_variable_names_service(serv_smp1m)
-serv_opt<-transition_variable_names_service(serv_opt)
-serv_breach<-transition_variable_names_service(serv_breach)
 
 
 
@@ -191,6 +187,12 @@ serv_breach<-transition_variable_names_service(serv_breach)
 # summary(serv_exeropt$n_CBre_OMB20_GDP18)
 # serv_exeropt$ln_CBre_OMB20_GDP18<-na_non_positive_log(serv_exeropt$n_CBre_OMB20_GDP18)
 # summary(serv_exeropt$ln_CBre_OMB20_GDP18)
+
+colnames(serv_smp)[colnames(serv_smp)=="CrisisProductOrServiceArea"]<-"ServArea"
+colnames(serv_smp1m)[colnames(serv_smp1m)=="CrisisProductOrServiceArea"]<-"ServArea"
+colnames(serv_opt)[colnames(serv_opt)=="CrisisProductOrServiceArea"]<-"ServArea"
+colnames(serv_exeropt)[colnames(serv_exeropt)=="CrisisProductOrServiceArea"]<-"ServArea"
+colnames(serv_breach)[colnames(serv_breach)=="CrisisProductOrServiceArea"]<-"ServArea"
 
 
 save(file="data/clean/def_sample.Rdata",serv_smp,serv_smp1m,serv_opt,serv_exeropt,serv_breach)

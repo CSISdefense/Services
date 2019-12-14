@@ -178,7 +178,7 @@ save(def_serv,file="../data/clean/defense_services_complete.RData")
 ### Transform
 ```{r Transform}
 load(file="../data/clean/defense_services_complete.RData")
-debug(transform_contract)
+# debug(transform_contract)
 def_serv<-transform_contract(def_serv)
 #
 #
@@ -190,6 +190,10 @@ discrete_percent_plot(def_serv,"Term")
 # summary(def_serv$Unmodifieddef_servBaseAndAllOptionsValue)
 # summary(def_serv$Action.Obligation)
 # 
+colnames(def_serv)[colnames(def_serv)=="ln_CBre_OMB20_GDP18"]<-"ln_CBre"
+colnames(def_serv)[colnames(def_serv)=="Comp1or5"]<-"Comp"
+colnames(def_serv)[colnames(def_serv)=="CrisisProductOrServiceArea"]<-"ServArea"
+
 
 save(file="../data/clean/transformed_def_serv.Rdata",def_serv)
 ```
