@@ -12,7 +12,6 @@ library(csis360)
 library(ggplot2)
 library(dplyr)
 library(arm)
-library(R2WinBUGS)
 library(knitr)
 library(foreign)
 library(stargazer)
@@ -55,7 +54,7 @@ summary(def_serv$cln_Ceil)
 summary(def_serv$cln_Base)
 summary(def_serv$cln_Days)
 summary(def_serv$Veh) 
-summary(def_serv$Pricing)
+summary(def_serv$PricingUCA)
 summary(def_serv$Place)
 summary(def_serv$NAICS6)
 summary(def_serv$NAICS3)
@@ -94,7 +93,7 @@ complete<-
   !is.na(def_serv$cln_Base)&
   !is.na(def_serv$cln_Days)&
   !is.na(def_serv$Veh) &
-  !is.na(def_serv$Pricing)&
+  !is.na(def_serv$PricingUCA)&
   !is.na(def_serv$Place)& #New Variable
   # !is.na(def_serv$b_UCA)& No longer  used
   !is.na(def_serv$NAICS6)&

@@ -19,7 +19,6 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 library(csis360)
 library(ggplot2)
 library(arm)
-library(R2WinBUGS)
 library(dplyr)
 library(Hmisc)
 library(stargazer)
@@ -808,15 +807,12 @@ Combination				-	+	+
 
 
 ```{r Model07A}
-serv_smp$Pricing<-factor(serv_smp$Pricing,
-                            levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-serv_opt$Pricing<-factor(serv_opt$Pricing,
-                            levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-summary_discrete_plot(serv_smp,"Pricing")
+
+summary_discrete_plot(serv_smp,"PricingUCA")
 
 #Model
 Term_07A <- glm (data=serv_smp,
-                 b_Term ~ Pricing, family=binomial(link="logit"))
+                 b_Term ~ PricingUCA, family=binomial(link="logit"))
 
 
 #Plot residuals versus fitted
@@ -847,7 +843,7 @@ Term_07B <- glm (data=serv_smp,
                    cln_Base + cln_Days+clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing, family=binomial(link="logit"))
+                   PricingUCA, family=binomial(link="logit"))
 
 glmer_examine(Term_07B)
 
@@ -908,7 +904,7 @@ Term_08B <- glm (data=serv_smp,
                    cln_Base + cln_Days+clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis, family=binomial(link="logit"))
 
 glmer_examine(Term_08B)
@@ -1073,7 +1069,7 @@ Term_09E <- glm (data=serv_smp,
                    cln_Base + cln_Days+clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS, family=binomial(link="logit"))
 glmer_examine(Term_09E)
@@ -1180,7 +1176,7 @@ Term_10D <- glm (data=serv_smp,
                    cln_Base + cln_Days+clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS, family=binomial(link="logit"))
@@ -1239,7 +1235,7 @@ Term_11B <- glm (data=serv_smp,
                    cln_Base + cln_Days+clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS+
@@ -1338,7 +1334,7 @@ Term_12C <- glm (data=serv_smp,
                    cln_Base + cln_Days+clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS+
@@ -1372,14 +1368,14 @@ Combination				+	-	-
 Cost-based and incentive contract types may do a  better job at handling complex contracts.
 
 ```{r Model15A}
-summary_continuous_plot(serv_smp1m,"cln_Base","Pricing",metric="cbre")
+summary_continuous_plot(serv_smp1m,"cln_Base","PricingUCA",metric="cbre")
 
 #Create the models
-term_salary_pricing_15A_no_interact <- glm(data=serv_smp, b_Term ~ Pricing + cl_US6_avg_sal_lag1,
+term_salary_pricing_15A_no_interact <- glm(data=serv_smp, b_Term ~ PricingUCA + cl_US6_avg_sal_lag1,
                                            family=binomial(link="logit"))
 glmer_examine(term_salary_pricing_15A_no_interact)
 
-term_salary_pricing_15A <- glm(data=serv_smp, b_Term ~ Pricing + cl_US6_avg_sal_lag1 + Pricing:cl_US6_avg_sal_lag1,
+term_salary_pricing_15A <- glm(data=serv_smp, b_Term ~ PricingUCA + cl_US6_avg_sal_lag1 + PricingUCA:cl_US6_avg_sal_lag1,
                                family=binomial(link="logit"))
 glmer_examine(term_salary_pricing_15A)
 
@@ -1400,12 +1396,12 @@ term_salary_pricing_15B <- glm(data=serv_smp, b_Term ~ cln_US6sal +
                    cln_Base + cln_Days+ clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS+
                    cp_PairObl7+
-                   cln_OffObl7+cln_OffFocus + Pricing:cl_US6_avg_sal_lag1, 
+                   cln_OffObl7+cln_OffFocus + PricingUCA:cl_US6_avg_sal_lag1, 
                  family=binomial(link="logit"))
 
 glmer_examine(term_salary_pricing_15B)
@@ -1449,7 +1445,7 @@ term_partnership_actions_16B <- glm(data=serv_smp, b_Term ~ cln_US6sal +
                    cln_Base + cln_Days+ clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS+
@@ -1496,7 +1492,7 @@ term_partnership_share_17B <- glm(data=serv_smp, b_Term ~ cln_US6sal +
                    cln_Base + cln_Days+ clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS+
@@ -1547,7 +1543,7 @@ Term17D <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -1600,7 +1596,7 @@ term_partnership_duration_18B <- glm(data=serv_smp, b_Term ~ cln_US6sal +
                    cln_Base + cln_Days+ clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS+
@@ -1628,14 +1624,14 @@ Other Cost Based				+	-	-
 Undefinitized Contract Award				+	-	-
 Combination				+	-	-
 ```{r Model19A}
-summary_discrete_plot(serv_smp1m,"cn_PairHist7","Pricing")
+summary_discrete_plot(serv_smp1m,"cn_PairHist7","PricingUCA")
 
 #Create the models
-term_history_pricing_19A_no_interact <- glm(data=serv_smp, b_Term ~ cn_PairHist7 + Pricing,
+term_history_pricing_19A_no_interact <- glm(data=serv_smp, b_Term ~ cn_PairHist7 + PricingUCA,
                  family=binomial(link="logit"))
 glmer_examine(term_history_pricing_19A_no_interact)
 
-term_history_pricing_19A <- glm(data=serv_smp, b_Term ~ cn_PairHist7 + Pricing + cn_PairHist7:Pricing,
+term_history_pricing_19A <- glm(data=serv_smp, b_Term ~ cn_PairHist7 + PricingUCA + cn_PairHist7:PricingUCA,
                  family=binomial(link="logit"))
 glmer_examine(term_history_pricing_19A)
 
@@ -1654,12 +1650,12 @@ term_history_pricing_19B <- glm(data=serv_smp, b_Term ~ cln_US6sal +
                    cln_Base + cln_Days+ clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS+
                    cp_PairObl7+
-                   cln_OffObl7+cln_OffFocus + cn_PairHist7:Pricing,
+                   cln_OffObl7+cln_OffFocus + cn_PairHist7:PricingUCA,
                  family=binomial(link="logit"))
 
 #Compare the models
@@ -1723,13 +1719,13 @@ term_base2ceil_ceiling_21B <- glm(data=serv_smp, b_Term ~ cln_US6sal +
                    cln_Base + cln_Days+ clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS+
                    cp_PairObl7+
                    cln_OffObl7+cln_OffFocus +
-                    cn_PairHist7:Pricing+ 
+                    cn_PairHist7:PricingUCA+ 
                    clr_Ceil2Base:cln_Base,
                  family=binomial(link="logit"))
 glmer_examine(term_base2ceil_ceiling_21B)
@@ -1772,13 +1768,13 @@ term_base2ceil_duration_22B <- glm(data=serv_smp, b_Term ~ cln_US6sal +
                    cln_Base + cln_Days+ clr_Ceil2Base+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+clr_Def3toUS+
                    cp_PairObl7+
                    cln_OffObl7+cln_OffFocus +
-                    cn_PairHist7:Pricing+ 
+                    cn_PairHist7:PricingUCA+ 
                    clr_Ceil2Base:cln_Base +
                  clr_Ceil2Base:cln_Days,
                  family=binomial(link="logit"))
@@ -1848,13 +1844,13 @@ if(!exists("term25A")){
                      cln_Base + cln_Days+ clr_Ceil2Base+
                      Comp+
                      Veh+
-                     Pricing+
+                     PricingUCA+
                      Crisis+
                      cln_Def6HHI+clr_Def6toUS+
                      cln_Def3HHI+clr_Def3toUS+
                      cp_PairObl7+
                      cln_OffObl7+cln_OffFocus +
-                     cn_PairHist7:Pricing+ 
+                     cn_PairHist7:PricingUCA+ 
                      # clr_Ceil2Base:cl_Ceil+
                      (1 | NAICS3/NAICS6/ServArea)+  
                      (1 | Agency/Office) +
@@ -1886,13 +1882,13 @@ if(!exists("term25B")){
                      cln_Base + cln_Days+ clr_Ceil2Base+
                      Comp+
                      Veh+
-                     Pricing+
+                     PricingUCA+
                      Crisis+
                      cln_Def6HHI+clr_Def6toUS+
                      cln_Def3HHI+clr_Def3toUS+
                      cp_PairObl7+
                      cln_OffObl7+cln_OffFocus +
-                     cn_PairHist7:Pricing+ 
+                     cn_PairHist7:PricingUCA+ 
                      (1 | NAICS3/NAICS6/ServArea)+  
                      (1 | Agency/Office) +
                      (1 | Place)+ 
