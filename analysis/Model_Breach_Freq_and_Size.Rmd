@@ -13,7 +13,7 @@ Modeling Likelihood or size of Ceiling Breach
 #Setup and  Load Data
 First we load the data. The dataset used is a U.S. Defense Contracting dataset derived from FPDS.
 
-```{r Libraries, echo = FALSE, results = FALSE, message = FALSE, warning = FALSE}
+```{r setup, echo = FALSE, results = FALSE, message = FALSE, warning = FALSE}
 library(csis360)
 library(ggplot2)
 library(arm)
@@ -920,23 +920,20 @@ Combination				-	+	+
 
 
 ```{r Model07A}
-serv_smp$Pricing<-factor(serv_smp$Pricing,
-                            levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-serv_smp$Pricing<-factor(serv_smp$Pricing,
-                            levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-  summary_discrete_plot(serv_smp1m,metric="cbre","Pricing")
+
+  summary_discrete_plot(serv_smp1m,metric="cbre","PricingUCA")
 
 #Scatter Plot
-ggplot(serv_smp, aes(x=Pricing, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
+ggplot(serv_smp, aes(x=PricingUCA, y=ln_CBre)) + geom_point(alpha = 0.1) + ggtitle('Ceiling Breach Growth') + theme(plot.title = element_text(hjust = 0.5))
 
 
 #Model
 b_CBre07A <- glm (data=serv_smp,
-                 b_CBre ~ Pricing, family=binomial(link="logit"))
+                 b_CBre ~ PricingUCA, family=binomial(link="logit"))
 
 
 n_CBre07A <- glm(data=serv_breach,
-                        ln_CBre ~ Pricing)
+                        ln_CBre ~ PricingUCA)
 
 
 #Plot residuals versus fitted
@@ -965,7 +962,7 @@ b_CBre07B <- glm (data=serv_smp,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing, family=binomial(link="logit"))
+                   PricingUCA, family=binomial(link="logit"))
 glmer_examine(b_CBre07B)
 
 n_CBre07B <- glm(data=serv_breach,
@@ -975,7 +972,7 @@ n_CBre07B <- glm(data=serv_breach,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing)
+                   PricingUCA)
 
 glmer_examine(n_CBre07B)
 
@@ -1044,7 +1041,7 @@ b_CBre08B <- glm (data=serv_smp,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis, family=binomial(link="logit"))
 glmer_examine(b_CBre08B)
 
@@ -1055,7 +1052,7 @@ n_CBre08B <- glm(data=serv_breach,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis)
 glmer_examine(n_CBre08B)
 
@@ -1232,7 +1229,7 @@ b_CBre09E <- glm (data=serv_smp,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+cln_Def6Obl, family=binomial(link="logit"))
 glmer_examine(b_CBre09E)
@@ -1244,7 +1241,7 @@ n_CBre09E <- glm(data=serv_breach,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+cln_Def6Obl)
 
@@ -1453,7 +1450,7 @@ b_CBre10D <- glm (data=serv_smp,
                    cln_Base + clr_Ceil2Base + cln_Days +
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+cln_Def3HHI+
                    clr_Def3toUS, family=binomial(link="logit"))
@@ -1466,7 +1463,7 @@ n_CBre10D <- glm(data=serv_breach,
                  cln_Base + clr_Ceil2Base + cln_Days +
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+cln_Def3HHI+
                    clr_Def3toUS)
@@ -1482,7 +1479,7 @@ b_CBre10D2 <- glm (data=serv_smp,
                    cln_Base + clr_Ceil2Base + cln_Days +
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+#cln_Def3HHI+
                    clr_Def3toUS, family=binomial(link="logit"))
@@ -1495,7 +1492,7 @@ n_CBre10D2 <- glm(data=serv_breach,
                  cln_Base + clr_Ceil2Base + cln_Days +
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+#cln_Def3HHI+
                    clr_Def3toUS)
@@ -1569,7 +1566,7 @@ b_CBre11B <- glm (data=serv_smp,
                    cln_Base + clr_Ceil2Base + cln_Days +
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    #cln_Def3HHI+
@@ -1584,7 +1581,7 @@ n_CBre11B <- glm(data=serv_breach,
                  cln_Base + clr_Ceil2Base + cln_Days +
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -1686,7 +1683,7 @@ b_CBre12C <- glm (data=serv_smp,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    #cln_Def3HHI+
@@ -1702,7 +1699,7 @@ n_CBre12C <- glm(data=serv_breach,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -1720,7 +1717,7 @@ b_CBre12C2<- glm (data=serv_smp,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    #cln_Def3HHI+
@@ -1736,7 +1733,7 @@ n_CBre12C2 <- glm(data=serv_breach,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -1754,7 +1751,7 @@ b_CBre12C3<- glm (data=serv_smp,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    #cln_Def3HHI+
@@ -1771,7 +1768,7 @@ n_CBre12C3 <- glm(data=serv_breach,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -1859,19 +1856,19 @@ Cost-based and incentive contract types may do a  better job at handling complex
 
 ```{r Model15A}
 #Create the models
-b_cbre_salary_pricing_15A_no_interact <- glm(data=serv_smp, b_CBre ~ Pricing + cl_US6_avg_sal_lag1, 
+b_cbre_salary_pricing_15A_no_interact <- glm(data=serv_smp, b_CBre ~ PricingUCA + cl_US6_avg_sal_lag1, 
                                              family=binomial(link="logit"))
 glmer_examine(b_cbre_salary_pricing_15A_no_interact)
 
-b_cbre_salary_pricing_15A <- glm(data=serv_smp, b_CBre ~ Pricing + cl_US6_avg_sal_lag1 + Pricing:cl_US6_avg_sal_lag1,
+b_cbre_salary_pricing_15A <- glm(data=serv_smp, b_CBre ~ PricingUCA + cl_US6_avg_sal_lag1 + PricingUCA:cl_US6_avg_sal_lag1,
                                  family=binomial(link="logit"))
 glmer_examine(b_cbre_salary_pricing_15A)
 
 
-n_cbre_salary_pricing_15A_no_interact <- glm(data=serv_breach, ln_CBre ~ Pricing + cl_US6_avg_sal_lag1)
+n_cbre_salary_pricing_15A_no_interact <- glm(data=serv_breach, ln_CBre ~ PricingUCA + cl_US6_avg_sal_lag1)
 glmer_examine(n_cbre_salary_pricing_15A_no_interact)
 
-n_cbre_salary_pricing_15A <- glm(data=serv_breach, ln_CBre ~ Pricing + cl_US6_avg_sal_lag1 + Pricing:cl_US6_avg_sal_lag1)
+n_cbre_salary_pricing_15A <- glm(data=serv_breach, ln_CBre ~ PricingUCA + cl_US6_avg_sal_lag1 + PricingUCA:cl_US6_avg_sal_lag1)
 glmer_examine(n_cbre_salary_pricing_15A)
 
 
@@ -1895,7 +1892,7 @@ b_cbre_salary_pricing_15B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -1903,7 +1900,7 @@ b_cbre_salary_pricing_15B <- glm(data=serv_smp,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  #cln_OffFocus+ 
-                 Pricing:cl_US6_avg_sal_lag1, family=binomial(link="logit"))
+                 PricingUCA:cl_US6_avg_sal_lag1, family=binomial(link="logit"))
 glmer_examine(b_cbre_salary_pricing_15B)
 
 n_cbre_salary_pricing_15B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal + 
@@ -1912,7 +1909,7 @@ n_cbre_salary_pricing_15B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -1920,7 +1917,7 @@ n_cbre_salary_pricing_15B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cp_PairObl7+
                    cln_OffObl7+ 
                  #cln_OffFocus+
-                   Pricing:cl_US6_avg_sal_lag1)
+                   PricingUCA:cl_US6_avg_sal_lag1)
 glmer_examine(n_cbre_salary_pricing_15B)
 
 ```
@@ -1971,7 +1968,7 @@ b_cbre_partnership_actions_16B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -1989,7 +1986,7 @@ n_cbre_partnership_actions_16B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2052,7 +2049,7 @@ b_cbre_partnership_share_17B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2070,7 +2067,7 @@ b_cbre_partnership_share_17B2 <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2089,7 +2086,7 @@ n_cbre_partnership_share_17B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2107,7 +2104,7 @@ n_cbre_partnership_share_17B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2176,7 +2173,7 @@ b_cbre17D <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2195,7 +2192,7 @@ n_cbre17D <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2214,7 +2211,7 @@ n_cbre17D2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2284,7 +2281,7 @@ b_cbre_partnership_duration_18B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2302,7 +2299,7 @@ n_cbre_partnership_duration_18B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2320,7 +2317,7 @@ n_cbre_partnership_duration_18B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2359,16 +2356,16 @@ Undefinitized Contract Award				+	-	-
 Combination				+	-	-
 ```{r Model19A}
 #Create the models
-b_cbre_history_pricing_19A_no_interact <- glm(data=serv_smp, b_CBre ~ cn_PairHist7 + Pricing, family=binomial(link="logit"))
+b_cbre_history_pricing_19A_no_interact <- glm(data=serv_smp, b_CBre ~ cn_PairHist7 + PricingUCA, family=binomial(link="logit"))
 glmer_examine(b_cbre_history_pricing_19A_no_interact)
 
-b_cbre_history_pricing_19A <- glm(data=serv_smp, b_CBre ~ cn_PairHist7 + Pricing + cn_PairHist7:Pricing, family=binomial(link="logit"))
+b_cbre_history_pricing_19A <- glm(data=serv_smp, b_CBre ~ cn_PairHist7 + PricingUCA + cn_PairHist7:PricingUCA, family=binomial(link="logit"))
 glmer_examine(b_cbre_history_pricing_19A)
 
-n_cbre_history_pricing_19A_no_interact <- glm(data=serv_breach, ln_CBre ~ cn_PairHist7 + Pricing)
+n_cbre_history_pricing_19A_no_interact <- glm(data=serv_breach, ln_CBre ~ cn_PairHist7 + PricingUCA)
 glmer_examine(n_cbre_history_pricing_19A_no_interact)
 
-n_cbre_history_pricing_19A <- glm(data=serv_breach, ln_CBre ~ cn_PairHist7 + Pricing + cn_PairHist7:Pricing)
+n_cbre_history_pricing_19A <- glm(data=serv_breach, ln_CBre ~ cn_PairHist7 + PricingUCA + cn_PairHist7:PricingUCA)
 glmer_examine(n_cbre_history_pricing_19A)
 
 
@@ -2392,7 +2389,7 @@ b_cbre_history_pricing_19B <- glm(data=serv_smp,
                                     cln_Base + clr_Ceil2Base + cln_Days+
                                     Comp+
                                     Veh+
-                                    Pricing+
+                                    PricingUCA+
                                     Crisis+
                                     cln_Def6HHI+clr_Def6toUS+
                                     #cln_Def3HHI+
@@ -2402,7 +2399,7 @@ b_cbre_history_pricing_19B <- glm(data=serv_smp,
                                     #cln_OffFocus+ 
                                     cp_OffPerf7:cln_PairCA+cp_OffPerf7:cp_PairObl7+
                                     cp_OffPerf7:cln_Days+
-                                    cn_PairHist7:Pricing, family=binomial(link="logit"))
+                                    cn_PairHist7:PricingUCA, family=binomial(link="logit"))
 glmer_examine(b_cbre_history_pricing_19B)
 
 n_cbre_history_pricing_19B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal + 
@@ -2411,7 +2408,7 @@ n_cbre_history_pricing_19B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2420,7 +2417,7 @@ n_cbre_history_pricing_19B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                    cln_OffObl7+ 
                  #cln_OffFocus+
                    cp_OffPerf7:cln_PairCA+
-                   cn_PairHist7:Pricing)
+                   cn_PairHist7:PricingUCA)
 glmer_examine(n_cbre_history_pricing_19B)
 
 n_cbre_history_pricing_19B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal + 
@@ -2429,7 +2426,7 @@ n_cbre_history_pricing_19B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2438,7 +2435,7 @@ n_cbre_history_pricing_19B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                    cln_OffObl7+ 
                  #cln_OffFocus+
                    # cp_OffPerf7:cln_PairCA+
-                   cn_PairHist7:Pricing)
+                   cn_PairHist7:PricingUCA)
 glmer_examine(n_cbre_history_pricing_19B2)
 
 
@@ -2505,7 +2502,7 @@ b_cbre_competition_NAICS66_20B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2525,7 +2522,7 @@ b_cbre_competition_NAICS66_20B2 <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2544,7 +2541,7 @@ n_cbre_competition_NAICS66_20B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2562,7 +2559,7 @@ n_cbre_competition_NAICS66_20B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2582,7 +2579,7 @@ b_cbre_competition_naincs3_20B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2602,7 +2599,7 @@ b_cbre_competition_naincs3_20B2 <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2621,7 +2618,7 @@ n_cbre_competition_naincs3_20B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2639,7 +2636,7 @@ n_cbre_competition_naincs3_20B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2692,7 +2689,7 @@ b_CBre_base2ceil_ceiling_21B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2712,7 +2709,7 @@ n_CBre_base2ceil_ceiling_21B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    #cln_Def3HHI+
@@ -2731,7 +2728,7 @@ n_CBre_base2ceil_ceiling_21B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    #cln_Def3HHI+
@@ -2787,7 +2784,7 @@ b_CBre_base2ceil_duration_21D <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2807,7 +2804,7 @@ n_CBre_base2ceil_duration_21D <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2825,7 +2822,7 @@ n_CBre_base2ceil_duration_21D2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2856,19 +2853,19 @@ Cost-based and incentive contract types may do a  better job at handling complex
 
 ```{r Model22A}
 #Create the models
-b_cbre_CFTE_pricing_22A_no_interact <- glm(data=serv_smp, b_CBre ~ Pricing + cln_PSCrate, 
+b_cbre_CFTE_pricing_22A_no_interact <- glm(data=serv_smp, b_CBre ~ PricingUCA + cln_PSCrate, 
                                              family=binomial(link="logit"))
 glmer_examine(b_cbre_CFTE_pricing_22A_no_interact)
 
-b_cbre_CFTE_pricing_22A <- glm(data=serv_smp, b_CBre ~ Pricing + cln_PSCrate + Pricing:cln_PSCrate,
+b_cbre_CFTE_pricing_22A <- glm(data=serv_smp, b_CBre ~ PricingUCA + cln_PSCrate + PricingUCA:cln_PSCrate,
                                  family=binomial(link="logit"))
 glmer_examine(b_cbre_CFTE_pricing_22A)
 
 
-n_cbre_CFTE_pricing_22A_no_interact <- glm(data=serv_breach, ln_CBre ~ Pricing + cln_PSCrate)
+n_cbre_CFTE_pricing_22A_no_interact <- glm(data=serv_breach, ln_CBre ~ PricingUCA + cln_PSCrate)
 glmer_examine(n_cbre_CFTE_pricing_22A_no_interact)
 
-n_cbre_CFTE_pricing_22A <- glm(data=serv_breach, ln_CBre ~ Pricing + cln_PSCrate + Pricing:cln_PSCrate)
+n_cbre_CFTE_pricing_22A <- glm(data=serv_breach, ln_CBre ~ PricingUCA + cln_PSCrate + PricingUCA:cln_PSCrate)
 glmer_examine(n_cbre_CFTE_pricing_22A)
 
 
@@ -2895,7 +2892,7 @@ b_cbre_CFTE_pricing_22B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2907,7 +2904,7 @@ b_cbre_CFTE_pricing_22B <- glm(data=serv_smp,
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate, family=binomial(link="logit"))
+                 PricingUCA:cln_PSCrate, family=binomial(link="logit"))
 glmer_examine(b_cbre_CFTE_pricing_22B)
 
 n_cbre_CFTE_pricing_22B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal + 
@@ -2916,7 +2913,7 @@ n_cbre_CFTE_pricing_22B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2925,7 +2922,7 @@ n_cbre_CFTE_pricing_22B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                    cln_OffObl7+ 
                    cp_OffPerf7:cln_PairCA+
                  #cln_OffFocus+
-                   Pricing:cln_PSCrate)
+                   PricingUCA:cln_PSCrate)
 glmer_examine(n_cbre_CFTE_pricing_22B)
 
 n_cbre_CFTE_pricing_22B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal + 
@@ -2934,7 +2931,7 @@ n_cbre_CFTE_pricing_22B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -2943,7 +2940,7 @@ n_cbre_CFTE_pricing_22B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                    cln_OffObl7+ 
                    # cp_OffPerf7:cln_PairCA+
                  #cln_OffFocus+
-                   Pricing:cln_PSCrate)
+                   PricingUCA:cln_PSCrate)
 glmer_examine(n_cbre_CFTE_pricing_22B2)
 
 #Compare the models
@@ -3009,7 +3006,7 @@ b_cbre23B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -3021,7 +3018,7 @@ b_cbre23B <- glm(data=serv_smp,
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate+
+                 PricingUCA:cln_PSCrate+
                    cp_OffPSC7:cln_OffObl7, family=binomial(link="logit"))
 glmer_examine(b_cbre23B)
 
@@ -3031,7 +3028,7 @@ n_cbre23B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -3049,7 +3046,7 @@ n_cbre23B2 <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  #cln_Def3HHI+
@@ -3085,7 +3082,7 @@ b_cbre24A <- b_cbre_CFTE_pricing_22B <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3097,7 +3094,7 @@ b_cbre24A <- b_cbre_CFTE_pricing_22B <- glm(data=serv_smp,
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate
+                 PricingUCA:cln_PSCrate
   , family=binomial(link="logit"))
 glmer_examine(b_cbre24A)
 
@@ -3139,7 +3136,7 @@ b_cbre24C <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3151,7 +3148,7 @@ b_cbre24C <- glm(data=serv_smp,
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate+
+                 PricingUCA:cln_PSCrate+
                    cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_cbre24C)
 
@@ -3162,7 +3159,7 @@ b_cbre24C2 <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3174,7 +3171,7 @@ b_cbre24C2 <- glm(data=serv_smp,
                    # cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate+
+                 PricingUCA:cln_PSCrate+
                    cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_cbre24C2)
 
@@ -3186,7 +3183,7 @@ b_cbre24C3 <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3198,7 +3195,7 @@ b_cbre24C3 <- glm(data=serv_smp,
                    # cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate+
+                 PricingUCA:cln_PSCrate+
                    cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_cbre24C3)
 
@@ -3210,7 +3207,7 @@ b_cbre24C4 <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3222,7 +3219,7 @@ b_cbre24C4 <- glm(data=serv_smp,
                    # cp_OffPerf7:cp_PairObl7+
                  # cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate+
+                 PricingUCA:cln_PSCrate+
                    cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_cbre24C4)
 
@@ -3260,7 +3257,7 @@ b_cbre24E <- glm(data=serv_smp,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3272,7 +3269,7 @@ b_cbre24E <- glm(data=serv_smp,
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate+
+                 PricingUCA:cln_PSCrate+
                    cln_OffObl7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_cbre24E)
 
@@ -3301,7 +3298,7 @@ if(!exists("b_CBre25A")){
                        cln_Base + clr_Ceil2Base + cln_Days+
                        Comp+
                        Veh+
-                       Pricing+
+                       PricingUCA+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
                        #cln_Def3HHI+
@@ -3327,7 +3324,7 @@ if(!exists("b_CBre25A")){
                       cln_Base + clr_Ceil2Base + cln_Days+
                       Comp+
                       Veh+
-                      Pricing+
+                      PricingUCA+
                       Crisis+
                       cln_Def6HHI+clr_Def6toUS+
                       #cln_Def3HHI+
@@ -3381,7 +3378,7 @@ if(!exists("n_CBre26A")){
                       cln_Base + clr_Ceil2Base + cln_Days+
                       Comp+
                       Veh+
-                      Pricing+
+                      PricingUCA+
                       Crisis+
                       cln_Def6HHI+clr_Def6toUS+
                       #cln_Def3HHI+
@@ -3429,7 +3426,7 @@ if(!exists("b_CBre27A")){
                        cln_Base + clr_Ceil2Base + cln_Days+
                        Comp+
                        Veh+
-                       Pricing+
+                       PricingUCA+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
                        #cln_Def3HHI+
@@ -3439,7 +3436,7 @@ if(!exists("b_CBre27A")){
                        #cln_OffFocus+ 
                        cp_OffPerf7:cln_PairCA+#cp_OffPerf7:cp_PairObl7+
                        cp_OffPerf7:cln_Days+
-                       Pricing:cln_PSCrate+
+                       PricingUCA:cln_PSCrate+
                        #clr_Ceil2Base:cln_Base+
                        
                        (1 | NAICS3/NAICS6/ServArea)+  
@@ -3484,7 +3481,7 @@ if(!exists("b_CBre28B")){
                        cln_Base + clr_Ceil2Base + cln_Days+
                        Comp+
                        Veh+
-                       Pricing+
+                       PricingUCA+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
                        #cln_Def3HHI+
@@ -3509,7 +3506,7 @@ if(!exists("b_CBre28B")){
                        cln_Base + clr_Ceil2Base + cln_Days+
                        Comp+
                        Veh+
-                       Pricing+
+                       PricingUCA+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
                        #cln_Def3HHI+
@@ -3552,7 +3549,7 @@ if(!exists("b_CBre29B")){
                        cln_Base + clr_Ceil2Base + cln_Days+
                        Comp+
                        Veh+
-                       Pricing+
+                       PricingUCA+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
                        cln_Def3HHI+
@@ -3578,7 +3575,7 @@ if(!exists("b_CBre29B")){
                        cln_Base + clr_Ceil2Base + cln_Days+
                        Comp+
                        Veh+
-                       Pricing+
+                       PricingUCA+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
                        #cln_Def3HHI+
@@ -3587,7 +3584,7 @@ if(!exists("b_CBre29B")){
                        cln_OffObl7+
                        cln_OffFocus+
                        cp_OffPerf7:cln_PairCA+
-                       #cp_OffPerf7:cp_PairObl7+
+                       #cp_OffPerf7:cp_PairObl7+P
                        cp_OffPerf7:cln_Days+
                        # clr_Ceil2Base:cln_Base+
                        (1 | NAICS3/NAICS6/ServArea)+
