@@ -473,9 +473,9 @@ texreg::htmlreg(list(b_CBre29B,n_CBre25A),file="..//Output//ceiling_breaches.htm
                               # "Services Complexity" = 2:3,
                               # "Office Capacity" =4:5,
                               # "Past Relationship"=6:7,
-                              "Contract Characteristics"=8:26,
-                                                "NAICS/Office Characteristics" =27:32,
-                              "Interactions"=33:34
+                              "Contract Characteristics"=8:26#,
+                                                # "NAICS/Office Characteristics" =27:32,
+                              # "Interactions"=33:34
                               ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,

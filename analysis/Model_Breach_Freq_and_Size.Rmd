@@ -3578,7 +3578,7 @@ if(!exists("b_CBre29B")){
                        PricingUCA+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
-                       #cln_Def3HHI+
+                       cln_Def3HHI+
                        clr_Def3toUS+
                        cp_PairObl7+
                        cln_OffObl7+
