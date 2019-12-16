@@ -938,21 +938,14 @@ Combination				-	+	+
 
 
 ```{r Model07A}
-serv_opt$Pricing<-factor(serv_opt$Pricing,
-                            levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-serv_opt$Pricing<-factor(serv_opt$Pricing,
-                            levels=c( "FFP","Other FP","T&M/LH/FPLOE","Incentive","Other CB","UCA" ,"Combination or Other" ))
-  summary_discrete_plot(serv_opt,metric="opt","Pricing")
-
-
 
 #Model
 b_SomeOpt07A <- glm (data=serv_opt,
-                 b_SomeOpt ~ Pricing, family=binomial(link="logit"))
+                 b_SomeOpt ~ PricingUCA, family=binomial(link="logit"))
 
 
 b_AllOpt07A <- glm(data=serv_exeropt, family=binomial(link="logit"),
-                        b_AllOpt ~ Pricing)
+                        b_AllOpt ~ PricingUCA)
 
 
 #Plot residuals versus fitted
@@ -988,21 +981,21 @@ b_SomeOpt07B <- glm (data=serv_opt,
                  cn_PairHist7+cln_PairCA +
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
-                   Pricing, family=binomial(link="logit"))
+                   PricingUCA, family=binomial(link="logit"))
 b_SomeOpt07Bv2 <- glm (data=serv_opt,
                  b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+
                  cn_PairHist7+cln_PairCA +
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
-                   Pricing, family=binomial(link="logit"))
+                   PricingUCA, family=binomial(link="logit"))
 b_SomeOpt07Bv3 <- glm (data=serv_opt,
                  b_SomeOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
-                   Pricing, family=binomial(link="logit"))
+                   PricingUCA, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt07B)
 glmer_examine(b_SomeOpt07Bv2)
 glmer_examine(b_SomeOpt07Bv3)
@@ -1013,7 +1006,7 @@ b_AllOpt07B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
-                   Pricing)
+                   PricingUCA)
 
 glmer_examine(b_AllOpt07B)
 
@@ -1085,7 +1078,7 @@ b_SomeOpt08B <- glm (data=serv_opt,
                  cn_PairHist7 +
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
-                   Pricing+
+                   PricingUCA+
                    Crisis, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt08B)
 
@@ -1095,7 +1088,7 @@ b_AllOpt08B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cn_PairHist7+cln_PairCA+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
-                   Pricing+
+                   PricingUCA+
                    Crisis)
 b_AllOpt08Bv2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
                         b_AllOpt ~  cln_US6sal + 
@@ -1103,7 +1096,7 @@ b_AllOpt08Bv2 <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cn_PairHist7+
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
-                   Pricing+
+                   PricingUCA+
                    Crisis)
 glmer_examine(b_AllOpt08B)
 glmer_examine(b_AllOpt08Bv2)
@@ -1282,7 +1275,7 @@ b_SomeOpt09E <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+cln_Def6Obl, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt09E)
@@ -1294,7 +1287,7 @@ b_AllOpt09E <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+cln_Def6Obl)
 
@@ -1500,7 +1493,7 @@ b_SomeOpt10D <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days +
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+#clr_Def6Obl+
                    cln_Def3HHI,#+clr_Def3toUS, 
@@ -1514,7 +1507,7 @@ b_AllOpt10D <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cln_Base + clr_Ceil2Base + cln_Days +
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+cln_Def3HHI+
                    clr_Def3toUS)
@@ -1585,7 +1578,7 @@ b_SomeOpt11B <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days +
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+#clr_Def6Obl+
                    cln_Def3HHI+#clr_Def3toUS, 
@@ -1600,7 +1593,7 @@ b_AllOpt11B <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cln_Base + clr_Ceil2Base + cln_Days +
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+cln_Def3HHI+
                    clr_Def3toUS+
@@ -1699,7 +1692,7 @@ b_SomeOpt12C <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+
@@ -1715,7 +1708,7 @@ b_SomeOpt12C2 <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    # cln_Def3HHI+
@@ -1732,7 +1725,7 @@ b_SomeOpt12C3 <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    # cln_Def3HHI+
@@ -1748,7 +1741,7 @@ b_SomeOpt12C4 <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+
@@ -1766,7 +1759,7 @@ b_SomeOpt12C4 <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+
@@ -1783,7 +1776,7 @@ b_SomeOpt12C5 <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+
@@ -1802,7 +1795,7 @@ b_SomeOpt12C6 <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+
@@ -1820,7 +1813,7 @@ b_AllOpt12C <- glm(data=serv_exeropt, family=binomial(link="logit"),
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -1864,7 +1857,7 @@ b_SomeOpt13A <- glm (data=serv_opt,
                    cln_Base + clr_Ceil2Base + cln_Days+
                    Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+
@@ -1957,19 +1950,19 @@ Cost-based and incentive contract types may do a  better job at handling complex
 
 ```{r Model15A}
 #Create the models
-b_SomeOpt_salary_pricing_15A_no_interact <- glm(data=serv_opt, b_SomeOpt ~ Pricing + cl_US6_avg_sal_lag1, 
+b_SomeOpt_salary_pricing_15A_no_interact <- glm(data=serv_opt, b_SomeOpt ~ PricingUCA + cl_US6_avg_sal_lag1, 
                                              family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_salary_pricing_15A_no_interact)
 
-b_SomeOpt_salary_pricing_15A <- glm(data=serv_opt, b_SomeOpt ~ Pricing + cl_US6_avg_sal_lag1 + Pricing:cl_US6_avg_sal_lag1,
+b_SomeOpt_salary_pricing_15A <- glm(data=serv_opt, b_SomeOpt ~ PricingUCA + cl_US6_avg_sal_lag1 + PricingUCA:cl_US6_avg_sal_lag1,
                                  family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_salary_pricing_15A)
 
 
-b_AllOpt_salary_pricing_15A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Pricing + cl_US6_avg_sal_lag1)
+b_AllOpt_salary_pricing_15A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ PricingUCA + cl_US6_avg_sal_lag1)
 glmer_examine(b_AllOpt_salary_pricing_15A_no_interact)
 
-b_AllOpt_salary_pricing_15A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Pricing + cl_US6_avg_sal_lag1 + Pricing:cl_US6_avg_sal_lag1)
+b_AllOpt_salary_pricing_15A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ PricingUCA + cl_US6_avg_sal_lag1 + PricingUCA:cl_US6_avg_sal_lag1)
 glmer_examine(b_AllOpt_salary_pricing_15A)
 
 
@@ -1993,7 +1986,7 @@ b_SomeOpt_salary_pricing_15B <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2001,7 +1994,7 @@ b_SomeOpt_salary_pricing_15B <- glm(data=serv_opt,
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                 Pricing:cl_US6_avg_sal_lag1, family=binomial(link="logit"))
+                 PricingUCA:cl_US6_avg_sal_lag1, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_salary_pricing_15B)
 
 b_AllOpt_salary_pricing_15B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
@@ -2010,7 +2003,7 @@ b_AllOpt_salary_pricing_15B <- glm(data=serv_exeropt, family=binomial(link="logi
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2018,7 +2011,7 @@ b_AllOpt_salary_pricing_15B <- glm(data=serv_exeropt, family=binomial(link="logi
                  cp_PairObl7+
                    cln_OffObl7+ 
                  cln_OffFocus+
-                   Pricing:cl_US6_avg_sal_lag1)
+                   PricingUCA:cl_US6_avg_sal_lag1)
 glmer_examine(b_AllOpt_salary_pricing_15B)
 
 ```
@@ -2070,7 +2063,7 @@ b_SomeOpt_partnership_actions_16B <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2088,7 +2081,7 @@ b_AllOpt_partnership_actions_16B <- glm(data=serv_exeropt, family=binomial(link=
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2152,7 +2145,7 @@ b_SomeOpt_partnership_share_17B <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2171,7 +2164,7 @@ b_AllOpt_partnership_share_17B <- glm(data=serv_exeropt, family=binomial(link="l
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2243,7 +2236,7 @@ b_SomeOpt17D <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2262,7 +2255,7 @@ b_AllOpt17D <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2282,7 +2275,7 @@ b_AllOpt17D2 <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2353,7 +2346,7 @@ b_SomeOpt_partnership_duration_18B <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2372,7 +2365,7 @@ b_AllOpt_partnership_duration_18B <- glm(data=serv_exeropt, family=binomial(link
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2390,7 +2383,7 @@ b_AllOpt_partnership_duration_18B2 <- glm(data=serv_exeropt, family=binomial(lin
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2429,16 +2422,16 @@ Undefinitized Contract Award				+	-	-
 Combination				+	-	-
 ```{r Model19A}
 #Create the models
-b_SomeOpt_history_pricing_19A_no_interact <- glm(data=serv_opt, b_SomeOpt ~ cn_PairHist7 + Pricing, family=binomial(link="logit"))
+b_SomeOpt_history_pricing_19A_no_interact <- glm(data=serv_opt, b_SomeOpt ~ cn_PairHist7 + PricingUCA, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_history_pricing_19A_no_interact)
 
-b_SomeOpt_history_pricing_19A <- glm(data=serv_opt, b_SomeOpt ~ cn_PairHist7 + Pricing + cn_PairHist7:Pricing, family=binomial(link="logit"))
+b_SomeOpt_history_pricing_19A <- glm(data=serv_opt, b_SomeOpt ~ cn_PairHist7 + PricingUCA + cn_PairHist7:PricingUCA, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_history_pricing_19A)
 
-b_AllOpt_history_pricing_19A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cn_PairHist7 + Pricing)
+b_AllOpt_history_pricing_19A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cn_PairHist7 + PricingUCA)
 glmer_examine(b_AllOpt_history_pricing_19A_no_interact)
 
-b_AllOpt_history_pricing_19A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cn_PairHist7 + Pricing + cn_PairHist7:Pricing)
+b_AllOpt_history_pricing_19A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cn_PairHist7 + PricingUCA + cn_PairHist7:PricingUCA)
 glmer_examine(b_AllOpt_history_pricing_19A)
 
 
@@ -2468,7 +2461,7 @@ b_SomeOpt_history_pricing_19B <- glm(data=serv_opt,
                                     cln_Base + clr_Ceil2Base + cln_Days+
                                     Comp+
                                     Veh+
-                                    Pricing+
+                                    PricingUCA+
                                     Crisis+
                                     cln_Def6HHI+clr_Def6toUS+
                                     cln_Def3HHI+
@@ -2479,7 +2472,7 @@ b_SomeOpt_history_pricing_19B <- glm(data=serv_opt,
                                     cp_OffPerf7:cp_PairObl7+
                                     cln_OffObl7:cp_PairObl7+
                                     cp_OffPerf7:cln_Days+
-                                    cn_PairHist7:Pricing, family=binomial(link="logit"))
+                                    cn_PairHist7:PricingUCA, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_history_pricing_19B)
 
 b_AllOpt_history_pricing_19B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
@@ -2488,7 +2481,7 @@ b_AllOpt_history_pricing_19B <- glm(data=serv_exeropt, family=binomial(link="log
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2498,7 +2491,7 @@ b_AllOpt_history_pricing_19B <- glm(data=serv_exeropt, family=binomial(link="log
                  cln_OffFocus+
                  cp_OffPerf7:cp_PairObl7+
                    
-                   cn_PairHist7:Pricing)
+                   cn_PairHist7:PricingUCA)
 glmer_examine(b_AllOpt_history_pricing_19B)
 
 
@@ -2566,7 +2559,7 @@ b_SomeOpt_competition_NAICS66_20B <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2586,7 +2579,7 @@ b_AllOpt_competition_NAICS66_20B <- glm(data=serv_exeropt, family=binomial(link=
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2608,7 +2601,7 @@ b_SomeOpt_competition_naincs3_20B <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2630,7 +2623,7 @@ b_AllOpt_competition_naincs3_20B <- glm(data=serv_exeropt, family=binomial(link=
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2648,7 +2641,7 @@ b_AllOpt_competition_naincs3_20B2 <- glm(data=serv_exeropt, family=binomial(link
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2705,7 +2698,7 @@ b_SomeOpt_base2ceil_ceiling_21B <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2716,7 +2709,7 @@ b_SomeOpt_base2ceil_ceiling_21B <- glm(data=serv_opt,
                 cp_OffPerf7:cp_PairObl7+
                   cln_OffObl7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
-                  cn_PairHist7:Pricing +
+                  cn_PairHist7:PricingUCA +
                    clr_Ceil2Base:cln_Base, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_base2ceil_ceiling_21B)
 
@@ -2727,7 +2720,7 @@ b_AllOpt_base2ceil_ceiling_21B <- glm(data=serv_exeropt, family=binomial(link="l
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                    cln_Def6HHI+clr_Def6toUS+
                    cln_Def3HHI+
@@ -2787,7 +2780,7 @@ b_SomeOpt_base2ceil_duration_21D <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2798,7 +2791,7 @@ b_SomeOpt_base2ceil_duration_21D <- glm(data=serv_opt,
                    cp_OffPerf7:cp_PairObl7+
                    cln_OffObl7:cp_PairObl7+
                    cp_OffPerf7:cln_Days+ 
-                   cn_PairHist7:Pricing +
+                   cn_PairHist7:PricingUCA +
                    clr_Ceil2Base:cln_Base+
                    clr_Ceil2Base:cln_Days, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_base2ceil_duration_21D)
@@ -2809,7 +2802,7 @@ b_AllOpt_base2ceil_duration_21D <- glm(data=serv_exeropt, family=binomial(link="
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2840,19 +2833,19 @@ Cost-based and incentive contract types may do a better job at handling complex 
 
 ```{r Model22A}
 #Create the models
-b_SomeOpt_CFTE_pricing_22A_no_interact <- glm(data=serv_opt, b_SomeOpt ~ Pricing + cln_PSCrate, 
+b_SomeOpt_CFTE_pricing_22A_no_interact <- glm(data=serv_opt, b_SomeOpt ~ PricingUCA + cln_PSCrate, 
                                              family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_CFTE_pricing_22A_no_interact)
 
-b_SomeOpt_CFTE_pricing_22A <- glm(data=serv_opt, b_SomeOpt ~ Pricing + cln_PSCrate + Pricing:cln_PSCrate,
+b_SomeOpt_CFTE_pricing_22A <- glm(data=serv_opt, b_SomeOpt ~ PricingUCA + cln_PSCrate + PricingUCA:cln_PSCrate,
                                  family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_CFTE_pricing_22A)
 
 
-b_AllOpt_CFTE_pricing_22A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Pricing + cln_PSCrate)
+b_AllOpt_CFTE_pricing_22A_no_interact <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ PricingUCA + cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22A_no_interact)
 
-b_AllOpt_CFTE_pricing_22A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ Pricing + cln_PSCrate + Pricing:cln_PSCrate)
+b_AllOpt_CFTE_pricing_22A <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ PricingUCA + cln_PSCrate + PricingUCA:cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22A)
 
 
@@ -2880,7 +2873,7 @@ b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2892,9 +2885,9 @@ b_SomeOpt_CFTE_pricing_22B <- glm(data=serv_opt,
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    
-                   cn_PairHist7:Pricing+
+                   cn_PairHist7:PricingUCA+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate, family=binomial(link="logit"))
+                 PricingUCA:cln_PSCrate, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_CFTE_pricing_22B)
 
 b_SomeOpt_CFTE_pricing_22B2 <- glm(data=serv_opt,
@@ -2904,7 +2897,7 @@ b_SomeOpt_CFTE_pricing_22B2 <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2916,9 +2909,9 @@ b_SomeOpt_CFTE_pricing_22B2 <- glm(data=serv_opt,
                    cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
                    
-                   # cn_PairHist7:Pricing+
+                   # cn_PairHist7:PricingUCA+
                    clr_Ceil2Base:cln_Base+
-                 Pricing:cln_PSCrate, family=binomial(link="logit"))
+                 PricingUCA:cln_PSCrate, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt_CFTE_pricing_22B2)
 
 b_AllOpt_CFTE_pricing_22B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ cln_US6sal + 
@@ -2927,7 +2920,7 @@ b_AllOpt_CFTE_pricing_22B <- glm(data=serv_exeropt, family=binomial(link="logit"
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -2938,7 +2931,7 @@ b_AllOpt_CFTE_pricing_22B <- glm(data=serv_exeropt, family=binomial(link="logit"
                  cln_OffFocus+
                  cp_OffPerf7:cp_PairObl7+
                    
-                   Pricing:cln_PSCrate)
+                   PricingUCA:cln_PSCrate)
 glmer_examine(b_AllOpt_CFTE_pricing_22B)
 
 
@@ -2953,7 +2946,7 @@ summary_residual_compare(b_SomeOpt_base2ceil_ceiling_21B, b_SomeOpt_CFTE_pricing
 summary_residual_compare(b_AllOpt_partnership_share_17B, b_AllOpt_CFTE_pricing_22B)
 
 ```
-Some is not significant in line with expectation and raises the AIC slightly. Swapping to use of just PSCrate:Pricing increases AIC, more though is more in line with expectations. Leaving out, though swapping for model alignment has some appeal.
+Some is not significant in line with expectation and raises the AIC slightly. Swapping to use of just PSCrate:PricingUCA increases AIC, more though is more in line with expectations. Leaving out, though swapping for model alignment has some appeal.
 
 Aligns with expectation and lowers AIC a bit for all options model, although incentive fee results are not significant. Tentatively adding. 
 
@@ -3013,7 +3006,7 @@ b_SomeOpt23B <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3023,7 +3016,7 @@ b_SomeOpt23B <- glm(data=serv_opt,
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7+
                    cln_OffObl7:cp_PairObl7+
-                 cn_PairHist7:Pricing + 
+                 cn_PairHist7:PricingUCA + 
                    clr_Ceil2Base:cln_Base+
                    cp_OffPSC7:cln_OffObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt23B)
@@ -3035,7 +3028,7 @@ b_SomeOpt23B2 <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3044,7 +3037,7 @@ b_SomeOpt23B2 <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7+
-                 cn_PairHist7:Pricing + 
+                 cn_PairHist7:PricingUCA + 
                    # clr_Ceil2Base:cln_Base+
                    cp_OffPSC7:cln_OffObl7, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt23B2)
@@ -3055,7 +3048,7 @@ b_AllOpt23B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3065,9 +3058,9 @@ b_AllOpt23B <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                  cln_OffFocus+
                    cp_OffPerf7:cp_PairObl7 +
                    
-                   Pricing:cln_PSCrate+
+                   PricingUCA:cln_PSCrate+
                    
-                   Pricing:cln_PSCrate + 
+                   PricingUCA:cln_PSCrate + 
                    cp_OffPSC7:cln_OffObl7)
 glmer_examine(b_AllOpt23B)
 
@@ -3093,7 +3086,7 @@ b_SomeOpt24A <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3102,7 +3095,7 @@ b_SomeOpt24A <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7+
-                 cn_PairHist7:Pricing + 
+                 cn_PairHist7:PricingUCA + 
                    clr_Ceil2Base:cln_Base, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24A)
 
@@ -3115,7 +3108,7 @@ b_SomeOpt24A2 <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3125,7 +3118,7 @@ b_SomeOpt24A2 <- glm(data=serv_opt,
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7+
                    
-                 cn_PairHist7:Pricing,
+                 cn_PairHist7:PricingUCA,
                    # cp_OffPSC7:cln_OffObl7+, 
                  # clr_Ceil2Base:cln_Base
                  family=binomial(link="logit"))
@@ -3140,7 +3133,7 @@ b_SomeOpt24A3 <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3149,7 +3142,7 @@ b_SomeOpt24A3 <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7,
-                 # cn_PairHist7:Pricing ,#+ 
+                 # cn_PairHist7:PricingUCA ,#+ 
                    # clr_Ceil2Base:cln_Base,#+
                    # cp_OffPSC7:cln_OffObl7+, 
                  family=binomial(link="logit"))
@@ -3199,7 +3192,7 @@ b_SomeOpt24C <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3208,7 +3201,7 @@ b_SomeOpt24C <- glm(data=serv_opt,
                    cln_OffObl7+ 
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7+
-                 cn_PairHist7:Pricing + 
+                 cn_PairHist7:PricingUCA + 
                    clr_Ceil2Base:cln_Base+
                    cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24C)
@@ -3222,7 +3215,7 @@ b_SomeOpt24C2 <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3232,7 +3225,7 @@ b_SomeOpt24C2 <- glm(data=serv_opt,
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7+
                    
-                   cn_PairHist7:Pricing + 
+                   cn_PairHist7:PricingUCA + 
                    # clr_Ceil2Base:cln_Base
                    cp_OffPSC7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_SomeOpt24C2)
@@ -3245,7 +3238,7 @@ b_AllOpt24C <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3255,7 +3248,7 @@ b_AllOpt24C <- glm(data=serv_exeropt, family=binomial(link="logit"), b_AllOpt ~ 
                  cln_OffFocus+
                    cp_OffPerf7:cp_PairObl7 + 
                    
-                   Pricing:cln_PSCrate+ 
+                   PricingUCA:cln_PSCrate+ 
                    cp_OffPSC7:cln_OffFocus)
 glmer_examine(b_AllOpt24C)
 
@@ -3307,7 +3300,7 @@ b_SomeOpt24E <- glm(data=serv_opt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3317,7 +3310,7 @@ b_SomeOpt24E <- glm(data=serv_opt,
                  cln_OffFocus+ 
                    cp_OffPerf7:cp_PairObl7+
                    cp_OffPerf7:cln_Days+
-                 cn_PairHist7:Pricing + 
+                 cn_PairHist7:PricingUCA + 
                    clr_Ceil2Base:cln_Base+
                    # cp_OffPSC7:cln_OffObl7+
                    cln_OffObl7:cln_OffFocus, family=binomial(link="logit"))
@@ -3331,7 +3324,7 @@ b_AllOpt24E <- glm(data=serv_exeropt,
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3343,9 +3336,9 @@ b_AllOpt24E <- glm(data=serv_exeropt,
                   # cp_OffPerf7:cln_PairCA + 
                    cp_OffPSC7:cln_OffFocus+
                    
-                   Pricing:cln_PSCrate+
+                   PricingUCA:cln_PSCrate+
                       # cp_OffPerf7:cln_Days+
-                 # Pricing:cln_PSCrate+
+                 # PricingUCA:cln_PSCrate+
                    cln_OffObl7:cln_OffFocus, family=binomial(link="logit"))
 glmer_examine(b_AllOpt24E)
 
@@ -3381,7 +3374,7 @@ if(!exists("b_SomeOpt25A")){
                        cln_Base + clr_Ceil2Base + cln_Days+
                        Comp+
                        Veh+
-                       Pricing+
+                       PricingUCA+
                        Crisis+
                        cln_Def6HHI+clr_Def6toUS+
                        cln_Def3HHI+
@@ -3405,7 +3398,7 @@ if(!exists("b_SomeOpt25A")){
                       cln_Base + clr_Ceil2Base + cln_Days+
                       Comp+
                       Veh+
-                      Pricing+
+                      PricingUCA+
                       Crisis+
                       cln_Def6HHI+clr_Def6toUS+
                       cln_Def3HHI+
@@ -3481,7 +3474,7 @@ if(!exists("b_SomeOpt25B")){
                           cln_Base + clr_Ceil2Base + cln_Days+
                           Comp+
                           Veh+
-                          Pricing+
+                          PricingUCA+
                           Crisis+
                           cln_Def6HHI+clr_Def6toUS+
                           cln_Def3HHI+
@@ -3492,7 +3485,7 @@ if(!exists("b_SomeOpt25B")){
                           cp_OffPerf7:cp_PairObl7+
                           cp_OffPerf7:cln_Days+
                           clr_Ceil2Base:cln_Base+
-                          Pricing:cln_PSCrate+
+                          PricingUCA:cln_PSCrate+
                           (1 | NAICS3/NAICS6/ServArea)+
                           (1 | Agency/Office) +
                           (1 | Place)+
@@ -3507,7 +3500,7 @@ if(!exists("b_SomeOpt25B")){
                          cln_Base + clr_Ceil2Base + cln_Days+
                          Comp+
                          Veh+
-                         Pricing+
+                         PricingUCA+
                          Crisis+
                          cln_Def6HHI+clr_Def6toUS+
                          cln_Def3HHI+
@@ -3519,7 +3512,7 @@ if(!exists("b_SomeOpt25B")){
                          cp_OffPerf7:cln_PairCA +
                          cp_OffPSC7:cln_OffObl7 + 
                          cp_OffPSC7:cln_OffFocus + 
-                         Pricing:cln_PSCrate+
+                         PricingUCA:cln_PSCrate+
                          (1 | NAICS3/NAICS6/ServArea)+  
                          (1 | Agency/Office) +
                          (1 | Place)+ 
@@ -3579,7 +3572,7 @@ if(!exists("b_SomeOpt25C")){
                           cln_Base + clr_Ceil2Base + #cln_Days+
                           Comp+
                           Veh+
-                          Pricing+
+                          PricingUCA+
                           Crisis+
                           cln_Def6HHI+clr_Def6toUS+
                           cln_Def3HHI+
@@ -3589,7 +3582,7 @@ if(!exists("b_SomeOpt25C")){
                           cln_OffFocus+
                           cp_OffPerf7:cp_PairObl7 +
                           cln_OffObl7:cp_PairObl7 + 
-                          cn_PairHist7:Pricing + 
+                          cn_PairHist7:PricingUCA + 
                           clr_Ceil2Base:cln_Base + 
                           cp_OffPSC7:cln_OffObl7 + 
                           (1 | NAICS3/NAICS6/ServArea)+
@@ -3623,7 +3616,7 @@ if(!exists("b_SomeOpt25Cv2")){
                             cln_Base + clr_Ceil2Base + cln_Days+
                             Comp+
                             Veh+
-                            Pricing+
+                            PricingUCA+
                             Crisis+
                             cln_Def6HHI+clr_Def6toUS+
                             cln_Def3HHI+
@@ -3633,7 +3626,7 @@ if(!exists("b_SomeOpt25Cv2")){
                             cln_OffFocus+
                             cp_OffPerf7:cp_PairObl7 +
                             cln_OffObl7:cp_PairObl7 + 
-                            cn_PairHist7:Pricing + 
+                            cn_PairHist7:PricingUCA + 
                             clr_Ceil2Base:cln_Base + 
                             cp_OffPSC7:cln_OffObl7 + 
                             (1 | NAICS3/NAICS6/ServArea)+
@@ -3666,7 +3659,7 @@ if(!exists("b_SomeOpt25Cv3")){
                             cln_Base + clr_Ceil2Base + cln_Days+
                             Comp+
                             Veh+
-                            Pricing+
+                            PricingUCA+
                             Crisis+
                             cln_Def6HHI+clr_Def6toUS+
                             cln_Def3HHI+
@@ -3676,7 +3669,7 @@ if(!exists("b_SomeOpt25Cv3")){
                             cln_OffFocus+
                             cp_OffPerf7:cp_PairObl7 +
                             cln_OffObl7:cp_PairObl7 + 
-                            cn_PairHist7:Pricing + 
+                            cn_PairHist7:PricingUCA + 
                             cp_OffPerf7:cln_PairCA +
                             clr_Ceil2Base:cln_Base + 
                             cp_OffPSC7:cln_OffObl7 + 
@@ -3748,7 +3741,7 @@ if(!exists("b_SomeOpt26A")){
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3758,7 +3751,7 @@ if(!exists("b_SomeOpt26A")){
                  cln_OffFocus+ 
                 cp_OffPerf7:cp_PairObl7+
                  cp_OffPerf7:cln_Days+
-                  cn_PairHist7:Pricing +
+                  cn_PairHist7:PricingUCA +
                    clr_Ceil2Base:cln_Base+
                             (1 | NAICS3/NAICS6/ServArea)+
                             (1 | Agency/Office) +
@@ -3778,7 +3771,7 @@ if(!exists("b_SomeOpt26A")){
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3790,9 +3783,9 @@ if(!exists("b_SomeOpt26A")){
                   # cp_OffPerf7:cln_PairCA + 
                    cp_OffPSC7:cln_OffFocus+
                    
-                   Pricing:cln_PSCrate+
+                   PricingUCA:cln_PSCrate+
                       # cp_OffPerf7:cln_Days+
-                 # Pricing:cln_PSCrate+
+                 # PricingUCA:cln_PSCrate+
                    cln_OffObl7:cln_OffFocus+
                       (1 | NAICS3/NAICS6/ServArea)+  
                       (1 | Agency/Office) +
@@ -3866,7 +3859,7 @@ if(!exists("b_SomeOpt26B")){
                  cln_Base + clr_Ceil2Base + cln_Days+
                  Comp+
                    Veh+
-                   Pricing+
+                   PricingUCA+
                    Crisis+
                  cln_Def6HHI+clr_Def6toUS+
                  cln_Def3HHI+
@@ -3877,7 +3870,7 @@ if(!exists("b_SomeOpt26B")){
                 cp_OffPerf7:cp_PairObl7+
                   cln_OffObl7:cp_PairObl7 + 
                  cp_OffPerf7:cln_Days+
-                  cn_PairHist7:Pricing +
+                  cn_PairHist7:PricingUCA +
                    clr_Ceil2Base:cln_Base+
                             (1 | NAICS3/NAICS6/ServArea)+
                             (1 | Agency/Office) +
