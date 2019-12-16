@@ -34,7 +34,8 @@ geom.text.size<-12
 main.text.size<-1
 note.text.size<-1.40
 
-load(file="..//data//semi_clean//serv_opt.rdata")
+load(file="..//data//semi_clean//def_sample.Rdata")
+
 
 ```
 

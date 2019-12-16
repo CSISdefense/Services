@@ -140,7 +140,7 @@ serv_smp1m<-serv_complete[sample(nrow(serv_complete),1000000),]
 serv_smp<-serv_complete[sample(nrow(serv_complete),250000),]
 rm(serv_complete)
 serv_opt<-def_serv[complete&def_serv$AnyUnmodifiedUnexercisedOptions==1,]
-serv_exeropt<-serv_opt[serv_opt$Exer %in% c("Some Options","Some and All Options"),]
+serv_exeropt<-serv_opt[serv_opt$OptExer %in% c("Some Options","Some and All Options"),]
 serv_breach<-def_serv[complete&def_serv$b_CBre==1,]
 
 #To instead replace entries in existing sample, use  this code.
