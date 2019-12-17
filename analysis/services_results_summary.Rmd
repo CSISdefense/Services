@@ -509,8 +509,8 @@ texreg::htmlreg(list(term25B),file="..//Output//terminations.html",
                               "Study Variables" = 2:7,
                               "Contract Characteristics"=8:26,
                               "NAICS Characteristics" =27:30,
-                              "Office Characteristics" =31:33
-                              # "Interactions"=34:39
+                              "Office Characteristics" =31:33,
+                              "Interactions"=34:39
                               ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,
