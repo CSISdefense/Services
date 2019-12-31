@@ -34,7 +34,7 @@ geom.text.size<-12
 main.text.size<-1
 note.text.size<-1.40
 
-load(file="..//data//semi_clean//def_sample.Rdata")
+load(file="..//data//clean//def_sample.Rdata")
 
 
 ```
@@ -3783,7 +3783,6 @@ if(!exists("b_SomeOpt26A")){
                    cp_OffPerf7:cp_PairObl7 + 
                   # cp_OffPerf7:cln_PairCA + 
                    cp_OffPSC7:cln_OffFocus+
-                   
                    PricingUCA:cln_PSCrate+
                       # cp_OffPerf7:cln_Days+
                  # PricingUCA:cln_PSCrate+
@@ -3848,7 +3847,7 @@ summary_residual_compare(b_AllOpt26A, bins=100)
 
 ```
 
-####26B: 2019-08-31 - Adding pairCA
+####26B: 2019-08-31 - Dropped cp_OffPSC7:cln_OffObl7 but added  cp_OffPerf7:cln_Days+
 ```{r SomeOpt26B}
 if(file.exists("..//Output//b_SomeOpt26B.rda"))  load("..//Output//b_SomeOpt26B.rda")
 
@@ -3879,6 +3878,9 @@ if(!exists("b_SomeOpt26B")){
                             (1 | StartFY),
                           family=binomial(link="logit"),
                           verbose=TRUE)
+  
+  
+  
   save(b_SomeOpt26B, file="..\\Output\\b_SomeOpt26B.rda")
   
   
@@ -3936,3 +3938,174 @@ summary_residual_compare(b_SomeOpt25A,b_SomeOpt25Cv3,
 25C3 appears to do better by AIC, BIC, and even slightly by residuals. Sticking with it.
 
 Not sure whether it was adding the interaction or PairCA, but 26B doesn't manage to improve on AIC or BIC versus 26A either.
+
+
+
+```{r SomeOpt26C}
+if(file.exists("..//Output//b_SomeOpt26C.rda"))  load("..//Output//b_SomeOpt26C.rda")
+if(file.exists("..//Output//b_AllOpt26C.rda"))  load("..//Output//b_AllOpt26C.rda")
+
+if(!exists("b_SomeOpt26C")){
+ 
+  
+  b_AllOpt26C <- glmer(data=serv_exeropt,
+                       b_AllOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+cln_PairCA+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cln_Def6HHI+clr_Def6toUS+
+                 cln_Def3HHI+
+                   clr_Def3toUS+
+                 cp_PairObl7+
+                   cln_OffObl7+ 
+                 cln_OffFocus+
+                   cp_OffPerf7:cp_PairObl7 + 
+                  # cp_OffPerf7:cln_PairCA + 
+                   cp_OffPSC7:cln_OffFocus+
+                   
+                   PricingUCA:cln_PSCrate+
+                      # cp_OffPerf7:cln_Days+
+                 # PricingUCA:cln_PSCrate+
+                   # cln_OffObl7:cln_OffFocus+
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                      family=binomial(link="logit"),
+                      verbose=TRUE)
+  
+  save(b_AllOpt26C,file="..\\output\\b_AllOpt26C.rda")
+}
+  
+glmer_examine(b_AllOpt26A)
+
+
+stargazer::stargazer(b_AllOpt25A,b_AllOpt25B,b_AllOpt26A,b_AllOpt26C, type = "text", digits = 2)
+
+ 
+summary_residual_compare(b_AllOpt25B, b_AllOpt26A, bins=100)
+
+
+summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
+                     b_SomeOpt25Cv3, b_SomeOpt26A, bins=100)
+
+
+summary_residual_compare(b_AllOpt26A, bins=100)
+
+
+```
+
+
+####26C: 2019-12-29 - All_26A but for Some.
+
+```{r SomeOpt26A}
+if(file.exists("..//Output//b_SomeOpt26A.rda"))  load("..//Output//b_SomeOpt26A.rda")
+if(file.exists("..//Output//b_AllOpt26A.rda"))  load("..//Output//b_AllOpt26A.rda")
+
+if(!exists("b_SomeOpt26A")){
+  b_SomeOpt26C <- glmer(data=serv_opt,
+                        b_SomeOpt ~  cln_US6sal + 
+                   cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                 cn_PairHist7+#cln_PairCA+
+                 cln_Base + clr_Ceil2Base + cln_Days+
+                 Comp+
+                   Veh+
+                   PricingUCA+
+                   Crisis+
+                 cln_Def6HHI+clr_Def6toUS+
+                 cln_Def3HHI+
+                   clr_Def3toUS+
+                 cp_PairObl7+
+                   cln_OffObl7+ 
+      cln_OffFocus+
+                   cp_OffPerf7:cp_PairObl7 + 
+                  # cp_OffPerf7:cln_PairCA + 
+                   cp_OffPSC7:cln_OffFocus+
+                   PricingUCA:cln_PSCrate+
+                      # cp_OffPerf7:cln_Days+
+                 # PricingUCA:cln_PSCrate+
+                   cln_OffObl7:cln_OffFocus+
+                            (1 | NAICS3/NAICS6/ServArea)+
+                            (1 | Agency/Office) +
+                            (1 | Place)+
+                            (1 | StartFY),
+                          family=binomial(link="logit"),
+                          verbose=TRUE)
+  save(b_SomeOpt26C, file="..\\Output\\b_SomeOpt26A.rda")
+  
+  
+  
+}
+  
+ 
+summary_residual_compare(b_AllOpt25B, b_AllOpt26A, bins=100)
+
+
+summary_residual_compare(b_SomeOpt25A, b_SomeOpt25Cv3,
+                     b_SomeOpt25Cv3, b_SomeOpt26A, bins=100)
+
+
+summary_residual_compare(b_AllOpt26A, bins=100)
+
+
+```
+
+####27A: 2019-12-28 Trimmed down Some Options
+
+```{r SomeOpt25C3}
+if(file.exists("..//Output//b_SomeOpt27A.rda"))  load("..//Output//b_SomeOpt27A.rda")
+
+if(!exists("b_SomeOpt27A")){
+  b_SomeOpt27A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                            cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                            cn_PairHist7+cln_PairCA+
+                            cln_Base + clr_Ceil2Base + cln_Days+
+                            Comp+
+                            Veh+
+                            PricingUCA+
+                            Crisis+
+                            cln_Def6HHI+clr_Def6toUS+
+                            cln_Def3HHI+
+                            clr_Def3toUS+
+                            cp_PairObl7+
+                            cln_OffObl7+
+                            cln_OffFocus+
+                            cp_OffPerf7:cp_PairObl7 +
+                            # cln_OffObl7:cp_PairObl7 + 
+                            cn_PairHist7:PricingUCA + 
+                            # cp_OffPerf7:cln_PairCA +
+                            clr_Ceil2Base:cln_Base + 
+                            cp_OffPSC7:cln_OffObl7 + 
+                            (1 | NAICS3/NAICS6/ServArea)+
+                            (1 | Agency/Office) +
+                            (1 | Place)+
+                            (1 | StartFY),
+                          family=binomial(link="logit"),
+                          verbose=TRUE)
+  save(b_SomeOpt27A, file="..\\Output\\b_SomeOpt27A.rda")
+}
+
+ 
+
+glmer_examine(b_SomeOpt27A)
+
+stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv3,b_SomeOpt26C,
+                     b_SomeOpt27A, type = "text", digits = 2)
+
+glmer_examine(b_AllOpt27A)
+
+
+stargazer::stargazer(b_AllOpt25A,b_AllOpt25B,b_AllOpt26A,
+                     b_AllOpt26C,b_AllOpt27A, type = "text", digits = 2)
+
+
+summary_residual_compare(b_SomeOpt25A, b_SomeOpt27A,
+                     b_SomeOpt25Cv2,b_SomeOpt27A, bins=100)
+
+
+
+```
