@@ -1993,7 +1993,7 @@ n_cbre_partnership_actions_16B <- glm(data=serv_breach, ln_CBre ~ cln_US6sal +
                    clr_Def3toUS+
                  cp_PairObl7+
                    cln_OffObl7+ 
-                 #cl_office_NAICS6_hhi_kc+
+                 #cln_OffFocus+
                    cp_OffPerf7:cln_PairCA)
 
 
@@ -3331,7 +3331,7 @@ if(!exists("b_CBre25A")){
                       clr_Def3toUS+
                       cp_PairObl7+
                       cln_OffObl7+ 
-                      #cl_office_NAICS6_hhi_kc+
+                      #cln_OffFocus+
                       cp_OffPerf7:cln_PairCA+
                       (1 | NAICS3/NAICS6/ServArea)+  
                       (1 | Agency/Office) +
@@ -3385,7 +3385,7 @@ if(!exists("n_CBre26A")){
                       clr_Def3toUS+
                       cp_PairObl7+
                       cln_OffObl7+ 
-                      #cl_office_NAICS6_hhi_kc+
+                      #cln_OffFocus+
                       # cp_OffPerf7:cln_PairCA+
                       clr_Ceil2Base:cln_Base+
                       (1 | NAICS3/NAICS6/ServArea)+  
@@ -3538,7 +3538,7 @@ summary_residual_compare( b_CBre25A, b_CBre28A,b_CBre25A,b_CBre28B,bins=100)
 ####29A and 29B: 2019-08-22 Restoring cln_Def3HHI and cln_OffFocus
 
 
-```{r b_CBre29AB}
+```{r CBre29AB}
 if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
 
 if(!exists("b_CBre29B")){
@@ -3593,7 +3593,32 @@ if(!exists("b_CBre29B")){
                        (1 | StartFY),
                      family=binomial(link="logit"),
                      verbose=TRUE)
-  save(b_CBre29A,b_CBre29B,file="..\\output\\b_CBre29AB.rda")
+  
+  
+  
+  
+  n_CBre29A <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
+                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                      cn_PairHist7+cln_PairCA+
+                      cln_Base + clr_Ceil2Base + cln_Days+
+                      Comp+
+                      Veh+
+                      PricingUCA+
+                      Crisis+
+                      cln_Def6HHI+clr_Def6toUS+
+                      cln_Def3HHI+
+                      clr_Def3toUS+
+                      cp_PairObl7+
+                      cln_OffObl7+ 
+                      cln_OffFocus+
+                      cp_OffPerf7:cln_PairCA+
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                    verbose=TRUE)
+  glmer_examine(n_CBre29A,display = TRUE)
+  save(b_CBre29A,b_CBre29B,n_CBre29A,file="..\\output\\b_CBre29AB.rda")
 }
 
 #Compare the models
@@ -3601,8 +3626,63 @@ glmer_examine(b_CBre29B,display = TRUE)
 
 stargazer::stargazer(b_CBre28A, b_CBre29A, b_CBre28B, b_CBre29B, type="text", digits=2)
 
+
+
+stargazer::stargazer(n_cbre_partnership_actions_16B, n_CBre25A,n_CBre26A, n_CBre29A,type="text", digits=2)
+
+
 summary_residual_compare( b_CBre28A, b_CBre29A,bins=100)
 summary_residual_compare( b_CBre28B,b_CBre29B,bins=100)
 ```
 
-Adding off focus is significant in its own right in the expected direction and lowers AIC and BIC.
+Adding off focus is significant in its own right in the expected direction and lowers AIC and BIC. Slightly raises AIC and BIC for n_CBre, though clm_Def3HHI is significant and in the expected direction. Seems worth it for consistency.
+
+### 29C Adding PBSC:Days to n_CBre
+
+
+```{r n_CBre29C}
+if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
+
+if(!exists("b_CBre29B")){
+  #Create the model
+  
+  
+  n_CBre29C <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
+                      cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                      cn_PairHist7+cln_PairCA+
+                      cln_Base + clr_Ceil2Base + cln_Days+
+                      Comp+
+                      Veh+
+                      PricingUCA+
+                      Crisis+
+                      cln_Def6HHI+clr_Def6toUS+
+                      cln_Def3HHI+
+                      clr_Def3toUS+
+                      cp_PairObl7+
+                      cln_OffObl7+ 
+                      cln_OffFocus+
+                      cp_OffPerf7:cln_PairCA+
+                       cp_OffPerf7:cln_Days+
+                      (1 | NAICS3/NAICS6/ServArea)+  
+                      (1 | Agency/Office) +
+                      (1 | Place)+ 
+                      (1 | StartFY),
+                    verbose=TRUE)
+  glmer_examine(n_CBre29C,display = TRUE)
+  save(n_CBre29C,file="..\\output\\n_CBre29C")
+}
+
+#Compare the models
+glmer_examine(b_CBre29B,display = TRUE)
+
+stargazer::stargazer(b_CBre28A, b_CBre29A, b_CBre28B, b_CBre29B, type="text", digits=2)
+
+
+
+stargazer::stargazer(n_cbre_partnership_actions_16B, n_CBre25A,n_CBre26A, n_CBre29A,n_CBre29C,type="text", digits=2)
+
+
+summary_residual_compare( n_CBre25A,n_CBre29C,
+                          n_CBre29A, n_CBre29C,bins=100)
+
+```

@@ -4090,8 +4090,38 @@ if(!exists("b_SomeOpt27A")){
 }
 
  
+if(!exists("b_AllOpt27A")){
+  b_AllOpt27A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+                            cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
+                            cn_PairHist7+cln_PairCA+
+                            cln_Base + clr_Ceil2Base + cln_Days+
+                            Comp+
+                            Veh+
+                            PricingUCA+
+                            Crisis+
+                            cln_Def6HHI+clr_Def6toUS+
+                            cln_Def3HHI+
+                            clr_Def3toUS+
+                            cp_PairObl7+
+                            cln_OffObl7+
+                            cln_OffFocus+
+                            cp_OffPerf7:cp_PairObl7 +
+                            # cln_OffObl7:cp_PairObl7 + 
+                            cn_PairHist7:PricingUCA + 
+                            # cp_OffPerf7:cln_PairCA +
+                            clr_Ceil2Base:cln_Base + 
+                            cp_OffPSC7:cln_OffObl7 + 
+                            (1 | NAICS3/NAICS6/ServArea)+
+                            (1 | Agency/Office) +
+                            (1 | Place)+
+                            (1 | StartFY),
+                          family=binomial(link="logit"),
+                          verbose=TRUE)
+  save(b_AllOpt27A, file="..\\Output\\b_AllOpt27A.rda")
+}
 
-glmer_examine(b_SomeOpt27A)
+
+glmer_examine(b_AllOpt27A)
 
 stargazer::stargazer(b_SomeOpt_base2ceil_ceiling_21B,b_SomeOpt25A, b_SomeOpt25Cv3,b_SomeOpt26C,
                      b_SomeOpt27A, type = "text", digits = 2)

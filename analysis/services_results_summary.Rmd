@@ -288,11 +288,9 @@ if(!exists("b_CBre29B")){
 }
 glmer_examine(b_CBre29B)
 
-if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
-
-if(!exists("n_CBre25A")){
+if(!exists("n_CBre29C")){
     
-  n_CBre25A <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
+  n_CBre29C <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                       cn_PairHist7+cln_PairCA+
                       cln_Base + clr_Ceil2Base + cln_Days+
@@ -313,11 +311,11 @@ if(!exists("n_CBre25A")){
                       (1 | StartFY),
                     verbose=TRUE)
   
-  save(n_CBre25A,file="..\\output\\n_CBre25A.rda")
+  save(n_CBre29C,file="..\\output\\n_CBre29C.rda")
 }
 
 
-glmer_examine(n_CBre25A)
+glmer_examine(n_CBre29C)
 
 # if(!exists("b_CBre29B_restart")){
 #   pars<-get_pars(b_CBre25A)
@@ -392,7 +390,7 @@ glmer_examine(term25B)
 ### Study Variables Only
 ```{r StudyVariableSummary}
 
-texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre25A,term25B),file="..//Output//study_var_model_lvl1.html",
+texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre29C,term25B),file="..//Output//study_var_model_lvl1.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options","All Options","Breach Likelihood","Breach Size","Termination"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -453,7 +451,7 @@ texreg::htmlreg(list(b_SomeOpt27A, b_AllOpt26C),file="..//Output//options.html",
 ```{r CeilingResults}
 
   stargazer::stargazer(#b_SomeOpt27A,b_AllOpt26C,
-                       b_CBre29B,n_CBre25A,
+                       b_CBre29B,n_CBre29C,
                        single.row = TRUE,
                 custom.model.name=c("Breach Frequency (Logit)","Breach Size for Breached Contracts (Regression"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -461,7 +459,7 @@ texreg::htmlreg(list(b_SomeOpt27A, b_AllOpt26C),file="..//Output//options.html",
                        digits=2)
 
 
-texreg::htmlreg(list(b_CBre29B,n_CBre25A),file="..//Output//ceiling_breaches.html",
+texreg::htmlreg(list(b_CBre29B,n_CBre29C),file="..//Output//ceiling_breaches.html",
                 single.row = TRUE,
                 custom.model.name=c("Likelihood\n(Logit)","Size Given Breach\n(Regression)"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -470,9 +468,9 @@ texreg::htmlreg(list(b_CBre29B,n_CBre25A),file="..//Output//ceiling_breaches.htm
                               # "Services Complexity" = 2:3,
                               # "Office Capacity" =4:5,
                               # "Past Relationship"=6:7,
-                              "Contract Characteristics"=8:26#,
-                                                # "NAICS/Office Characteristics" =27:32,
-                              # "Interactions"=33:34
+                              "Contract Characteristics"=8:26,
+                                                 "NAICS/Office Characteristics" =27:33,
+                              "Interactions"=34:35
                               ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,
@@ -596,8 +594,8 @@ complex_coef<-all_coef_list[c(grep("cln_US6sal",names(all_coef_list)),
                               )]
                               
 
-texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre25A,term25B),file="..//Output//service_complexity.html",
-                single.row = TRUE,
+texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre29C,term25B),file="..//Output//service_complexity.html",
+                single.row = FALSE,
                 custom.model.name=c("Some Options\nExercised\n(Logit)",
                                     "All Options\nExercised\n(Logit)",
                                     "Ceiling Breach\nLikelihood\n(Logit)",
@@ -619,7 +617,7 @@ texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre25A,term25B),file=
                 custom.coef.map=complex_coef,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 9: Ceiling Breaches",
+                caption="Table 12: Service Complexity Results Across Models",
                 caption.above=TRUE)
 
 
@@ -627,8 +625,8 @@ texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre25A,term25B),file=
 ```
 
 
-### Office Capacity
-```{r OffCapacity}
+### Contract-Management Capacity
+```{r ContractManagement}
 
 
 office_coef<-all_coef_list[sort(unique(c(grep("c_pPBSC",names(all_coef_list)),
@@ -639,7 +637,7 @@ office_coef<-all_coef_list[sort(unique(c(grep("c_pPBSC",names(all_coef_list)),
                               )))]
                               
 
-texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre25A,term25B),
+texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre29C,term25B),
                 file="..//Output//office_capacity.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options\nExercised\n(Logit)",
@@ -663,7 +661,7 @@ texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre25A,term25B),
                 custom.coef.map=office_coef,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 10: Office Capacity",
+                caption="Table 13: Contract-Management Capacity Results Across Models",
                 caption.above=TRUE)
 
 
@@ -683,7 +681,7 @@ pair_coef<-all_coef_list[sort(c(grep("c_pairHist",names(all_coef_list)),
                               ))]
                               
 
-texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre25A,term25B),
+texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre29C,term25B),
                 file="..//Output//pair_history.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options\nExercised\n(Logit)",
@@ -707,7 +705,7 @@ texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre25A,term25B),
                 custom.coef.map=pair_coef,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 11: Past Relationship",
+                caption="Table 14: Paired History Results Across Models",
                 caption.above=TRUE)
 
 
@@ -748,10 +746,10 @@ ggsave(options_residual,file="..//output//opt_residual.png",width=6.5*1.2, heigh
            x="Estimated Pr(Breach)",y="Actual Pr(Breach)"),
     residuals_binned(b_CBre29B, bins=50)+labs(title="Ceiling Breach Binned Residual",
                                               x="Estimated Pr(Breach)",y="Residuals"),
-    binned_fitted_versus_residuals(n_CBre25A,bins=50)+
+    binned_fitted_versus_residuals(n_CBre29C,bins=50)+
       labs(title="Ceiling Breach Size Actuals",caption=NULL,
            x="Estimated Mean(Log(Breach Size) | Breach)",y="Actual Mean(Log(Breach Size) | Breach)"),
-    resid_plot(n_CBre25A,sample=25000)+labs(title="Sample of 25,000 Breach Size Residuals",
+    resid_plot(n_CBre29C,sample=25000)+labs(title="Sample of 25,000 Breach Size Residuals",
                                             x="Estimated Log(Breach Size) | Breach")
   )
 )

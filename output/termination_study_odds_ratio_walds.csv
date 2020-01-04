@@ -1,7 +1,7 @@
 "Output","Variable","Odds Ratio","Lower Bound","Upper Bound"
 "Termination Likelihood","Log(Det. Ind. Salary)",0.97,0.86,1.09
 "Termination Likelihood","Log(Serv. Code Invoice Rate)",0.99,0.94,1.03
-"Termination Likelihood","Office Perf.-Based %",1.09,1.01,1.18
+"Termination Likelihood","Office PBSA Prop.",1.09,1.01,1.18
 "Termination Likelihood","Office Serv. Code Exp. %",1.5,1.38,1.63
 "Termination Likelihood","Paired Years",0.77,0.74,0.81
 "Termination Likelihood","Log(Paired Actions)",0.93,0.88,0.99
