@@ -3641,9 +3641,9 @@ Adding off focus is significant in its own right in the expected direction and l
 
 
 ```{r n_CBre29C}
-if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
+if(file.exists("..//Output//n_CBre29C.rda")) load("..//Output//n_CBre29C.rda")
 
-if(!exists("b_CBre29B")){
+if(!exists("n_CBre29C")){
   #Create the model
   
   
@@ -3669,11 +3669,11 @@ if(!exists("b_CBre29B")){
                       (1 | StartFY),
                     verbose=TRUE)
   glmer_examine(n_CBre29C,display = TRUE)
-  save(n_CBre29C,file="..\\output\\n_CBre29C")
+  save(n_CBre29C,file="..\\output\\n_CBre29C.rda")
 }
 
 #Compare the models
-glmer_examine(b_CBre29B,display = TRUE)
+
 
 stargazer::stargazer(b_CBre28A, b_CBre29A, b_CBre28B, b_CBre29B, type="text", digits=2)
 

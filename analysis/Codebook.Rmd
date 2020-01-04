@@ -33,7 +33,6 @@ main.text.size<-1
 note.text.size<-1.40
 
 load("../data/clean/transformed_def_serv.Rdata")
-def_serv<-transition_variable_names_service(def_serv)
 
 # colnames(def_serv)[duplicated(colnames(def_serv))]
 # which(duplicated(colnames(def_serv)))
@@ -1276,37 +1275,39 @@ grouped_barplot("StartCY", def_serv)
 
 (
 logged<-statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18",
-                                 "Base2Ceil",
+                                 "Ceil2Base",
                                  "UnmodifiedDays",
                                  "def3_HHI_lag1",
-                                 # "def3_ratio_lag1",
+                                 "def3_ratio_lag1",
                                  "def6_HHI_lag1",
-                                 # "def6_ratio_lag1",
-                                 "office_naics_hhi_k"), def_serv)
+                                 "capped_def6_ratio_lag1",
+                                 "office_naics_hhi_k"
+                                 ), def_serv)
 )
 
-summary(def_serv$def6_ratio_lag1)
-summary(log(def_serv$def6_ratio_lag1))
-summary(na_non_positive_log(def_serv$def6_ratio_lag1))
-summary(arm::rescale(na_non_positive_log(def_serv$def6_ratio_lag1)))
-summary(arm::rescale(def_serv$def6_ratio_lag1))
-summary(def_serv$clr_Def6toUS)
-summary(arm::rescale(na_non_positive_log(def_serv$capped_def6_ratio_lag1)))
 
-summary(arm::rescale(na_non_positive_log(def_serv$def3_ratio_lag1)))
-summary(arm::rescale(def_serv$def3_ratio_lag1))
-summary(def_serv$clr_Def3toUS)
+# Leftover code from detecting the ratio problem.
+# summary(def_serv$def6_ratio_lag1)
+# summary(na_non_positive_log(def_serv$def6_ratio_lag1))
+# summary(arm::rescale(na_non_positive_log(def_serv$def6_ratio_lag1)))
+# summary(arm::rescale(def_serv$def6_ratio_lag1))
+# summary(def_serv$clr_Def6toUS)
+# summary(arm::rescale(na_non_positive_log(def_serv$capped_def6_ratio_lag1)))
+# 
+# summary(arm::rescale(na_non_positive_log(def_serv$def3_ratio_lag1)))
+# summary(arm::rescale(def_serv$def3_ratio_lag1))
+# summary(def_serv$clr_Def3toUS)
+# 
+# 
+# sd(def_serv$def6_ratio_lag1,na.rm = TRUE)
+# summary(arm::rescale(def_serv$def6_ratio_lag1))
+# summary(def_serv$capped_def6_ratio_lag1)
 
 
-sd(def_serv$def6_ratio_lag1,na.rm = TRUE)
-summary(arm::rescale(def_serv$def6_ratio_lag1))
-summary(def_serv$capped_def6_ratio_lag1)
-
-
-
-
-write.csv(logged,"..\\output\\logged_controls.csv",row.names = FALSE)
-
+  
+  
+  write.csv(logged,"..\\output\\logged_controls.csv",row.names = FALSE)
+  
 
 
 
@@ -1316,9 +1317,7 @@ loggedplus1<-statsummary_continuous(c("office_obligatedamount_7year"), def_serv,
 
 write.csv(loggedplus1,"..\\output\\logged_controls_plus1.csv",row.names = FALSE)
 
-unlogged<-statsummary_continuous(c("def3_ratio_lag1",
-                                   "def6_ratio_lag1",
-                                   "pMarket"), def_serv, log = FALSE)
+unlogged<-statsummary_continuous(c("pMarket"), def_serv, log = FALSE)
 write.csv(unlogged,"..\\output\\unlogged_controls.csv",row.names = FALSE)
 
 
@@ -1327,51 +1326,12 @@ write.csv(unlogged,"..\\output\\unlogged_controls.csv",row.names = FALSE)
 ## Missing Data Measures
 ```{r missing}
 
- # load(file="data//def_sample.Rdata")
-
-summary(def_serv$b_Term)
-summary(def_serv$b_CBre)
-summary(def_serv$lp_OptGrowth) #Missing
-summary(def_serv$ExercisedOptions)
-summary(def_serv$AnyUnmodifiedUnexercisedOptions)
-#Study Variables
-summary(def_serv$cln_US6sal)
-summary(def_serv$cln_PSCrate)
-summary(def_serv$cp_OffPerf7)
-summary(def_serv$cp_OffPSC7)
-summary(def_serv$cn_PairHist7)
-summary(def_serv$cln_PairCA)
-#Controls
-summary(def_serv$CompOffr)
-summary(def_serv$cl_Offr)
-summary(def_serv$cl_Ceil)
-summary(def_serv$capped_cln_Days)
-summary(def_serv$Veh) 
-summary(def_serv$Pricing)
-summary(def_serv$Place)
-summary(def_serv$NAICS6)
-summary(def_serv$NAICS3)
-summary(def_serv$Office)
-summary(def_serv$Agency)
-summary(def_serv$StartCY)
-summary(def_serv$cln_Def3HHI)
-summary(def_serv$clr_Def3toUS)
-summary(def_serv$cln_Def6HHI)
-summary(def_serv$cln_Def6Obl)
-summary(def_serv$clr_Def6toUS)
-#New Controls
-summary(def_serv$cl_OffCA)
-summary(def_serv$cl_OffCA)
-summary(def_serv$cp_PairObl7)
-summary(def_serv$Crisis)
-
-
 complete<-
   #Dependent Variables
   !is.na(def_serv$b_Term)& #summary(def_serv$b_Term)
   !is.na(def_serv$b_CBre)&
-  !is.na(def_serv$lp_OptGrowth)&
-  !is.na(def_serv$ExercisedOptions)&
+  # !is.na(def_serv$ln_CBre_OMB20_GDP18)&
+  # !is.na(def_serv$ln_OptGrowth)&
   !is.na(def_serv$AnyUnmodifiedUnexercisedOptions)&
   #Study Variables
   !is.na(def_serv$cln_US6sal)&
@@ -1381,12 +1341,12 @@ complete<-
   !is.na(def_serv$cn_PairHist7)&
   !is.na(def_serv$cln_PairCA)&
   #Controls
-  !is.na(def_serv$CompOffr)&
-  !is.na(def_serv$cl_Offr)&
-  !is.na(def_serv$cl_Ceil)&
-  !is.na(def_serv$capped_cln_Days)&
+  !is.na(def_serv$Comp)&
+  !is.na(def_serv$clr_Ceil2Base)&
+  !is.na(def_serv$cln_Base)&
+  !is.na(def_serv$cln_Days)&
   !is.na(def_serv$Veh) &
-  !is.na(def_serv$Pricing)&
+  !is.na(def_serv$PricingUCA)&
   !is.na(def_serv$Place)& #New Variable
   # !is.na(def_serv$b_UCA)& No longer  used
   !is.na(def_serv$NAICS6)&
@@ -1397,13 +1357,14 @@ complete<-
   !is.na(def_serv$cln_Def3HHI)&
   !is.na(def_serv$clr_Def3toUS)&
   !is.na(def_serv$cln_Def6HHI)&
-  !is.na(def_serv$cln_Def6OblConst)&
+  !is.na(def_serv$cln_Def6Obl)&
   !is.na(def_serv$clr_Def6toUS)&
   #New Controls
-  !is.na(def_serv$cl_OffCA)& #summary(def_serv$cl_OffCA)
   !is.na(def_serv$cln_OffObl7)& #summary(def_serv$cln_OffObl7)
   !is.na(def_serv$cp_PairObl7)&  #summary(def_serv$cp_PairObl7)
-  !is.na(def_serv$Crisis)  #summary(def_serv$cp_PairObl7)
+  !is.na(def_serv$Crisis)&  #summary(def_serv$cp_PairObl7)
+  !is.na(def_serv$cln_OffFocus)&
+  !is.na(def_serv$clr_Ceil2Base)
 
 
 
@@ -1424,11 +1385,7 @@ sum(money[def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/
   sum(money,na.rm=TRUE)
 
 
-#Missing data, how many records
-nrow(def_serv[!complete,])/nrow(def_serv)
-sum(def_serv[!complete,]$Action_Obligation_OMB20_GDP18.OMB20,na.rm=TRUE)/sum(def_serv$Action.Obligation.OMB20_GDP18,na.rm=TRUE)
-
-#Missing data how much money?
+#Missing data exercised options
 length(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1])/
   length(money[def_serv$AnyUnmodifiedUnexercisedOptions==1])
 sum(money[!complete&def_serv$AnyUnmodifiedUnexercisedOptions==1],na.rm=TRUE)/

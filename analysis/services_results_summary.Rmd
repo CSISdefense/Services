@@ -257,6 +257,7 @@ glmer_examine(b_SomeOpt27A)
 
 ```{r Model-CBre}
 if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
+if(file.exists("..//Output//n_CBre29C.rda")) load("..//Output//n_CBre29C.rda")
 
 if(!exists("b_CBre29B")){
   b_CBre29B <- glmer(data=serv_smp1m, b_CBre ~  cln_US6sal +
@@ -287,6 +288,8 @@ if(!exists("b_CBre29B")){
 
 }
 glmer_examine(b_CBre29B)
+
+
 
 if(!exists("n_CBre29C")){
     

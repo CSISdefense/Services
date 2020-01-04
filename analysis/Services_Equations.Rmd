@@ -30,13 +30,13 @@ The remaining variables have β coefficients, with each non-base level of the ca
 Note that because we use the complete dataset for exercised options, there's no 1 million entry variant.
 ```{r Model-OptGrowth, echo = FALSE, message=FALSE}
 # Deprecated
-load("..//Output//b_SomeOpt25Cv3.rda")
+load("..//Output//b_SomeOpt27A.rda")
 # 
 
-load("..//Output//b_AllOpt26A.rda")
+load("..//Output//b_AllOpt26C.rda")
 
-# str(b_AllOpt26A)
-# b_AllOpt26A@flist
+# str(b_AllOpt26C)
+# b_AllOpt26C@flist
 # ?levels
 # 
 group_n<-function(m,col){
@@ -46,7 +46,7 @@ group_n<-function(m,col){
 sample_n<-function(m){
   format(nrow(m@frame),big.mark=",")
 }
-texreg::screenreg(list(b_SomeOpt25Cv3,b_AllOpt26A),
+texreg::screenreg(list(b_SomeOpt27A,b_AllOpt26C),
 custom.model.names = c("Some Opt","All Opt"),                  
                   digits=2)
 ```
@@ -89,26 +89,24 @@ $β_{`r (b<-b+1)`}Log(Det.~Ind.~DoD:U.S.)_{i}~+~$
 $β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}~+$
 $β_{`r (b<-b+1)`}Log(Office~Focus)_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Share_{i}~+~$\newline\
-$β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}·Log(Office~Obl.+1)_{i}~+~$\newline\
-$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Log(Paired~Actions+1)_{i}~+~$
-$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Paired~Share_{i}~+~$
-$(~β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Other~Fixed–Price_{i}~+~$
-$β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Incentive~Fee_{i}~+~$
-$β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Comb–Other_{i}~+~$
-$β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Other~Cost–Based_{i}~+~$
-$β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·Time~\&~Materials_{i}~+~$
-$β_{`r (b<-b+1)`}cn\_OffPerf7_{i}·UCA_{i}~)~+$\newline\
-$β_{`r (b<-b+1)`}Log(Init.~Base)_{i}·Log(Init.~Ceiling:Base)_{i}~+~$
-$β_{`r (b<-b+1)`}Paired~Share_{i}·Log(Office~Obl.+1)_{i}~+~$
-$ϵ_{i},~for~i=1~to~`r sample_n(b_SomeOpt25Cv3)`$
+$β_{`r (b<-b+1)`}Office~PBSA~Prop._{i}·Paired~Share_{i}~+~$
+$(~β_{`r (b<-b+1)`}Office~PBSA~Prop_{i}·Other~Fixed–Price_{i}~+~$
+$β_{`r (b<-b+1)`}Office~PBSA~Prop_{i}·Incentive~Fee_{i}~+~$
+$β_{`r (b<-b+1)`}Office~PBSA~Prop_{i}·Comb–Other_{i}~+~$
+$β_{`r (b<-b+1)`}Office~PBSA~Prop_{i}·Other~Cost–Based_{i}~+~$
+$β_{`r (b<-b+1)`}Office~PBSA~Prop_{i}·Time~\&~Materials_{i}~+~$
+$β_{`r (b<-b+1)`}Office~PBSA~Prop_{i}·UCA_{i}~)~+$\newline\
+$β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}·Log(Office~Focus)_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Init.~Base)_{i}·Log(Init.~Ceiling:Base)_{i}~$
+$ϵ_{i},~for~i=1~to~`r sample_n(b_SomeOpt27A)`$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_SomeOpt25Cv3,"NAICS3")`;$$
-$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(b_SomeOpt25Cv3,"NAICS6:NAICS3")`;$$
-$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(b_SomeOpt25Cv3,"ServArea:(NAICS6:NAICS3)")`;$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(b_SomeOpt25Cv3,"Agency")`$$
-$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(b_SomeOpt25Cv3,"Office:Agency")`$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(b_SomeOpt25Cv3,"Place")`$$
-$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_SomeOpt25Cv3,"StartFY")`$$
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_SomeOpt27A,"NAICS3")`;$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(b_SomeOpt27A,"NAICS6:NAICS3")`;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(b_SomeOpt27A,"ServArea:(NAICS6:NAICS3)")`;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(b_SomeOpt27A,"Agency")`;$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(b_SomeOpt27A,"Office:Agency")`;$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(b_SomeOpt27A,"Place")`;$$
+$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_SomeOpt27A,"StartFY")`$$
 
 ## All Options Likelihood
 
@@ -147,24 +145,22 @@ $β_{`r (b<-b+1)`}Log(Det.~Ind.~DoD:U.S.)_{i}~+~$
 $β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}~+$
 $β_{`r (b<-b+1)`}Log(Office~Focus)_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Share_{i}~+~$
-$(~β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Other~Fixed–Price_{i}~+$
-$β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Incentive~Fee_{i}~+~$
-$β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Comb–Other_{i}~+$\newline\
-$β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Other~Cost–Based_{i}~+~$
-$β_{`r (b<-b+1)`}cn\_PSCrate_{i}·Time~\&~Materials_{i}~+$
-$β_{`r (b<-b+1)`}cn\_PSCrate_{i}·UCA_{i}~)~+~$
-$β_{`r (b<-b+1)`}cln\_OffPSC7_{i}·Log(Office~Focus)_{i}~+$\newline\
-$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Paired~Share_{i}~+~$
-$β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}·Log(Office~Focus)_{i}~+~$\newline\
-$ϵ_{i},~for~i=1~to~`r sample_n(b_AllOpt26A)`$
+$(~β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}·Other~Fixed–Price_{i}~+$
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}·Incentive~Fee_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}·Comb–Other_{i}~+$\newline\
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}·Other~Cost–Based_{i}~+~$
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}·Time~\&~Materials_{i}~+$
+$β_{`r (b<-b+1)`}Log(Serv.~Code~Invoice~Rate)_{i}·UCA_{i}~)~+~$
+$β_{`r (b<-b+1)`}Office~Serv.~Code~Exp.~\%_{i}·Log(Office~Focus)_{i}~+$\newline\
+$ϵ_{i},~for~i=1~to~`r sample_n(b_AllOpt26C)`$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_AllOpt26A,"NAICS3")`;$$
-$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(b_AllOpt26A,"NAICS6:NAICS3")`;$$
-$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(b_AllOpt26A,"ServArea:(NAICS6:NAICS3)")`;$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(b_AllOpt26A,"Agency")`$$
-$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(b_AllOpt26A,"Office:Agency")`$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(b_AllOpt26A,"Place")`$$
-$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_AllOpt26A,"StartFY")`$$
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_AllOpt26C,"NAICS3")`;$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(b_AllOpt26C,"NAICS6:NAICS3")`;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(b_AllOpt26C,"ServArea:(NAICS6:NAICS3)")`;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(b_AllOpt26C,"Agency")`;$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(b_AllOpt26C,"Office:Agency")`;$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(b_AllOpt26C,"Place")`;$$
+$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_AllOpt26C,"StartFY")`$$
 
 
 
@@ -174,9 +170,9 @@ $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_AllOpt26A
 if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
 
 
-if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
+if(file.exists("..//Output//n_CBre29C.rda")) load("..//Output//n_CBre29C.rda")
 
-texreg::screenreg(list(b_CBre29B,n_CBre25A),
+texreg::screenreg(list(b_CBre29B,n_CBre29C),
                   custom.model.names = c("Breach Likelihood","BreachSize"),                  
                   digits=2)
 
@@ -212,22 +208,23 @@ $β_{`r (b<-b+1)`}UCA_{i}~)~+~$
 $(~β_{`r (b<-b+1)`}ARRA_{i}~+~$
 $β_{`r (b<-b+1)`}Disaster_{i}~+~$
 $β_{`r (b<-b+1)`}OCO_{i}~)~+~$
+$β_{`r (b<-b+1)`}Log(Subsector~HHI)_{i}~+~$
 $β_{`r (b<-b+1)`}Log(Subsector~DoD:U.S.)_{i}~+$
 $β_{`r (b<-b+1)`}Log(Det.~Ind.~HHI)_{i}~+~$
 $β_{`r (b<-b+1)`}Log(Det.~Ind.~DoD:U.S.)_{i}~+~$
 $β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}~+~$
 $β_{`r (b<-b+1)`}Log(Office~Focus)_{i}~+$
 $β_{`r (b<-b+1)`}Paired~Share_{i}~+~$
-$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Log(Paired~Actions+1)_{i}~+$\newline\
-$β_{`r (b<-b+1)`}cln\_OffPerf7_{i}·Log(Planned~Dur.)_{i}~+~$
+$β_{`r (b<-b+1)`}Office~PBSA~Prop._{i}·Log(Paired~Actions+1)_{i}~+$\newline\
+$β_{`r (b<-b+1)`}Office~PBSA~Prop._{i}·Log(Planned~Dur.)_{i}~+~$
 $ϵ_{i},~for~i=  1~to~`r sample_n(b_CBre29B)`$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(b_CBre29B,"NAICS3")`;$$
 $$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(b_CBre29B,"NAICS6:NAICS3")`;$$
 $$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(b_CBre29B,"ServArea:(NAICS6:NAICS3)")`;$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(b_CBre29B,"Agency")`$$
-$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(b_CBre29B,"Office:Agency")`$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(b_CBre29B,"Place")`$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(b_CBre29B,"Agency")`;$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(b_CBre29B,"Office:Agency")`;$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(b_CBre29B,"Place")`;$$
 $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(b_CBre29B,"StartFY")`$$
 
 ## Breach Size
@@ -260,22 +257,24 @@ $β_{`r (b<-b+1)`}UCA_{i}~)~+~$
 $(~β_{`r (b<-b+1)`}ARRA_{i}~+~$
 $β_{`r (b<-b+1)`}Disaster_{i}~+~$
 $β_{`r (b<-b+1)`}OCO_{i}~)~+~$
+$β_{`r (b<-b+1)`}Log(Subsector~HHI)_{i}~+$
 $β_{`r (b<-b+1)`}Log(Subsector~DoD:U.S.)_{i}~+~$
 $β_{`r (b<-b+1)`}Log(Det.~Ind.~HHI)_{i}~+$
 $β_{`r (b<-b+1)`}Log(Det.~Ind.~DoD:U.S.)_{i}~+~$
 $β_{`r (b<-b+1)`}Log(Office~Obl.+1)_{i}~+~$
 $β_{`r (b<-b+1)`}Log(Office~Focus)_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Share_{i}~+$
-$β_{`r (b<-b+1)`}Office~PBSA~Prop._{i}·Log(Paired~Actions+1)_{i}~+~ϵ_{i}~+~$\newline\
-$ϵ_{i},~for~i=  1~to~`r sample_n(n_CBre25A)`$
+$β_{`r (b<-b+1)`}Office~PBSA~Prop._{i}·Log(Paired~Actions+1)_{i}~+$\newline\
+$β_{`r (b<-b+1)`}Office~PBSA~Prop._{i}·Log(Planned~Dur.)_{i}~+~$
+$ϵ_{i},~for~i=  1~to~`r sample_n(n_CBre29C)`$
 
-$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(n_CBre25A,"NAICS3")`;$$
-$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(n_CBre25A,"NAICS6:NAICS3")`;$$
-$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(n_CBre25A,"ServArea:(NAICS6:NAICS3)")`;$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(n_CBre25A,"Agency")`$$
-$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(n_CBre25A,"Office:Agency")`$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(n_CBre25A,"Place")`$$
-$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(n_CBre25A,"StartFY")`$$
+$$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(n_CBre29C,"NAICS3")`;$$
+$$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(n_CBre29C,"NAICS6:NAICS3")`;$$
+$$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(n_CBre29C,"ServArea:(NAICS6:NAICS3)")`;$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(n_CBre29C,"Agency")`;$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(n_CBre29C,"Office:Agency")`;$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(n_CBre29C,"Place")`;$$
+$$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(n_CBre29C,"StartFY")`$$
 
 #Terminations
 
@@ -328,12 +327,12 @@ $β_{`r (b<-b+1)`}Paired~Years_{i}·Incentive~Fee_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Years_{i}·Comb–Other_{i}~+$
 $β_{`r (b<-b+1)`}Paired~Years_{i}·Other~Cost–Based_{i}~+~$
 $β_{`r (b<-b+1)`}Paired~Years_{i}·Time~\&~Materials_{i}~+$
-$β_{`r (b<-b+1)`}Paired~Years_{i}·UCA_{i}~)~+~ϵ_{i}~+~ϵ_{i},~~~~for~i=1~to~`r sample_n(term25B)`$
+$β_{`r (b<-b+1)`}Paired~Years_{i}·UCA_{i}~)~+~ϵ_{i},~~~~for~i=1~to~`r sample_n(term25B)`$
 
 $$a^{NAICS3}_{j}\sim~N(μ_{α},σ^{2}_{α}),~for~j= 1~to~`r group_n(term25B,"NAICS3")`;$$
 $$a^{NAICS3:NAICS6}_{k}\sim~N(μ_{α},σ^{2}_{α}),~for~k= 1~to~`r group_n(term25B,"NAICS6:NAICS3")`;$$
 $$a^{NAICS3:NAICS6:ServArea}_{l}\sim~N(μ_{α},σ^{2}_{α}),~for~l= 1~to~`r group_n(term25B,"ServArea:(NAICS6:NAICS3)")`;$$
-$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(term25B,"Agency")`$$
-$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(term25B,"Office:Agency")`$$
-$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(term25B,"Place")`$$
+$$a^{Agency}_{m}\sim~N(μ_{α},σ^{2}_{α}),~for~m= 1~to~`r group_n(term25B,"Agency")`;$$
+$$a^{Agency:Office}_{n}\sim~N(μ_{α},σ^{2}_{α}),~for~n= 1~to~`r group_n(term25B,"Office:Agency")`;$$
+$$a^{Place}_{o}\sim~N(μ_{α},σ^{2}_{α}),~~~~for~n= 1~to~`r group_n(term25B,"Place")`;$$
 $$a^{StartFY}_{p}\sim~N(μ_{α},σ^{2}_{α}),~for~o= 1~to~`r group_n(term25B,"StartFY")`$$
