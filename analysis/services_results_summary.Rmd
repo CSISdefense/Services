@@ -536,7 +536,6 @@ texreg::htmlreg(list(term25B),file="..//Output//terminations.html",
 # #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
 # gridExtra::grid.arrange(dotplot(ranef(b_CBre29B, condVar = T), strip = T, scales=list(relation='free'))$Agency,
 #              nrow=1)
-
 comp.or<-odds_ratio(b_SomeOpt27A,"b_SomeOpt27A",output = "Some Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
 write.csv(get_study_variables_odds_ratio(comp.or, study = "services"),file="..//output//some_exer_opt_study_odds_ratio.csv",row.names=FALSE)
 get_icc(b_SomeOpt27A)

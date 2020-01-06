@@ -84,7 +84,7 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 ```
 
 ```
-## Working directory is C:/Users/gsand/Repositories/Services/analysis
+## Working directory is F:/Users/Greg/Repositories/Services/analysis
 ```
 
 ```
@@ -120,7 +120,7 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 ```
 
 ```
-## -- Attaching packages ------------------------------------------------------------------------------------------------------------------------------ tidyverse 1.2.1 --
+## -- Attaching packages ------------------------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
 ```
 
 ```
@@ -130,7 +130,7 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 ```
 
 ```
-## -- Conflicts --------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+## -- Conflicts ---------------------------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
 ## x tidyr::expand()  masks Matrix::expand()
 ## x tidyr::extract() masks texreg::extract()
 ## x dplyr::filter()  masks stats::filter()
@@ -201,26 +201,255 @@ First we load the data. The dataset used is a U.S. Defense Contracting dataset d
 
 Contracts are classified using a mix of numerical and categorical variables. While the changes in numerical variables are easy to grasp and summarize, a contract may have one line item that is competed and another that is not. As is detailed in the exploration on R&D, we are only considering information available prior to contract start. The percentage of contract obligations that were competed is a valuable benchmark, but is highly influenced by factors that occured after contract start.
 
-# Pre-Model Graphs
-None at present.
+
+# Data Exploration
+
+## Prod Serv
+
+
+```r
+ProdServ_summary<-
+  read_delim("..\\data\\semi_clean\\ProductOrServiceCode.ProdServHistoryCFTEcoalesceLaggedConst.txt",delim="\t",
+             na=c("NA","NULL"),
+             guess_max = 200000)
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   fiscal_year = col_double(),
+##   OCO_GF = col_character(),
+##   ProductOrServiceCode = col_character(),
+##   ProductOrServiceCode1L = col_character(),
+##   IsRnDdefenseSystem = col_double(),
+##   CFTE_Rate_1year = col_double(),
+##   CFTE_Factor_1year = col_double(),
+##   CFTE_Factor_1yearP4 = col_double(),
+##   CFTE_Factor_1yearP4avg = col_double(),
+##   CFTE_Factor_1yearP1 = col_double(),
+##   CFTE_Factor_1yearP1avg = col_double(),
+##   GDPdeflatorName = col_character()
+## )
+```
+
+```r
+top_ProdServ<-def_serv %>% group_by(ProdServ,CFTE_Rate_1year,OCO_GF) %>%
+  dplyr::summarise(annual_action_obligation=sum(Action_Obligation_OMB20_GDP18),
+                   annual_count=length(StartFY))  %>% 
+  dplyr::summarise(ProdServ_action_obligation=sum(annual_action_obligation),
+                   ProdServ_count=sum(annual_count)) 
+top_ProdServ$ProdServ_dollar_rank<-rank(-top_ProdServ$ProdServ_action_obligation)
+top_ProdServ$ProdServ_count_rank<-rank(-top_ProdServ$ProdServ_count)
+
+
+ProdServ_summary<-left_join(ProdServ_summary,top_ProdServ %>% 
+                              dplyr::select(ProdServ,ProdServ_dollar_rank,ProdServ_count_rank)
+                            , by=c("ProductOrServiceCode"="ProdServ"))
+rm(top_ProdServ)
+
+
+ProdServ_summary<-as.data.frame(ProdServ_summary)
+ProdServ_summary<-read_and_join_experiment(ProdServ_summary,
+                        lookup_file = "ProductOrServiceCodes.csv",
+                        path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
+                                      dir="",
+                        by=c("ProductOrServiceCode"="ProductOrServiceCode"),
+                        add_var=c("ProductOrServiceCodeText","Simple"),
+                        skip_check_var=c("ProductOrServiceCodeText","Simple")
+                        #                  "ProdServ_shorthand")
+               )
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   Unseperated = col_logical(),
+##   IsService = col_double(),
+##   IsCatchAllCode = col_double(),
+##   isRnD1to5 = col_double(),
+##   PBLscore = col_double(),
+##   IsPossibleReclassification = col_double(),
+##   IsPossibleSoftwareEngineering = col_logical(),
+##   OCOcrisisScore = col_double(),
+##   OCOcrisisPercent = col_double(),
+##   CrisisPercent = col_logical(),
+##   IsRnDdefenseSystem = col_double(),
+##   Level1_Code = col_double(),
+##   Level2_Code = col_double()
+## )
+```
+
+```
+## See spec(...) for full column specifications.
+```
+
+```r
+#Remove R&D
+ProdServ_summary<-ProdServ_summary %>% dplyr::filter(Simple=="Services" &
+                                                       fiscal_year>=2011)
+
+
+
+# View(ProdServ_summary)
+
+ProdServ_summary$ProdServName<-factor(paste(
+                                              ProdServ_summary$ProductOrServiceCode,
+                                              ProdServ_summary$ProductOrServiceCodeText,sep=": "))
+
+ProdServ_summary$ProdServName<-factor(ProdServ_summary$ProdServName
+                                            ,levels=levels(ProdServ_summary$ProdServName),
+                                            ,labels=swr(levels(ProdServ_summary$ProdServName),nwrap = 15)
+                                            )
+
+
+
+ProdServ_summary$CFTE_Rate_1yearP4<-1/ProdServ_summary$CFTE_Factor_1yearP4
+
+ProdServ_short<-subset(ProdServ_summary,ProdServ_dollar_rank<=6 |
+                             ProdServ_count_rank<=6)
+
+ProdServ_short$FYdate<-as.Date(paste(ProdServ_short$fiscal_year,"01","01",sep="-"))
+
+(
+ProdServ20top<-ggplot(ProdServ_short,
+       aes(x=FYdate,y=CFTE_Rate_1yearP4,linetype=OCO_GF))+#color=ProdServ_Code
+  geom_line()+
+  scale_y_continuous(label=scales::comma)+ 
+    scale_x_date(date_labels = "'%y",limits=as.Date(c("2013-01-01", "2017-01-01")))+
+  # scale_x_continuous(breaks=c(2006,2009,2011,2014))+
+  labs(x="Fiscal Year",y="Annual Invoice Rate (Constant 2018 $)")+ 
+    facet_wrap(~ProdServName,ncol=5)+theme(
+                        legend.position = "bottom")#+
+    # coord_cartesian(xlim = as.Date(c("2013-01-01", "2017-01-01")))
+)
+```
+
+```
+## Warning: Removed 6 rows containing missing values (geom_path).
+```
+
+![](services_results_summary_files/figure-html/ProdServ_Summary-1.png)<!-- -->
+
+```r
+ggsave600dpi(ProdServ20top,file="..//Output\\ProdServ20top.png",width=6.5,height=3.5,
+             size=8,lineheight=1)
+```
+
+```
+## Warning: Removed 6 rows containing missing values (geom_path).
+```
+
+```r
+ggsave(ProdServ20top,file="..//Output\\ProdServ20top.eps",width=6.5,height=3)
+```
+
+```
+## Warning: Removed 6 rows containing missing values (geom_path).
+```
+
+
+
+
+
+
+## Variable examination
+
+```r
+HH1plot<-freq_continuous_plot(def_serv,"def6_HHI_lag1",bins=50)
+HH1plot<-HH1plot+geom_vline(xintercept=c(1500,2500))+labs(x="Annual Herfindahl-Hirschman Index (HHI) for NAICS-6 Sector",y="Contract or Task Order Count")
+HH1plot
+```
+
+```
+## Warning: Removed 30285 rows containing non-finite values (stat_bin).
+```
+
+![](services_results_summary_files/figure-html/VarGraph-1.png)<!-- -->
+
+```r
+ggsave(HH1plot,file="..//Output//HH1freq.png",width=5.5,height=5.5,dpi=600)
+```
+
+```
+## Warning: Removed 30285 rows containing non-finite values (stat_bin).
+```
+
+```r
+ggsave(HH1plot,file="..//Output//HH1freq.eps",width=5.5,height=5.5,dpi=600)
+```
+
+```
+## Warning: Removed 30285 rows containing non-finite values (stat_bin).
+```
+
+```r
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="No Comp."],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+```
+
+```
+## [1] NaN
+```
+
+```r
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="1 Offer"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+```
+
+```
+## [1] NaN
+```
+
+```r
+sum(def_serv$Action_Obligation.OMB20_GDP18[def_serv$EffComp=="2+ Offers"],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+```
+
+```
+## [1] NaN
+```
+
+```r
+nrow(def_serv[def_serv$EffComp=="No Comp.",])/nrow(def_serv)
+```
+
+```
+## [1] 0.2800416
+```
+
+```r
+sum(def_serv$Action_Obligation.OMB20_GDP18[is.na(def_serv$EffComp)],na.rm=TRUE)/sum(def_serv$Action_Obligation.OMB20_GDP18,na.rm=TRUE)
+```
+
+```
+## [1] NaN
+```
+
+```r
+# Effplot<-freq_discrete_plot(subset(def_serv,"EffComp"))
+# Effplot<-Effplot+labs(x="Effective Competition",y="Contract or Task Order Count")
+# ggsave(Effplot,file="..//Output//EffFreq.png",width=5.5,height=5.5,dpi=600)
+```
+
+
+
+
+
+
 # Models
 ## Loading Models
 ### Exercised Options
 Note that because we use the complete dataset for exercised options, there's no 1 million entry variant.
 
 ```r
-if(file.exists("..//Output//b_SomeOpt25Cv3.rda")) load("..//Output//b_SomeOpt25Cv3.rda")
-# 
-if(!exists("b_SomeOpt25Cv3")){
-  #Create the model
+if(file.exists("..//Output//b_SomeOpt27A.rda"))  load("..//Output//b_SomeOpt27A.rda")
 
-  b_SomeOpt25Cv3 <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
+if(!exists("b_SomeOpt27A")){
+  b_SomeOpt27A <- glmer(data=serv_opt, b_SomeOpt ~  cln_US6sal +
                             cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                             cn_PairHist7+cln_PairCA+
                             cln_Base + clr_Ceil2Base + cln_Days+
                             Comp+
                             Veh+
-                            Pricing+
+                            PricingUCA+
                             Crisis+
                             cln_Def6HHI+clr_Def6toUS+
                             cln_Def3HHI+
@@ -229,21 +458,20 @@ if(!exists("b_SomeOpt25Cv3")){
                             cln_OffObl7+
                             cln_OffFocus+
                             cp_OffPerf7:cp_PairObl7 +
-                            cp_OffPerf7:cln_PairCA +
-                            cn_PairHist7:Pricing +
-                            cp_PairObl7:cln_OffObl7 +
-                            clr_Ceil2Base:cln_Base +
-                            pOffPSC:cln_OffObl7 +
+                            # cln_OffObl7:cp_PairObl7 + 
+                            cn_PairHist7:PricingUCA + 
+                            # cp_OffPerf7:cln_PairCA +
+                            clr_Ceil2Base:cln_Base + 
+                            cp_OffPSC7:cln_OffObl7 + 
                             (1 | NAICS3/NAICS6/ServArea)+
                             (1 | Agency/Office) +
                             (1 | Place)+
                             (1 | StartFY),
                           family=binomial(link="logit"),
                           verbose=TRUE)
-  save(b_SomeOpt25Cv3, file="..\\Output\\b_SomeOpt25Cv3.rda")
+  save(b_SomeOpt27A, file="..\\Output\\b_SomeOpt27A.rda")
 }
-
-glmer_examine(b_SomeOpt25Cv3)
+glmer_examine(b_SomeOpt27A)
 ```
 
 ```
@@ -255,61 +483,59 @@ glmer_examine(b_SomeOpt25Cv3)
 ```
 ## [[1]]
 ##                             GVIF Df GVIF^(1/(2*Df))
-## cln_US6sal              1.047479  1        1.023464
-## cln_PSCrate             1.024780  1        1.012314
-## cp_OffPerf7             1.136534  1        1.066084
-## cp_OffPSC7              1.228139  1        1.108214
-## cn_PairHist7            1.402637  1        1.184330
-## cln_PairCA              1.829788  1        1.352697
-## cln_Base                1.930475  1        1.389415
-## clr_Ceil2Base           1.098552  1        1.048118
-## cln_Days                1.054625  1        1.026949
-## Comp                    1.134899  3        1.021315
-## Veh                     1.430044  4        1.045728
-## Pricing                 2.222059  6        1.068800
-## Crisis                  1.018403  3        1.003044
-## cln_Def6HHI             1.208464  1        1.099302
-## clr_Def6toUS            1.158370  1        1.076276
-## cln_Def3HHI             1.208161  1        1.099164
-## clr_Def3toUS            1.188483  1        1.090176
-## cp_PairObl7             1.813427  1        1.346636
-## cln_OffObl7             3.171537  1        1.780881
-## cln_OffFocus            1.098722  1        1.048199
-## cp_OffPerf7:cp_PairObl7 1.642782  1        1.281711
-## cp_PairObl7:cln_OffObl7 1.674192  1        1.293906
-## cn_PairHist7:Pricing    2.234718  6        1.069306
-## cp_OffPerf7:cln_PairCA  1.311745  1        1.145314
-## cln_Base:clr_Ceil2Base  1.826092  1        1.351330
-## cp_OffPSC7:cln_OffObl7  2.972175  1        1.724000
+## cln_US6sal              1.028277  1        1.014040
+## cln_PSCrate             1.027237  1        1.013527
+## cp_OffPerf7             1.089068  1        1.043584
+## cp_OffPSC7              1.200713  1        1.095771
+## cn_PairHist7            1.405622  1        1.185589
+## cln_PairCA              1.797064  1        1.340546
+## cln_Base                1.723120  1        1.312677
+## clr_Ceil2Base           1.431878  1        1.196611
+## cln_Days                1.057840  1        1.028513
+## Comp                    1.149647  3        1.023515
+## Veh                     1.386955  4        1.041736
+## PricingUCA              1.896517  6        1.054783
+## Crisis                  1.024990  3        1.004122
+## cln_Def6HHI             1.119419  1        1.058026
+## clr_Def6toUS            1.331187  1        1.153771
+## cln_Def3HHI             1.161359  1        1.077664
+## clr_Def3toUS            1.351926  1        1.162723
+## cp_PairObl7             1.599734  1        1.264806
+## cln_OffObl7             2.819625  1        1.679174
+## cln_OffFocus            1.057293  1        1.028247
+## cp_OffPerf7:cp_PairObl7 1.324845  1        1.151019
+## cn_PairHist7:PricingUCA 1.957950  6        1.057589
+## cln_Base:clr_Ceil2Base  2.048563  1        1.431280
+## cp_OffPSC7:cln_OffObl7  2.749011  1        1.658014
 ## 
 ## [[2]]
 ## # Intraclass Correlation Coefficient
 ## 
-##      Adjusted ICC: 0.285
-##   Conditional ICC: 0.257
+##      Adjusted ICC: 0.236
+##   Conditional ICC: 0.205
 ## 
 ## [[3]]
-## [1] "Model failed to converge with max|grad| = 0.00987252 (tol = 0.001, component 1)"
+## [1] "Model failed to converge with max|grad| = 0.110023 (tol = 0.001, component 1)"
 ## 
 ## [[4]]
 ## ServArea:(NAICS6:NAICS3).(Intercept)            Office:Agency.(Intercept) 
-##                           0.37036191                           0.73454189 
+##                            0.3530846                            0.7415007 
 ##            NAICS6:NAICS3.(Intercept)                    Place.(Intercept) 
-##                           0.21098304                           0.52045517 
+##                            0.1966052                            0.3775788 
 ##                   NAICS3.(Intercept)                   Agency.(Intercept) 
-##                           0.17013830                           0.03999664 
+##                            0.2271073                            0.2442771 
 ##                  StartFY.(Intercept) 
-##                           0.53665792
+##                            0.2157766
 ```
 
 ```r
-if(file.exists("..//Output//b_AllOpt26A.rda")) load("..//Output//b_AllOpt26A.rda")
+if(file.exists("..//Output//b_AllOpt26C.rda")) load("..//Output//b_AllOpt26C.rda")
 
-if(!exists("b_AllOpt26A")){
+if(!exists("b_AllOpt26C")){
   #Create the model
   
 
-  b_AllOpt26A <- glmer(data=serv_exeropt,
+  b_AllOpt26C <- glmer(data=serv_exeropt,
                        b_AllOpt ~  cln_US6sal + 
                    cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                  cn_PairHist7+cln_PairCA+
@@ -339,69 +565,11 @@ if(!exists("b_AllOpt26A")){
                       family=binomial(link="logit"),
                       verbose=TRUE)
   
-  save(b_AllOpt26A,file="..\\output\\b_AllOpt26A.rda")
+  save(b_AllOpt26C,file="..\\output\\b_AllOpt26C.rda")
 
 }
 
-glmer_examine(b_AllOpt26A)
-```
-
-```
-## Warning: 'icc' is deprecated.
-## Use 'performance::icc()' instead.
-## See help("Deprecated")
-```
-
-```
-## [[1]]
-##                              GVIF Df GVIF^(1/(2*Df))
-## cln_US6sal               1.064923  1        1.031951
-## cln_PSCrate              1.099503  1        1.048572
-## cp_OffPerf7              1.109265  1        1.053216
-## cp_OffPSC7               1.286291  1        1.134148
-## cn_PairHist7             1.359993  1        1.166187
-## cln_PairCA               1.787506  1        1.336976
-## cln_Base                 1.159549  1        1.076823
-## clr_Ceil2Base            1.066374  1        1.032654
-## cln_Days                 1.042561  1        1.021059
-## Comp                     1.161180  3        1.025219
-## Veh                      1.459185  4        1.048368
-## Pricing                  4.163678  6        1.126220
-## Crisis                   1.028852  3        1.004752
-## cln_Def6HHI              1.186484  1        1.089259
-## clr_Def6toUS             1.181533  1        1.086983
-## cln_Def3HHI              1.189430  1        1.090610
-## clr_Def3toUS             1.230824  1        1.109425
-## cp_PairObl7              1.371218  1        1.170990
-## cln_OffObl7              1.363349  1        1.167626
-## cln_OffFocus             1.117581  1        1.057157
-## cp_OffPerf7:cp_PairObl7  1.167857  1        1.080674
-## cp_OffPSC7:cln_OffFocus  1.266560  1        1.125415
-## cln_PSCrate:Pricing      3.980569  6        1.122007
-## cln_OffObl7:cln_OffFocus 1.298144  1        1.139361
-## 
-## [[2]]
-## # Intraclass Correlation Coefficient
-## 
-##      Adjusted ICC: 0.137
-##   Conditional ICC: 0.119
-## 
-## [[3]]
-## [1] "Model failed to converge with max|grad| = 0.00364159 (tol = 0.001, component 1)"
-## 
-## [[4]]
-## ServArea:(NAICS6:NAICS3).(Intercept)            Office:Agency.(Intercept) 
-##                            0.1811424                            0.4707001 
-##            NAICS6:NAICS3.(Intercept)                    Place.(Intercept) 
-##                            0.3079215                            0.2689522 
-##                   NAICS3.(Intercept)                   Agency.(Intercept) 
-##                            0.1296557                            0.2352865 
-##                  StartFY.(Intercept) 
-##                            0.1714321
-```
-
-```r
-glmer_examine(b_SomeOpt25Cv3)
+glmer_examine(b_AllOpt26C)
 ```
 
 ```
@@ -413,51 +581,106 @@ glmer_examine(b_SomeOpt25Cv3)
 ```
 ## [[1]]
 ##                             GVIF Df GVIF^(1/(2*Df))
-## cln_US6sal              1.047479  1        1.023464
-## cln_PSCrate             1.024780  1        1.012314
-## cp_OffPerf7             1.136534  1        1.066084
-## cp_OffPSC7              1.228139  1        1.108214
-## cn_PairHist7            1.402637  1        1.184330
-## cln_PairCA              1.829788  1        1.352697
-## cln_Base                1.930475  1        1.389415
-## clr_Ceil2Base           1.098552  1        1.048118
-## cln_Days                1.054625  1        1.026949
-## Comp                    1.134899  3        1.021315
-## Veh                     1.430044  4        1.045728
-## Pricing                 2.222059  6        1.068800
-## Crisis                  1.018403  3        1.003044
-## cln_Def6HHI             1.208464  1        1.099302
-## clr_Def6toUS            1.158370  1        1.076276
-## cln_Def3HHI             1.208161  1        1.099164
-## clr_Def3toUS            1.188483  1        1.090176
-## cp_PairObl7             1.813427  1        1.346636
-## cln_OffObl7             3.171537  1        1.780881
-## cln_OffFocus            1.098722  1        1.048199
-## cp_OffPerf7:cp_PairObl7 1.642782  1        1.281711
-## cp_PairObl7:cln_OffObl7 1.674192  1        1.293906
-## cn_PairHist7:Pricing    2.234718  6        1.069306
-## cp_OffPerf7:cln_PairCA  1.311745  1        1.145314
-## cln_Base:clr_Ceil2Base  1.826092  1        1.351330
-## cp_OffPSC7:cln_OffObl7  2.972175  1        1.724000
+## cln_US6sal              1.061222  1        1.030156
+## cln_PSCrate             1.098421  1        1.048056
+## cp_OffPerf7             1.113371  1        1.055164
+## cp_OffPSC7              1.271621  1        1.127662
+## cn_PairHist7            1.347695  1        1.160903
+## cln_PairCA              1.763803  1        1.328082
+## cln_Base                1.154644  1        1.074544
+## clr_Ceil2Base           1.064128  1        1.031566
+## cln_Days                1.042479  1        1.021019
+## Comp                    1.165783  3        1.025895
+## Veh                     1.436021  4        1.046273
+## PricingUCA              3.550527  6        1.111368
+## Crisis                  1.039954  3        1.006551
+## cln_Def6HHI             1.151775  1        1.073208
+## clr_Def6toUS            1.560218  1        1.249087
+## cln_Def3HHI             1.229400  1        1.108783
+## clr_Def3toUS            1.628290  1        1.276045
+## cp_PairObl7             1.330786  1        1.153597
+## cln_OffObl7             1.146267  1        1.070638
+## cln_OffFocus            1.069404  1        1.034120
+## cp_OffPerf7:cp_PairObl7 1.129495  1        1.062777
+## cp_OffPSC7:cln_OffFocus 1.248045  1        1.117159
+## cln_PSCrate:PricingUCA  3.402848  6        1.107440
 ## 
 ## [[2]]
 ## # Intraclass Correlation Coefficient
 ## 
-##      Adjusted ICC: 0.285
-##   Conditional ICC: 0.257
+##      Adjusted ICC: 0.139
+##   Conditional ICC: 0.124
 ## 
 ## [[3]]
-## [1] "Model failed to converge with max|grad| = 0.00987252 (tol = 0.001, component 1)"
+## [1] "Model failed to converge with max|grad| = 0.00350207 (tol = 0.001, component 1)"
 ## 
 ## [[4]]
 ## ServArea:(NAICS6:NAICS3).(Intercept)            Office:Agency.(Intercept) 
-##                           0.37036191                           0.73454189 
+##                           0.23712053                           0.46587417 
 ##            NAICS6:NAICS3.(Intercept)                    Place.(Intercept) 
-##                           0.21098304                           0.52045517 
+##                           0.34204659                           0.23662135 
 ##                   NAICS3.(Intercept)                   Agency.(Intercept) 
-##                           0.17013830                           0.03999664 
+##                           0.04903319                           0.26304650 
 ##                  StartFY.(Intercept) 
-##                           0.53665792
+##                           0.12415826
+```
+
+```r
+glmer_examine(b_SomeOpt27A)
+```
+
+```
+## Warning: 'icc' is deprecated.
+## Use 'performance::icc()' instead.
+## See help("Deprecated")
+```
+
+```
+## [[1]]
+##                             GVIF Df GVIF^(1/(2*Df))
+## cln_US6sal              1.028277  1        1.014040
+## cln_PSCrate             1.027237  1        1.013527
+## cp_OffPerf7             1.089068  1        1.043584
+## cp_OffPSC7              1.200713  1        1.095771
+## cn_PairHist7            1.405622  1        1.185589
+## cln_PairCA              1.797064  1        1.340546
+## cln_Base                1.723120  1        1.312677
+## clr_Ceil2Base           1.431878  1        1.196611
+## cln_Days                1.057840  1        1.028513
+## Comp                    1.149647  3        1.023515
+## Veh                     1.386955  4        1.041736
+## PricingUCA              1.896517  6        1.054783
+## Crisis                  1.024990  3        1.004122
+## cln_Def6HHI             1.119419  1        1.058026
+## clr_Def6toUS            1.331187  1        1.153771
+## cln_Def3HHI             1.161359  1        1.077664
+## clr_Def3toUS            1.351926  1        1.162723
+## cp_PairObl7             1.599734  1        1.264806
+## cln_OffObl7             2.819625  1        1.679174
+## cln_OffFocus            1.057293  1        1.028247
+## cp_OffPerf7:cp_PairObl7 1.324845  1        1.151019
+## cn_PairHist7:PricingUCA 1.957950  6        1.057589
+## cln_Base:clr_Ceil2Base  2.048563  1        1.431280
+## cp_OffPSC7:cln_OffObl7  2.749011  1        1.658014
+## 
+## [[2]]
+## # Intraclass Correlation Coefficient
+## 
+##      Adjusted ICC: 0.236
+##   Conditional ICC: 0.205
+## 
+## [[3]]
+## [1] "Model failed to converge with max|grad| = 0.110023 (tol = 0.001, component 1)"
+## 
+## [[4]]
+## ServArea:(NAICS6:NAICS3).(Intercept)            Office:Agency.(Intercept) 
+##                            0.3530846                            0.7415007 
+##            NAICS6:NAICS3.(Intercept)                    Place.(Intercept) 
+##                            0.1966052                            0.3775788 
+##                   NAICS3.(Intercept)                   Agency.(Intercept) 
+##                            0.2271073                            0.2442771 
+##                  StartFY.(Intercept) 
+##                            0.2157766
 ```
 
 
@@ -466,6 +689,7 @@ glmer_examine(b_SomeOpt25Cv3)
 
 ```r
 if(file.exists("..//Output//b_CBre29AB.rda")) load("..//Output//b_CBre29AB.rda")
+if(file.exists("..//Output//n_CBre29C.rda")) load("..//Output//n_CBre29C.rda")
 
 if(!exists("b_CBre29B")){
   b_CBre29B <- glmer(data=serv_smp1m, b_CBre ~  cln_US6sal +
@@ -507,54 +731,53 @@ glmer_examine(b_CBre29B)
 ```
 ## [[1]]
 ##                            GVIF Df GVIF^(1/(2*Df))
-## cln_US6sal             1.031540  1        1.015647
-## cln_PSCrate            1.040981  1        1.020285
-## cp_OffPerf7            1.327036  1        1.151971
-## cp_OffPSC7             1.694827  1        1.301855
-## cn_PairHist7           1.266040  1        1.125184
-## cln_PairCA             1.556359  1        1.247541
-## cln_Base               1.178172  1        1.085436
-## clr_Ceil2Base          1.054316  1        1.026799
-## cln_Days               1.167189  1        1.080365
-## Comp                   1.121085  3        1.019232
-## Veh                    1.430197  4        1.045742
-## Pricing                1.067455  6        1.005455
-## Crisis                 1.046224  3        1.007560
-## cln_Def6HHI            1.030654  1        1.015211
-## clr_Def6toUS           1.180614  1        1.086561
-## clr_Def3toUS           1.194564  1        1.092961
-## cp_PairObl7            1.233907  1        1.110814
-## cln_OffObl7            1.811823  1        1.346040
-## cln_OffFocus           1.061505  1        1.030293
-## cp_OffPerf7:cln_PairCA 1.166241  1        1.079926
-## cp_OffPerf7:cln_Days   1.064677  1        1.031832
+## cln_US6sal             1.018520  1        1.009217
+## cln_PSCrate            1.045974  1        1.022729
+## cp_OffPerf7            1.304960  1        1.142349
+## cp_OffPSC7             1.624703  1        1.274638
+## cn_PairHist7           1.253837  1        1.119748
+## cln_PairCA             1.543825  1        1.242508
+## cln_Base               1.168937  1        1.081174
+## clr_Ceil2Base          1.060536  1        1.029823
+## cln_Days               1.171785  1        1.082490
+## Comp                   1.127426  3        1.020191
+## Veh                    1.425822  4        1.045341
+## PricingUCA             1.108592  6        1.008628
+## Crisis                 1.046844  3        1.007659
+## cln_Def6HHI            1.252008  1        1.118932
+## clr_Def6toUS           1.195481  1        1.093381
+## cln_Def3HHI            1.248737  1        1.117469
+## clr_Def3toUS           1.193970  1        1.092689
+## cp_PairObl7            1.223293  1        1.106026
+## cln_OffObl7            1.742165  1        1.319911
+## cln_OffFocus           1.057607  1        1.028400
+## cp_OffPerf7:cln_PairCA 1.140726  1        1.068048
+## cp_OffPerf7:cln_Days   1.067543  1        1.033220
 ## 
 ## [[2]]
 ## # Intraclass Correlation Coefficient
 ## 
 ##      Adjusted ICC: 0.428
-##   Conditional ICC: 0.381
+##   Conditional ICC: 0.377
 ## 
 ## [[3]]
-## [1] "Model failed to converge with max|grad| = 0.0670472 (tol = 0.001, component 1)"
+## [1] "Model failed to converge with max|grad| = 0.00855539 (tol = 0.001, component 1)"
 ## 
 ## [[4]]
 ## ServArea:(NAICS6:NAICS3).(Intercept)            Office:Agency.(Intercept) 
-##                            0.4607491                            1.2414533 
+##                            0.5014640                            1.2105593 
 ##            NAICS6:NAICS3.(Intercept)                    Place.(Intercept) 
-##                            0.3823538                            0.4392544 
+##                            0.3496012                            0.5216457 
 ##                   NAICS3.(Intercept)                   Agency.(Intercept) 
-##                            0.4442963                            0.3961069 
+##                            0.4041312                            0.4092928 
 ##                  StartFY.(Intercept) 
-##                            0.1391915
+##                            0.1489441
 ```
 
 ```r
-if(file.exists("..//Output//CBre25A.rda")) load("..//Output//CBre25A.rda")
-
-if(!exists("n_CBre25A")){
+if(!exists("n_CBre29C")){
     
-  n_CBre25A <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
+  n_CBre29C <- lmer(data=serv_breach, ln_CBre ~ cln_US6sal + 
                       cln_PSCrate+ cp_OffPerf7+cp_OffPSC7+
                       cn_PairHist7+cln_PairCA+
                       cln_Base + clr_Ceil2Base + cln_Days+
@@ -575,11 +798,11 @@ if(!exists("n_CBre25A")){
                       (1 | StartFY),
                     verbose=TRUE)
   
-  save(n_CBre25A,file="..\\output\\n_CBre25A.rda")
+  save(n_CBre29C,file="..\\output\\n_CBre29C.rda")
 }
 
 
-glmer_examine(n_CBre25A)
+glmer_examine(n_CBre29C)
 ```
 
 ```
@@ -591,44 +814,47 @@ glmer_examine(n_CBre25A)
 ```
 ## [[1]]
 ##                            GVIF Df GVIF^(1/(2*Df))
-## cln_US6sal             1.043359  1        1.021450
-## cln_PSCrate            1.047556  1        1.023502
-## cp_OffPerf7            1.297150  1        1.138925
-## cp_OffPSC7             1.552161  1        1.245857
-## cn_PairHist7           1.258603  1        1.121875
-## cln_PairCA             1.567469  1        1.251986
-## cln_Base               1.203104  1        1.096861
-## clr_Ceil2Base          1.056344  1        1.027786
-## cln_Days               1.195631  1        1.093449
-## Comp                   1.112113  3        1.017868
-## Veh                    1.410407  4        1.043922
-## Pricing                1.071976  6        1.005809
-## Crisis                 1.053055  3        1.008653
-## cln_Def6HHI            1.028841  1        1.014318
-## clr_Def6toUS           1.098625  1        1.048153
-## clr_Def3toUS           1.112190  1        1.054604
-## cp_PairObl7            1.258396  1        1.121782
-## cln_OffObl7            1.528491  1        1.236321
-## cp_OffPerf7:cln_PairCA 1.159844  1        1.076960
+## cln_US6sal             1.035158  1        1.017427
+## cln_PSCrate            1.058065  1        1.028623
+## cp_OffPerf7            1.289682  1        1.135642
+## cp_OffPSC7             1.568078  1        1.252229
+## cn_PairHist7           1.249840  1        1.117963
+## cln_PairCA             1.547820  1        1.244114
+## cln_Base               1.219706  1        1.104403
+## clr_Ceil2Base          1.057761  1        1.028475
+## cln_Days               1.216735  1        1.103057
+## Comp                   1.126630  3        1.020071
+## Veh                    1.416657  4        1.044499
+## PricingUCA             1.106887  6        1.008499
+## Crisis                 1.057016  3        1.009284
+## cln_Def6HHI            1.257406  1        1.121341
+## clr_Def6toUS           1.270200  1        1.127032
+## cln_Def3HHI            1.256098  1        1.120758
+## clr_Def3toUS           1.262303  1        1.123523
+## cp_PairObl7            1.264106  1        1.124325
+## cln_OffObl7            1.555172  1        1.247065
+## cln_OffFocus           1.082395  1        1.040382
+## cp_OffPerf7:cln_PairCA 1.144219  1        1.069682
+## cp_OffPerf7:cln_Days   1.084706  1        1.041492
 ## 
 ## [[2]]
 ## # Intraclass Correlation Coefficient
 ## 
-##      Adjusted ICC: 0.160
-##   Conditional ICC: 0.092
+##      Adjusted ICC: 0.157
+##   Conditional ICC: 0.091
 ## 
 ## [[3]]
-## [1] "Model failed to converge with max|grad| = 0.00219991 (tol = 0.002, component 1)"
+## [1] "Model failed to converge with max|grad| = 0.00282497 (tol = 0.002, component 1)"
 ## 
 ## [[4]]
 ## ServArea:(NAICS6:NAICS3).(Intercept)            Office:Agency.(Intercept) 
-##                           0.21764855                           0.22259707 
+##                           0.20418545                           0.22300006 
 ##            NAICS6:NAICS3.(Intercept)                    Place.(Intercept) 
-##                           0.11722286                           0.18983714 
+##                           0.13202220                           0.18581150 
 ##                   NAICS3.(Intercept)                   Agency.(Intercept) 
-##                           0.14869246                           0.13630345 
+##                           0.15192495                           0.13507128 
 ##                  StartFY.(Intercept) 
-##                           0.04961028
+##                           0.03879358
 ```
 
 ```r
@@ -709,53 +935,53 @@ glmer_examine(term25B)
 
 ```
 ## [[1]]
-##                          GVIF Df GVIF^(1/(2*Df))
-## cln_US6sal           1.023581  1        1.011722
-## cln_PSCrate          1.077570  1        1.038061
-## cp_OffPerf7          1.061212  1        1.030152
-## cp_OffPSC7           1.088078  1        1.043110
-## cn_PairHist7         1.327677  1        1.152249
-## cln_PairCA           1.684679  1        1.297952
-## cln_Base             1.156270  1        1.075300
-## cln_Days             1.174037  1        1.083530
-## clr_Ceil2Base        1.079836  1        1.039152
-## Comp                 1.131030  3        1.020733
-## Veh                  1.426813  4        1.045432
-## Pricing              2.548032  6        1.081062
-## Crisis               1.099538  3        1.015941
-## cln_Def6HHI          1.370578  1        1.170717
-## clr_Def6toUS         1.088018  1        1.043081
-## cln_Def3HHI          1.376273  1        1.173147
-## clr_Def3toUS         1.085676  1        1.041958
-## cp_PairObl7          1.245483  1        1.116012
-## cln_OffObl7          1.096063  1        1.046930
-## cln_OffFocus         1.108827  1        1.053009
-## cn_PairHist7:Pricing 2.533441  6        1.080544
+##                             GVIF Df GVIF^(1/(2*Df))
+## cln_US6sal              1.019710  1        1.009807
+## cln_PSCrate             1.079084  1        1.038790
+## cp_OffPerf7             1.056187  1        1.027710
+## cp_OffPSC7              1.085853  1        1.042042
+## cn_PairHist7            1.332721  1        1.154435
+## cln_PairCA              1.709285  1        1.307396
+## cln_Base                1.154476  1        1.074466
+## cln_Days                1.179830  1        1.086200
+## clr_Ceil2Base           1.079817  1        1.039142
+## Comp                    1.150102  3        1.023582
+## Veh                     1.442152  4        1.046831
+## PricingUCA              2.851087  6        1.091233
+## Crisis                  1.089560  3        1.014398
+## cln_Def6HHI             1.154083  1        1.074282
+## clr_Def6toUS            1.330290  1        1.153382
+## cln_Def3HHI             1.176483  1        1.084658
+## clr_Def3toUS            1.335521  1        1.155647
+## cp_PairObl7             1.243286  1        1.115027
+## cln_OffObl7             1.095692  1        1.046753
+## cln_OffFocus            1.108155  1        1.052690
+## cn_PairHist7:PricingUCA 2.901367  6        1.092824
 ## 
 ## [[2]]
 ## # Intraclass Correlation Coefficient
 ## 
-##      Adjusted ICC: 0.307
-##   Conditional ICC: 0.273
+##      Adjusted ICC: 0.319
+##   Conditional ICC: 0.282
 ## 
 ## [[3]]
-## [1] "Model failed to converge with max|grad| = 0.021645 (tol = 0.001, component 1)"
+## [1] "Model failed to converge with max|grad| = 0.0474448 (tol = 0.001, component 1)"
 ## 
 ## [[4]]
 ## ServArea:(NAICS6:NAICS3).(Intercept)            Office:Agency.(Intercept) 
-##                            0.4246339                            0.8130444 
+##                           0.43129011                           0.85916162 
 ##            NAICS6:NAICS3.(Intercept)                    Place.(Intercept) 
-##                            0.3333396                            0.6252668 
+##                           0.36005266                           0.61270930 
 ##                   NAICS3.(Intercept)                   Agency.(Intercept) 
-##                            0.2077932                            0.2444498 
+##                           0.19454196                           0.26691591 
 ##                  StartFY.(Intercept) 
-##                            0.1094118
+##                           0.05794786
 ```
 
 ### Study Variables Only
 
 ```r
-texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),file="..//Output//study_var_model_lvl1.html",
+texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre29C,term25B),file="..//Output//study_var_model_lvl1.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options","All Options","Breach Likelihood","Breach Size","Termination"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -780,9 +1006,9 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),fil
 ### Exercised Options
 
 ```r
-#MODELS - b_SomeOpt25Cv3; b_AllOpt26A
+#MODELS - b_SomeOpt27A; b_AllOpt26C
 
-stargazer::stargazer(b_SomeOpt25Cv3, b_AllOpt26A,
+stargazer::stargazer(b_SomeOpt27A, b_AllOpt26C,
                        single.row = TRUE,
                 custom.model.name=c("Exercised Options"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -792,71 +1018,68 @@ stargazer::stargazer(b_SomeOpt25Cv3, b_AllOpt26A,
 
 ```
 ## 
-## ========================================================================
-##                                                Dependent variable:      
-##                                          -------------------------------
-##                                             b_SomeOpt       b_AllOpt    
-##                                                (1)             (2)      
-## ------------------------------------------------------------------------
-## cln_US6sal                                 0.01 (0.06)     0.08 (0.06)  
-## cln_PSCrate                               -0.06* (0.03)  -0.07** (0.03) 
-## cp_OffPerf7                              -0.16*** (0.05)  0.002 (0.05)  
-## cp_OffPSC7                               -0.18*** (0.06) 0.18*** (0.06) 
-## cn_PairHist7                             0.26*** (0.02)  0.14*** (0.03) 
-## cln_PairCA                                -0.07 (0.04)   -0.22*** (0.05)
-## cln_Base                                 0.23*** (0.04)  -0.14*** (0.03)
-## clr_Ceil2Base                            0.30*** (0.01)  -0.80*** (0.02)
-## cln_Days                                 0.29*** (0.03)  -0.45*** (0.04)
-## Comp1 offer                                0.01 (0.03)    0.002 (0.03)  
-## Comp2-4 offers                            -0.03 (0.03)    -0.04 (0.03)  
-## Comp5+ offers                            -0.07** (0.03)  -0.08** (0.03) 
-## VehS-IDC                                 -0.69*** (0.04) -0.20*** (0.05)
-## VehM-IDC                                 -0.23*** (0.04) -0.13*** (0.04)
-## VehFSS/GWAC                              -0.17*** (0.04)  -0.06 (0.04)  
-## VehBPA/BOA                               -0.29*** (0.08)  0.25** (0.10) 
-## PricingOther FP                          -0.70*** (0.17) -0.50** (0.22) 
-## PricingIncentive                          -0.34 (0.30)    0.58* (0.31)  
-## PricingCombination or Other              0.36*** (0.09)  -0.14** (0.07) 
-## PricingOther CB                          0.25*** (0.06)  0.21*** (0.06) 
-## PricingT&M/LH/FPLOE                        0.06 (0.07)    -0.03 (0.07)  
-## PricingUCA                                -0.09 (0.12)    -0.09 (0.15)  
-## CrisisARRA                               -0.42** (0.16)   -0.24 (0.22)  
-## CrisisDis                                 -0.32 (0.31)   -1.46*** (0.42)
-## CrisisOCO                                -0.34*** (0.12) -0.26** (0.12) 
-## cln_Def6HHI                              -0.13*** (0.05)  -0.09* (0.05) 
-## clr_Def6toUS                              -0.01 (0.04)     0.04 (0.05)  
-## cln_Def3HHI                               -0.02 (0.05)    -0.05 (0.06)  
-## clr_Def3toUS                               0.03 (0.08)    -0.02 (0.08)  
-## cp_PairObl7                               -0.02 (0.05)    -0.07 (0.06)  
-## cln_OffObl7                              0.20*** (0.05)  -0.09*** (0.03)
-## cln_OffFocus                             -0.32*** (0.06) -0.13** (0.06) 
-## cp_OffPerf7:cp_PairObl7                  0.69*** (0.08)    0.15 (0.09)  
-## cp_PairObl7:cln_OffObl7                    0.13 (0.12)                  
-## cn_PairHist7:PricingOther FP              -0.09 (0.37)                  
-## cn_PairHist7:PricingIncentive            1.55*** (0.51)                 
-## cn_PairHist7:PricingCombination or Other -0.45** (0.18)                 
-## cn_PairHist7:PricingOther CB              0.20** (0.10)                 
-## cn_PairHist7:PricingT&M/LH/FPLOE           0.08 (0.12)                  
-## cn_PairHist7:PricingUCA                    0.16 (0.22)                  
-## cp_OffPerf7:cln_PairCA                   -0.61*** (0.06)                
-## cln_Base:clr_Ceil2Base                   0.26*** (0.02)                 
-## cp_OffPSC7:cln_OffObl7                   1.03*** (0.16)                 
-## cp_OffPSC7:cln_OffFocus                                   -0.10 (0.11)  
-## cln_PSCrate:PricingOther FP                               -0.23 (0.61)  
-## cln_PSCrate:PricingIncentive                              -0.60 (0.70)  
-## cln_PSCrate:PricingCombination or Other                   0.40** (0.20) 
-## cln_PSCrate:PricingOther CB                              0.43*** (0.14) 
-## cln_PSCrate:PricingT&M/LH/FPLOE                            0.17 (0.20)  
-## cln_PSCrate:PricingUCA                                   1.42*** (0.37) 
-## cln_OffObl7:cln_OffFocus                                  -0.003 (0.07) 
-## Constant                                   0.05 (0.22)   1.15*** (0.15) 
-## ------------------------------------------------------------------------
-## Observations                                 74,274          51,357     
-## Log Likelihood                             -37,835.41      -29,663.31   
-## Akaike Inf. Crit.                           75,772.83       59,424.62   
-## Bayesian Inf. Crit.                         76,242.82       59,858.10   
-## ========================================================================
-## Note:                                        *p<0.1; **p<0.05; ***p<0.01
+## ===========================================================================
+##                                                   Dependent variable:      
+##                                             -------------------------------
+##                                                b_SomeOpt       b_AllOpt    
+##                                                   (1)             (2)      
+## ---------------------------------------------------------------------------
+## cln_US6sal                                    0.03 (0.06)     0.06 (0.05)  
+## cln_PSCrate                                 -0.07** (0.03)   -0.05 (0.03)  
+## cp_OffPerf7                                  -0.02 (0.04)     0.04 (0.04)  
+## cp_OffPSC7                                   0.001 (0.05)   0.17*** (0.05) 
+## cn_PairHist7                                0.32*** (0.02)  0.13*** (0.02) 
+## cln_PairCA                                   -0.01 (0.04)   -0.13*** (0.04)
+## cln_Base                                      0.02 (0.03)   -0.19*** (0.03)
+## clr_Ceil2Base                               0.25*** (0.01)  -0.79*** (0.02)
+## cln_Days                                    0.42*** (0.03)  -0.38*** (0.04)
+## Comp1 Offer                                  0.07** (0.03)   -0.004 (0.03) 
+## Comp2-4 Offers                              0.11*** (0.03)   -0.02 (0.03)  
+## Comp5+ Offers                               -0.17*** (0.03) -0.09*** (0.03)
+## VehS-IDC                                    -0.70*** (0.04) -0.17*** (0.04)
+## VehM-IDC                                    -0.30*** (0.04) -0.15*** (0.04)
+## VehFSS/GWAC                                 -0.18*** (0.04)  -0.07* (0.04) 
+## VehBPA/BOA                                  -0.52*** (0.07) 0.27*** (0.08) 
+## PricingUCAOther FP                          -0.56*** (0.15) -0.57*** (0.20)
+## PricingUCAIncentive                          -0.33 (0.27)     0.32 (0.25)  
+## PricingUCACombination or Other              0.32*** (0.08)   -0.10 (0.07)  
+## PricingUCAOther CB                           0.14** (0.06)  0.17*** (0.06) 
+## PricingUCAT&M/LH/FPLOE                       0.002 (0.06)    -0.04 (0.06)  
+## PricingUCAUCA                                -0.07 (0.11)    -0.11 (0.14)  
+## CrisisARRA                                  -0.36** (0.16)   -0.24 (0.21)  
+## CrisisDis                                    -0.32 (0.30)   -1.58*** (0.43)
+## CrisisOCO                                   -0.99*** (0.10) -0.43*** (0.11)
+## cln_Def6HHI                                 -0.19*** (0.04) -0.10** (0.04) 
+## clr_Def6toUS                                 -0.06 (0.06)   0.17*** (0.06) 
+## cln_Def3HHI                                 -0.15*** (0.06)   0.02 (0.05)  
+## clr_Def3toUS                                 -0.04 (0.07)     0.05 (0.06)  
+## cp_PairObl7                                 -0.12** (0.05)   -0.09 (0.05)  
+## cln_OffObl7                                 0.14*** (0.05)  -0.11*** (0.03)
+## cln_OffFocus                                -0.48*** (0.05)  -0.08 (0.05)  
+## cp_OffPerf7:cp_PairObl7                     0.29*** (0.07)    0.12 (0.08)  
+## cn_PairHist7:PricingUCAOther FP               0.01 (0.34)                  
+## cn_PairHist7:PricingUCAIncentive             1.12** (0.47)                 
+## cn_PairHist7:PricingUCACombination or Other -0.57*** (0.17)                
+## cn_PairHist7:PricingUCAOther CB               0.11 (0.08)                  
+## cn_PairHist7:PricingUCAT&M/LH/FPLOE          -0.07 (0.11)                  
+## cn_PairHist7:PricingUCAUCA                   -0.05 (0.22)                  
+## cln_Base:clr_Ceil2Base                      0.50*** (0.02)                 
+## cp_OffPSC7:cln_OffObl7                      1.08*** (0.14)                 
+## cp_OffPSC7:cln_OffFocus                                      0.24** (0.10) 
+## cln_PSCrate:PricingUCAOther FP                               -0.10 (0.55)  
+## cln_PSCrate:PricingUCAIncentive                              -0.27 (0.54)  
+## cln_PSCrate:PricingUCACombination or Other                    0.29 (0.18)  
+## cln_PSCrate:PricingUCAOther CB                              0.40*** (0.13) 
+## cln_PSCrate:PricingUCAT&M/LH/FPLOE                            0.07 (0.18)  
+## cln_PSCrate:PricingUCAUCA                                   0.89*** (0.33) 
+## Constant                                    0.61*** (0.19)  1.27*** (0.13) 
+## ---------------------------------------------------------------------------
+## Observations                                    87,387          62,180     
+## Log Likelihood                                -44,438.59      -36,660.40   
+## Akaike Inf. Crit.                              88,975.17       73,416.80   
+## Bayesian Inf. Crit.                            89,434.70       73,850.61   
+## ===========================================================================
+## Note:                                           *p<0.1; **p<0.05; ***p<0.01
 ## 
 ## =================
 ## Exercised Options
@@ -870,7 +1093,7 @@ stargazer::stargazer(b_SomeOpt25Cv3, b_AllOpt26A,
 ```r
 #Chart for report:
 
-texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt26A),file="..//Output//options.html",
+texreg::htmlreg(list(b_SomeOpt27A, b_AllOpt26C),file="..//Output//options.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options Exercised Model", "All Options Exercised Model"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -879,12 +1102,12 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt26A),file="..//Output//options.html
                   # "Services Complexity" = 2:3,
                   # "Office Capacity" =4:5,
                   # "Past Relationship"=6:7,
-                  # "Past Relationship"=6:7,
                   "Contract Characteristics"=8:26,
                   "NAICS/Office Characteristics" =27:33,
                   # "NAICS Characteristics" =27:30,
                   # "Office Characteristics" =31:33,
-                  "Interactions"=34:52
+                  "Interactions including Study Variables"=34:48,
+                  "Other Interactions"=49
                 ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,
@@ -900,8 +1123,8 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt26A),file="..//Output//options.html
 ### Ceiling Breach
 
 ```r
-  stargazer::stargazer(#b_SomeOpt25Cv3,b_AllOpt26A,
-                       b_CBre29B,n_CBre25A,
+  stargazer::stargazer(#b_SomeOpt27A,b_AllOpt26C,
+                       b_CBre29B,n_CBre29C,
                        single.row = TRUE,
                 custom.model.name=c("Breach Frequency (Logit)","Breach Size for Breached Contracts (Regression"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -911,55 +1134,56 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt26A),file="..//Output//options.html
 
 ```
 ## 
-## ==============================================================
-##                                    Dependent variable:        
-##                             ----------------------------------
-##                                   b_CBre           ln_CBre    
-##                             generalized linear     linear     
-##                               mixed-effects     mixed-effects 
-##                                    (1)               (2)      
-## --------------------------------------------------------------
-## cln_US6sal                    -0.003 (0.06)     -0.02 (0.06)  
-## cln_PSCrate                   0.06*** (0.01)   0.09*** (0.02) 
-## cp_OffPerf7                   0.07*** (0.03)    -0.06 (0.04)  
-## cp_OffPSC7                    0.19*** (0.02)   0.13*** (0.03) 
-## cn_PairHist7                 -0.08*** (0.01)     0.03 (0.02)  
-## cln_PairCA                    0.44*** (0.02)    -0.01 (0.03)  
-## cln_Base                      1.35*** (0.01)   2.65*** (0.02) 
-## clr_Ceil2Base                 0.25*** (0.01)   0.25*** (0.02) 
-## cln_Days                      0.28*** (0.01)    0.05** (0.02) 
-## Comp1 offer                   -0.03* (0.02)     -0.05* (0.03) 
-## Comp2-4 offers                0.11*** (0.01)   -0.11*** (0.02)
-## Comp5+ offers                 0.18*** (0.01)   -0.07*** (0.02)
-## VehS-IDC                     -0.48*** (0.02)    -0.01 (0.02)  
-## VehM-IDC                     -0.18*** (0.02)    -0.02 (0.03)  
-## VehFSS/GWAC                    -0.01 (0.03)     0.12** (0.05) 
-## VehBPA/BOA                   -0.29*** (0.03)   -0.13** (0.06) 
-## PricingOther FP              -0.40*** (0.09)   -0.36** (0.14) 
-## PricingIncentive              2.39*** (0.07)   0.81*** (0.12) 
-## PricingCombination or Other   0.26*** (0.05)   0.43*** (0.07) 
-## PricingOther CB              -0.09*** (0.03)   0.81*** (0.05) 
-## PricingT&M/LH/FPLOE           0.11** (0.04)    0.66*** (0.07) 
-## PricingUCA                     0.07* (0.04)    0.37*** (0.07) 
-## CrisisARRA                    0.12*** (0.04)    -0.06 (0.06)  
-## CrisisDis                      0.07 (0.09)     0.39*** (0.13) 
-## CrisisOCO                     -0.10** (0.05)     0.08 (0.08)  
-## cln_Def6HHI                    -0.02 (0.02)     0.06** (0.03) 
-## clr_Def6toUS                  0.07** (0.03)      0.01 (0.03)  
-## clr_Def3toUS                 -0.46*** (0.07)   0.29*** (0.08) 
-## cp_PairObl7                  -0.24*** (0.03)     0.01 (0.04)  
-## cln_OffObl7                   0.04** (0.02)     0.06** (0.02) 
-## cln_OffFocus                 -0.36*** (0.04)                  
-## cp_OffPerf7:cln_PairCA        0.38*** (0.03)   -0.20*** (0.04)
-## cp_OffPerf7:cln_Days         -0.12*** (0.02)                  
-## Constant                     -4.55*** (0.18)   8.82*** (0.13) 
-## --------------------------------------------------------------
-## Observations                    1,000,000          61,184     
-## Log Likelihood                 -173,798.70       -121,011.90  
-## Akaike Inf. Crit.               347,679.30       242,103.90   
-## Bayesian Inf. Crit.             348,163.80       242,464.80   
-## ==============================================================
-## Note:                              *p<0.1; **p<0.05; ***p<0.01
+## =================================================================
+##                                       Dependent variable:        
+##                                ----------------------------------
+##                                      b_CBre           ln_CBre    
+##                                generalized linear     linear     
+##                                  mixed-effects     mixed-effects 
+##                                       (1)               (2)      
+## -----------------------------------------------------------------
+## cln_US6sal                        -0.07 (0.06)     -0.05 (0.06)  
+## cln_PSCrate                      0.05*** (0.01)   0.08*** (0.02) 
+## cp_OffPerf7                      0.12*** (0.03)    -0.03 (0.03)  
+## cp_OffPSC7                       0.17*** (0.02)   0.12*** (0.03) 
+## cn_PairHist7                    -0.09*** (0.01)     0.03 (0.02)  
+## cln_PairCA                       0.45*** (0.02)   -0.07** (0.03) 
+## cln_Base                         1.37*** (0.01)   2.66*** (0.02) 
+## clr_Ceil2Base                    0.30*** (0.01)   0.29*** (0.02) 
+## cln_Days                         0.30*** (0.01)   0.06*** (0.02) 
+## Comp1 Offer                       0.003 (0.02)     -0.01 (0.03)  
+## Comp2-4 Offers                   0.13*** (0.01)   -0.09*** (0.02)
+## Comp5+ Offers                    0.19*** (0.01)   -0.05** (0.02) 
+## VehS-IDC                        -0.48*** (0.02)     0.03 (0.02)  
+## VehM-IDC                        -0.14*** (0.02)    -0.005 (0.03) 
+## VehFSS/GWAC                      -0.0003 (0.03)    0.11** (0.05) 
+## VehBPA/BOA                      -0.39*** (0.03)   -0.15*** (0.05)
+## PricingUCAOther FP              -0.59*** (0.06)   -1.02*** (0.10)
+## PricingUCAIncentive              2.37*** (0.07)   0.79*** (0.11) 
+## PricingUCACombination or Other   0.29*** (0.05)   0.47*** (0.07) 
+## PricingUCAOther CB                -0.05 (0.03)    0.88*** (0.05) 
+## PricingUCAT&M/LH/FPLOE           0.13*** (0.04)   0.65*** (0.07) 
+## PricingUCAUCA                     0.04 (0.04)     0.33*** (0.06) 
+## CrisisARRA                        0.08* (0.04)     -0.06 (0.06)  
+## CrisisDis                         0.07 (0.09)     0.40*** (0.13) 
+## CrisisOCO                         -0.07 (0.05)      0.07 (0.07)  
+## cln_Def6HHI                     -0.11*** (0.03)     0.01 (0.04)  
+## clr_Def6toUS                      0.05 (0.05)     0.15*** (0.06) 
+## cln_Def3HHI                       -0.04 (0.03)    0.14*** (0.05) 
+## clr_Def3toUS                      0.03 (0.07)       0.11 (0.08)  
+## cp_PairObl7                     -0.22*** (0.02)    0.08** (0.03) 
+## cln_OffObl7                       0.003 (0.02)      0.02 (0.02)  
+## cln_OffFocus                    -0.34*** (0.04)     0.01 (0.05)  
+## cp_OffPerf7:cln_PairCA           0.46*** (0.02)   -0.18*** (0.04)
+## cp_OffPerf7:cln_Days            -0.10*** (0.02)   -0.17*** (0.03)
+## Constant                        -4.32*** (0.18)   8.80*** (0.12) 
+## -----------------------------------------------------------------
+## Observations                       1,000,000          69,776     
+## Log Likelihood                    -180,980.70       -138,615.70  
+## Akaike Inf. Crit.                  362,045.50       277,317.30   
+## Bayesian Inf. Crit.                362,541.70       277,710.90   
+## =================================================================
+## Note:                                 *p<0.1; **p<0.05; ***p<0.01
 ## 
 ## =======================================================================
 ## Breach Frequency (Logit) Breach Size for Breached Contracts (Regression
@@ -971,7 +1195,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3, b_AllOpt26A),file="..//Output//options.html
 ```
 
 ```r
-texreg::htmlreg(list(b_CBre29B,n_CBre25A),file="..//Output//ceiling_breaches.html",
+texreg::htmlreg(list(b_CBre29B,n_CBre29C),file="..//Output//ceiling_breaches.html",
                 single.row = TRUE,
                 custom.model.name=c("Likelihood\n(Logit)","Size Given Breach\n(Regression)"),
                 stars=c(0.1,0.05,0.01,0.001),
@@ -981,8 +1205,8 @@ texreg::htmlreg(list(b_CBre29B,n_CBre25A),file="..//Output//ceiling_breaches.htm
                               # "Office Capacity" =4:5,
                               # "Past Relationship"=6:7,
                               "Contract Characteristics"=8:26,
-                                                "NAICS/Office Characteristics" =27:32,
-                              "Interactions"=33:34
+                                                 "NAICS/Office Characteristics" =27:33,
+                              "Interactions"=34:35
                               ),
                 custom.coef.map=all_coef_list,
                 bold=0.05,
@@ -1000,7 +1224,7 @@ texreg::htmlreg(list(b_CBre29B,n_CBre25A),file="..//Output//ceiling_breaches.htm
 
 ```r
 #Absolute Exercised Options
-  stargazer::stargazer(#b_SomeOpt25Cv3,b_AllOpt26A,
+  stargazer::stargazer(#b_SomeOpt27A,b_AllOpt26C,
                        term25B,
                        single.row = TRUE,
                 custom.model.name=c("Termination"),
@@ -1011,57 +1235,57 @@ texreg::htmlreg(list(b_CBre29B,n_CBre25A),file="..//Output//ceiling_breaches.htm
 
 ```
 ## 
-## ====================================================================
-##                                              Dependent variable:    
-##                                          ---------------------------
-##                                                    b_Term           
-## --------------------------------------------------------------------
-## cln_US6sal                                      -0.05 (0.06)        
-## cln_PSCrate                                     -0.02 (0.02)        
-## cp_OffPerf7                                      0.03 (0.04)        
-## cp_OffPSC7                                     0.31*** (0.04)       
-## cn_PairHist7                                   -0.28*** (0.02)      
-## cln_PairCA                                      -0.04 (0.03)        
-## cln_Base                                       0.29*** (0.02)       
-## cln_Days                                       0.90*** (0.02)       
-## clr_Ceil2Base                                  0.50*** (0.01)       
-## Comp1 offer                                    0.30*** (0.03)       
-## Comp2-4 offers                                 0.37*** (0.03)       
-## Comp5+ offers                                  0.71*** (0.03)       
-## VehS-IDC                                       -0.67*** (0.03)      
-## VehM-IDC                                       -0.41*** (0.03)      
-## VehFSS/GWAC                                    -0.18*** (0.04)      
-## VehBPA/BOA                                     -0.97*** (0.06)      
-## PricingOther FP                                -0.95*** (0.10)      
-## PricingIncentive                               -1.02*** (0.39)      
-## PricingCombination or Other                     -0.16 (0.10)        
-## PricingOther CB                                -0.37*** (0.08)      
-## PricingT&M/LH/FPLOE                            -0.45*** (0.09)      
-## PricingUCA                                     -0.72*** (0.14)      
-## CrisisARRA                                     -0.32** (0.13)       
-## CrisisDis                                       0.48** (0.19)       
-## CrisisOCO                                       -0.07 (0.08)        
-## cln_Def6HHI                                      0.04 (0.04)        
-## clr_Def6toUS                                     0.02 (0.04)        
-## cln_Def3HHI                                      0.03 (0.04)        
-## clr_Def3toUS                                   0.24*** (0.09)       
-## cp_PairObl7                                    -0.13*** (0.04)      
-## cln_OffObl7                                      0.03 (0.03)        
-## cln_OffFocus                                   -0.24*** (0.05)      
-## cn_PairHist7:PricingOther FP                     0.09 (0.18)        
-## cn_PairHist7:PricingIncentive                   -0.09 (0.65)        
-## cn_PairHist7:PricingCombination or Other         0.32 (0.23)        
-## cn_PairHist7:PricingOther CB                    0.30** (0.13)       
-## cn_PairHist7:PricingT&M/LH/FPLOE               -0.60*** (0.18)      
-## cn_PairHist7:PricingUCA                         -0.51* (0.26)       
-## Constant                                       -4.45*** (0.15)      
-## --------------------------------------------------------------------
-## Observations                                      1,000,000         
-## Log Likelihood                                   -71,257.17         
-## Akaike Inf. Crit.                                142,606.40         
-## Bayesian Inf. Crit.                              143,149.90         
-## ====================================================================
-## Note:                                    *p<0.1; **p<0.05; ***p<0.01
+## =======================================================================
+##                                                 Dependent variable:    
+##                                             ---------------------------
+##                                                       b_Term           
+## -----------------------------------------------------------------------
+## cln_US6sal                                         -0.03 (0.06)        
+## cln_PSCrate                                        -0.01 (0.02)        
+## cp_OffPerf7                                        0.09** (0.04)       
+## cp_OffPSC7                                        0.41*** (0.04)       
+## cn_PairHist7                                      -0.26*** (0.02)      
+## cln_PairCA                                        -0.07** (0.03)       
+## cln_Base                                          0.27*** (0.02)       
+## cln_Days                                          0.87*** (0.03)       
+## clr_Ceil2Base                                     0.49*** (0.01)       
+## Comp1 Offer                                       0.36*** (0.03)       
+## Comp2-4 Offers                                    0.35*** (0.03)       
+## Comp5+ Offers                                     0.72*** (0.03)       
+## VehS-IDC                                          -0.66*** (0.03)      
+## VehM-IDC                                          -0.39*** (0.03)      
+## VehFSS/GWAC                                       -0.17*** (0.05)      
+## VehBPA/BOA                                        -0.92*** (0.06)      
+## PricingUCAOther FP                                -1.52*** (0.09)      
+## PricingUCAIncentive                               -1.25*** (0.45)      
+## PricingUCACombination or Other                     -0.11 (0.11)        
+## PricingUCAOther CB                                -0.42*** (0.08)      
+## PricingUCAT&M/LH/FPLOE                            -0.44*** (0.09)      
+## PricingUCAUCA                                     -0.80*** (0.15)      
+## CrisisARRA                                         -0.21 (0.13)        
+## CrisisDis                                          0.49** (0.20)       
+## CrisisOCO                                           0.02 (0.07)        
+## cln_Def6HHI                                        0.002 (0.04)        
+## clr_Def6toUS                                       0.11* (0.06)        
+## cln_Def3HHI                                        -0.01 (0.05)        
+## clr_Def3toUS                                       -0.01 (0.07)        
+## cp_PairObl7                                       -0.13*** (0.04)      
+## cln_OffObl7                                         0.01 (0.03)        
+## cln_OffFocus                                      -0.31*** (0.05)      
+## cn_PairHist7:PricingUCAOther FP                   -1.42*** (0.15)      
+## cn_PairHist7:PricingUCAIncentive                    0.30 (0.94)        
+## cn_PairHist7:PricingUCACombination or Other         0.24 (0.23)        
+## cn_PairHist7:PricingUCAOther CB                   0.41*** (0.14)       
+## cn_PairHist7:PricingUCAT&M/LH/FPLOE               -0.62*** (0.18)      
+## cn_PairHist7:PricingUCAUCA                         -0.53* (0.28)       
+## Constant                                          -4.56*** (0.15)      
+## -----------------------------------------------------------------------
+## Observations                                         1,000,000         
+## Log Likelihood                                      -68,782.99         
+## Akaike Inf. Crit.                                   137,658.00         
+## Bayesian Inf. Crit.                                 138,201.50         
+## =======================================================================
+## Note:                                       *p<0.1; **p<0.05; ***p<0.01
 ## 
 ## ===========
 ## Termination
@@ -1110,8 +1334,7 @@ texreg::htmlreg(list(term25B),file="..//Output//terminations.html",
 # #https://www.lcampanelli.org/mixed-effects-modeling-lme4/
 # gridExtra::grid.arrange(dotplot(ranef(b_CBre29B, condVar = T), strip = T, scales=list(relation='free'))$Agency,
 #              nrow=1)
-
-comp.or<-odds_ratio(b_SomeOpt25Cv3,"b_SomeOpt25Cv3",output = "Some Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
+comp.or<-odds_ratio(b_SomeOpt27A,"b_SomeOpt27A",output = "Some Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
 ```
 
 ```
@@ -1121,7 +1344,7 @@ comp.or<-odds_ratio(b_SomeOpt25Cv3,"b_SomeOpt25Cv3",output = "Some Options Exerc
 
 ```r
 write.csv(get_study_variables_odds_ratio(comp.or, study = "services"),file="..//output//some_exer_opt_study_odds_ratio.csv",row.names=FALSE)
-get_icc(b_SomeOpt25Cv3)
+get_icc(b_SomeOpt27A)
 ```
 
 ```
@@ -1134,11 +1357,11 @@ get_icc(b_SomeOpt25Cv3)
 ## [[1]]
 ## # Intraclass Correlation Coefficient
 ## 
-##      Adjusted ICC: 0.285
-##   Conditional ICC: 0.257
+##      Adjusted ICC: 0.236
+##   Conditional ICC: 0.205
 ## 
 ## [[2]]
-## [1] "Model failed to converge with max|grad| = 0.00987252 (tol = 0.001, component 1)"
+## [1] "Model failed to converge with max|grad| = 0.110023 (tol = 0.001, component 1)"
 ```
 
 ```r
@@ -1146,7 +1369,7 @@ get_icc(b_SomeOpt25Cv3)
 # gridExtra::grid.arrange(dotplot(ranef(b_SomeOpt25A, condVar = T), strip = T, scales=list(relation='free'))$Agency,
 #              nrow=1)
 
-comp.or<-odds_ratio(b_AllOpt26A,"b_AllOpt26A",output = "All Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
+comp.or<-odds_ratio(b_AllOpt26C,"b_AllOpt26C",output = "All Options Exercised Likelihood", walds = TRUE, rename_list=all_coef_list)
 ```
 
 ```
@@ -1156,7 +1379,7 @@ comp.or<-odds_ratio(b_AllOpt26A,"b_AllOpt26A",output = "All Options Exercised Li
 
 ```r
 write.csv(get_study_variables_odds_ratio(comp.or, study = "services"),file="..//output//all_exer_opt_study_odds_ratio.csv",row.names=FALSE)
-get_icc(b_AllOpt26A)
+get_icc(b_AllOpt26C)
 ```
 
 ```
@@ -1169,11 +1392,11 @@ get_icc(b_AllOpt26A)
 ## [[1]]
 ## # Intraclass Correlation Coefficient
 ## 
-##      Adjusted ICC: 0.137
-##   Conditional ICC: 0.119
+##      Adjusted ICC: 0.139
+##   Conditional ICC: 0.124
 ## 
 ## [[2]]
-## [1] "Model failed to converge with max|grad| = 0.00364159 (tol = 0.001, component 1)"
+## [1] "Model failed to converge with max|grad| = 0.00350207 (tol = 0.001, component 1)"
 ```
 
 ### Ceiling Breach 
@@ -1205,10 +1428,10 @@ get_icc(b_CBre29B)
 ## # Intraclass Correlation Coefficient
 ## 
 ##      Adjusted ICC: 0.428
-##   Conditional ICC: 0.381
+##   Conditional ICC: 0.377
 ## 
 ## [[2]]
-## [1] "Model failed to converge with max|grad| = 0.0670472 (tol = 0.001, component 1)"
+## [1] "Model failed to converge with max|grad| = 0.00855539 (tol = 0.001, component 1)"
 ```
 
 ```r
@@ -1246,11 +1469,11 @@ get_icc(term25B)
 ## [[1]]
 ## # Intraclass Correlation Coefficient
 ## 
-##      Adjusted ICC: 0.307
-##   Conditional ICC: 0.273
+##      Adjusted ICC: 0.319
+##   Conditional ICC: 0.282
 ## 
 ## [[2]]
-## [1] "Model failed to converge with max|grad| = 0.021645 (tol = 0.001, component 1)"
+## [1] "Model failed to converge with max|grad| = 0.0474448 (tol = 0.001, component 1)"
 ```
 
 ```r
@@ -1271,8 +1494,8 @@ complex_coef<-all_coef_list[c(grep("cln_US6sal",names(all_coef_list)),
                               )]
                               
 
-texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),file="..//Output//service_complexity.html",
-                single.row = TRUE,
+texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre29C,term25B),file="..//Output//service_complexity.html",
+                single.row = FALSE,
                 custom.model.name=c("Some Options\nExercised\n(Logit)",
                                     "All Options\nExercised\n(Logit)",
                                     "Ceiling Breach\nLikelihood\n(Logit)",
@@ -1294,7 +1517,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),fil
                 custom.coef.map=complex_coef,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 9: Ceiling Breaches",
+                caption="Table 12: Service Complexity Results Across Models",
                 caption.above=TRUE)
 ```
 
@@ -1303,7 +1526,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),fil
 ```
 
 
-### Office Capacity
+### Contract-Management Capacity
 
 ```r
 office_coef<-all_coef_list[sort(unique(c(grep("c_pPBSC",names(all_coef_list)),
@@ -1314,7 +1537,7 @@ office_coef<-all_coef_list[sort(unique(c(grep("c_pPBSC",names(all_coef_list)),
                               )))]
                               
 
-texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),
+texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre29C,term25B),
                 file="..//Output//office_capacity.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options\nExercised\n(Logit)",
@@ -1338,7 +1561,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),
                 custom.coef.map=office_coef,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 10: Office Capacity",
+                caption="Table 13: Contract-Management Capacity Results Across Models",
                 caption.above=TRUE)
 ```
 
@@ -1358,7 +1581,7 @@ pair_coef<-all_coef_list[sort(c(grep("c_pairHist",names(all_coef_list)),
                               ))]
                               
 
-texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),
+texreg::htmlreg(list(b_SomeOpt27A,b_AllOpt26C,b_CBre29B,n_CBre29C,term25B),
                 file="..//Output//pair_history.html",
                 single.row = TRUE,
                 custom.model.name=c("Some Options\nExercised\n(Logit)",
@@ -1382,7 +1605,7 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),
                 custom.coef.map=pair_coef,
                 bold=0.05,
                 custom.note="%stars. Numerical inputs are rescaled.",
-                caption="Table 11: Past Relationship",
+                caption="Table 14: Paired History Results Across Models",
                 caption.above=TRUE)
 ```
 
@@ -1390,27 +1613,25 @@ texreg::htmlreg(list(b_SomeOpt25Cv3,b_AllOpt26A,b_CBre29B,n_CBre25A,term25B),
 ## The table was written to the file '..//Output//pair_history.html'.
 ```
 
-
 ## Residuals Plot
-
 
 
 ```r
 (
 options_residual<-gridExtra::grid.arrange(
-  binned_fitted_versus_residuals(b_SomeOpt25Cv3,bins=50)+
+  binned_fitted_versus_residuals(b_SomeOpt27A,bins=50)+
       labs(title="Some Options Binned Actuals",
            caption=NULL,
             x="Estimated Pr(Some Options)",y="Actual Pr(Some Options)"),
-    residuals_binned(b_SomeOpt25Cv3, bins=50)+labs(title="Some Options Binned Residuals",
+    residuals_binned(b_SomeOpt27A, bins=50)+labs(title="Some Options Binned Residuals",
                                                   x="Estimated Pr(Some Options)",y="Residuals"),
     
     
-    binned_fitted_versus_residuals(b_AllOpt26A,bins=50)+
+    binned_fitted_versus_residuals(b_AllOpt26C,bins=50)+
       labs(title="All Options Binned Actuals",
            caption=NULL,
            x="Estimated Pr(All Options | Some Options)",y="Actual Pr(All Options | Some Options)"),
-  residuals_binned(b_AllOpt26A, bins=50)+labs(title="All Options Binned Residuals",
+  residuals_binned(b_AllOpt26C, bins=50)+labs(title="All Options Binned Residuals",
                                                   x="Estimated Pr(All Options | Some Options)",
                                               y="Residuals"),
     ncol=2)
@@ -1418,12 +1639,12 @@ options_residual<-gridExtra::grid.arrange(
 ```
 
 ```
-## Warning in residuals_binned(b_SomeOpt25Cv3, bins = 50): Always uses Xlb
+## Warning in residuals_binned(b_SomeOpt27A, bins = 50): Always uses Xlb
 ## Estimated Pr(Termination), should update.
 ```
 
 ```
-## Warning in residuals_binned(b_AllOpt26A, bins = 50): Always uses Xlb
+## Warning in residuals_binned(b_AllOpt26C, bins = 50): Always uses Xlb
 ## Estimated Pr(Termination), should update.
 ```
 
@@ -1449,10 +1670,10 @@ ggsave(options_residual,file="..//output//opt_residual.png",width=6.5*1.2, heigh
            x="Estimated Pr(Breach)",y="Actual Pr(Breach)"),
     residuals_binned(b_CBre29B, bins=50)+labs(title="Ceiling Breach Binned Residual",
                                               x="Estimated Pr(Breach)",y="Residuals"),
-    binned_fitted_versus_residuals(n_CBre25A,bins=50)+
+    binned_fitted_versus_residuals(n_CBre29C,bins=50)+
       labs(title="Ceiling Breach Size Actuals",caption=NULL,
            x="Estimated Mean(Log(Breach Size) | Breach)",y="Actual Mean(Log(Breach Size) | Breach)"),
-    resid_plot(n_CBre25A,sample=25000)+labs(title="Sample of 25,000 Breach Size Residuals",
+    resid_plot(n_CBre29C,sample=25000)+labs(title="Sample of 25,000 Breach Size Residuals",
                                             x="Estimated Log(Breach Size) | Breach")
   )
 )
