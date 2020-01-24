@@ -35,7 +35,8 @@ main.text.size<-1
 note.text.size<-1.40
 
 load(file="..//data//clean//def_sample.Rdata")
-
+contract_transform_verify(serv_opt,just_check_na = TRUE)
+contract_transform_verify(serv_exeropt,just_check_na = TRUE)
 
 ```
 

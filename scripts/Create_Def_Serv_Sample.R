@@ -22,6 +22,13 @@ library(foreign)
 source("https://raw.githubusercontent.com/CSISdefense/Vendor/master/Scripts/DIIGstat.r")
 
 if(!exists("def_serv")) load("data/clean/transformed_def_serv.Rdata")
+def_serv<-transition_variable_names_FMS(def_serv)
+
+
+contract_transform_verify(def_serv)
+
+def_serv$Action_Obligation.OMB20_GDP18
+
 ## Computational Sample Creation
 summary(def_serv$UnmodifiedBase_Then_Year)
 summary(def_serv$UnmodifiedCeiling_Then_Year)

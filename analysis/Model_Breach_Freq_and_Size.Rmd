@@ -44,6 +44,12 @@ if(!"ln_CBre" %in% colnames(serv_breach))
   colnames(serv_breach)[colnames(serv_breach)=="ln_CBre_OMB20_GDP18"]<-"ln_CBre"
 
 memory.limit(64000)
+
+
+contract_transform_verify(serv_smp1m,just_check_na = TRUE)
+contract_transform_verify(serv_smp,just_check_na = TRUE)
+contract_transform_verify(serv_breach,just_check_na = TRUE)
+
 ```
 
 

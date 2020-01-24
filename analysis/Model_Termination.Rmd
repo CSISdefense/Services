@@ -36,6 +36,10 @@ main.text.size<-1
 note.text.size<-1.40
 memory.limit(64000)
 load(file="..//data//clean//def_sample.Rdata")
+
+contract_transform_verify(serv_smp1m,just_check_na = TRUE)
+contract_transform_verify(serv_smp,just_check_na = TRUE)
+
 ```
 
 
