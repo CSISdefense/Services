@@ -80,8 +80,9 @@ The measures b_SomeOptand b_AllOpt  are constructed using a variety of different
 * b_AllOpt ("All Options Exercised") is a binary variable that reports Whether the vast majority, over 95 percent by value, of a contract’s options were exercised. The sample for the model using this variable is limited to contracts that exercised some options in order to more clearly illustrate the relationship between independent variables and all options being exercised.
 
 ```{r Options}
-
+grouped_barplot("OptExer", def_serv)
 grouped_barplot("Opt", def_serv)
+
 
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"p_OptGrowth",bins=50, log=TRUE)
 freq_continuous_plot(def_serv %>%filter(AnyUnmodifiedUnexercisedOptions==1),"n_OptGrowth_OMB20_GDP18",bins=50, log=TRUE)
@@ -255,8 +256,7 @@ Comp is derived from b_Comp to determine competition and UnmodifiedNumberOfOffer
 
 
 ```{r Competition}  
-
-freq_continuous_plot(def_serv %>% dplyr::filter(b_Comp==1), #Only Competed
+freq_continuous_plot(def_serv %>% dplyr::filter(Comp!="No Comp."), #Only Competed
                      "UnmodifiedNumberOfOffersReceived", bins=100,log=TRUE)
 
 grouped_barplot("Comp",def_serv)
@@ -299,7 +299,7 @@ NA_stats(def_serv,"capped_cln_Days")`
 
 freq_continuous_plot(def_serv,"UnmodifiedDays",bins=50, log=TRUE)
 
-statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18","Base2Ceil","UnmodifiedDays"), def_serv)
+scope<-statsummary_continuous(c("UnmodifiedBase_OMB20_GDP18","Ceil2Base","UnmodifiedDays"), def_serv)
 
 write.csv(scope,"..\\output\\scope_characteristic.csv",row.names = FALSE)
 ```
@@ -363,9 +363,9 @@ Agency_Summary <- def_serv %>% group_by(Agency) %>%
   dplyr::mutate(Percent_Freq=Count_Freq/sum(Count_Freq),
                 Obl_Freq=Action_Obligation_OMB20_GDP18/sum(Action_Obligation_OMB20_GDP18))
 
-
+debug(read_and_join_experiment)
 #Add detail description to Agency code
-def_serv<-read_and_join_experiment(def_serv,
+Agency_Summary<-read_and_join_experiment(Agency_Summary,
                             lookup_file = "Agency_AgencyID.csv",
                             path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
                             dir="",
@@ -375,34 +375,32 @@ def_serv<-read_and_join_experiment(def_serv,
 )
 
 
-
-Agency_Freq <- left_join(Agency_Freq, Agency_Lookup, by = "Agency")
-Agency_Freq$Agency <- factor(Agency_Freq$Agency, levels = rev(Agency_Freq$Agency))
-Agency_Freq <- Agency_Freq[order(-Agency_Freq$Percent_Freq),]
-Agency_Freq$Agency_Description <- factor(Agency_Freq$Agency_Description, 
-                                         levels=rev(Agency_Freq$Agency_Description))
+Agency_Summary$Agency <- factor(Agency_Summary$Agency, levels = rev(Agency_Summary$Agency))
+Agency_Summary <- Agency_Summary[order(-Agency_Summary$Percent_Freq),]
+Agency_Summary$Agency_Description <- factor(Agency_Summary$Agency_Description, 
+                                         levels=rev(Agency_Summary$Agency_Description))
 
 
 
 
 #Add obligation percent information to data frame
 Percent_Obli <- c()
-for (i in Agency_Freq$Agency) {
+for (i in Agency_Summary$Agency) {
   Percent_Obligation <- round(sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$Agency == i], na.rm = TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18, na.rm = TRUE),5)
   Percent_Obli <- c(Percent_Obli, Percent_Obligation)
 }
-Agency_Freq$Percent_Obli <- Percent_Obli*100
+Agency_Summary$Percent_Obli <- Percent_Obli*100
 
 #Get top 5 Agencies that take largest percent obligation
-Agency_Freq <- Agency_Freq[order(-Percent_Obli),]
-Agency_Freq <- Agency_Freq[1:5,]
-percent_freq_rest <- 100 - sum(Agency_Freq$Percent_Freq, na.rm = TRUE)
-percent_obli_rest <- 100 - sum(Agency_Freq$Percent_Obli, na.rm = TRUE)
+Agency_Summary <- Agency_Summary[order(-Percent_Obli),]
+Agency_Summary <- Agency_Summary[1:5,]
+percent_freq_rest <- 100 - sum(Agency_Summary$Percent_Freq, na.rm = TRUE)
+percent_obli_rest <- 100 - sum(Agency_Summary$Percent_Obli, na.rm = TRUE)
 
-Agency_Freq[6,] <- c("All Other", "NA", percent_freq_rest, "All Other", percent_obli_rest)
-Agency_Freq$Agency_Description <- factor(Agency_Freq$Agency_Description, levels = rev(Agency_Freq$Agency_Description))
-Agency_Freq[,c(3,5)] <- lapply(Agency_Freq[,c(3,5)], function(x) as.numeric(x))
-Agency_Freq <- melt(Agency_Freq, id = c("Agency","Count_Freq","Percent_Freq", "Agency_Description"))
+Agency_Summary[6,] <- c("All Other", "NA", percent_freq_rest, "All Other", percent_obli_rest)
+Agency_Summary$Agency_Description <- factor(Agency_Summary$Agency_Description, levels = rev(Agency_Summary$Agency_Description))
+Agency_Summary[,c(3,5)] <- lapply(Agency_Summary[,c(3,5)], function(x) as.numeric(x))
+Agency_Summary <- melt(Agency_Summary, id = c("Agency","Count_Freq","Percent_Freq", "Agency_Description"))
 
 
             
@@ -823,7 +821,7 @@ statsummary_continuous(c("def3_ratio_lag1"), def_serv)
 
 
 
-```{r NAICS3_Summary, fig.width=7.5 , fig.height=3}
+```{r Def2US, fig.width=7.5 , fig.height=3}
 NAICS_summary<-def_serv %>% group_by(NAICS3,StartCY,def3_HHI_lag1,def3_obl_lag1,def3_ratio_lag1,US3_avg_sal_lag1) %>%
   dplyr::summarise(annual_action_obligation=sum(Action_Obligation_Then_Year),
                    annual_count=length(StartCY)) 

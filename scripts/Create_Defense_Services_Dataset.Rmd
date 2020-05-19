@@ -296,16 +296,15 @@ def_serv$b_AllOpt[def_serv$b_SomeOpt==0]<-0
 summary(def_serv$b_AllOpt)
 
 def_serv$OptExer<-factor(NA, levels=c(
-        "Initial Base=Ceiling","Not Some Options","Some Options","Some and All Options"
+        "Initial Base=Ceiling","No Options","Some Options","Some and All Options"
       ))
-def_serv$OptExer[(def_serv$AnyUnmodifiedUnexercisedOptions==1)& def_serv$b_SomeOpt==0]<-"Not Some Options"
+def_serv$OptExer[(def_serv$AnyUnmodifiedUnexercisedOptions==1)& def_serv$b_SomeOpt==0]<-"No Options"
       def_serv$OptExer[def_serv$AnyUnmodifiedUnexercisedOptions==1& def_serv$b_SomeOpt==1]<-"Some Options"
       def_serv$OptExer[def_serv$AnyUnmodifiedUnexercisedOptions==1&
                      def_serv$b_SomeOpt==1 & def_serv$b_AllOpt==1]<-"Some and All Options"
       def_serv$OptExer[def_serv$AnyUnmodifiedUnexercisedOptions==0]<-"Initial Base=Ceiling"
       def_serv$OptExer[def_serv$UnmodifiedBase_Then_Year>def_serv$UnmodifiedCeiling_Then_Year]<-NA
       
-
 
 summary(def_serv$Opt)      
 summary(def_serv$OptExer)

@@ -1,0 +1,4 @@
+"Variable_Name","Min","Max","Median","Logarithmic Mean","1 unit below","1 unit above","% of records NA","% of Obligations to NA records"
+"UnmodifiedBase_OMB20_GDP18","0.01","27,801,453,260.02","30,394.75","34,728.12","465.13","2,592,900.78","0.4690%","0.6080%"
+"Ceil2Base","1.00","29,008,179.90","1.00","1.10","0.46*","2.64","0.4700%","0.6160%"
+"UnmodifiedDays","1.00","33,049.00","120.04","81.94","2.85","2,359.33","2.2500%","1.7650%"
