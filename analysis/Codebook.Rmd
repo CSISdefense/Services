@@ -91,7 +91,7 @@ grouped_barplot("b_SomeOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercised
 grouped_barplot("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 &
                                                               b_SomeOpt==1))
 
-
+statsummary_discrete("AnyUnmodifiedUnexercisedOptions", def_serv)
 statsummary_discrete("b_SomeOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 ))
 statsummary_discrete("b_AllOpt", def_serv %>% dplyr::filter(AnyUnmodifiedUnexercisedOptions==1 &
                                                               b_SomeOpt==1))
@@ -130,7 +130,7 @@ freq_continuous_plot(def_serv %>%filter(b_CBre==1),"n_CBre_OMB20_GDP18",bins=50,
 # )
 
 statsummary_discrete("CBre", def_serv)
-statsummary_continuous(c("n_CBre_OMB20_GDP18"), def_serv %>% dplyr::filter(b_CBre==1))
+statsummary_continuous(c("n_CBre_OMB20_GDP18"), def_serv %>% dplyr::filter(b_CBre==1),digits=0)
 ```
 
 ### Contract Terminations
@@ -184,7 +184,7 @@ The original variables for cln_PSCrate is CFTE_Rate_1year
 freq_continuous_plot(def_serv,"CFTE_Rate_1year",bins=50,
                      log=TRUE)
 
-statsummary_continuous(c("US6_avg_sal_lag1Const","CFTE_Rate_1year"), def_serv)
+statsummary_continuous(c("US6_avg_sal_lag1Const","CFTE_Rate_1year"), def_serv, digits = 0)
 ```
 
 ### Office Capacity
@@ -226,7 +226,7 @@ The original variables for cn_PairHist7 is office_entity_paircount_7year
 ```{r PairHistory}
 freq_continuous_plot(def_serv,"office_entity_paircount_7year",bins=7)
 
-statsummary_continuous(c("pPBSC","pOffPSC","office_entity_paircount_7year"), def_serv,log=FALSE)
+statsummary_continuous(c("pPBSC","pOffPSC","office_entity_paircount_7year"), def_serv,log=FALSE, digits=3)
 
 ```
 
@@ -238,7 +238,7 @@ The original variables for cln_PairCA is office_entity_numberofactions_1year
 ```{r cln_PairCA}
 freq_continuous_plot(def_serv,"office_entity_numberofactions_1year",bins=50, log=TRUE, plus1 = TRUE)
 
-statsummary_continuous(c("office_entity_numberofactions_1year"), def_serv, plus1=TRUE)
+statsummary_continuous(c("office_entity_numberofactions_1year"), def_serv, plus1=TRUE,digits=1)
 ```
 
 ## Contract-Level Controls
@@ -363,9 +363,8 @@ Agency_Summary <- def_serv %>% group_by(Agency) %>%
   dplyr::mutate(Percent_Freq=Count_Freq/sum(Count_Freq),
                 Obl_Freq=Action_Obligation_OMB20_GDP18/sum(Action_Obligation_OMB20_GDP18))
 
-debug(read_and_join_experiment)
 #Add detail description to Agency code
-Agency_Summary<-read_and_join_experiment(Agency_Summary,
+def_serv<-read_and_join_experiment(def_serv,
                             lookup_file = "Agency_AgencyID.csv",
                             path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
                             dir="",
@@ -374,37 +373,10 @@ Agency_Summary<-read_and_join_experiment(Agency_Summary,
                             guess_max=1395
 )
 
-
-Agency_Summary$Agency <- factor(Agency_Summary$Agency, levels = rev(Agency_Summary$Agency))
-Agency_Summary <- Agency_Summary[order(-Agency_Summary$Percent_Freq),]
-Agency_Summary$Agency_Description <- factor(Agency_Summary$Agency_Description, 
-                                         levels=rev(Agency_Summary$Agency_Description))
-
-
-
-
-#Add obligation percent information to data frame
-Percent_Obli <- c()
-for (i in Agency_Summary$Agency) {
-  Percent_Obligation <- round(sum(def_serv$Action_Obligation_OMB20_GDP18[def_serv$Agency == i], na.rm = TRUE)/sum(def_serv$Action_Obligation_OMB20_GDP18, na.rm = TRUE),5)
-  Percent_Obli <- c(Percent_Obli, Percent_Obligation)
-}
-Agency_Summary$Percent_Obli <- Percent_Obli*100
-
-#Get top 5 Agencies that take largest percent obligation
-Agency_Summary <- Agency_Summary[order(-Percent_Obli),]
-Agency_Summary <- Agency_Summary[1:5,]
-percent_freq_rest <- 100 - sum(Agency_Summary$Percent_Freq, na.rm = TRUE)
-percent_obli_rest <- 100 - sum(Agency_Summary$Percent_Obli, na.rm = TRUE)
-
-Agency_Summary[6,] <- c("All Other", "NA", percent_freq_rest, "All Other", percent_obli_rest)
-Agency_Summary$Agency_Description <- factor(Agency_Summary$Agency_Description, levels = rev(Agency_Summary$Agency_Description))
-Agency_Summary[,c(3,5)] <- lapply(Agency_Summary[,c(3,5)], function(x) as.numeric(x))
-Agency_Summary <- melt(Agency_Summary, id = c("Agency","Count_Freq","Percent_Freq", "Agency_Description"))
-
-
-            
 grouped_barplot("AgencyIDtext", def_serv)
+grouped_barplot("AgencyIDtext", def_serv,top_rank = 5)
+
+grouped_barplot("AgencyIDtext", def_serv,top_rank = 10)
 
 ```
 
@@ -416,76 +388,24 @@ NA_stats(def_serv,"Office")`
 ```{r grouped percent frequency/obligation barplot for all Office}
 #grouped bar plot for variable Office
 #Perpare data for plot
-#get the detailed desceription for Office by AgencyID and OfficeID
+#get the detailed desceription for Office by Agency and Office
 # Office_Lookup <- read.delim("https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/office/Office.ContractingOfficeCode.txt")
 # def_dup <- def_serv
+#Generate a new name column by Combining officeID and ContractingOfficeName
 
-memory.limit(56000)
-Office_Freq <- def_serv %>% group_by(Office,ContractingOfficeName) %>% summarise(
-  Count_Freq=length(CSIScontractID),
-  Action_Obligation_OMB20_GDP18=sum(Action_Obligation_OMB20_GDP18)
-)
-  
-  # Office_Freq <- Office_Freq[order(-Office_Freq$Freq),]
-# Office_Freq_TOP20 <- Office_Freq[1:20,]   #Get top 20 NAICS6 has largest frequency count
-Office_Freq$Percent_Freq <- round(Office_Freq$Count_Freq/
-                                   sum(Office_Freq$Count_Freq),4)*100
-Office_Freq$Percent_Obli <- round(Office_Freq$Action_Obligation_OMB20_GDP18/
-                                         sum(Office_Freq$Action_Obligation_OMB20_GDP18),4)*100
-
-colnames(Office_Freq)[colnames(Office_Freq)=="Office"] <- "OfficeID"
-colnames(Office_Freq)[colnames(Office_Freq)=="ContractingOfficeName"] <- "OfficeName"
-
-Office_Freq$Percent_Freq <- round(Office_Freq$Count_Freq/sum(Office_Freq$Count_Freq),4)*100
-Office_Freq <- subset(Office_Freq, (Office_Freq$Count_Freq != 0)&(Office_Freq$Percent_Freq!=0))
-Office_Freq[,1:2] <- lapply(Office_Freq[,1:2], function(x) as.character(x))
-
-Office_Freq$Office_Full <- ifelse(is.na(Office_Freq$OfficeName), Office_Freq$OfficeID, Office_Freq$OfficeName)
-
-
-
-Office_Freq_top10Freq <- Office_Freq[order(-Office_Freq$Percent_Freq),]
-Office_Freq_top10Freq <- Office_Freq_top10Freq[1:10, ]  #including NULL category
-Office_Freq_top10Obli <- Office_Freq[order(-Office_Freq$Percent_Obli),]
-Office_Freq_top10Obli <- Office_Freq_top10Obli[1:10, ]  #including NULL category
-
-Office_Freq_TOP <- rbind(Office_Freq_top10Obli, Office_Freq_top10Freq)
-Office_Freq_TOP <- unique(Office_Freq_TOP)  #17 records in total
-
-#Generate a new name column by Combining officeID and officeName
-Office_Freq_TOP$Office_Full <- ifelse(Office_Freq_TOP$Office_Full == Office_Freq_TOP$OfficeID, 
-                                      Office_Freq_TOP$OfficeID, 
-                                      paste(Office_Freq_TOP$OfficeID, 
+def_serv$Office_Full <- ifelse(is.na(def_serv$ContractingOfficeName), def_serv$Office, def_serv$ContractingOfficeName)
+def_serv$Office_Full <- ifelse(def_serv$Office_Full == def_serv$Office, 
+                                      def_serv$Office, 
+                                      paste(def_serv$Office, 
                                             " - ", 
-                                            Office_Freq_TOP$OfficeName))
+                                            def_serv$ContractingOfficeName))
 
-Office_Freq_TOP$Office_Full <- factor(Office_Freq_TOP$Office_Full, 
-                                      levels = rev(Office_Freq_TOP$Office_Full))
-Office_Freq_TOP <- melt(Office_Freq_TOP, 
-                        id = c("OfficeID", "OfficeName", "Count_Freq", "Office_Full"))
+grouped_barplot("Office_Full", def_serv,top_rank = 10)+
+                  ggtitle("Percent of Frequency and obligation for Office")
 
-(
-Office_barplot <- ggplot(data = Office_Freq_TOP,
-                         aes(x = Office_Full, 
-                             y = value,
-                             fill = factor(variable))) +
-                  geom_bar(stat = "identity", 
-                  position = "dodge", 
-                  width = 0.8) + 
-                  coord_flip() +
-                  xlab("") + 
-                  ylab("") + 
-                  theme_grey() + 
-                  scale_fill_grey(labels = c("% of records", "% of obligation"),
-                                  guide = guide_legend(reverse = TRUE)) + 
-                  ggtitle("Percent of Frequency and obligation for Office") +
-                  theme(text = element_text(size = 10), 
-                        legend.title = element_blank(),
-                        legend.position = "bottom",
-                        legend.margin = margin(t=-0.8, r=0, b=0.5, l=0, unit = "cm"),
-                        legend.text = element_text(margin = margin(r=0.5, unit = "cm")), 
-                        plot.margin = margin(t=0.3, r=0.5, b=0, l=0.5, unit = "cm"))
-)
+grouped_barplot("Office_Full", def_serv,top_rank = 25)+
+                  ggtitle("Percent of Frequency and obligation for Office")
+
 ```
 
 ##### Office Obligations
@@ -650,14 +570,15 @@ NAICS_summary<-read_and_join_experiment(NAICS_summary,
                                         by="principalnaicscode",
                                         skip_check_var=c("principalnaicscodeText",
                                                          "NAICS_shorthand",
-                                                         "principalNAICS4DigitCode")
+                                                         "principalNAICS4DigitCode",
+                                                         "NAICS_unabbreviated")
 )
 
 # https://stackoverflow.com/questions/37174316/how-to-fit-long-text-into-ggplot2-facet-titles
 
 
 centered_log_description(def_serv$def3_obl_lag1,"obligations")
-centered_log_description(def_serv$l_def6_obl_lag1,"obligations")
+centered_log_description(def_serv$l_def6_obl_lag1Const,"obligations")
 NA_stats(def_serv,"cl_def3_obl_lag1")
 NA_stats(def_serv,"cln_Def6Obl")
 
@@ -781,7 +702,9 @@ NAICS3_Freq<-read_and_join_experiment(NAICS3_Freq,
                                         by=c("NAICS3"="principalnaicscode"),
                                         skip_check_var=c("principalnaicscodeText",
                                                          "NAICS_shorthand",
-                                                         "principalNAICS4DigitCode")
+                                                         "principalNAICS4DigitCode",
+                                                                  "NAICS_unabbreviated"
+                                                         )
 )
 
 
@@ -809,7 +732,7 @@ part_grouped_barplot("NAICS3", NAICS3_Freq_TOP) + ggtitle("Top 15 of the most fr
 ##### Def3 HHI
 ```{r cln_Def6HHI}
 
-freq_continuous_plot(def_serv,"cl_def3_HHI_lag1",bins=50, log=TRUE)
+freq_continuous_plot(def_serv,"cln_Def3HHI",bins=50, log=TRUE)
 ```
 
 ##### Def3:US
@@ -848,7 +771,8 @@ NAICS_summary<-read_and_join_experiment(NAICS_summary,
                                       by=c("NAICS3"="principalnaicscode"),
                                       skip_check_var=c("principalnaicscodeText",
                                                        "NAICS_shorthand",
-                                                       "principalNAICS4DigitCode")
+                                                       "principalNAICS4DigitCode",
+                                                       "NAICS_unabbreviated")
                                       )
 
 # https://stackoverflow.com/questions/37174316/how-to-fit-long-text-into-ggplot2-facet-titles
@@ -946,9 +870,9 @@ NAICS3long_wide<-ggplot(subset(NAICS_long,naics_dollar_rank<=8),
   facet_grid(variable~NAICS_shorthand,scales="free_y")   
 )
 
-ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure2.png",width=9.5,height=6,dpi=600)
-ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure2.eps",width=9.5,height=6,dpi=600)
-ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\JSCAN\\Figure2.svg",width=9.5,height=6,dpi=600)
+ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\Figure2.png",width=9.5,height=6,dpi=600)
+ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\Figure2.eps",width=9.5,height=6,dpi=600)
+ggsave(NAICS3long_wide+theme(text=element_text(size=13)),file="..//Output\\Figure2.svg",width=9.5,height=6,dpi=600)
 
 write.csv(NAICS_summary,file="..//Output/NAICS3_summary.csv",row.names = FALSE)
 ```
@@ -963,9 +887,11 @@ write.csv(NAICS_summary,file="..//Output/NAICS3_summary.csv",row.names = FALSE)
 NA_stats(def_serv,"NAICS6")`
 
 ```{r NAICS6_Summary, fig.width=7.5 , fig.height=3}
-NAICS_summary<-def_serv %>% group_by(NAICS6,StartCY,def6_HHI_lag1,def6_obl_lag1,def6_ratio_lag1,US6_avg_sal_lag1) %>%
+NAICS_summary<-def_serv %>% group_by(NAICS6,StartCY,def6_HHI_lag1,def6_obl_lag1Const,def6_ratio_lag1,US6_avg_sal_lag1Const) %>%
   dplyr::summarise(annual_action_obligation=sum(Action_Obligation_OMB20_GDP18),
                    annual_count=length(StartCY)) 
+
+
 
 top_NAICS <- NAICS_summary %>% group_by(NAICS6) %>% 
   dplyr::summarise(naics_action_obligation=sum(annual_action_obligation),
@@ -980,7 +906,7 @@ colnames(NAICS_summary)[colnames(NAICS_summary)=="NAICS6"]<-"principalnaicscode"
 
 NAICS_summary$principalnaicscode<-as.character(NAICS_summary$principalnaicscode)
 NAICS_summary<-as.data.frame(NAICS_summary)
-
+NAICS_summary$principalnaicscode[NAICS_summary$principalnaicscode==""]<-NA
 
 NAICS_summary<-read_and_join_experiment(NAICS_summary,
                                                  lookup_file = "Lookup_PrincipalNAICScode.csv",
@@ -989,7 +915,8 @@ NAICS_summary<-read_and_join_experiment(NAICS_summary,
                                                  by="principalnaicscode",
                                                  skip_check_var=c("principalnaicscodeText",
                                                                   "NAICS_shorthand",
-                                                                  "principalNAICS4DigitCode")
+                                                                  "principalNAICS4DigitCode",
+                                                                  "NAICS_unabbreviated")
 
 )
 
@@ -1038,9 +965,9 @@ ggsave(NAICS6top8_wide,file="..\\Output\\NAICS6top8.eps",width=9.5,height=4,dpi=
 colnames(NAICS_summary)
 NAICS_long<-NAICS_summary[,colnames(NAICS_summary) %in% c( "principalnaicscode",
                                                     "def6_HHI_lag1",
-                                                    "def6_obl_lag1",
+                                                    "def6_obl_lag1Const",
                                                     "def6_ratio_lag1",
-                                                    # "US6_avg_sal_lag1",
+                                                    # "US6_avg_sal_lag1Const",
                                                     "naics_dollar_rank" ,
                                                     "naics_count_rank",
                                                     "principalnaicscodeText",
@@ -1055,7 +982,7 @@ NAICS_long<-melt(NAICS_long, id=c("principalnaicscode","naics_dollar_rank","naic
 
 
 levels(NAICS_long$variable)<- list("Herfindahl-\nHerschman Index"=c("def6_HHI_lag1"),
-                                   "Defense Obligations"=c("def6_obl_lag1"),
+                                   "Defense Obligations"=c("def6_obl_lag1Const"),
                                    "Defense Obligations\nto U.S. Revenue Ratio"=c("def6_ratio_lag1"))
 
 NAICS_long$high<-2500
@@ -1101,7 +1028,8 @@ NAICS_Freq_TOP20<-read_and_join_experiment(NAICS_Freq_TOP20,
                                                  by=c("NAICS_Code"="principalnaicscode"),
                                                  skip_check_var=c("principalnaicscodeText",
                                                                   "NAICS_shorthand",
-                                                                  "principalNAICS4DigitCode")
+                                                                  "principalNAICS4DigitCode",
+                                                                  "NAICS_unabbreviated")
 
 )
 
@@ -1149,7 +1077,8 @@ NAICS_Freq<-read_and_join_experiment(NAICS_Freq,
                                                  by=c("NAICS_Code"="principalnaicscode"),
                                                  skip_check_var=c("principalnaicscodeText",
                                                                   "NAICS_shorthand",
-                                                                  "principalNAICS4DigitCode")
+                                                                  "principalNAICS4DigitCode",
+                                                                  "NAICS_unabbreviated")
 
 )
 
@@ -1226,7 +1155,7 @@ freq_continuous_plot(def_serv,"def6_HHI_lag1",bins=50, log=TRUE)
 
 HHI_category<-c("def3_HHI_lag1","def6_HHI_lag1")
 
-statsummary_discrete("CompOffr",def_serv)
+statsummary_discrete("Comp",def_serv)
 
 hhi<-statsummary_continuous(HHI_category, def_serv)
 hhi
