@@ -1171,6 +1171,9 @@ write.csv(hhi,file="..\\Output/hhi_summary.csv")
 ```{r clr_Def6toUS}
 
 freq_continuous_plot(def_serv,"def6_ratio_lag1",bins=50, log=TRUE)
+statsummary_continuous(c("def6_ratio_lag1"), def_serv)
+summary(rescale(na_non_positive_log(def_serv$def6_ratio_lag1,1)))
+summary(def_serv$clr_Def6toUS)
 ```
 
 ### Place
