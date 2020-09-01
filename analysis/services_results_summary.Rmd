@@ -52,6 +52,13 @@ Contracts are classified using a mix of numerical and categorical variables. Whi
 
 # Data Exploration
 
+## DoD Product/Service/R&D Breakdown
+```{r DoD_PSA}
+load(file.path("..","data","semi_clean","2018_unaggregated_FPDS.Rda"))
+
+```
+
+
 ## Prod Serv
 
 ```{r ProdServ_Summary, fig.width=7.5 , fig.height=3}
