@@ -56,6 +56,16 @@ Contracts are classified using a mix of numerical and categorical variables. Whi
 ```{r DoD_PSA}
 load(file.path("..","data","semi_clean","2018_unaggregated_FPDS.Rda"))
 
+(
+psr<-build_plot(data=full_data,
+           x_var="fiscal_year",
+           y_var="Action_Obligation_OMB20_GDP18",
+           color_var = "ProductServiceOrRnDarea.sum",
+           labels_and_colors=labels_and_colors,
+           column_key = column_key,
+           format = TRUE
+           )
+)
 ```
 
 
@@ -105,9 +115,9 @@ ProdServ_summary$ProdServName<-factor(paste(
                                               ProdServ_summary$ProductOrServiceCode,
                                               ProdServ_summary$ProductOrServiceCodeText,sep=": "))
 
-ProdServ_summary$ProdServName<-factor(ProdServ_summary$ProdServName
-                                            ,levels=levels(ProdServ_summary$ProdServName),
-                                            ,labels=swr(levels(ProdServ_summary$ProdServName),nwrap = 15)
+ProdServ_summary$ProdServName<-factor(ProdServ_summary$ProdServName,
+                                            levels=levels(ProdServ_summary$ProdServName),
+                                            labels=swr(levels(ProdServ_summary$ProdServName),nwrap = 15)
                                             )
 
 
