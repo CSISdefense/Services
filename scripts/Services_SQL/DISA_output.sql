@@ -373,6 +373,7 @@ SELECT  [fiscal_year]
       ,[TypeOfContractPricing5Category]
       ,[ParentID]
       ,[principalnaicscode]
+	  ,principalnaicscodeText
       ,[NAICS_ShortHand]
       ,informationtechnologycommercialitemcategory
   
@@ -409,6 +410,7 @@ SELECT  [fiscal_year]
       ,[ParentID]
       ,[principalnaicscode]
       ,[NAICS_ShortHand]
+	  ,principalnaicscodeText
       ,informationtechnologycommercialitemcategory
      ,[usaspending_permalink]     
       ,[ContractingCustomer]
