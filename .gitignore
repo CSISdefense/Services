@@ -64,3 +64,11 @@ output/~$iling_breaches.html
 output/~$ptions.html
 
 output/~WRL0002.tmp
+
+data/semi_clean/DISA_GSA_contract.txt
+
+data/semi_clean/DISA_GSA_contract_no_description.txt
+
+data/semi_clean/Defense_ProdServPricingVehicleAgencyHistory.rpt
+
+data/semi_clean/DISA_summary.txt
