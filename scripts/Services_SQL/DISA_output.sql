@@ -432,3 +432,89 @@ SELECT  [fiscal_year]
       ,[ProductOrServiceCodeText]
       ,[VehicleClassification]
       ,[CompetitionClassification]
+
+
+
+SET ANSI_WARNINGS OFF;
+SET NOCOUNT ON;
+SELECT  [fiscal_year]
+      ,sum([baseandexercisedoptionsvalue]) as [baseandexercisedoptionsvalue]
+      ,sum([baseandalloptionsvalue]) as [baseandalloptionsvalue]
+      ,sum([obligatedAmount]) as [obligatedAmount]
+      ,[contractingofficeagencyid]
+      ,[ContractingAgencyText]
+      ,[fundingrequestingagencyid]
+      ,[fundingrequestingofficeid]
+      ,[reasonformodification]
+      ,[typeofcontractpricing]
+      ,[TypeOfContractPricing5Category]
+      ,[ParentID]
+      ,[principalnaicscode]
+	  ,principalnaicscodeText
+      ,[NAICS_ShortHand]
+      ,informationtechnologycommercialitemcategory
+  ,idvagencyid
+     ,[usaspending_permalink]     
+      ,[ContractingCustomer]
+      ,[ContractingSubCustomer]
+      ,[SubCustomer]
+      ,[FundingAgency]
+      ,[FundingSubAgency]	  
+      ,[MajorCommandID]
+      ,[ContractingOfficeID]
+      ,[ContractingOfficeName]
+      ,[ContractingOfficeCity]
+      ,[ContractingOfficeState]
+      ,[ContractingOfficeCountry]
+      ,[ContractingOfficeStartDate]
+      ,[ContractingOfficeEndDate]
+      ,[ProductOrServiceArea]
+      ,[ProductServiceOrRnDarea]
+      ,[ProductOrServiceCode]
+      ,[ProductOrServiceCodeText]
+      ,[VehicleClassification]
+      ,[CompetitionClassification]
+  FROM [Contract].[FPDSclassification]
+  where contractingofficeagencyid='97AK' --or (customer='GSA' and  productorservicearea in ('ICT' ,'Electronics & Communications'))
+  group by [fiscal_year]
+      ,[contractingofficeagencyid]
+      ,[ContractingAgencyText]
+      ,[fundingrequestingagencyid]
+      ,[fundingrequestingofficeid]
+      ,[reasonformodification]
+      ,[typeofcontractpricing]
+      ,[TypeOfContractPricing5Category]
+      ,[ParentID]
+      ,[principalnaicscode]
+      ,[NAICS_ShortHand]
+	  ,principalnaicscodeText
+      ,informationtechnologycommercialitemcategory
+     ,[usaspending_permalink]     
+	 ,idvagencyid
+      ,[ContractingCustomer]
+      ,[ContractingSubCustomer]
+      ,[SubCustomer]
+      ,[FundingAgency]
+      ,[FundingSubAgency]
+      ,[MajorCommandID]
+      ,[ContractingOfficeID]
+      ,[ContractingOfficeName]
+      ,[ContractingOfficeCity]
+      ,[ContractingOfficeState]
+      ,[ContractingOfficeCountry]
+      ,[ContractingOfficeStartDate]
+      ,[ContractingOfficeEndDate]
+      ,[ProductOrServiceArea]
+      ,[ProductServiceOrRnDarea]
+      ,[ProductOrServiceCode]
+      ,[ProductOrServiceCodeText]
+      ,[VehicleClassification]
+      ,[CompetitionClassification]
+
+	  update FPDSTypeTable.AgencyID
+	  set Customer='DHS'
+
+	  ,SubCustomer='Other DHS'
+	  ,SubCustomer.sum='Other DHS'
+	  where agencyid='955P'
+	  and customer is null
