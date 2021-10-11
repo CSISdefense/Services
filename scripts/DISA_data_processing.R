@@ -79,6 +79,19 @@ disa <- deflate(disa,money_var="obligatedAmount",fy_var="fiscal_year",deflator_v
 disa_sum <- deflate(disa_sum,money_var="obligatedAmount",fy_var="fiscal_year",deflator_var="OMB19_19")
 disa_sum$NAICS_ShortHand
 
+disa_sum %>% group_by(informationtechnologycommercialitemcategory) %>% filter(fiscal_year>="2000") %>%
+  # group_by(ProductOrServiceCode,ProductOrServiceCodeText,principalnaicscode,NAICS_ShortHand,ContractingOfficeID,ContractingOfficeName) %>%
+  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
+levels(factor(disa_sum$informationtechnologycommercialitemcategory))
+disa_sum$informationtechnologycommercialitemcategory<-factor(disa_sum$informationtechnologycommercialitemcategory)
+levels(disa_sum$informationtechnologycommercialitemcategory)<-list("Unlabeled"="",
+                                                                   "A: COMMERCIALLY AVAILABLE" =c("A","A: COMMERCIALLY AVAILABLE"),
+                                                                   "B: OTHER COMMERCIAL ITEM"=c(  "B"                ,              "B: OTHER COMMERCIAL ITEM"  ),
+                                                                   "C: NON-DEVELOPMENTAL ITEM"=c("C","C: NON-DEVELOPMENTAL ITEM"),
+                                                                   "D: NON-COMMERCIAL ITEM"=c("D",                              "D: NON-COMMERCIAL ITEM" ),
+                                                                   "E: COMMERCIAL SERVICE" =c("E","E: COMMERCIAL SERVICE"),
+                                                                   "F: NON-COMMERCIAL SERVICE" =c("F"            ,                  "F: NON-COMMERCIAL SERVICE"),
+                                                                   "Z: NOT IT PRODUCTS OR SERVICES"=c("Z","Z: NOT IT PRODUCTS OR SERVICES"))
 
 disa_sum$informationtechnologycommercialitemcategory<-factor(disa_sum$informationtechnologycommercialitemcategory)
 levels(disa_sum$informationtechnologycommercialitemcategory)<-list("Unlabeled"="",
@@ -89,7 +102,19 @@ levels(disa_sum$informationtechnologycommercialitemcategory)<-list("Unlabeled"="
                                                                    "E: COMMERCIAL SERVICE" =c("E","E: COMMERCIAL SERVICE"),
                                                                    "F: NON-COMMERCIAL SERVICE" =c("F"            ,                  "F: NON-COMMERCIAL SERVICE"),
                                                                    "Z: NOT IT PRODUCTS OR SERVICES"=c("Z","Z: NOT IT PRODUCTS OR SERVICES"))
-save(disa_sum, file=file.path("data","semi_clean","disa.rda"))
+
+disa_sum<-csis360::read_and_join(disa_sum,
+                                  "LOOKUP_Buckets.csv",
+                                  # by="ProductOrServiceArea",
+                                  by="ProductServiceOrRnDarea",
+                                  replace_na_var="ProductServiceOrRnDarea",
+                                  add_var="ProductServiceOrRnDarea.sum",
+                                  path="https://raw.githubusercontent.com/CSISdefense/R-scripts-and-data/master/",
+                                  dir="Lookups/"
+)
+
+save(disa_sum,file=file.path("data","semi_clean","disa.Rda"))
+
 
 View(disa %>% group_by(fiscal_year) %>% summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19)))
 View(disa_sum %>% group_by(fiscal_year) %>% summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19)))
@@ -163,18 +188,41 @@ levels(factor(disa_sum$informationtechnologycommercialitemcategory))
                format=TRUE
 )+theme(legend.position = "right")
 )
-ggsave(coverall,file="disa_commercial.png")
+ggsave(coverall,file="output//disa_commercial.png")
+
+disa_sum<-read_and_join_experiment(data=disa_sum
+                         ,"Vehicle.csv"
+                         ,path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/"
+                         ,dir="contract/"
+                         ,by=c("VehicleClassification"="Vehicle.detail")
+                         # ,new_var_checked=FALSE
+                         # ,create_lookup_rdata=TRUE
+                         # ,col_types="dddddddddccc"
+) 
+
+
+disa_sum<-read_and_join_experiment(data=disa_sum
+                                   ,"InformationTechnologyCommercialItemCategory.csv"
+                                   ,path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/"
+                                   ,dir="productorservice/"
+                                   ,by=c("informationtechnologycommercialitemcategory"="informationtechnologycommercialitemcategory")
+                                   # ,new_var_checked=FALSE
+                                   # ,create_lookup_rdata=TRUE
+                                   # ,col_types="dddddddddccc"
+) 
 
 (voverall<-build_plot(disa_sum %>% filter(fiscal_year>=2000),
                       chart_geom = "Bar Chart",
                       share=FALSE,
                       x_var="fiscal_year",
                       y_var="obligatedAmount_OMB19_19",
-                      color_var = "VehicleClassification",
+                      color_var = "Vehicle.sum7",
                       # facet_var = "ContractingOfficeID",
                       format=TRUE
 )+theme(legend.position = "right")
 )
+ggsave(voverall,file="output//disa_vehicle.png")
+
 
 View(disa_psc_naics %>% filter(crank<=5))
 disa_psc_naics %>% filter(crank<=5) %>% group_by(ContractingOfficeID) %>%
