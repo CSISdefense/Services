@@ -42,7 +42,7 @@ idv_spend[order(desc(idv_spend$obligatedAmount)),]
 disa_gsa<-read_delim(file.path("data","semi_clean","DISA_GSA_contract.txt"),delim="\t",na=c("NULL","NA"),
                      col_names = TRUE, guess_max = 700000)
 
-disa_sum<-read_delim(file.path("data","semi_clean","DISA_summary.txt"),delim="\t",na=c("NULL","NA"),
+disa_sum<-read_delim(file.path("data","semi_clean","DISA_summary2.txt"),delim="\t",na=c("NULL","NA"),
                     col_names = TRUE, guess_max = 700000)
 
 
@@ -80,7 +80,7 @@ disa_sum$NAICS_ShortHand
 
 disa_sum %>% group_by(informationtechnologycommercialitemcategory) %>% filter(fiscal_year>="2000") %>%
   # group_by(ProductOrServiceCode,ProductOrServiceCodeText,principalnaicscode,NAICS_ShortHand,ContractingOfficeID,ContractingOfficeName) %>%
-  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
+  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB20_GDP20))
 levels(factor(disa_sum$informationtechnologycommercialitemcategory))
 disa_sum$informationtechnologycommercialitemcategory<-factor(disa_sum$informationtechnologycommercialitemcategory)
 levels(disa_sum$informationtechnologycommercialitemcategory)<-list("Unlabeled"="",
@@ -125,6 +125,8 @@ disa_sum<-read_and_join_experiment(data=disa_sum
 
 disa_sum$dFYear<-as.Date(paste("1/1/",as.character(disa_sum$fiscal_year),sep=""),"%m/%d/%Y")
 
+ds_lc<-prepare_labels_and_colors(disa_sum)
+ds_ck<-get_column_key(disa_sum)
 
 save(disa_sum,file=file.path("data","semi_clean","disa.Rda"))
 
