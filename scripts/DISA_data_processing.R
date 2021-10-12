@@ -25,8 +25,15 @@ library(readr)
 
 source("scripts\\NAICS.r")
 # read in data
-summary(factor(disa_gsa$CSISidvpiidid[disa_gsa$idvpiid==""]))
 
+disa_gsa<-read_delim(file.path("data","semi_clean","DISA_GSA_contract.txt"),delim="\t",na=c("NULL","NA"),
+                     col_names = TRUE, guess_max = 700000)
+
+disa_sum<-read_delim(file.path("data","semi_clean","DISA_summary.txt"),delim="\t",na=c("NULL","NA"),
+                     col_names = TRUE, guess_max = 700000)
+
+
+summary(factor(disa_gsa$CSISidvpiidid[disa_gsa$idvpiid==""]))
 
 disa_gsa$idvpiid[is.na(disa_gsa$idvpiid)]<-""
 disa_gsa$idv_or_piid[disa_gsa$idvpiid!=""]<-paste("IDV",disa_gsa$idvpiid[disa_gsa$idvpiid!=""],"_")
@@ -39,15 +46,9 @@ idv_spend[order(desc(idv_spend$obligatedAmount)),]
 
 
 
-disa_gsa<-read_delim(file.path("data","semi_clean","DISA_GSA_contract.txt"),delim="\t",na=c("NULL","NA"),
-                     col_names = TRUE, guess_max = 700000)
 
 disa_sum<-read_delim(file.path("data","semi_clean","DISA_summary2.txt"),delim="\t",na=c("NULL","NA"),
                     col_names = TRUE, guess_max = 700000)
-
-
-disa_gsa<-read_delim(file.path("data","semi_clean","DISA_GSA_contract_no_description.txt"),delim="\t",na=c("NULL","NA"),
-                     col_names = TRUE, guess_max = 1300000)
 
 
 
@@ -60,7 +61,7 @@ summary(factor(disa$ContractingOfficeName))
 summary(factor(disa$ContractingOfficeID))
 View(disa %>%filter(is.na(ContractingOfficeName)))
 
-?build_plot
+
 
 
 (v<-build_plot(disa %>% filter(fiscal_year>=2005),
@@ -92,6 +93,15 @@ levels(disa_sum$informationtechnologycommercialitemcategory)<-list("Unlabeled"="
                                                                    "F: NON-COMMERCIAL SERVICE" =c("F"            ,                  "F: NON-COMMERCIAL SERVICE"),
                                                                    "Z: NOT IT PRODUCTS OR SERVICES"=c("Z","Z: NOT IT PRODUCTS OR SERVICES"))
 
+disa_sum$informationtechnologycommercialitemcategory<-factor(disa_sum$informationtechnologycommercialitemcategory)
+levels(disa_sum$informationtechnologycommercialitemcategory)<-list("Unlabeled"="",
+                                                                   "A: COMMERCIALLY AVAILABLE" =c("A","A: COMMERCIALLY AVAILABLE"),
+                                                                   "B: OTHER COMMERCIAL ITEM"=c(  "B"                ,              "B: OTHER COMMERCIAL ITEM"  ),
+                                                                   "C: NON-DEVELOPMENTAL ITEM"=c("C","C: NON-DEVELOPMENTAL ITEM"),
+                                                                   "D: NON-COMMERCIAL ITEM"=c("D",                              "D: NON-COMMERCIAL ITEM" ),
+                                                                   "E: COMMERCIAL SERVICE" =c("E","E: COMMERCIAL SERVICE"),
+                                                                   "F: NON-COMMERCIAL SERVICE" =c("F"            ,                  "F: NON-COMMERCIAL SERVICE"),
+                                                                   "Z: NOT IT PRODUCTS OR SERVICES"=c("Z","Z: NOT IT PRODUCTS OR SERVICES"))
 
 disa_sum<-csis360::read_and_join(disa_sum,
                                   "LOOKUP_Buckets.csv",
@@ -141,7 +151,9 @@ idv_spend_test<-disa %>% filter(fiscal_year>=2005) %>% group_by(idv_or_piid,Vehi
 
 
 idv_spend<-disa %>% filter(fiscal_year>=2005) %>% group_by(idv_or_piid,VehicleClassification,ContractingOfficeID,ContractingOfficeName) %>%
-  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
+  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19),
+            min_fyear=min(fiscal_year),
+            max_fyear=max(fiscal_year))
 
 idv_spend <-  idv_spend %>% group_by(ContractingOfficeID) %>%
   mutate(crank=order(order(obligatedAmount_OMB19_19,decreasing = TRUE)),
@@ -176,6 +188,10 @@ disa_psc_naics$NAICS_ShortHand[disa_psc_naics$NAICS_ShortHand=="" & disa_psc_nai
 
 
 summary(factor(disa_sum$informationtechnologycommercialitemcategory))
+disa_sum %>% group_by(informationtechnologycommercialitemcategory) %>% filter(fiscal_year>="2000") %>%
+  # group_by(ProductOrServiceCode,ProductOrServiceCodeText,principalnaicscode,NAICS_ShortHand,ContractingOfficeID,ContractingOfficeName) %>%
+  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
+levels(factor(disa_sum$informationtechnologycommercialitemcategory))
 
 (c<-build_plot(disa_sum %>% filter(fiscal_year>=2005),
                chart_geom = "Bar Chart",
