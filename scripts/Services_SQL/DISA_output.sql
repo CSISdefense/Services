@@ -397,7 +397,8 @@ SELECT  [fiscal_year]
       ,[ProductOrServiceCodeText]
       ,[VehicleClassification]
       ,[CompetitionClassification]
-  FROM [Contract].[FPDSclassification]
+	  ,ClassifyNumberOfOffers
+  FROM [Contract].[FPDSclassification] c
   where contractingofficeagencyid='97AK' --or (customer='GSA' and  productorservicearea in ('ICT' ,'Electronics & Communications'))
   group by [fiscal_year]
       ,[contractingofficeagencyid]
@@ -432,7 +433,7 @@ SELECT  [fiscal_year]
       ,[ProductOrServiceCodeText]
       ,[VehicleClassification]
       ,[CompetitionClassification]
-
+	  mClassifyNumberOfOffers
 
 
 SET ANSI_WARNINGS OFF;
@@ -474,6 +475,7 @@ SELECT  [fiscal_year]
       ,[ProductOrServiceCodeText]
       ,[VehicleClassification]
       ,[CompetitionClassification]
+	  ,ClassifyNumberOfOffers
   FROM [Contract].[FPDSclassification]
   where contractingofficeagencyid='97AK' --or (customer='GSA' and  productorservicearea in ('ICT' ,'Electronics & Communications'))
   group by [fiscal_year]
@@ -510,11 +512,4 @@ SELECT  [fiscal_year]
       ,[ProductOrServiceCodeText]
       ,[VehicleClassification]
       ,[CompetitionClassification]
-
-	  update FPDSTypeTable.AgencyID
-	  set Customer='DHS'
-
-	  ,SubCustomer='Other DHS'
-	  ,SubCustomer.sum='Other DHS'
-	  where agencyid='955P'
-	  and customer is null
+	  ,ClassifyNumberOfOffers
