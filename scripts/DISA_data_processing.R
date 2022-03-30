@@ -45,15 +45,13 @@ idv_spend[order(desc(idv_spend$obligatedAmount)),]
 
 
 
-disa_gsa<-read_delim(file.path("data","semi_clean","DISA_GSA_contract.txt"),delim="\t",na=c("NULL","NA"),
-                     col_names = TRUE, guess_max = 700000)
 
 disa_sum<-read_delim(file.path("data","semi_clean","DISA_summary2.txt"),delim="\t",na=c("NULL","NA"),
                     col_names = TRUE, guess_max = 700000)
 
 
-disa_gsa<-read_delim(file.path("data","semi_clean","DISA_GSA_contract_no_description.txt"),delim="\t",na=c("NULL","NA"),
-                     col_names = TRUE, guess_max = 1300000)
+
+disa_sum<-apply_standard_lookups(disa_sum)
 # disa_sum <- deflate(disa_sum,money_var="obligatedAmount",fy_var="Fiscal_Year",deflator_var="OMB20_GDP20")
 # disa_sum$NAICS_ShortHand
 
@@ -105,65 +103,13 @@ View(disa %>%filter(is.na(ContractingOfficeName)))
 )
 
 disa <- deflate(disa,money_var="obligatedAmount",fy_var="Fiscal_Year",deflator_var="OMB20_GDP20")
-disa_sum$NAICS_ShortHand
 
-disa_sum %>% group_by(informationtechnologycommercialitemcategory) %>% filter(fiscal_year>="2000") %>%
-  # group_by(ProductOrServiceCode,ProductOrServiceCodeText,principalnaicscode,NAICS_ShortHand,ContractingOfficeID,ContractingOfficeName) %>%
-  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB20_GDP20))
-levels(factor(disa_sum$informationtechnologycommercialitemcategory))
-disa_sum$informationtechnologycommercialitemcategory<-factor(disa_sum$informationtechnologycommercialitemcategory)
-levels(disa_sum$informationtechnologycommercialitemcategory)<-list("Unlabeled"="",
-                                                                   "A: COMMERCIALLY AVAILABLE" =c("A","A: COMMERCIALLY AVAILABLE"),
-                                                                   "B: OTHER COMMERCIAL ITEM"=c(  "B"                ,              "B: OTHER COMMERCIAL ITEM"  ),
-                                                                   "C: NON-DEVELOPMENTAL ITEM"=c("C","C: NON-DEVELOPMENTAL ITEM"),
-                                                                   "D: NON-COMMERCIAL ITEM"=c("D",                              "D: NON-COMMERCIAL ITEM" ),
-                                                                   "E: COMMERCIAL SERVICE" =c("E","E: COMMERCIAL SERVICE"),
-                                                                   "F: NON-COMMERCIAL SERVICE" =c("F"            ,                  "F: NON-COMMERCIAL SERVICE"),
-                                                                   "Z: NOT IT PRODUCTS OR SERVICES"=c("Z","Z: NOT IT PRODUCTS OR SERVICES"))
 
 
 View(disa %>% group_by(Fiscal_Year) %>% summarise(Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20)))
 View(disa_sum %>% group_by(Fiscal_Year) %>% summarise(Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20)))
-                                  # by="ProductOrServiceArea",
-                                  by="ProductServiceOrRnDarea",
-                                  replace_na_var="ProductServiceOrRnDarea",
-                                  add_var="ProductServiceOrRnDarea.sum",
-                                  path="https://raw.githubusercontent.com/CSISdefense/R-scripts-and-data/master/",
-                                  dir="Lookups/"
-)
 
 idv_spend_test<-disa %>% filter(Fiscal_Year>=2005) %>% group_by(idv_or_piid,VehicleClassification,ContractingOfficeID,ContractingOfficeName,fundingrequestingagencyid,
-disa_sum<-csis360::read_and_join_experiment(disa_sum,
-                                            "Vehicle.csv",
-                                            by=c("VehicleClassification"="Vehicle.detail"),
-                                            add_var=c("Vehicle.sum","Vehicle.sum7","Vehicle.AwardTask"),
-                                            path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/",
-                                            # path="K:/Users/Greg/Repositories/Lookup-Tables/",
-                                            dir="contract/"
-)
-
-disa_sum<-read_and_join_experiment(data=disa_sum
-                                   ,"InformationTechnologyCommercialItemCategory.csv"
-                                   ,path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/"
-                                   ,dir="productorservice/"
-                                   ,by=c("informationtechnologycommercialitemcategory"="informationtechnologycommercialitemcategory")
-                                   # ,new_var_checked=FALSE
-                                   # ,create_lookup_rdata=TRUE
-                                   # ,col_types="dddddddddccc"
-) 
-
-disa_sum$dFYear<-as.Date(paste("1/1/",as.character(disa_sum$fiscal_year),sep=""),"%m/%d/%Y")
-
-ds_lc<-prepare_labels_and_colors(disa_sum)
-ds_ck<-get_column_key(disa_sum)
-
-save(disa_sum,file=file.path("data","semi_clean","disa.Rda"))
-
-
-View(disa %>% group_by(fiscal_year) %>% summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19)))
-View(disa_sum %>% group_by(fiscal_year) %>% summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19)))
-disa$naics
-disa$fundingrequestingagencyid
                                                                 ) %>%
   summarise(Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20))
 
@@ -187,7 +133,7 @@ idv_spend %>% filter(crank<=10) %>% group_by(ContractingOfficeID) %>%
   dplyr::summarise(cshare=sum(cshare),
                    Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20))
 
-idv_spend<-idv_spend[order(idv_spend$ContractingOfficeID,desc(idv_spend$obligatedAmount_OMB19_19)),]
+idv_spend<-idv_spend[order(idv_spend$ContractingOfficeID,desc(idv_spend$Action_Obligation_OMB20_GDP20)),]
 View(idv_spend %>% filter(crank<=5))
 write.csv(idv_spend %>% filter(crank<=5), file="DISA_top_office_contract.csv",row.names = FALSE)
 
@@ -203,66 +149,6 @@ idv_spend_2020<-disa %>% filter(Fiscal_Year>=2010) %>% group_by(idv_or_piid,Vehi
          cshare=Action_Obligation_OMB20_GDP20/sum(Action_Obligation_OMB20_GDP20)) %>% filter(crank<=5) %>% group_by(ContractingOfficeID) %>%
 disa_psc_naics$NAICS_ShortHand[disa_psc_naics$NAICS_ShortHand=="" & disa_psc_naics$principalnaicscode=="511210"]<-"Software Publishers"
 disa_psc_naics$NAICS_ShortHand[disa_psc_naics$NAICS_ShortHand=="" & disa_psc_naics$principalnaicscode=="541512"]<-"Computer Systems Design Services "
-
-
-summary(factor(disa_sum$informationtechnologycommercialitemcategory))
-
-(c<-build_plot(disa_sum %>% filter(fiscal_year>=2005),
-               chart_geom = "Bar Chart",
-               share=FALSE,
-               x_var="fiscal_year",
-               y_var="obligatedAmount_OMB19_19",
-               color_var = "informationtechnologycommercialitemcategory",
-               facet_var = "ContractingOfficeID",
-               format=TRUE
-)
-)
-(coverall<-build_plot(disa_sum %>% filter(fiscal_year>=2002),
-               chart_geom = "Bar Chart",
-               share=FALSE,
-               x_var="fiscal_year",
-               y_var="obligatedAmount_OMB19_19",
-               color_var = "informationtechnologycommercialitemcategory",
-               # facet_var = "ContractingOfficeID",
-               format=TRUE
-)+theme(legend.position = "right")
-)
-ggsave(coverall,file="output//disa_commercial.png")
-
-disa_sum<-read_and_join_experiment(data=disa_sum
-                         ,"Vehicle.csv"
-                         ,path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/"
-                         ,dir="contract/"
-                         ,by=c("VehicleClassification"="Vehicle.detail")
-                         # ,new_var_checked=FALSE
-                         # ,create_lookup_rdata=TRUE
-                         # ,col_types="dddddddddccc"
-) 
-
-
-disa_sum<-read_and_join_experiment(data=disa_sum
-                                   ,"InformationTechnologyCommercialItemCategory.csv"
-                                   ,path="https://raw.githubusercontent.com/CSISdefense/Lookup-Tables/master/"
-                                   ,dir="productorservice/"
-                                   ,by=c("informationtechnologycommercialitemcategory"="informationtechnologycommercialitemcategory")
-                                   # ,new_var_checked=FALSE
-                                   # ,create_lookup_rdata=TRUE
-                                   # ,col_types="dddddddddccc"
-) 
-
-(voverall<-build_plot(disa_sum %>% filter(fiscal_year>=2000),
-                      chart_geom = "Bar Chart",
-                      share=FALSE,
-                      x_var="fiscal_year",
-                      y_var="obligatedAmount_OMB19_19",
-                      color_var = "Vehicle.sum7",
-                      # facet_var = "ContractingOfficeID",
-                      format=TRUE
-)+theme(legend.position = "right")
-)
-ggsave(voverall,file="output//disa_vehicle.png")
-
-
   dplyr::summarise(cshare=sum(cshare),
                    Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20))
 
