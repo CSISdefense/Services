@@ -357,87 +357,10 @@ SELECT  [unique_transaction_id]
 
 
 
-  /****** Script for SelectTopNRows command from SSMS  ******/
+--Keeping the version with IDVagencyID
 SET ANSI_WARNINGS OFF;
 SET NOCOUNT ON;
-SELECT  [fiscal_year]
-      ,sum([baseandexercisedoptionsvalue]) as [baseandexercisedoptionsvalue]
-      ,sum([baseandalloptionsvalue]) as [baseandalloptionsvalue]
-      ,sum([obligatedAmount]) as [obligatedAmount]
-      ,[contractingofficeagencyid]
-      ,[ContractingAgencyText]
-      ,[fundingrequestingagencyid]
-      ,[fundingrequestingofficeid]
-      ,[reasonformodification]
-      ,[typeofcontractpricing]
-      ,[TypeOfContractPricing5Category]
-      ,[ParentID]
-      ,[principalnaicscode]
-	  ,principalnaicscodeText
-      ,[NAICS_ShortHand]
-      ,informationtechnologycommercialitemcategory
-  
-     ,[usaspending_permalink]     
-      ,[ContractingCustomer]
-      ,[ContractingSubCustomer]
-      ,[SubCustomer]
-      ,[FundingAgency]
-      ,[FundingSubAgency]
-      ,[MajorCommandID]
-      ,[ContractingOfficeID]
-      ,[ContractingOfficeName]
-      ,[ContractingOfficeCity]
-      ,[ContractingOfficeState]
-      ,[ContractingOfficeCountry]
-      ,[ContractingOfficeStartDate]
-      ,[ContractingOfficeEndDate]
-      ,[ProductOrServiceArea]
-      ,[ProductServiceOrRnDarea]
-      ,[ProductOrServiceCode]
-      ,[ProductOrServiceCodeText]
-      ,[VehicleClassification]
-      ,[CompetitionClassification]
-	  ,ClassifyNumberOfOffers
-  FROM [Contract].[FPDSclassification] c
-  where contractingofficeagencyid='97AK' --or (customer='GSA' and  productorservicearea in ('ICT' ,'Electronics & Communications'))
-  group by [fiscal_year]
-      ,[contractingofficeagencyid]
-      ,[ContractingAgencyText]
-      ,[fundingrequestingagencyid]
-      ,[fundingrequestingofficeid]
-      ,[reasonformodification]
-      ,[typeofcontractpricing]
-      ,[TypeOfContractPricing5Category]
-      ,[ParentID]
-      ,[principalnaicscode]
-      ,[NAICS_ShortHand]
-	  ,principalnaicscodeText
-      ,informationtechnologycommercialitemcategory
-     ,[usaspending_permalink]     
-      ,[ContractingCustomer]
-      ,[ContractingSubCustomer]
-      ,[SubCustomer]
-      ,[FundingAgency]
-      ,[FundingSubAgency]
-      ,[MajorCommandID]
-      ,[ContractingOfficeID]
-      ,[ContractingOfficeName]
-      ,[ContractingOfficeCity]
-      ,[ContractingOfficeState]
-      ,[ContractingOfficeCountry]
-      ,[ContractingOfficeStartDate]
-      ,[ContractingOfficeEndDate]
-      ,[ProductOrServiceArea]
-      ,[ProductServiceOrRnDarea]
-      ,[ProductOrServiceCode]
-      ,[ProductOrServiceCodeText]
-      ,[VehicleClassification]
-      ,[CompetitionClassification]
-	  mClassifyNumberOfOffers
 
-
-SET ANSI_WARNINGS OFF;
-SET NOCOUNT ON;
 SELECT  [fiscal_year]
       ,sum([baseandexercisedoptionsvalue]) as [baseandexercisedoptionsvalue]
       ,sum([baseandalloptionsvalue]) as [baseandalloptionsvalue]

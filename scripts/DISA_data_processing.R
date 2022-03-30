@@ -18,15 +18,21 @@
 library(tidyverse)
 library(magrittr)
 library(csis360)
-library(Hmisc)
 library(readr)
 
 
 
 source("scripts\\NAICS.r")
 # read in data
-summary(factor(disa_gsa$CSISidvpiidid[disa_gsa$idvpiid==""]))
+# setwd("K:/Users/Greg/Repositories/Vendor")
+disa_gsa<-read_delim(file.path("data","semi_clean","DISA_GSA_contract.txt"),delim="\t",na=c("NULL","NA"),
+                     col_names = TRUE, guess_max = 700000)
 
+disa_sum<-read_delim(file.path("data","semi_clean","DISA_summary_veh.txt"),delim="\t",na=c("NULL","NA"),
+                     col_names = TRUE, guess_max = 700000)
+
+
+summary(factor(disa_gsa$CSISidvpiidid[disa_gsa$idvpiid==""]))
 
 disa_gsa$idvpiid[is.na(disa_gsa$idvpiid)]<-""
 disa_gsa$idv_or_piid[disa_gsa$idvpiid!=""]<-paste("IDV",disa_gsa$idvpiid[disa_gsa$idvpiid!=""],"_")
@@ -48,6 +54,30 @@ disa_sum<-read_delim(file.path("data","semi_clean","DISA_summary2.txt"),delim="\
 
 disa_gsa<-read_delim(file.path("data","semi_clean","DISA_GSA_contract_no_description.txt"),delim="\t",na=c("NULL","NA"),
                      col_names = TRUE, guess_max = 1300000)
+# disa_sum <- deflate(disa_sum,money_var="obligatedAmount",fy_var="Fiscal_Year",deflator_var="OMB20_GDP20")
+# disa_sum$NAICS_ShortHand
+
+disa_sum<-csis360::read_and_join(disa_sum,
+                           "LOOKUP_Buckets.csv",
+                           # by="ProductOrServiceArea",
+                           by="ProductServiceOrRnDarea",
+                           replace_na_var="ProductServiceOrRnDarea",
+                           add_var=c("ServicesCategory.detail"),
+                           path="https://raw.githubusercontent.com/CSISdefense/R-scripts-and-data/master/",
+                           dir="Lookups/"
+)
+
+disa_sum %>% group_by(informationtechnologycommercialitemcategory) %>% filter(Fiscal_Year>="2000") %>%
+  # group_by(ProductOrServiceCode,ProductOrServiceCodeText,principalnaicscode,NAICS_ShortHand,ContractingOfficeID,ContractingOfficeName) %>%
+  summarise(Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20))
+# levels(factor(disa_sum$informationtechnologycommercialitemcategory))
+
+
+ds_lc<-prepare_labels_and_colors(disa_sum)
+ds_ck<-get_column_key(disa_sum)
+
+save(disa_sum,file=file.path("data","semi_clean","disa.Rda"))
+
 
 
 
@@ -60,13 +90,13 @@ summary(factor(disa$ContractingOfficeName))
 summary(factor(disa$ContractingOfficeID))
 View(disa %>%filter(is.na(ContractingOfficeName)))
 
-?build_plot
 
 
-(v<-build_plot(disa %>% filter(fiscal_year>=2005),
+
+(v<-build_plot(disa %>% filter(Fiscal_Year>=2005),
            chart_geom = "Bar Chart",
            share=FALSE,
-           x_var="fiscal_year",
+           x_var="Fiscal_Year",
            y_var="obligatedAmount",
            color_var = "VehicleClassification",
            facet_var = "ContractingOfficeID",
@@ -74,8 +104,7 @@ View(disa %>%filter(is.na(ContractingOfficeName)))
            )
 )
 
-disa <- deflate(disa,money_var="obligatedAmount",fy_var="fiscal_year",deflator_var="OMB20_GDP20")
-disa_sum <- deflate(disa_sum,money_var="obligatedAmount",fy_var="fiscal_year",deflator_var="OMB20_GDP20")
+disa <- deflate(disa,money_var="obligatedAmount",fy_var="Fiscal_Year",deflator_var="OMB20_GDP20")
 disa_sum$NAICS_ShortHand
 
 disa_sum %>% group_by(informationtechnologycommercialitemcategory) %>% filter(fiscal_year>="2000") %>%
@@ -93,8 +122,8 @@ levels(disa_sum$informationtechnologycommercialitemcategory)<-list("Unlabeled"="
                                                                    "Z: NOT IT PRODUCTS OR SERVICES"=c("Z","Z: NOT IT PRODUCTS OR SERVICES"))
 
 
-disa_sum<-csis360::read_and_join(disa_sum,
-                                  "LOOKUP_Buckets.csv",
+View(disa %>% group_by(Fiscal_Year) %>% summarise(Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20)))
+View(disa_sum %>% group_by(Fiscal_Year) %>% summarise(Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20)))
                                   # by="ProductOrServiceArea",
                                   by="ProductServiceOrRnDarea",
                                   replace_na_var="ProductServiceOrRnDarea",
@@ -103,7 +132,7 @@ disa_sum<-csis360::read_and_join(disa_sum,
                                   dir="Lookups/"
 )
 
-#Vehicle
+idv_spend_test<-disa %>% filter(Fiscal_Year>=2005) %>% group_by(idv_or_piid,VehicleClassification,ContractingOfficeID,ContractingOfficeName,fundingrequestingagencyid,
 disa_sum<-csis360::read_and_join_experiment(disa_sum,
                                             "Vehicle.csv",
                                             by=c("VehicleClassification"="Vehicle.detail"),
@@ -135,27 +164,28 @@ View(disa %>% group_by(fiscal_year) %>% summarise(obligatedAmount_OMB19_19=sum(o
 View(disa_sum %>% group_by(fiscal_year) %>% summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19)))
 disa$naics
 disa$fundingrequestingagencyid
-idv_spend_test<-disa %>% filter(fiscal_year>=2005) %>% group_by(idv_or_piid,VehicleClassification,ContractingOfficeID,ContractingOfficeName,fundingrequestingagencyid,
                                                                 ) %>%
-  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
+  summarise(Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20))
 
 
-idv_spend<-disa %>% filter(fiscal_year>=2005) %>% group_by(idv_or_piid,VehicleClassification,ContractingOfficeID,ContractingOfficeName) %>%
-  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
+idv_spend<-disa %>% filter(Fiscal_Year>=2005) %>% group_by(idv_or_piid,VehicleClassification,ContractingOfficeID,ContractingOfficeName) %>%
+  summarise(Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20),
+            min_fyear=min(Fiscal_Year),
+            max_fyear=max(Fiscal_Year))
 
 idv_spend <-  idv_spend %>% group_by(ContractingOfficeID) %>%
-  mutate(crank=order(order(obligatedAmount_OMB19_19,decreasing = TRUE)),
-         cshare=obligatedAmount_OMB19_19/sum(obligatedAmount_OMB19_19))
+  mutate(crank=order(order(Action_Obligation_OMB20_GDP20,decreasing = TRUE)),
+         cshare=Action_Obligation_OMB20_GDP20/sum(Action_Obligation_OMB20_GDP20))
 
 View(idv_spend %>% filter(crank<=5))
 
 idv_spend %>% filter(crank<=5) %>% group_by(ContractingOfficeID) %>%
   dplyr::summarise(cshare=sum(cshare),
-           obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
+           Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20))
 
 idv_spend %>% filter(crank<=10) %>% group_by(ContractingOfficeID) %>%
   dplyr::summarise(cshare=sum(cshare),
-                   obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
+                   Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20))
 
 idv_spend<-idv_spend[order(idv_spend$ContractingOfficeID,desc(idv_spend$obligatedAmount_OMB19_19)),]
 View(idv_spend %>% filter(crank<=5))
@@ -167,10 +197,10 @@ disa_psc_naics <-  disa_psc_naics %>% group_by(ContractingOfficeID) %>%
   mutate(crank=order(order(obligatedAmount_OMB19_19,decreasing = TRUE)),
          cshare=obligatedAmount_OMB19_19/sum(obligatedAmount_OMB19_19))
 
-disa_psc_naics<-disa_psc_naics[order(disa_psc_naics$ContractingOfficeID,desc(disa_psc_naics$obligatedAmount_OMB19_19)),]
-disa_psc_naics$NAICS_ShortHand[disa_psc_naics$NAICS_ShortHand=="" & disa_psc_naics$principalnaicscode=="541519"]<-"Other Computer Related Services"
-disa_psc_naics$NAICS_ShortHand[disa_psc_naics$NAICS_ShortHand=="" & disa_psc_naics$principalnaicscode=="517410"]<-"Satellite Telecommunications"
-disa_psc_naics$NAICS_ShortHand[disa_psc_naics$NAICS_ShortHand=="" & disa_psc_naics$principalnaicscode=="517110"]<-"Wired Telecommunications Carriers"
+idv_spend_2020<-disa %>% filter(Fiscal_Year>=2010) %>% group_by(idv_or_piid,VehicleClassification,ContractingOfficeID) %>%
+  summarise(Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20)) %>%  group_by(ContractingOfficeID) %>%
+  mutate(crank=order(order(Action_Obligation_OMB20_GDP20,decreasing = TRUE)),
+         cshare=Action_Obligation_OMB20_GDP20/sum(Action_Obligation_OMB20_GDP20)) %>% filter(crank<=5) %>% group_by(ContractingOfficeID) %>%
 disa_psc_naics$NAICS_ShortHand[disa_psc_naics$NAICS_ShortHand=="" & disa_psc_naics$principalnaicscode=="511210"]<-"Software Publishers"
 disa_psc_naics$NAICS_ShortHand[disa_psc_naics$NAICS_ShortHand=="" & disa_psc_naics$principalnaicscode=="541512"]<-"Computer Systems Design Services "
 
@@ -233,17 +263,8 @@ disa_sum<-read_and_join_experiment(data=disa_sum
 ggsave(voverall,file="output//disa_vehicle.png")
 
 
-View(disa_psc_naics %>% filter(crank<=5))
-disa_psc_naics %>% filter(crank<=5) %>% group_by(ContractingOfficeID) %>%
   dplyr::summarise(cshare=sum(cshare),
-                   obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
-
-idv_spend_2020<-disa %>% filter(fiscal_year>=2010) %>% group_by(idv_or_piid,VehicleClassification,ContractingOfficeID) %>%
-  summarise(obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19)) %>%  group_by(ContractingOfficeID) %>%
-  mutate(crank=order(order(obligatedAmount_OMB19_19,decreasing = TRUE)),
-         cshare=obligatedAmount_OMB19_19/sum(obligatedAmount_OMB19_19)) %>% filter(crank<=5) %>% group_by(ContractingOfficeID) %>%
-  dplyr::summarise(cshare=sum(cshare),
-                   obligatedAmount_OMB19_19=sum(obligatedAmount_OMB19_19))
+                   Action_Obligation_OMB20_GDP20=sum(Action_Obligation_OMB20_GDP20))
 
 
 
